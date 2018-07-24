@@ -56,6 +56,20 @@ tags:
       The Issues API provides methods for creating issues, changing the state of an issue, commenting on an issue and
       requesting detailed information and reports on issues and comments.
 
+  - name: "Glossaries"
+    description: |-
+      The Glossary API allows you to create and edit Glossaries in a Smartling account and populate it with Glossary terms. You can also download your Glossaries as CSV or TBX files and import Excel spreadsheets to create new Glossaries.
+
+      **Glossary API introduces following limitations on its usage:**
+      * Maximum request size is 10MB
+      * Maximum file upload size is 10MB
+      * Maximum HTTP header size is 128KB
+      * For requests that uses pagination, maximum page size is 5000 elements
+      * For requests that returns entities by their UIDs - maximum 100 elements
+      Rate limits:
+      * Maximum 5 concurrent requests
+      * Maximum rate is 200 requests per 15 seconds window frame
+
 x-tagGroups:
   - name: "Basics"
     tags:
@@ -74,6 +88,9 @@ x-tagGroups:
       - "Issues"
       - "Issue comments"
       - "Issue watchers"
+  - name: "Glossaries"
+    tags:
+      - "Glossaries"
 
 paths:
   '/auth-api/v2/authenticate':
@@ -2816,8 +2833,6 @@ paths:
           name: stringRequest
           schema:
             type: object
-            required:
-              - stringText
             properties:
               placeholderFormat:
                 description: |-
@@ -2835,6 +2850,8 @@ paths:
                 type: array
                 items:
                   type: object
+                  required:
+                    - stringText
                   properties:
                     stringText:
                       description: |-
@@ -3040,6 +3057,903 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/ErrorResponse'
+
+#
+# Glossary API endpoints
+#
+  /glossary-api/v2/accounts/{accountUid}/glossaries:
+    get:
+      description: 'Returns a list of all glossaries in an account. Optional filters for glossary name and UID can be added.'
+      summary: List Glossaries for an Account
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: name
+          in: query
+          type: string
+          description: filter for glossary name in LIKE manner (case-insensitive)
+        - name: glossaryUids
+          in: query
+          type: array
+          items:
+            type: string
+          description:  filter for glossary uid in IN manner (might contain up to 100 uids separated by comma e.g glossaryUids=1234,4567)
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/GlossaryListResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 2
+                  items:
+                  - glossaryUid: 50d9dab5-6b8b-11e5-ba24-127b00b163a3
+                    name: Another document tester-Glossary
+                    createdByUserUid: ah27fhq8
+                    createdDate: '2015-11-21T01:51:17Z'
+                    sourceLocaleId: en-US
+                    description: some desc
+                  - glossaryUid: 50e5c8d3-6b8b-11e5-ba24-127b00b163a3
+                    name: BizDocs test Max's project-Glossary
+                    createdByUserUid: ah27fhq8
+                    createdDate: '2015-11-21T01:51:17Z'
+                    sourceLocaleId: en-US
+                    description: some desc
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+    post:
+      description: 'Creates a new Glossary in an account.'
+      summary: Create glossary
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossary
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateGlossary'
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/GlossaryResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  glossaryUid: 50d9dab5-6b8b-11e5-ba24-127b00b163a3
+                  name: Another document tester-Glossary
+                  description: Description of a Glossary
+                  sourceLocaleId: en-US
+                  createdByUserUid: ah27fhq8
+                  createdDate: '2015-11-21T01:51:17Z'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}:
+    get:
+      description: 'Gets the name, description, locale, and creation information for a glossary.'
+      summary: Get glossary details
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryUid
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/GlossaryResponse'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+    put:
+      description: 'Edits the name, description or source locale of a glossary. This will completely replace the name, description and source locale of the target glossary. If you do not provide a field, or leave it blank, any existing information will be deleted.'
+      summary: Edit a glossary
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryUid
+          in: path
+          required: true
+          type: string
+        - name: glossary
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateGlossary'
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/GlossaryResponse'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+    delete:
+      description: Deletes a Glossary. Note that if a Glossary has been assigned to a Linguistic Package, you will not be able to delete it. Linguistic Packages are managed in the Smartling Dashboard.
+      summary: Delete Glossary
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryUid
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  termText: cold call
+                  partOfSpeechCode: VERB
+                  definition: ''
+                  notes: ''
+                  caseSensitive: false
+                  exactMatch: false
+                  variations: ''
+                  synonyms: ''
+                  antonyms: ''
+                  seo: false
+                  doNotTranslate: false
+                  translation:
+                    localeId: fr-CA
+                    translatedTerm: cold call french ca
+                    notes: some notes from user
+                    translatorUserUid: 58870b8e965
+                    submittedForTranslation: true
+                    lockTranslation: false
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms:
+    get:
+      description: Returns terms from a Glossary. Only the source term is included in this response.
+      summary: Get glossary terms
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryUid
+          in: path
+          required: true
+          type: string
+        - name: termText
+          in: query
+          type: string
+          description: filter for term text in LIKE manner (case-insensitive).
+        - name: limit
+          in: query
+          type: integer
+          description: pagination portion size
+        - name: offset
+          in: query
+          type: integer
+          description: pagination offset value
+        - name: sort
+          in: query
+          type: string
+          description:  sorting instructions. represents field to sort by and direction separated by coma (i.e. sort=termText,desc). We support sorting by all fields.
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/SourceTermListResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 2
+                  items:
+                  - termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b537
+                    termText: cold calls
+                    caseSensitive: false
+                    exactMatch: false
+                    partOfSpeechCode: UNSPECIFIED
+                    definition: ''
+                    variations: ''
+                    synonyms: ''
+                    antonyms: ''
+                    seo: false
+                    doNotTranslate: false
+                    deprecated: false
+                    notes: ''
+                    createdDate: '2015-12-30T12:43:12Z'
+                    modifiedDate: '2015-12-30T12:43:12Z'
+                  - termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b538
+                    termText: cold call
+                    caseSensitive: true
+                    exactMatch: false
+                    partOfSpeechCode: VERB
+                    definition: My definition
+                    variations: ''
+                    synonyms: ''
+                    antonyms: ''
+                    seo: false
+                    doNotTranslate: false
+                    deprecated: false
+                    notes: My notes
+                    createdDate: '2015-12-30T12:43:12Z'
+                    modifiedDate: '2015-12-30T12:43:12Z'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+    post:
+      description: Creates a new glossary term. The only required parameter is termText. See our Glossary documentation for details on each term parameter. You can only add one translation object in this request. To add additional translations, use Edit Glossary term.
+      summary: Create glossary term
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryUid
+          in: path
+          required: true
+          type: string
+        - name: term
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateTerm'
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/TranslatedTermResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  termText: cold call
+                  partOfSpeechCode: VERB
+                  definition: ''
+                  notes: ''
+                  caseSensitive: false
+                  exactMatch: false
+                  variations: ''
+                  synonyms: ''
+                  antonyms: ''
+                  seo: false
+                  doNotTranslate: false
+                  translation:
+                    localeId: fr-CA
+                    translatedTerm: cold call french ca
+                    notes: some notes from user
+                    translatorUserUid: 58870b8e965
+                    submittedForTranslation: true
+                    lockTranslation: false
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/batch:
+    post:
+      description: Creates a new glossary terms.Validation for the endpoint works in atomic fashion - either all terms passed validation, and then they all will be created, or non of them will be. Translation section is optional.
+      summary: Create glossary terms in batch
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryUid
+          in: path
+          required: true
+          type: string
+        - name: term
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CreateTerm'
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/TranslatedTermResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 2
+                  items:
+                  - termText: term 22
+                    partOfSpeechCode: UNSPECIFIED
+                    definition: ''
+                    notes: ''
+                    caseSensitive: false
+                    exactMatch: false
+                    variations: ''
+                    synonyms: ''
+                    antonyms: ''
+                    seo: false
+                    doNotTranslate: false
+                  - termText: term 33
+                    partOfSpeechCode: UNSPECIFIED
+                    definition: ''
+                    notes: ''
+                    caseSensitive: false
+                    exactMatch: false
+                    variations: ''
+                    synonyms: ''
+                    antonyms: ''
+                    seo: false
+                    doNotTranslate: false
+                    translation:
+                      localeId: fr-CA
+                      translatedTerm: term 33 french ca
+                      notes: some notes from user
+                      translatorUserUid: 58870b8ee965
+                      submittedForTranslation: false
+                      lockTranslation: false
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/locales/{localeId}/terms:
+    get:
+      description: 'Returns terms from a Glossary, including translations for the specified locale.'
+      summary: Get Glossary Terms and Translations
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryUid
+          in: path
+          required: true
+          type: string
+        - name: localeId
+          in: path
+          required: true
+          type: string
+        - name: termUids
+          in: query
+          type: array
+          items:
+            type: string
+          description: UIDs of specific terms to be retrieved (validation allows not more than 100 in single request)
+        - name: termText
+          in: query
+          type: string
+          description: filter for term text in LIKE manner (case-insensitive).
+        - name: translated
+          in: query
+          type: boolean
+          description: flag to filter out terms by criteria of presence of translation. if not specified - it is not taken into account
+        - name: limit
+          in: query
+          type: integer
+          description: pagination portion size
+        - name: offset
+          in: query
+          type: integer
+          description: pagination offset value
+        - name: sort
+          in: query
+          type: string
+          description:  sorting instructions. represents field to sort by and direction separated by coma (i.e. sort=termText,desc). We support sorting by all fields.
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/TranslatedTermResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 2
+                  items:
+                  - translation:
+                      createdDate: '2015-12-30T12:43:12Z'
+                      modifiedDate: '2015-12-30T12:43:12Z'
+                      localeId: fr-CA
+                      translatedTerm: cold calls in french ca
+                      notes: ''
+                      submittedForTranslation: true
+                      translatorUserUid: 58870b8ee964
+                      lockTranslation: false
+                    termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b537
+                    termText: cold calls
+                    caseSensitive: false
+                    exactMatch: false
+                    partOfSpeechCode: UNSPECIFIED
+                    definition: ''
+                    variations: ''
+                    synonyms: ''
+                    antonyms: ''
+                    seo: false
+                    doNotTranslate: false
+                    deprecated: false
+                    notes: ''
+                    createdDate: '2015-12-30T12:43:12Z'
+                    modifiedDate: '2015-12-30T12:43:12Z'
+                  - translation:
+                      createdDate: '2015-12-30T12:43:12Z'
+                      modifiedDate: '2015-12-30T12:43:12Z'
+                      localeId: fr-CA
+                      translatedTerm: cold call french ca
+                      notes: ''
+                      submittedForTranslation: false
+                      translatorUserUid: 58870b8ee966
+                      lockTranslation: false
+                    termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b538
+                    termText: cold call
+                    caseSensitive: false
+                    exactMatch: false
+                    partOfSpeechCode: ADJECTIVE
+                    definition: ''
+                    variations: ''
+                    synonyms: ''
+                    antonyms: ''
+                    seo: false
+                    doNotTranslate: false
+                    deprecated: false
+                    notes: ''
+                    createdDate: '2015-12-30T12:43:12Z'
+                    modifiedDate: '2015-12-30T12:43:12Z'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+
+  /glossary-api/v2/accounts/{accountUid}/locales/{localeId}/terms:
+    get:
+      description: |-
+        If performance is an issue, and client wants to avoid makeing several calls to get terms from different glossaries - this call serves this purpose. Glossary uid is omitted from URI path, but security check is performed that all requested terms belong to glossaries which are connected to account specified in path. Validation works in atomic fashion - either all terms comply criteria, or non is accepted.
+        Response contains glossary uids for every term, to show which glossary term belongs to (glossaryUid field in response is specific for this API call only).
+
+      summary: Returns terms with translations for particular locale for multiple glossaries
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: localeId
+          in: path
+          required: true
+          type: string
+        - name: termUids
+          in: query
+          type: array
+          items:
+            type: string
+          description: UIDs of specific terms to be retrieved (validation allows not more than 100 in single request)
+        - name: termText
+          in: query
+          type: string
+          description: filter for term text in LIKE manner (case-insensitive).
+        - name: translated
+          in: query
+          type: boolean
+          description: flag to filter out terms by criteria of presence of translation. if not specified - it is not taken into account
+        - name: limit
+          in: query
+          type: integer
+          description: pagination portion size
+        - name: offset
+          in: query
+          type: integer
+          description: pagination offset value
+        - name: sort
+          in: query
+          type: string
+          description:  sorting instructions. represents field to sort by and direction separated by coma (i.e. sort=termText,desc). We support sorting by all fields.
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/TermWithGlossaryUidListResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 2
+                  items:
+                  - translation:
+                      localeId: fr-FR
+                      translatedTerm: arabian architecture in french
+                      notes: ''
+                      translatorUserUid:
+                      lockTranslation: false
+                      submittedForTranslation: false
+                      createdDate: '2015-10-21T11:08:01Z'
+                      modifiedDate: '2015-10-27T13:09:56Z'
+                    termUid: 6b3e1e8c-eb40-4c32-a9f7-024e407b0b30
+                    termText: arabian architecture
+                    caseSensitive: true
+                    exactMatch: false
+                    partOfSpeechCode: VERB
+                    definition: ''
+                    variations: ''
+                    synonyms: ''
+                    antonyms: ''
+                    seo: true
+                    doNotTranslate: false
+                    deprecated: false
+                    notes: ''
+                    createdByUserUid: kjakjf82v
+                    glossaryUid: bdf416ee-98ff-11e5-b159-0ad0c2f6b537
+                    createdDate: '2015-10-19T15:48:34Z'
+                    modifiedDate: '2015-11-09T15:33:19Z'
+                  - translation:
+                      localeId: fr-FR
+                      translatedTerm: summer time french 22
+                      notes: ''
+                      translatorUserUid:
+                      lockTranslation: false
+                      submittedForTranslation: false
+                      createdDate: '2015-12-02T14:28:00Z'
+                      modifiedDate: '2015-12-02T14:28:00Z'
+                    termUid: aaf416ee-98ff-11e5-b159-0ad0c2f6b537
+                    termText: summer time
+                    caseSensitive: false
+                    exactMatch: false
+                    partOfSpeechCode: ADJECTIVE
+                    definition: ''
+                    variations: ''
+                    synonyms: ''
+                    antonyms: ''
+                    seo: false
+                    doNotTranslate: false
+                    deprecated: false
+                    notes: ''
+                    createdByUserUid: kjakjf82v
+                    glossaryUid: bbf416ee-98ff-11e5-b159-0ad0c2f6b537
+                    createdDate: '2015-12-02T14:19:15Z'
+                    modifiedDate: '2015-12-02T14:19:15Z'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/{termUid}:
+    put:
+      description: 'Edits the details of a glossary term. With the exception of the translation object, you must provide all desired fields every time you edit the term. If you do not provide a field or leave it blank, any existing value for that field will be deleted. To add translations for multiple locales, make a separate request for each locale. Keep all fields except for the translation object identical in each request.'
+      summary: Edit glossary term
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryUid
+          in: path
+          required: true
+          type: string
+        - name: termUid
+          in: path
+          required: true
+          type: string
+        - name: term
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateTerm'
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/TranslatedTermResponse'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    delete:
+      description: 'Delete a Glossary term. This will remove the term and all translations.'
+      summary: Delete term
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryUid
+          in: path
+          required: true
+          type: string
+        - name: termUid
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /glossary-api/v2/projects/{projectUid}/glossaries/{glossaryUid}/terms/authorization:
+    put:
+      description: Sends selected terms for translation via specified workflows to chosen target locales.
+      summary: Authorize terms for translation
+      tags:
+        - Glossaries
+      parameters:
+        - name: projectUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryUid
+          in: path
+          required: true
+          type: string
+        - name: request
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AuthorizeTerms'
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/download:
+    get:
+      description: Downloads a glossary as a CSV, TBX or XLSX (Open Excel) file.
+      summary: Download glossary
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryUid
+          in: path
+          required: true
+          type: string
+        - name: format
+          in: query
+          required: true
+          type: string
+          enum: [csv, tbx, xlsx]
+        - name: localeIds
+          in: query
+          type: string
+          description: 'Comma-separated list of locales for which to return translations'
+      responses:
+        200:
+          description: 'CSV File'
+          schema:
+            type: file
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /glossary-api/v2/accounts/{accountUid}/import-jobs:
+    post:
+      description: Creates a new Glossary in your account from an uploaded Excel spreadsheet. The format of the spreadsheet is important. See Import Glossary and Glossary Spreadsheet Format.
+      summary: Create new glossary from Excel file
+      tags:
+        - Glossaries
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: name
+          in: formData
+          required: true
+          type: string
+          description: 'A name for the glossary. This name must be unique. Attempting to use a name already in use in the account will return an error.'
+        - name: sourceLocaleId
+          in: formData
+          required: true
+          type: string
+          description: 'Source locale for the glossary.'
+        - name: description
+          in: formData
+          required: true
+          type: string
+          description: 'Description for the glossary'
+        - name: importFile
+          in: formData
+          required: true
+          type: file
+          description: 'File containing the Glossary you want to import. See Glossary Spreadsheet Format for details.'
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/GlossaryImportJob'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  glossaryImportJobUid: 78d93dde-5e3d-4beb-8171-415f82ca2c7b
+                  glossary:
+                    glossaryUid: 5c8d2aa8-e254-4ab3-8eb3-3b96b24f8609
+                    name: Import keysight test
+                    accountUid: 8a196313
+                    createdByUserUid: 58870b8ee965
+                    sourceLocaleId: en
+                    description: test desc
+                    createdDate: '2016-05-18T12:04:38Z'
+                  fileName: ExampleImportGlossary2.xlsx
+                  accountUid: b76d6285
+                  glossaryImportJobStatus: PENDING
+                  termsNumber: 10
+                  termsProcessed: 0
+                  localesNumber: 20
+                  createdDate: '2016-03-21T15:00:48Z'
+                  modifiedDate: '2016-03-21T15:00:48Z'
+                  createdByUserUid: 58870b8ee965
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /glossary-api/v2/accounts/{accountUid}/import-jobs/{glossaryImportJobUid}:
+    get:
+      description: Checks the status of a glossary import.
+      summary: Create new Glossary from Excel file - check status
+      tags:
+        - Glossaries
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: glossaryImportJobUid
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/GlossaryImportJob'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  glossaryImportJobUid: 78d93dde-5e3d-4beb-8171-415f82ca2c7b
+                  glossary:
+                    glossaryUid: 5c8d2aa8-e254-4ab3-8eb3-3b96b24f8609
+                    name: Import keysight test
+                    accountUid: 8a196313
+                    createdByUserUid: 58870b8ee965
+                    sourceLocaleId: en
+                    description: test desc
+                    createdDate: '2016-05-18T12:04:38Z'
+                  fileName: ExampleImportGlossary2.xlsx
+                  accountUid: b76d6285
+                  glossaryImportJobStatus: PENDING
+                  termsNumber: 10
+                  termsProcessed: 0
+                  localesNumber: 20
+                  createdDate: '2016-03-21T15:00:48Z'
+                  modifiedDate: '2016-03-21T15:00:48Z'
+                  createdByUserUid: 58870b8ee965
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /glossary-api/v2/dictionary/parts-of-speech:
+    get:
+      description: Order is fixed and consistent throughout the calls.
+      summary: Get list of parts of speech
+      tags:
+        - Glossaries
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/PartsOfSpeechList'
+          examples:
+            response:
+              code: SUCCESS
+              data:
+                totalCount: 9
+                items:
+                - partOfSpeechCode: NOUN
+                  description: Noun
+                - partOfSpeechCode: VERB
+                  description: Verb
+                - partOfSpeechCode: ADJECTIVE
+                  description: Adjective
+                - partOfSpeechCode: ADVERB
+                  description: Adverb
+                - partOfSpeechCode: PRONOUN
+                  description: Pronoun
+                - partOfSpeechCode: PREPOSITION
+                  description: Preposition
+                - partOfSpeechCode: INTERJECTION
+                  description: Interjection
+                - partOfSpeechCode: CONJUNCTION
+                  description: Conjunction
+                - partOfSpeechCode: UNSPECIFIED
+                  description: Unspecified
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
 
 
 definitions:
@@ -4273,3 +5187,316 @@ definitions:
             modifiedDate:
               description: When this translation was last modified.
               type: string
+
+#
+# Glossary API definitions:
+#
+
+  Glossary:
+    required:
+      - glossaryUid
+      - name
+      - sourceLocaleId
+    properties:
+      glossaryUid:
+        type: string
+        example: 50d9dab5-6b8b-11e5-ba24-127b00b163a3
+      name:
+        type: string
+        example: Another document tester-Glossary
+      description:
+        type: string
+        example: Description of a Glossary
+      sourceLocaleId:
+        type: string
+        example: en-US
+      createdByUserUid:
+        type: string
+        example: ah27fhq8
+      createdDate:
+        type: string
+        format: date-time
+        example: '2015-11-21T01:51:17Z'
+
+  TermData:
+    required:
+      - termText
+    properties:
+      termText:
+        type: string
+        example: cold calls
+      partOfSpeechCode:
+        type: string
+        example: UNSPECIFIED
+      definition:
+        type: string
+      notes:
+        type: string
+      caseSensitive:
+        type: boolean
+      exactMatch:
+        type: boolean
+      variations:
+        type: string
+      synonyms:
+        type: string
+      antonyms:
+        type: string
+      seo:
+        type: boolean
+      doNotTranslate:
+        type: boolean
+  SourceTerm:
+    allOf:
+    - $ref: '#/definitions/TermData'
+    - type: object
+      properties:
+        termUid:
+          type: string
+          example: e390a4d6-aef2-11e5-b159-0ad0c2f6b537
+        createdDate:
+          type: string
+          format: 'date-time'
+        modifiedDate:
+          type: string
+          format: 'date-time'
+
+  TranslatedTerm:
+    allOf:
+    - $ref: '#/definitions/SourceTerm'
+    - type: object
+      properties:
+        translation:
+          $ref: '#/definitions/TermTranslation'
+
+  TermWithGlossaryUid:
+    allOf:
+      - $ref: '#/definitions/TranslatedTerm'
+      - type: object
+        properties:
+          glossaryUid:
+            type: string
+          createdByUserUid:
+            type: string
+  TermTranslationData:
+    required:
+      - localeId
+      - translatedTerm
+    properties:
+      localeId:
+        type: string
+        example: fr-CA
+      translatedTerm:
+        type: string
+        example: cold calls in french ca
+      notes:
+        type: string
+      lockTranslation:
+        type: boolean
+  TermTranslation:
+    allOf:
+      - $ref: '#/definitions/TermTranslationData'
+      - type: object
+        properties:
+          translatorUserUid:
+            type: string
+          createdDate:
+            type: string
+            format: 'date-time'
+          modifiedDate:
+            type: string
+            format: 'date-time'
+
+  AuthorizeTerms:
+    required:
+      - termUids
+      - authorization
+    properties:
+      termUids:
+        type: array
+        items:
+          type: string
+          example: 65c62a7c-6b8b-11e5-ba24-127b00b163a3
+      authorization:
+        required:
+          - localeWorkflows
+        properties:
+          localeWorkflows:
+            type: array
+            items:
+              $ref: '#/definitions/LocaleWorkflow'
+  LocaleWorkflow:
+    required:
+      - targetLocaleId
+      - workflowUid
+    properties:
+      targetLocaleId:
+        type: string
+        example: cy-GB
+      workflowUid:
+        type: string
+        example: 9422471c2202
+  GlossaryImportJob:
+    properties:
+      glossaryImportJobUid:
+        type: string
+      glossary:
+        $ref: '#/definitions/Glossary'
+      fileName:
+        type: string
+      accountUid:
+        type: string
+      glossaryImportJobStatus:
+        type: string
+        enum: [PENDING, IN_PROGRESS, SUCCESSFUL, FAILED]
+      termsNumber:
+        type: integer
+        format: int32
+      termsProcessed:
+        type: integer
+        format: int32
+      localesNumber:
+        type: integer
+        format: int32
+      createdByUserUid:
+        type: string
+      createdDate:
+        type: string
+      modifiedDate:
+        type: string
+
+  CreateGlossary:
+    required:
+      - name
+      - description
+      - sourceLocaleId
+    properties:
+      name:
+        type: string
+        example: Some test glossary
+      description:
+        type: string
+        example: some desc
+      sourceLocaleId:
+        type: string
+        description: 'A valid Smartling Locale ID'
+        example: en-US
+  UpdateGlossary:
+    allOf:
+    - $ref: '#/definitions/CreateGlossary'
+
+  CreateTerm:
+    allOf:
+    - $ref: '#/definitions/TermData'
+  UpdateTerm:
+    allOf:
+    - $ref: '#/definitions/TermData'
+
+  PartsOfSpeech:
+    required:
+      - partOfSpeechCode
+    properties:
+      partOfSpeechCode:
+        type: string
+        example: ADJECTIVE
+      description:
+        type: string
+        example: Adjective
+
+  GlossaryResponse:
+    required:
+      - response
+    properties:
+      response:
+        allOf:
+        - $ref: '#/definitions/SuccessResponse'
+        - required:
+            - data
+          properties:
+            data:
+              $ref: '#/definitions/Glossary'
+  GlossaryListResponse:
+    required:
+      - response
+    properties:
+      response:
+        allOf:
+        - $ref: '#/definitions/SuccessResponse'
+        - required:
+            - data
+          properties:
+            data:
+              properties:
+                totalCount:
+                  type: number
+                items:
+                  type: array
+                  items:
+                    $ref: '#/definitions/Glossary'
+
+  SourceTermListResponse:
+    required:
+      - response
+    properties:
+      response:
+        allOf:
+        - $ref: '#/definitions/SuccessResponse'
+        - required:
+            - data
+          properties:
+            data:
+              properties:
+                totalCount:
+                  type: number
+                items:
+                  type: array
+                  items:
+                    $ref: '#/definitions/SourceTerm'
+  TranslatedTermResponse:
+    required:
+      - response
+    properties:
+      response:
+        allOf:
+        - $ref: '#/definitions/SuccessResponse'
+        - required:
+            - data
+          properties:
+            data:
+              $ref: '#/definitions/TranslatedTerm'
+  TermWithGlossaryUidListResponse:
+    required:
+      - response
+    properties:
+      response:
+        allOf:
+        - $ref: '#/definitions/SuccessResponse'
+        - required:
+            - data
+          properties:
+            data:
+              properties:
+                totalCount:
+                  type: number
+                items:
+                  type: array
+                  items:
+                    $ref: '#/definitions/TermWithGlossaryUid'
+  PartsOfSpeechList:
+    required:
+      - response
+    properties:
+      response:
+        allOf:
+        - $ref: '#/definitions/SuccessResponse'
+        - required:
+            - data
+          properties:
+            data:
+              properties:
+                totalCount:
+                  type: number
+                items:
+                  type: array
+                  items:
+                    $ref: '#/definitions/PartsOfSpeech'
