@@ -32,13 +32,6 @@ externalDocs:
   url: 'https://developer.smartling.com'
 
 
-securityDefinitions:
-  'Authorization header':
-    description: General authorization details goes here.
-    type: apiKey
-    name: Authorization
-    in: header
-
 tags:
   - name: "Authentication"
 
@@ -55,6 +48,10 @@ tags:
     description: |-
       The Issues API provides methods for creating issues, changing the state of an issue, commenting on an issue and
       requesting detailed information and reports on issues and comments.
+
+  - name: "Issue watchers"
+    description: |-
+      Any email address can be added as a watcher to receive notifications about an issue being opened, commented on, or closed.
 
   - name: "Glossaries"
     description: |-
@@ -340,7 +337,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
             
     get:
-      summary: Download original file
+      summary: Download an original file
       description: |
         Download the original version of the requested file from Smartling
 
@@ -379,9 +376,126 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
 
+  '/files-api/v2/projects/{projectId}/file/status':
+    get:
+      summary: Status of the file for each locale
+      description: |
+        Return information on a specific file
+
+        **Example**
+        ```bash
+          curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/file/status?fileUri=file.properties'
+        ```
+
+      tags:
+        - Translated Files
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+        - name: fileUri
+          in: query
+          required: true
+          type: string
+          description: Smartling value that uniquely identifies a file in Smartling
+      responses:
+        200:
+          description: |
+          schema:
+            $ref: '#/definitions/FilesAPIStatusAllLocalesSuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  fileUri: "/files/test_translation_import.csv"
+                  lastUploaded: '2017-09-06T20:29:15Z'
+                  created: '2017-09-06T20:29:15Z'
+                  fileType: csv
+                  parserVersion: 4
+                  hasInstructions: false
+                  directives:
+                    file_uri_as_namespace: 'true'
+                  namespace:
+                    name: "/files/test_trans_import.csv"
+                  totalStringCount: 1
+                  totalWordCount: 1
+                  totalCount: 1
+                  items:
+                  - localeId: ru-RU
+                    authorizedStringCount: 0
+                    authorizedWordCount: 0
+                    completedStringCount: 0
+                    completedWordCount: 0
+                    excludedStringCount: 0
+                    excludedWordCount: 0
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  '/files-api/v2/projects/{projectId}/locales/{localeId}/file/status':
+    get:
+      summary: Status of the file for a single locale
+      description: |
+        Return detailed status information on a specific file
+
+        **Example**
+        ```bash
+          curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/status?fileUri=file.properties'
+        ```
+
+      tags:
+        - Translated Files
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+        - name: localeId
+          in: path
+          required: true
+          type: string
+        - name: fileUri
+          in: query
+          required: true
+          type: string
+          description: Smartling value that uniquely identifies a file in Smartling
+      responses:
+        200:
+          description: |
+          schema:
+            $ref: '#/definitions/FilesAPIStatusSingleLocaleSuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  fileUri: "/files/4.properties"
+                  lastUploaded: '2017-05-27T12:45:36Z'
+                  created: '2017-05-27T12:45:36Z'
+                  fileType: javaProperties
+                  parserVersion: 4
+                  hasInstructions: false
+                  directives:
+                  namespace:
+                  totalStringCount: 5
+                  totalWordCount: 9
+                  authorizedStringCount: 4
+                  authorizedWordCount: 5
+                  completedStringCount: 0
+                  completedWordCount: 0
+                  excludedStringCount: 0
+                  excludedWordCount: 0
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file':
     get:
-      summary: Download translated file from Smartling
+      summary: Download translated file
       description: |
         Download the requested file from Smartling
 
@@ -455,11 +569,89 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
 
+  '/files-api/v2/projects/{projectId}/locales/all/file/zip':
+    get:
+      summary: Download all translations of the file
+      description: |
+        Download a ZIP archive with all translations for the requested file.
+
+        Unlike "Download translated file" endpoint you get a ZIP archive with all translations of a specific file.
+
+        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a 200 SUCCESS response. If you receive any other response status code than 200, the requested files will not be part of the response.
+
+        When you upload a UTF-16 character encoded file, then /file/get requests for that file will have a character encoding of UTF-16. All other uploaded files will return with a character encoding of UTF-8.
+
+        You can always use the content-type header in the response of a file/get request to determine the character encoding.
+
+        **Example**
+        ```bash
+          curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/all/file/zip?fileUri=yourfile.json&retrievalType=published'
+        ```
+
+      tags:
+        - Translated Files
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+        - name: fileUri
+          in: query
+          required: true
+          type: string
+          description: Smartling value that uniquely identifies a file in Smartling
+        - name: retrievalType
+          in: query
+          required: false
+          type: string
+          enum:
+            - pending
+            - published
+            - pseudo
+            - contextMatchingInstrumented
+          description: |
+            Determines the desired format for the download. Applies to translated files only.
+
+            | retrievalType | Description |
+            |---------------|-------------|
+            | pending | Smartling returns any translations (including non-published translations)|
+            | published | Smartling returns only published/pre-published translations.|
+            | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application|
+            | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension|
+        - name: includeOriginalStrings
+          in: query
+          required: false
+          type: boolean
+          description: |
+            Specifies whether Smartling will return the original string or an empty string where no translation is available. This parameter is supported for gettext, java properties, custom XML, and JSON files only
+
+            | Value | Description |
+            |-------|-------------|
+            | true | If there is no translation, Smartling returns the original string |
+            | false | If there is no translation, Smartling returns an empty string |
+        - name: zipFileName
+          in: query
+          required: false
+          type: string
+          description: Name for the downloaded zip file. If unset, default is ```translations.zip```
+      responses:
+        200:
+          description: OK
+          schema:
+            type: file
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
   '/files-api/v2/projects/{projectId}/files/zip':
     get:
-      summary: Download translated files from Smartling as a ZIP
+      summary: Download multiple translated files
       description: |
-        Download the requested translated files from Smartling as a ZIP
+        Download ZIP archive with the requested translated files.
+
+        Unlike "Download all translations of the file" you can specify multiple file URIs and locale IDs to select which
+        files and languages you want to download.
 
         It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a 200 SUCCESS response. If you receive any other response status code than 200, the requested files will not be part of the response.
 
@@ -564,79 +756,6 @@ paths:
       responses:
         200:
           description: |
-          schema:
-            type: file
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-
-  '/files-api/v2/projects/{projectId}/locales/all/file/zip':
-    get:
-      summary: Download the requested translated file from Smartling as a ZIP
-      description: |
-        Download the requested translated files from Smartling as a ZIP
-
-        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a 200 SUCCESS response. If you receive any other response status code than 200, the requested files will not be part of the response.
-
-        When you upload a UTF-16 character encoded file, then /file/get requests for that file will have a character encoding of UTF-16. All other uploaded files will return with a character encoding of UTF-8.
-
-        You can always use the content-type header in the response of a file/get request to determine the character encoding.
-
-        **Example**
-        ```bash
-          curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/all/file/zip?fileUri=yourfile.json&retrievalType=published'
-        ```
-
-      tags:
-        - Translated Files
-      parameters:
-        - name: projectId
-          in: path
-          required: true
-          type: string
-        - name: fileUri
-          in: query
-          required: true
-          type: string
-          description: Smartling value that uniquely identifies a file in Smartling
-        - name: retrievalType
-          in: query
-          required: false
-          type: string
-          enum:
-            - pending
-            - published
-            - pseudo
-            - contextMatchingInstrumented
-          description: |
-            Determines the desired format for the download. Applies to translated files only.
-
-            | retrievalType | Description |
-            |---------------|-------------|
-            | pending | Smartling returns any translations (including non-published translations)|
-            | published | Smartling returns only published/pre-published translations.|
-            | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application|
-            | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension|
-        - name: includeOriginalStrings
-          in: query
-          required: false
-          type: boolean
-          description: |
-            Specifies whether Smartling will return the original string or an empty string where no translation is available. This parameter is supported for gettext, java properties, custom XML, and JSON files only
-
-            | Value | Description |
-            |-------|-------------|
-            | true | If there is no translation, Smartling returns the original string |
-            | false | If there is no translation, Smartling returns an empty string |
-        - name: zipFileName
-          in: query
-          required: false
-          type: string
-          description: Name for the downloaded zip file. If unset, default is ```translations.zip```
-      responses:
-        200:
-          description: OK
           schema:
             type: file
         default:
@@ -773,125 +892,6 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
 
-  '/files-api/v2/projects/{projectId}/file/status':
-    get:
-      summary: Status - All Locales
-      description: |
-        Return information on a specific file
-
-        **Example**
-        ```bash
-          curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/file/status?fileUri=file.properties'
-        ```
-
-      tags:
-        - Translated Files
-      parameters:
-        - name: projectId
-          in: path
-          required: true
-          type: string
-        - name: fileUri
-          in: query
-          required: true
-          type: string
-          description: Smartling value that uniquely identifies a file in Smartling
-      responses:
-        200:
-          description: |
-          schema:
-            $ref: '#/definitions/FilesAPIStatusAllLocalesSuccessResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  fileUri: "/files/test_translation_import.csv"
-                  lastUploaded: '2017-09-06T20:29:15Z'
-                  created: '2017-09-06T20:29:15Z'
-                  fileType: csv
-                  parserVersion: 4
-                  hasInstructions: false
-                  directives:
-                    file_uri_as_namespace: 'true'
-                  namespace:
-                    name: "/files/test_trans_import.csv"
-                  totalStringCount: 1
-                  totalWordCount: 1
-                  totalCount: 1
-                  items:
-                  - localeId: ru-RU
-                    authorizedStringCount: 0
-                    authorizedWordCount: 0
-                    completedStringCount: 0
-                    completedWordCount: 0
-                    excludedStringCount: 0
-                    excludedWordCount: 0
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-
-
-  '/files-api/v2/projects/{projectId}/locales/{localeId}/file/status':
-    get:
-      summary: Status - Single Locale / Extended Response
-      description: |
-        Return detailed status information on a specific file
-
-        **Example**
-        ```bash
-          curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/status?fileUri=file.properties'
-        ```
-
-      tags:
-        - Translated Files
-      parameters:
-        - name: projectId
-          in: path
-          required: true
-          type: string
-        - name: localeId
-          in: path
-          required: true
-          type: string
-        - name: fileUri
-          in: query
-          required: true
-          type: string
-          description: Smartling value that uniquely identifies a file in Smartling
-      responses:
-        200:
-          description: |
-          schema:
-            $ref: '#/definitions/FilesAPIStatusSingleLocaleSuccessResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  fileUri: "/files/4.properties"
-                  lastUploaded: '2017-05-27T12:45:36Z'
-                  created: '2017-05-27T12:45:36Z'
-                  fileType: javaProperties
-                  parserVersion: 4
-                  hasInstructions: false
-                  directives:
-                  namespace:
-                  totalStringCount: 5
-                  totalWordCount: 9
-                  authorizedStringCount: 4
-                  authorizedWordCount: 5
-                  completedStringCount: 0
-                  completedWordCount: 0
-                  excludedStringCount: 0
-                  excludedWordCount: 0
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-
-
   '/files-api/v2/projects/{projectId}/file/rename':
     post:
       summary: Rename
@@ -978,7 +978,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file/last-modified':
     get:
-      summary: Last Modified by locale
+      summary: Last modified date for a single locale
       description: |
         Return the date a file was last modified in a specified locale
 
@@ -1028,7 +1028,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/file/last-modified':
     get:
-      summary: Last Modified - all locales
+      summary: Last modified date for each locales
       description: |
         Return the date a file was last modified in a each locale
 
@@ -1076,7 +1076,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file/import':
     post:
-      summary: Import Translations
+      summary: Import translations
       description: |
 
         **Example**
@@ -1154,7 +1154,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file/get-translations':
     post:
-      summary: Get Translations
+      summary: Export translations
       description: |
         Temporarily uploads a file, then returns a translated version for requested locales.
 
@@ -2033,7 +2033,7 @@ paths:
 #
   /issues-api/v2/dictionary/issue-types:
     get:
-      summary: Get Issue Types
+      summary: List all issue types
       description: >-
         This request returns all current issue types. Smartling may occasionally
         add or change the list of allowed issue types.
@@ -2073,7 +2073,7 @@ paths:
                           description: Revieanslation
   /issues-api/v2/dictionary/issue-states:
     get:
-      summary: Get Issue States
+      summary: List all issue states
       description: >-
         Currently the only allowed issue states are `OPENED` and `RESOLVED` but
         Smartling may introduce additional states in future. This request
@@ -2098,7 +2098,7 @@ paths:
                       issueStateCode: RESOLVED
   '/issues-api/v2/projects/{projectId}/issues':
     post:
-      summary: Create Issue
+      summary: Open an issue
       description: >-
         Creates a new issue for a string.
 
@@ -2149,7 +2149,7 @@ paths:
                   issueTextModifiedDate: null
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/issueText':
     put:
-      summary: Edit Issue
+      summary: Edit an issue
       description: >-
         Replaces the text of an issue with new text. Note that only the author
         of the issue can perform this action. The `issueTextModifiedDate`
@@ -2195,7 +2195,7 @@ paths:
                   issueTextModifiedDate: '2015-11-10T16:01:22Z'
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/state':
     put:
-      summary: Open or Close Issue
+      summary: Open or resolve an issue
       description: The state of the issue. Accepted values are `OPENED` or `RESOLVED`.
       tags:
         - Issues
@@ -2231,7 +2231,7 @@ paths:
                   issueStateCode: RESOLVED
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}':
     get:
-      summary: Get Issue Details
+      summary: Get issue details
       description: >-
         Returns detailed information on a single issue. Note that the
         `resolvedByUserUid` and `reportedByUserUid` values are not currently
@@ -2278,7 +2278,7 @@ paths:
                   issueTextModifiedDate: null
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/comments':
     post:
-      summary: Create Comment
+      summary: Add an issue comment
       description: >-
         Create a comment for an issue.
 
@@ -2325,7 +2325,7 @@ paths:
                   createdDate: '2015-12-22T12:34:49Z'
                   commentTextModifiedDate: null
     get:
-      summary: Get Comments
+      summary: List all comments of an issue
       description: >-
         Returns all comments on an issue. Note that the `createdByUserUid` value
         is not currently usable for identifying the users who created comments.
@@ -2364,7 +2364,7 @@ paths:
                   totalCount: 1
   '/issues-api/v2/issues-api/v2/projects/{projectId}/issues/{issueUid}/comments/{issueCommentUid}':
     post:
-      summary: Edit Comment Text
+      summary: Replace issue comment text
       description: >-
         Replaces the text of an issue with new text. Note that only the author
         of the issue can perform this action. The `commentTextModifiedDate`
@@ -2418,7 +2418,7 @@ paths:
                   createdDate: '2015-12-22T12:34:49Z'
                   commentTextModifiedDate: '2016-12-22T12:34:49Z'
     get:
-      summary: Get Comment Details
+      summary: Get issue comment
       description: >-
         Returns detailed information on a single issue comment. Note that the
         `createdByUserUid` value is not currently usable for identifying the
@@ -2461,7 +2461,7 @@ paths:
                   commentTextModifiedDate: null
   '/issues-api/v2/projects/{projectId}/issues/list':
     post:
-      summary: Find Issues
+      summary: Find issues
       description: >-
         Returns a list of issues matching specified filter options. You can
         filter based on the date issues were created, target languages, strings,
@@ -2512,12 +2512,12 @@ paths:
                   totalCount: 1
   '/issues-api/v2/projects/{projectId}/issues/count':
     post:
+      summary: Get number of issues
       description: >-
         Returns a count of issues matching specified filter options. You can
         filter based on the date issues were created, strings, target languages,
         issue types and states and the user who opened the issue.. All
         parameters are optional.
-      summary: Count Issues
       tags:
         - Issues
       consumes:
@@ -2546,10 +2546,46 @@ paths:
                 data:
                   count: 2
   '/issues-api/v2/accounts/{accountUid}/watchers':
+    post:
+      description: >-
+        Create a new watcher.
+      summary: Create a watcher
+      tags:
+        - Issue watchers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/WatcherRequest'
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                      uid: 323323wsss
+                      email: my@mail.com
+                      name: Mike Albert
+                      enabled: true
+                      created: '2015-12-21T16:38:48Z'
+                      modified: '2015-12-21T16:38:48Z'
     get:
+      summary: List all issue watchers
       description: >-
        Get a list of all watchers.
-      summary: List watchers
       tags:
         - Issue watchers
       consumes:
@@ -2596,48 +2632,12 @@ paths:
                       modified: '2015-12-21T16:38:48Z'
 
                   totalCount: 1
-    post:
-      description: >-
-        Create a new watcher.
-      summary: Create watcher
-      tags:
-        - Issue watchers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: accountUid
-          in: path
-          required: true
-          type: string
-          description: ''
-        - name: request
-          description: ''
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/WatcherRequest'
 
-      responses:
-        '200':
-          description: ''
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                      uid: 323323wsss
-                      email: my@mail.com
-                      name: Mike Albert
-                      enabled: true
-                      created: '2015-12-21T16:38:48Z'
-                      modified: '2015-12-21T16:38:48Z'
   '/issues-api/v2/accounts/{accountUid}/watchers/{watcherUid}':
     put:
       description: >-
-       Update the attributes of a watcher.
-      summary: Update watcher
+        Update the attributes of a watcher.
+      summary: Update a watcher
       tags:
         - Issue watchers
       consumes:
@@ -2676,11 +2676,12 @@ paths:
                       enabled: true
                       created: '2015-12-21T16:38:48Z'
                       modified: '2015-12-21T16:38:48Z'
+
   '/issues-api/v2/accounts/{accountUid}/projects/{projectId}/issues/{issueUid}/watchers/{watcherUid}':
     put:
+      summary: Link a watcher to an issue
       description: >-
        Associate or assign the watcher to an issue. The watcher will then begin receiving email notifications.
-      summary: Link watcher to issue
       tags:
         - Issue watchers
       consumes:
@@ -2718,9 +2719,9 @@ paths:
                 code: SUCCESS
                 data: null
     delete:
+      summary: Remove a watcher from an issue
       description: >-
         An update to an issue is sent to the associated/linked watcher. Once watchers are removed from an issue, email notifications will no longer be received by them.
-      summary: Remove watcher from issue
       tags:
         - Issue watchers
       consumes:
@@ -2760,9 +2761,9 @@ paths:
 
   '/issues-api/v2/accounts/{accountUid}/projects/{projectId}/issues/{issueUid}/watchers':
     get:
+      summary: List watchers linked to an issue
       description: >-
        Get a list of watchers that are linked to the issue.
-      summary: List watchers linked to issue
       tags:
         - Issue watchers
       consumes:
@@ -2807,7 +2808,7 @@ paths:
 #
   /strings-api/v2/projects/{projectId}:
     post:
-      summary: "Create Strings"
+      summary: "Add strings"
       description: |-
         Uploads an array of strings to a Smartling project. A maximum of 100 strings can be created per request. A request with more than 100 items will return an error. Each string has a character limit of 10 000.
 
@@ -2943,7 +2944,7 @@ paths:
 
   /strings-api/v2/projects/{projectId}/source-strings:
     get:
-      summary: "Get source strings"
+      summary: "List all source strings"
       description: |-
         Returns source strings from Smartling. You can get strings by specifying a file you want strings for, or you can specify individual strings by hashcode.
 
@@ -2995,7 +2996,7 @@ paths:
 
   /strings-api/v2/projects/{projectId}/translations:
     get:
-      summary: "Get translations"
+      summary: "List all translations"
       description: |-
         Returns translated strings from Smartling. You can get translations by specifying a file you want strings for, or you can specify individual strings by hashcode.
 
@@ -4011,6 +4012,7 @@ definitions:
     - type: object
       properties:
         data:
+          type: object
           default: null
 
 
