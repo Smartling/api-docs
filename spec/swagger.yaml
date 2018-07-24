@@ -32,6 +32,13 @@ externalDocs:
   url: 'https://developer.smartling.com'
 
 
+securityDefinitions:
+  'Authorization header':
+    description: General authorization details goes here.
+    type: apiKey
+    name: Authorization
+    in: header
+
 tags:
   - name: "Authentication"
   - name: "Files"
@@ -46,6 +53,10 @@ x-tagGroups:
     tags:
       - "Original Files"
       - "Translated Files"
+  - name: "Context"
+    tags:
+      - "Contexts"
+      - "Bindings"
 
 paths:
   '/auth-api/v2/authenticate':
@@ -1186,6 +1197,802 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
 
+#
+# Context API endpoints
+#
+  /context-api/v2/projects/{projectId}/contexts:
+    post:
+      summary: Upload new context.
+      description: |-
+        The Upload Context endpoint request body takes the form of a **multi-part post request**,
+        with each part having it's own content type, e.g. for **HTML** context:
+        ```
+          POST /context-api/v2/projects/a06b5c7e1/contexts HTTP/1.1
+          Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+          ------WebKitFormBoundary7MA4YWxkTrZu0gW
+          Content-Disposition: form-data; name="content"; filename="context.html"
+          Content-Type: text/html
+
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <title>Page title</title>
+          </head>
+          <body>
+              <div class="sl-translate">
+                  <p>String 1</p>
+              </div>
+              <div class="sl-translate">
+                  <p>String 2</p>
+              </div>
+          </body>
+          </html>
+
+          ------WebKitFormBoundary7MA4YWxkTrZu0gW
+          Content-Disposition: form-data; name="name"
+
+          /path/to/custom_context-name.html
+          ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+        ```
+        For **VIDEO** context, "content" part should be omitted and the "name" part should contain the public link to video:
+        ```
+          POST /context-api/v2/projects/a06b5c7e1/contexts HTTP/1.1
+          Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+          ------WebKitFormBoundary7MA4YWxkTrZu0gW
+          Content-Disposition: form-data; name="name"
+
+          http://video.domain.com/path_to_video.mp4
+          ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+        ```
+      tags:
+        - Contexts
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: content
+          description: The context file part with content type. Supported content types are image/\* and text/html.
+          in: formData
+          required: true
+          type: file
+        - name: name
+          in: formData
+          required: false
+          type: string
+          description: Optional parameter that overrides the file name of *content* part.
+      responses:
+        200:
+          description: Created context object
+          schema:
+            $ref: '#/definitions/ContextResponse'
+          examples:
+            application/json:
+                response:
+                  code: SUCCESS
+                  data:
+                    contextUid: '6e66fe6b-b508-4849-9e65-1e502d65755d'
+                    contextType: 'IMAGE'
+                    name: 'image.png'
+                    created: '2017-05-03T20:47:38Z'
+        400:
+          description: Validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              response:
+                code: 'VALIDATION_ERROR'
+                requestId: '2b963af9-c1bc-4f9e-80b6-0d6cb8fa55cf'
+                data:
+                  errors:
+                  -
+                    key: 'wrong_parameters'
+                    message: "Check request parameters, error message - 'Content stream is required for this context.', ref id: 'af4706d9-c5c1-40aa-93e4-1ec3498c1f05'"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    get:
+      summary: List contexts for project
+      description: Returns a list of metadata for all context files in a project, including the unique ID, type of context, file name and created date.
+                   Response is limited to *100* items, to retreive all items the request should be repeated with **offset** parameter specified.
+      tags:
+        - Contexts
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: nameFilter
+          in: query
+          type: string
+          required: false
+          description: Optional filter for context names
+        - name: offset
+          description: If your original request returns an offset value, the set of results is incomplete. Run the request again, with the given offset value to see more results. When offset is null, there are no more results to return.
+          in: query
+          type: string
+          required: false
+        - name: type
+          in: query
+          type: string
+          enum:
+          - IMAGE
+          - HTML
+          - VIDEO
+          required: false
+          description: Optional context type filter.
+      responses:
+        200:
+          description: List of contexts, no content included.
+          schema:
+            $ref: '#/definitions/ContextListResponse'
+          examples:
+            application/json:
+                response:
+                  code: SUCCESS
+                  data:
+                    items:
+                      -
+                        name: "image.png"
+                        contextType: "IMAGE"
+                        contextUid: "6e66fe6b-b508-4849-9e65-1e502d65755d"
+                        created: "2016-12-19T17:28:29Z"
+                      -
+                        contextUid: "ac79677f-0e0a-4d01-b4e3-b94e2e6ba09c"
+                        contextType: "IMAGE"
+                        name: "image-context.jpg"
+                        created: "2016-11-11T13:23:32Z"
+                    offset: null
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /context-api/v2/projects/{projectId}/contexts/{contextUid}:
+    get:
+      summary: View context metadata
+      description: Retrieves basic context information.
+      tags:
+        - Contexts
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: contextUid
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Basic context information.
+          schema:
+            $ref: '#/definitions/ContextResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  contextUid: '6e66fe6b-b508-4849-9e65-1e502d65755d'
+                  contextType: 'VIDEO'
+                  name: 'http://custom-video-hosting.com/path/to/video.mp4'
+                  created: '2017-05-03T20:47:38Z'
+        404:
+          description: Context not found error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              response:
+                code: NOT_FOUND_ERROR
+                errors:
+                  - key: 'not_found_error'
+                    message: "Context not found, ref id: 'ffd90ec4-5ca8-4720-8ecf-15dce3404823'"
+    delete:
+      summary: Delete the context.
+      description: Removes the context and all associated bindings of this context to strings.
+      tags:
+        - Contexts
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: contextUid
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Successful delete response.
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+        404:
+          description: Context not found error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              response:
+                code: NOT_FOUND_ERROR
+                errors:
+                - key: 'not_found_error'
+                  message: "Context not found, ref id: 'ffd90ec4-5ca8-4720-8ecf-15dce3404823'"
+
+  /context-api/v2/projects/{projectId}/contexts/{contextUid}/content:
+    get:
+      summary: Download content of the context file.
+      description: |-
+        Returns binary image data for **IMAGE** context,
+        html document with *bindings anchors* for **HTML** context.
+        Empty response for **VIDEO** context.
+      tags:
+        - Contexts
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: contextUid
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Previously uploaded context (i.e. image file, or html file).
+          schema:
+            type: file
+          examples:
+            text/html: |-
+              <html>
+                <head>
+                  <title>Document title</title>
+                </head>
+                <body>
+                  <div data-sl-anchor="11">html file contents</div>
+                </body>
+              </html>
+
+        404:
+          description: Context not found error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              response:
+                code: 'NOT_FOUND_ERROR'
+                errors:
+                  -
+                    key: 'not_found_error'
+                    message: "Context not found, ref id: 'ffd90ec4-5ca8-4720-8ecf-15dce3404823'"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /context-api/v2/projects/{projectId}/contexts/upload-and-match-async:
+    post:
+      summary: Upload new context and run automatic context matching.
+      description: |-
+        A combination of two requests:
+        - post /projects/{projectId}/contexts
+        - post /projects/{projectId}/contexts/{contextUid}/match/async
+        If the matching process returns no bindings the context wouldn't be created.
+        Supports only **HTML** context.
+      tags:
+        - Contexts
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: content
+          description: The context file part with content type. Supported content types are image/\* and text/html.
+          in: formData
+          required: true
+          type: file
+        - name: name
+          in: formData
+          required: false
+          type: string
+          description: Optional parameter that overrides the file name of *content* part.
+        - name: matchParams
+          in: formData
+          required: false
+          type: string
+          description: A part containing JSON object with an array of string hashcodes to match against.
+                       If the part content is missing, or empty array is passed, *all strings in the project* will be included in the match.
+                       This part contains the same parameters as a body of `/projects/{projectId}/contexts/{contextUid}/match/async` request.
+      responses:
+        200:
+          description: OK
+        202:
+                  description: Successful response
+                  schema:
+                    $ref: '#/definitions/AsyncMatchResponse'
+                  examples:
+                    application/json:
+                      response:
+                        code: 'SUCCESS'
+                        data:
+                          matchId: 'ffd90ec4-5ca8-4720-8ecf-15dce3404823'
+        400:
+          description: Validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              response:
+                code: 'VALIDATION_ERROR'
+                requestId: '2b963af9-c1bc-4f9e-80b6-0d6cb8fa55cf'
+                data:
+                  errors:
+                  -
+                    key: 'wrong_parameters'
+                    message: "Check request parameters, error message - 'Content stream is required for this context.', ref id: 'af4706d9-c5c1-40aa-93e4-1ec3498c1f05'"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /context-api/v2/projects/{projectId}/contexts/{contextUid}/match/async:
+    post:
+      summary: Run automatic context matching.
+      description: |-
+        Automatically matches a Context against strings in the project and creates corresponding bindings.
+        Optical Character Recognition (OCR) is used for **IMAGE** context, while **HTML** context uses approximate string matching algorithm.
+        Optionally, you can restrict matching to only a set of strings that you specify to ensure that no unwanted bindings are created.
+        This is a convenience method provided to save time and complexity in your integration.
+        While our OCR functionality is advanced, it cannot match 100% of strings.
+        If you need complete context coverage, either use the manual Create Bindings request or check your context images in the Smartling Dashboard after running this request to fill in any blanks.
+        Be mindful of the limitations of OCR if you are using an unusual or script-like font.
+      consumes:
+        - application/json
+      tags:
+        - Contexts
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: contextUid
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: matchRequest
+          in: body
+          required: false
+          schema:
+            $ref: '#/definitions/MatchRequest'
+      responses:
+        202:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AsyncMatchResponse'
+          examples:
+            application/json:
+              response:
+                code: 'SUCCESS'
+                data:
+                  matchId: 'ffd90ec4-5ca8-4720-8ecf-15dce3404823'
+        400:
+          description: Validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              response:
+                code: 'VALIDATION_ERROR'
+                errors:
+                - key: 'wrong_parameters'
+                  message: "Check request parameters, error message - 'Context with Uid=cb081827-2daa-4611-915c-4d207829be27 doesn't exist', ref id: '11f8b832-8154-4e6e-a196-a69a88009736'"
+                  details:
+        default:
+          description: General error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /context-api/v2/projects/{projectId}/match/{matchId}:
+    get:
+      summary: Retrieve asynchronous match results
+      description: |-
+        Check the status of the match request and get results once the match is completed.
+        When the match has been completed, any newly created bindings are also returned in the response.
+      tags:
+        - Contexts
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: matchId
+          description: Identifier of the match request obtained when running asynchronous match request.
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Successful response for the completed match request.
+          schema:
+            $ref: '#/definitions/AsyncMatchStatsResponse'
+          examples:
+            application/json:
+              response:
+                code: 'SUCCESS'
+                data:
+                  matchId: 'a9308883-30c7-4832-a023-6c3b10f6f9b1'
+                  createdDate: '2017-05-05T19:06:22Z'
+                  modifiedData: '2017-05-05T19:06:22Z'
+                  status: 'COMPLETED'
+                  bindings:
+                    - bindingUid: 'a9308883-30c7-4832-a023-6c3b10f6f9b1'
+                      contextUid: '428bf090-60fa-473d-ac07-4a551aa06c47'
+                      stringHashcode: '374825f7d147fb5700f23b2b22d6660d'
+                      anchors:
+                      - '11'
+                      - 'custom.anchor'
+                    - bindingUid: 'a9308883-30c7-4832-a023-6c3b10f6f9b1'
+                      contextUid: '428bf090-60fa-473d-ac07-4a551aa06c47'
+                      stringHashcode: '374825f7d147fb5700f23b2b22d6660d'
+                      anchors:
+                      - '12'
+        404:
+          description: Not found response for the match request that is not found or expired
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              response:
+                code: 'NOT_FOUND_ERROR'
+                errors:
+                - key: 'not_found'
+                  message: 'Match not found'
+
+  /context-api/v2/projects/{projectId}/bindings/{bindingUid}:
+    delete:
+      summary: Remove binding.
+      description: Deletes a context binding. The context referenced by the binding will no longer be displayed for the referenced string in the Translation Interface.
+      tags:
+        - Bindings
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: bindingUid
+          description: Unique identifier for the binding you want to delete
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: 'SUCCESS'
+                data:
+        404:
+          description: Not found response
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              response:
+                code: 'NOT_FOUND_ERROR'
+                errors:
+                - key: 'not_found_error'
+                  message: 'Binding not found'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /context-api/v2/projects/{projectId}/contexts/{contextUid}/bindings:
+    get:
+      summary: Return all bindings for the context.
+      description: |-
+        Return all bindings that reference a given piece of context.
+      tags:
+        - Bindings
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: contextUid
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Successful Response
+          schema:
+            $ref: '#/definitions/BindingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 1
+                  items:
+                    -
+                      bindingUid: "d6414f8c-4gdf-4415-9a69-f8e7902ca9ec"
+                      contextUid: "25137b65-e075-4341-8362-14b1a3e558f5"
+                      stringHashcode: "bd603147d945h3ec74d6874422ebe4e0"
+                      coordinates:
+                        top: 50
+                        left: 50
+                        bottom: 400
+                        right: 400
+        404:
+          description: Context not found error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              response:
+                code: 'NOT_FOUND_ERROR'
+                errors:
+                - key: 'not_found_error'
+                  message: "Context not found, ref id: 'ffd90ec4-5ca8-4720-8ecf-15dce3404823'"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /context-api/v2/projects/{projectId}/strings/{stringHashcode}/bindings:
+    get:
+      summary: Get bindings for the string
+      description: Return all bindings that reference a given string.
+      tags:
+        - Bindings
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: stringHashcode
+          description: Hashcode for the string you want to get bindings for.
+          in: path
+          required: true
+          type: string
+          format: hash
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/BindingsResponse'
+          examples:
+            application/json:
+              response:
+                code: 'SUCCESS'
+                data:
+                  totalCount: 1
+                  items:
+                    -
+                      bindingUid: "d6414f8c-4gdf-4415-9a69-f8e7902ca9ec"
+                      contextUid: "25137b65-e075-4341-8362-14b1a3e558f5"
+                      stringHashcode: "bd603147d945h3ec74d6874422ebe4e0"
+                      coordinates:
+                        top: 50
+                        left: 50
+                        bottom: 400
+                        right: 400
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /context-api/v2/projects/{projectId}/bindings:
+    post:
+      summary: Create bindings.
+      description: |-
+        Link context images with the strings they contain. The binding tells Smartling which context images to show translators for which strings.
+        A maximum of **150** bindings can be created per request. A request with more than **150** items will return a **400** response indicating validation error.
+        Basic bindings request should contain an object with "bindings" JSON array with at least one element (binding), featuring *contextUid* and *stringHashcode* properties:
+        ```JSON
+        {
+          "bindings": [
+            {
+               "contextUid": "25137b65-e075-4341-8362-14b1a3e558f5",
+               "stringHashcode": "bd603147d945h3ec74d6874422ebe4e0"
+            }
+          ]
+        }
+        ```
+        For **IMAGE** context, each binding may have additional *coordinates* data, which specifies rectangular area, where the string is located in the image. If not specified, binding will still be created with coordinates [0,0,0,0]:
+        ```JSON
+        {
+          "bindings": [
+            {
+               "contextUid": "25137b65-e075-4341-8362-14b1a3e558f5",
+               "stringHashcode": "bd603147d945h3ec74d6874422ebe4e0",
+               "coordinates": {
+                  "top": 50,
+                  "left": 50,
+                  "width": 400,
+                  "height": 400
+               }
+            }
+          ]
+        }```
+        For **HTML** context, each binding may have the *anchors* array, specifying the enclosing the string HTML elements with the corresponding value of the *data-sl-anchor* attribute. If not specified, binding will still be created with the empty *anchors* array:
+        ```JSON
+        {
+          "bindings": [
+            {
+               "contextUid": "25137b65-e075-4341-8362-14b1a3e558f5",
+               "stringHashcode": "bd603147d945h3ec74d6874422ebe4e0",
+               "selector": {
+                  "anchors": ["custom.anchor", "11", 44"]
+               }
+            }
+          ]
+        }```
+        For **VIDEO** context, each binding mave the *timecode* data, specifying the start and end time of the string appearance in the video:
+        ```JSON
+        {
+          "bindings": [
+            {
+                "contextUid": "25137b65-e075-4341-8362-14b1a3e558f5",
+                "stringHashcode": "bd603147d945h3ec74d6874422ebe4e0",
+                "timecode": {
+                   "startTime": 1203,
+                   "endTime": 1450
+                }
+            }
+          ]
+        }```
+      consumes:
+        - application/json
+      tags:
+        - Bindings
+      parameters:
+        - name: projectId
+          description: Project ID
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: request
+          description: String-to-context JSON bindings
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BindingsRequest'
+      responses:
+        200:
+          description: Bindings
+          schema:
+            $ref: '#/definitions/CreateBindingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 1
+                  items:
+                    -
+                      bindingUid: "d6414f8c-4gdf-4415-9a69-f8e7902ca9ec"
+                      contextUid: "25137b65-e075-4341-8362-14b1a3e558f5"
+                      stringHashcode: "bd603147d945h3ec74d6874422ebe4e0"
+                      coordinates:
+                        top: 50
+                        left: 50
+                        bottom: 400
+                        right: 400
+        400:
+          description: Validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              response:
+                code: 'VALIDATION_ERROR'
+                errors:
+                - key: 'wrong_parameters'
+                  message: 'Please, limit number of bindings to no more than 150 in one request'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /context-api/v2/projects/{projectId}/contexts/{contextUid}/match:
+    post:
+      summary: '**DEPRECATED** Run automatic match.'
+      description: |-
+        Automatically matches a Context Image against strings in the project using Optical Character Recognition (OCR) for **IMAGE** context and creates bindings for any found matches.
+        Optionally, you can restrict OCR matching to only a set of strings that you specify to ensure that no unwanted bindings are created.
+        This is a convenience method provided to save time and complexity in your integration. While our OCR functionality is advanced, it cannot match 100% of strings.
+        If you need complete context coverage, either use the manual Create Bindings request or check your context images in the Smartling Dashboard after running this request to fill in any blanks.
+        Be mindful of the limitations of OCR if you are using an unusual or script-like font.
+        **DEPRECATED** in favor of asynchronous matching.
+      tags:
+        - Bindings
+      deprecated: true
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: contextUid
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: matchRequest
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MatchRequest'
+      responses:
+        200:
+          description: Added bindings and matched but not bound strings
+          schema:
+            $ref: '#/definitions/MatchResponse'
+          examples:
+            application/json:
+              response:
+                  code: "SUCCESS"
+                  data:
+                    newBindings:
+                      -
+                        bindingUid: "fc2azc89-f0fc-43c4-9c3a-8e6u0521b092"
+                        contextUid: "456efpe5-0bf5-4482-365f-a0nce127abb0"
+                        stringHashcode: "4d70a525c0e49fe8a3b43e5b76ae33d9"
+                        coordinates:
+                          top: 114
+                          left: 589
+                          height: 33
+                          width: 346
+                      -
+                        bindingUid: "4c0a343c-d361-4315-9580-60cdfed3dc37"
+                        contextUid: "456ef9e5-0zf5-4382-b65f-a00ce127abb0"
+                        stringHashcode: "e5a03bi0d4cd78e1c29bde61e6898fa1"
+                        coordinates:
+                          top: 55
+                          left: 16
+                          height: 20
+                          width: 90
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
 
 
             
@@ -1666,3 +2473,301 @@ definitions:
         items:
           type: string
         description: Information about an import error
+
+#
+# Context Definitions
+#
+  ContextListResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          required:
+           - items
+          properties:
+            offset:
+              description: Result set is partial, if not empty. To retreive everything, request should be repeated with offset value.
+              type: string
+            items:
+              type: array
+              items:
+                $ref: '#/definitions/Context'
+
+  ContextResponse:
+    type: object
+    properties:
+      response:
+        type: object
+        properties:
+          code:
+            description: Code of the completed operation.
+            type: string
+            enum:
+              - SUCCESS
+          data:
+            description: Basic information about the context.
+            type: object
+            properties:
+              contextUid:
+                description: Unique identifier for the context.
+                type: string
+              contextType:
+                description: Type of context file.
+                type: string
+                enum:
+                  - IMAGE
+                  - HTML
+                  - VIDEO
+              name:
+                description: File name for IMAGE context, URL for HTML Context and video URL for VIDEO context.
+                type: string
+              created:
+                description: ISO8601 date and time string
+                type: string
+                format: date-time
+
+  AsyncMatchResponse:
+    type: object
+    properties:
+      response:
+        type: object
+        properties:
+          code:
+            description: Code of the completed operation.
+            type: string
+            enum:
+              - SUCCESS
+          data:
+            type: object
+            properties:
+              matchId:
+                description: Identifier of the started match operation. Should be specified for getting matching stats.
+                type: string
+                format: uuid
+
+  AsyncMatchStatsResponse:
+    type: object
+    properties:
+      response:
+        type: object
+        properties:
+          code:
+            description: Code of the completed operation.
+            type: string
+            enum:
+            - SUCCESS
+          data:
+            type: object
+            properties:
+              matchId:
+                description: Identifier of the started match operation. Should be specified for getting matching stats.
+                type: string
+                format: uuid
+              status:
+                type: string
+                enum:
+                  - IN_PROGRESS
+                  - COMPLETED
+                  - FAILED
+              createdDate:
+                type: string
+                format: date-time
+              modifiedDate:
+                type: string
+                format: date-time
+              bindings:
+                type: array
+                items:
+                  $ref: '#/definitions/Binding'
+
+  CreateBindingsResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          required:
+            - created
+          properties:
+            created:
+              type: object
+              required:
+                - items
+              properties:
+                totalCount:
+                  type: integer
+                items:
+                  type: array
+                  items:
+                    $ref: '#/definitions/Binding'
+            errors:
+              type: object
+              required:
+                - items
+              properties:
+                totalCount:
+                  type: integer
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - message
+                    properties:
+                      message:
+                        type: string
+
+  BindingsResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          required:
+            - items
+          properties:
+            totalCount:
+              type: integer
+            items:
+              type: array
+              items:
+                $ref: '#/definitions/Binding'
+
+  MatchResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          properties:
+            newBindings:
+              description: Array of new bindings by matching. For details on each binding object see the Get Bindings response.
+              type: array
+              items:
+                $ref: '#/definitions/Binding'
+
+  Context:
+    description: Basic information about the context.
+    type: object
+    required:
+      - name
+    properties:
+      contextUid:
+        description: Unique identifier for the context file
+        type: string
+      contextType:
+        type: string
+        description: Type of context file. Currently, **HTML**, **IMAGE** or **VIDEO** types are supported.
+        enum:
+          - IMAGE
+          - HTML
+          - VIDEO
+      name:
+        description: File name for **IMAGE** context, URL for **HTML** Context and video URL for **VIDEO** context.
+        type: string
+
+  Coordinates:
+    description: Describes the location and size of a box enclosing the string in a context image. ‘top’ and ‘left’ are the distance in pixels of the top left corner of the string from the top and left of the image. ‘width’ and ‘height’ are the dimensions of the string in pixels. This information is used to highlight the position of the string when displaying the context image in the Translation Interface. If coordinates are not provided, Smartling will attempt to locate the string on the image using Optical Character Recognition. If OCR fails, coordinates will default to 0, 0, 0, 0, meaning the image will be displayed when the string is translated, without any highlighting to show the position of the string.
+    type: object
+    required:
+      - top
+      - left
+      - height
+      - width
+    properties:
+      top:
+        type: number
+      left:
+        type: number
+      height:
+        type: number
+      width:
+        type: number
+
+  Timecode:
+    description: Number of seconds for the period of string appearance in a video relative to the video start time.
+    type: object
+    properties:
+      startTime:
+        type: integer
+        format: int64
+      endTime:
+        type: integer
+        format: int64
+
+  Binding:
+    description: String to context binding
+    type: object
+    required:
+      - contextUid
+      - stringHashcode
+    properties:
+      bindingUid:
+        type: string
+        description: Unique identifier for the context binding.
+      contextUid:
+        type: string
+        description: Unique identifier for the context.
+      stringHashcode:
+        type: string
+        description: Unique identifier for the translatable.
+      coordinates:
+        $ref: '#/definitions/Coordinates'
+      timecode:
+        $ref: '#/definitions/Timecode'
+      anchors:
+        description: Wrapper HTML element anchor numbers
+        type: array
+        items:
+          type: string
+
+  BindingsRequest:
+    type: object
+    properties:
+      bindings:
+        description: Array of string-to-context bindings
+        type: array
+        items:
+          description: Binding request
+          type: object
+          required:
+            - contextUid
+            - stringHashcode
+          properties:
+            contextUid:
+              description: Unique identifier for the context.
+              type: string
+              format: uuid
+            stringHashcode:
+              description: Unique identifier for the translatable.
+              type: string
+              format: hash
+            coordinates:
+              $ref: '#/definitions/Coordinates'
+            timecode:
+              $ref: '#/definitions/Timecode'
+            selector:
+              description: Values of "data-sl-anchor" attributes of HTML elements
+              type: object
+              properties:
+                anchors:
+                  type: array
+                  items:
+                    type: string
+
+  MatchRequest:
+    description: |-
+      Array of string hashcodes to match against.
+      If the request body is left blank, or empty array is passed, *all strings in the project* will be included in the match.
+    type: object
+    properties:
+      stringHashcodes:
+        type: array
+        items:
+          type: string
+          format: hash
