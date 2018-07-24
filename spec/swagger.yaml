@@ -41,9 +41,6 @@ securityDefinitions:
 
 tags:
   - name: "Authentication"
-  - name: "Files"
-    description: |
-      Create and manage files.
 
 x-tagGroups:
   - name: "Basics"
@@ -57,6 +54,11 @@ x-tagGroups:
     tags:
       - "Contexts"
       - "Bindings"
+  - name: "Translation Issues"
+    tags:
+      - "Issues"
+      - "Issue comments"
+      - "Issue watchers"
 
 paths:
   '/auth-api/v2/authenticate':
@@ -1994,6 +1996,778 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
 
+#
+# Issues API endpoints
+#
+  /issues-api/v2/dictionary/issue-types:
+    get:
+      summary: Get Issue Types
+      description: >-
+        This request returns all current issue types. Smartling may occasionally
+        add or change the list of allowed issue types.
+      tags:
+        - Issues
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 2
+                  items:
+                    - description: Source
+                      issueTypeCode: SOURCE
+                      subTypes:
+                        - issueSubTypeCode: CLARIFICATION
+                          description: Clarification
+                        - issueSubTypeCode: MISSPELLING
+                          description: Misspelling
+                    - description: Translation
+                      issueTypeCode: TRANSLATION
+                      subTypes:
+                        - issueSubTypeCode: POOR_TRANSLATION
+                          description: Poor Translation
+                        - issueSubTypeCode: DOES_NOT_FIT_SPACE
+                          description: Doesn't Fit Space
+                        - issueSubTypeCode: PLACEHOLDER_ISSUE
+                          description: Placeholder Issue
+                        - issueSubTypeCode: GENERAL_ISSUE
+                          description: General Issue
+                        - issueSubTypeCode: REVIEW_TRANSLATION
+                          description: Revieanslation
+  /issues-api/v2/dictionary/issue-states:
+    get:
+      summary: Get Issue States
+      description: >-
+        Currently the only allowed issue states are `OPENED` and `RESOLVED` but
+        Smartling may introduce additional states in future. This request
+        returns all current allowed states.
+      tags:
+        - Issues
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 2
+                  items:
+                    - description: Opened
+                      issueStateCode: OPENED
+                    - description: Resolved
+                      issueStateCode: RESOLVED
+  '/issues-api/v2/projects/{projectId}/issues':
+    post:
+      summary: Create Issue
+      description: >-
+        Creates a new issue for a string.
+
+        ##### Issue text is treated as plain text. Smartling will save the text
+        as provided and will not attempt to render this text with any special
+        formatting in its UIs; it will not be rendered as HTML or markdown.
+        Consumers of the issue API should be aware and escape the text as needed
+        before attempting to render it. Maximum length is 4000 characters.
+      tags:
+        - Issues
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: request
+          description: New issue for a string
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/IssueRequest'
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  string:
+                    hashcode: c32c16cddafd63dfa0dc12449372a093
+                    localeId: null
+                  resolvedByUserUid: null
+                  reportedByUserUid: 661801f19693
+                  createdDate: '2015-11-10T16:01:22Z'
+                  resolvedDate: null
+                  issueText: asdfsd
+                  issueUid: dceaa996d417
+                  projectId: e8fa915fa
+                  issueTypeCode: SOURCE
+                  issueSubTypeCode: CLARIFICATION
+                  issueStateCode: OPENED
+                  issueTextModifiedDate: null
+  '/issues-api/v2/projects/{projectId}/issues/{issueUid}/issueText':
+    put:
+      summary: Edit Issue
+      description: >-
+        Replaces the text of an issue with new text. Note that only the author
+        of the issue can perform this action. The `issueTextModifiedDate`
+        property of an issue object shows when it was last updated.
+
+        ##### Issue text is treated as plain text. Smartling will save the text
+        as provided and will not attempt to render this text with any special
+        formatting in its UIs; it will not be rendered as HTML or markdown.
+        Consumers of the issue API should be aware and escape the text as needed
+        before attempting to render it. Maximum length is 4000 characters.
+      tags:
+        - Issues
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/IssueTextRequest'
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  issueText: Edited issue text.
+                  issueTextModifiedDate: '2015-11-10T16:01:22Z'
+  '/issues-api/v2/projects/{projectId}/issues/{issueUid}/state':
+    put:
+      summary: Open or Close Issue
+      description: The state of the issue. Accepted values are `OPENED` or `RESOLVED`.
+      tags:
+        - Issues
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/IssueStateRequest'
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  issueStateCode: RESOLVED
+  '/issues-api/v2/projects/{projectId}/issues/{issueUid}':
+    get:
+      summary: Get Issue Details
+      description: >-
+        Returns detailed information on a single issue. Note that the
+        `resolvedByUserUid` and `reportedByUserUid` values are not currently
+        usable for identifying the users who created or resolved issues. In
+        future, a People API will be exposed for looking up user details.
+      tags:
+        - Issues
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueUid
+          in: path
+          required: true
+          type: string
+          description: ''
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  string:
+                    hashcode: c32c16cddafd63dfa0dc12449372a093
+                    localeId: ru-RU
+                  resolvedByUserUid: null
+                  reportedByUserUid: 661801f19693
+                  createdDate: '2015-11-10T16:01:22Z'
+                  resolvedDate: null
+                  issueText: This translation is incorrect. Please fix.
+                  issueUid: dceaa996d417
+                  projectId: e8fa915fa
+                  issueTypeCode: TRANSLATION
+                  issueSubTypeCode: POOR_TRANSLATION
+                  issueStateCode: OPENED
+                  issueTextModifiedDate: null
+  '/issues-api/v2/projects/{projectId}/issues/{issueUid}/comments':
+    post:
+      summary: Create Comment
+      description: >-
+        Create a comment for an issue.
+
+        ##### Comment text is treated as plain text. Smartling will save the
+        text as provided and will not attempt to render this text with any
+        special formatting in its UIs; it will not be rendered as HTML or
+        markdown. Consumers of the issue API should be aware and escape the text
+        as needed before attempting to render it. Maximum length is 4000
+        characters.
+      tags:
+        - Issue comments
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CommentRequest'
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  issueCommentUid: a75fea779bbb
+                  commentText: comment text
+                  createdByUserUid: 661801f19693
+                  createdDate: '2015-12-22T12:34:49Z'
+                  commentTextModifiedDate: null
+    get:
+      summary: Get Comments
+      description: >-
+        Returns all comments on an issue. Note that the `createdByUserUid` value
+        is not currently usable for identifying the users who created comments.
+        In future, a People API will be exposed for looking up user details.
+      tags:
+        - Issue comments
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueUid
+          in: path
+          required: true
+          type: string
+          description: ''
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  items:
+                    - issueCommentUid: a75fea779bbb
+                      commentText: comment text
+                      createdByUserUid: 661801f19693
+                      createdDate: '2015-12-22T12:34:49Z'
+                      commentTextModifiedDate: null
+                  totalCount: 1
+  '/issues-api/v2/issues-api/v2/projects/{projectId}/issues/{issueUid}/comments/{issueCommentUid}':
+    post:
+      summary: Edit Comment Text
+      description: >-
+        Replaces the text of an issue with new text. Note that only the author
+        of the issue can perform this action. The `commentTextModifiedDate`
+        property of an issue object shows when it was last updated.
+
+        ##### Comment text is treated as plain text. Smartling will save the
+        text as provided and will not attempt to render this text with any
+        special formatting in its UIs; it will not be rendered as HTML or
+        markdown. Consumers of the issue API should be aware and escape the text
+        as needed before attempting to render it. Maximum length is 4000
+        characters.
+      tags:
+        - Issue comments
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueCommentUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CommentRequest'
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  issueCommentUid: a75fea779bbb
+                  commentText: comment text
+                  createdByUserUid: 661801f19693
+                  createdDate: '2015-12-22T12:34:49Z'
+                  commentTextModifiedDate: '2016-12-22T12:34:49Z'
+    get:
+      summary: Get Comment Details
+      description: >-
+        Returns detailed information on a single issue comment. Note that the
+        `createdByUserUid` value is not currently usable for identifying the
+        users who created comments. In future, a People API will be exposed for
+        looking up user details.
+      tags:
+        - Issue comments
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueCommentUid
+          in: path
+          required: true
+          type: string
+          description: ''
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  createdByUserUid: 661801f19693
+                  createdDate: '2015-12-22T11:54:27Z'
+                  commentText: test comment
+                  issueCommentUid: ac5211a26eca
+                  commentTextModifiedDate: null
+  '/issues-api/v2/projects/{projectId}/issues/list':
+    post:
+      summary: Find Issues
+      description: >-
+        Returns a list of issues matching specified filter options. You can
+        filter based on the date issues were created, target languages, strings,
+        issue types and states and the user who opened the issue. Unless
+        otherwise specified, request will return a maximum of 30 results. All
+        parameters are optional.
+      tags:
+        - Issues
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/FindRequest'
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  items:
+                    - string:
+                        hashcode: c32c16cddafd63dfa0dc12449372a093
+                        localeId: ru-RU
+                      resolvedByUserUid: null
+                      reportedByUserUid: 661801f19693
+                      createdDate: '2015-12-21T16:38:48Z'
+                      resolvedDate: null
+                      issueText: does not fit space
+                      issueUid: 902372ac8e1e
+                      projectId: e8fa915fa
+                      issueTypeCode: TRANSLATION
+                      issueSubTypeCode: DOES_NOT_FIT_SPACE
+                      issueStateCode: OPENED
+                      issueTextModifiedDate: null
+                  totalCount: 1
+  '/issues-api/v2/projects/{projectId}/issues/count':
+    post:
+      description: >-
+        Returns a count of issues matching specified filter options. You can
+        filter based on the date issues were created, strings, target languages,
+        issue types and states and the user who opened the issue.. All
+        parameters are optional.
+      summary: Count Issues
+      tags:
+        - Issues
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CountRequest'
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  count: 2
+  '/issues-api/v2/accounts/{accountUid}/watchers':
+    get:
+      description: >-
+       Get a list of all watchers.
+      summary: List watchers
+      tags:
+        - Issue watchers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: email
+          in: query
+          required: false
+          type: string
+          description: ''
+        - name: limit
+          in: query
+          required: false
+          default: 100
+          type: number
+          description: ''
+        - name: offset
+          in: query
+          required: false
+          default: 0
+          type: number
+          description: ''
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  items:
+                    - uid: 323323wsss
+                      email: my@mail.com
+                      name: Mike Albert
+                      enabled: true
+                      created: '2015-12-21T16:38:48Z'
+                      modified: '2015-12-21T16:38:48Z'
+
+                  totalCount: 1
+    post:
+      description: >-
+        Create a new watcher.
+      summary: Create watcher
+      tags:
+        - Issue watchers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/WatcherRequest'
+
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                      uid: 323323wsss
+                      email: my@mail.com
+                      name: Mike Albert
+                      enabled: true
+                      created: '2015-12-21T16:38:48Z'
+                      modified: '2015-12-21T16:38:48Z'
+  '/issues-api/v2/accounts/{accountUid}/watchers/{watcherUid}':
+    put:
+      description: >-
+       Update the attributes of a watcher.
+      summary: Update watcher
+      tags:
+        - Issue watchers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: watcherUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/WatcherRequest'
+
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                      uid: 323323wsss
+                      email: my@mail.com
+                      name: Mike Albert
+                      enabled: true
+                      created: '2015-12-21T16:38:48Z'
+                      modified: '2015-12-21T16:38:48Z'
+  '/issues-api/v2/accounts/{accountUid}/projects/{projectId}/issues/{issueUid}/watchers/{watcherUid}':
+    put:
+      description: >-
+       Associate or assign the watcher to an issue. The watcher will then begin receiving email notifications.
+      summary: Link watcher to issue
+      tags:
+        - Issue watchers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: watcherUid
+          in: path
+          required: true
+          type: string
+          description: ''
+
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data: null
+    delete:
+      description: >-
+        An update to an issue is sent to the associated/linked watcher. Once watchers are removed from an issue, email notifications will no longer be received by them.
+      summary: Remove watcher from issue
+      tags:
+        - Issue watchers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: watcherUid
+          in: path
+          required: true
+          type: string
+          description: ''
+
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data: null
+
+  '/issues-api/v2/accounts/{accountUid}/projects/{projectId}/issues/{issueUid}/watchers':
+    get:
+      description: >-
+       Get a list of watchers that are linked to the issue.
+      summary: List watchers linked to issue
+      tags:
+        - Issue watchers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: ''
+        - name: issueUid
+          in: path
+          required: true
+          type: string
+          description: ''
+      responses:
+        '200':
+          description: ''
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  items:
+                    - uid: 323323wsss
+                      email: my@mail.com
+                      name: Mike Albert
+                      enabled: true
+                      created: '2015-12-21T16:38:48Z'
+                      modified: '2015-12-21T16:38:48Z'
 
             
 definitions:
@@ -2771,3 +3545,262 @@ definitions:
         items:
           type: string
           format: hash
+
+  WatcherRequest:
+    type: object
+    required:
+      - email
+      - name
+    properties:
+      email:
+        type: string
+        description: watcher email
+        example: my@maul.com
+      name:
+        type: string
+        description: watcher name
+        example: Alonso
+      enabled:
+        type: boolean
+        description: should send email notification to this email
+        example: true
+
+  IssueRequest:
+    type: object
+    required:
+      - issueText
+      - issueTypeCode
+      - issueSubTypeCode
+      - string
+    properties:
+      issueText:
+        type: string
+        description: Free text field explaining an issue.
+        example: This translation is incorrect. Please fix.
+      issueTypeCode:
+        type: string
+        enum:
+          - SOURCE
+          - TRANSLATION
+        description: >-
+          Identifies the issue type. issueTypeCode is either `SOURCE` or
+          `TRANSLATION`. Each have their own set of issueSubType values
+      issueSubTypeCode:
+        type: string
+        enum:
+          - CLARIFICATION
+          - MISSPELLING
+          - POOR_TRANSLATION
+          - DOES_NOT_FIT_SPACE
+          - PLACEHOLDER_ISSUE
+          - GENERAL_ISSUE
+          - REVIEW_TRANSLATION
+        description: >-
+          For issueTypeCode=SOURCE - CLARIFICATION | MISSPELLING, For
+          issueTypeCode=TRANSLATION - POOR_TRANSLATION | DOES_NOT_FIT_SPACE |
+          PLACEHOLDER_ISSUE | GENERAL_ISSUE | REVIEW_TRANSLATION
+      string:
+        type: object
+        required:
+          - hashcode
+          - localeId
+        properties:
+          hashcode:
+            type: string
+            description: >-
+              Unique identifier for a string in Smartling. Used by the Issues
+              API to attach an issue to a string. You can get the hashcode for a
+              string via String API.
+            example: c32c16cddafd63dfa0dc12449372a093
+          localeId:
+            type: string
+            description: An identifying code for a language in Smartling.
+            example: ru-RU
+  IssueTextRequest:
+    type: object
+    required:
+      - issueText
+    properties:
+      issueText:
+        type: string
+        description: Free text field explaining an issue.
+        example: Edited issue text.
+  IssueStateRequest:
+    type: object
+    required:
+      - issueStateCode
+    properties:
+      issueStateCode:
+        type: string
+        enum:
+          - OPENED
+          - RESOLVED
+        description: The state of the issue. Accepted values are `OPENED` or `RESOLVED`.
+  CommentRequest:
+    type: object
+    required:
+      - commentText
+    properties:
+      commentText:
+        type: string
+        description: Text of the comment you want to make.
+        example: 'Hey, are you sure this is what you want?'
+  FindRequest:
+    type: object
+    properties:
+      createdDateBefore:
+        type: string
+        example: '2015-12-23T18:14:09Z'
+      createdDateAfter:
+        type: string
+        example: '2015-11-10T15:14:09Z'
+      resolvedDateBefore:
+        type: string
+        example: '2015-12-23T18:14:09Z'
+      resolvedDateAfter:
+        type: string
+        example: '2015-11-10T15:14:09Z'
+      stringFilter:
+        type: object
+        properties:
+          hashcodes:
+            type: array
+            items:
+              type: string
+            example:
+              - afe47cdaffe0c0226506919c291d9c1a
+              - afe37cdaffe0c0226508919c291d9c1a
+              - afe47cdaffe0c02265406919c291d2c1a
+          localeIds:
+            type: array
+            items:
+              type: string
+            example:
+              - ru-RU
+      sortBy:
+        type: object
+        properties:
+          items:
+            type: array
+            items:
+              type: object
+              properties:
+                direction:
+                  type: string
+                  enum:
+                    - ASC
+                    - DESC
+                fieldName:
+                  type: string
+                  enum:
+                    - issueTypeCode
+                    - issueSubTypeCode
+                    - issueStateCode
+                    - createdDate
+                    - resolvedDate
+                    - hashcode
+                    - issueText
+                    - issueTextModifiedDate
+                    - resolvedByUserUid
+                    - reportedByUserUid
+        example: [{"direction": "ASC", "fieldName": "createdDate"}, {"direction": "DESC", "fieldName":"resolvedDate"}]
+      limit:
+        type: integer
+        default: 30
+        example: 30
+        minimum: 0
+      offset:
+        type: integer
+        default: 0
+        example: 0
+        minimum: 0
+      reportedByUserUid:
+        type: string
+        example: 661801f19693
+      issueStateCodes:
+        type: array
+        items:
+          type: string
+          enum:
+            - OPENED
+            - RESOLVED
+      issueTypeCodes:
+        type: array
+        items:
+          type: string
+          enum:
+            - SOURCE
+            - TRANSLATION
+      issueSubTypeCodes:
+        type: array
+        items:
+          type: string
+          enum:
+            - CLARIFICATION
+            - MISSPELLING
+            - POOR_TRANSLATION
+            - DOES_NOT_FIT_SPACE
+            - PLACEHOLDER_ISSUE
+            - GENERAL_ISSUE
+            - REVIEW_TRANSLATION
+  CountRequest:
+    type: object
+    properties:
+      createdDateBefore:
+        type: string
+        example: '2015-12-23T18:14:09Z'
+      createdDateAfter:
+        type: string
+        example: '2015-11-10T15:14:09Z'
+      resolvedDateBefore:
+        type: string
+        example: '2015-12-23T18:14:09Z'
+      resolvedDateAfter:
+        type: string
+        example: '2015-11-10T15:14:09Z'
+      stringFilter:
+        type: object
+        properties:
+          hashcodes:
+            type: array
+            items:
+              type: string
+            example:
+              - afe47cdaffe0c0226506919c291d9c1a
+              - afe37cdaffe0c0226508919c291d9c1a
+              - afe47cdaffe0c02265406919c291d2c1a
+          localeIds:
+            type: array
+            items:
+              type: string
+            example:
+              - ru-RU
+      reportedByUserUid:
+        type: string
+        example: 661801f19693
+      issueStateCodes:
+        type: array
+        items:
+          type: string
+          enum:
+            - OPENED
+            - RESOLVED
+      issueTypeCodes:
+        type: array
+        items:
+          type: string
+          enum:
+            - SOURCE
+            - TRANSLATION
+      issueSubTypeCodes:
+        type: array
+        items:
+          type: string
+          enum:
+            - CLARIFICATION
+            - MISSPELLING
+            - POOR_TRANSLATION
+            - DOES_NOT_FIT_SPACE
+            - PLACEHOLDER_ISSUE
+            - GENERAL_ISSUE
+            - REVIEW_TRANSLATION
