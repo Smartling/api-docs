@@ -1236,10 +1236,13 @@ paths:
 #
   /context-api/v2/projects/{projectId}/contexts:
     post:
-      summary: Upload new context.
+      summary: Upload new context
       description: |-
-        The Upload Context endpoint request body takes the form of a **multi-part post request**,
-        with each part having it's own content type, e.g. for **HTML** context:
+        Upload HTML file that can later be linked to the translations and shown to linguists as a visual context for the
+        string they are working on.
+
+        The upload context endpoint request body takes the form of a **multi-part POST request**,
+        with each part having its own content type, e.g. for **HTML** context:
         ```
           POST /context-api/v2/projects/a06b5c7e1/contexts HTTP/1.1
           Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -1333,7 +1336,7 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
     get:
-      summary: List contexts for project
+      summary: List context for project
       description: Returns a list of metadata for all context files in a project, including the unique ID, type of context, file name and created date.
                    Response is limited to *100* items, to retreive all items the request should be repeated with **offset** parameter specified.
       tags:
@@ -1365,7 +1368,6 @@ paths:
           description: Optional context type filter.
       responses:
         200:
-          description: List of contexts, no content included.
           schema:
             $ref: '#/definitions/ContextListResponse'
           examples:
@@ -1386,14 +1388,13 @@ paths:
                         created: "2016-11-11T13:23:32Z"
                     offset: null
         default:
-          description: Unexpected error
           schema:
             $ref: '#/definitions/ErrorResponse'
 
   /context-api/v2/projects/{projectId}/contexts/{contextUid}:
     get:
-      summary: View context metadata
-      description: Retrieves basic context information.
+      summary: Get context metadata
+      description: Retrieves basic information about the context.
       tags:
         - Contexts
       parameters:
@@ -1409,7 +1410,6 @@ paths:
           format: uuid
       responses:
         200:
-          description: Basic context information.
           schema:
             $ref: '#/definitions/ContextResponse'
           examples:
@@ -1422,7 +1422,6 @@ paths:
                   name: 'http://custom-video-hosting.com/path/to/video.mp4'
                   created: '2017-05-03T20:47:38Z'
         404:
-          description: Context not found error.
           schema:
             $ref: '#/definitions/ErrorResponse'
           examples:
@@ -1433,7 +1432,7 @@ paths:
                   - key: 'not_found_error'
                     message: "Context not found, ref id: 'ffd90ec4-5ca8-4720-8ecf-15dce3404823'"
     delete:
-      summary: Delete the context.
+      summary: Delete context
       description: Removes the context and all associated bindings of this context to strings.
       tags:
         - Contexts
@@ -1450,7 +1449,6 @@ paths:
           format: uuid
       responses:
         200:
-          description: Successful delete response.
           schema:
             $ref: '#/definitions/SuccessResponse'
           examples:
@@ -1459,7 +1457,6 @@ paths:
                 code: SUCCESS
                 data:
         404:
-          description: Context not found error.
           schema:
             $ref: '#/definitions/ErrorResponse'
           examples:
@@ -1472,11 +1469,11 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/{contextUid}/content:
     get:
-      summary: Download content of the context file.
+      summary: Download the context file content
       description: |-
-        Returns binary image data for **IMAGE** context,
-        html document with *bindings anchors* for **HTML** context.
-        Empty response for **VIDEO** context.
+        Returns binary image data for **image** context,
+        HTML document with *bindings anchors* for **HTML** context.
+        Empty response for **video** context.
       tags:
         - Contexts
       parameters:
@@ -1492,7 +1489,7 @@ paths:
           format: uuid
       responses:
         200:
-          description: Previously uploaded context (i.e. image file, or html file).
+          description: ''
           schema:
             type: file
           examples:
@@ -1525,11 +1522,14 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/upload-and-match-async:
     post:
-      summary: Upload new context and run automatic context matching.
+      summary: Upload HTML and match it with content
       description: |-
-        A combination of two requests:
-        - post /projects/{projectId}/contexts
-        - post /projects/{projectId}/contexts/{contextUid}/match/async
+        Uploads a new HTML context and asynhronously matches it with strings in the project.
+
+        Equivalent to calling:
+        - `POST /projects/{projectId}/contexts`
+        - `POST /projects/{projectId}/contexts/{contextUid}/match/async`
+
         If the matching process returns no bindings the context wouldn't be created.
         Supports only **HTML** context.
       tags:
@@ -1593,15 +1593,19 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/{contextUid}/match/async:
     post:
-      summary: Run automatic context matching.
+      summary: Run automatic context matching
       description: |-
-        Automatically matches a Context against strings in the project and creates corresponding bindings.
-        Optical Character Recognition (OCR) is used for **IMAGE** context, while **HTML** context uses approximate string matching algorithm.
-        Optionally, you can restrict matching to only a set of strings that you specify to ensure that no unwanted bindings are created.
+        Automatically matches context against strings in the project and creates corresponding bindings.
+        Optionally, you can restrict matching to only a set of strings that you specify to ensure that no unwanted
+        bindings are created.
+
+        Optical Character Recognition (OCR) is used for **image** context, while **HTML** context uses approximate string matching algorithm.
+
         This is a convenience method provided to save time and complexity in your integration.
-        While our OCR functionality is advanced, it cannot match 100% of strings.
-        If you need complete context coverage, either use the manual Create Bindings request or check your context images in the Smartling Dashboard after running this request to fill in any blanks.
-        Be mindful of the limitations of OCR if you are using an unusual or script-like font.
+        While our OCR functionality is advanced, it cannot match 100% of strings. If you need complete context coverage,
+        either use the manual Create Bindings request or check your context images in the Smartling Dashboard after
+        running this request to fill in any blanks. Be mindful of the limitations of OCR if you are using an unusual or
+        script-like font.
       consumes:
         - application/json
       tags:
@@ -3065,7 +3069,7 @@ paths:
   /glossary-api/v2/accounts/{accountUid}/glossaries:
     get:
       description: 'Returns a list of all glossaries in an account. Optional filters for glossary name and UID can be added.'
-      summary: List Glossaries for an Account
+      summary: List glossaries for an account
       tags:
         - Glossaries
       parameters:
@@ -3113,8 +3117,8 @@ paths:
             $ref: '#/definitions/ErrorResponse'
 
     post:
+      summary: Create a glossary
       description: 'Creates a new Glossary in an account.'
-      summary: Create glossary
       tags:
         - Glossaries
       parameters:
@@ -3151,8 +3155,8 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}:
     get:
-      description: 'Gets the name, description, locale, and creation information for a glossary.'
       summary: Get glossary details
+      description: 'Gets the name, description, locale, and creation information for a glossary.'
       tags:
         - Glossaries
       parameters:
@@ -3175,8 +3179,8 @@ paths:
             $ref: '#/definitions/ErrorResponse'
 
     put:
-      description: 'Edits the name, description or source locale of a glossary. This will completely replace the name, description and source locale of the target glossary. If you do not provide a field, or leave it blank, any existing information will be deleted.'
       summary: Edit a glossary
+      description: 'Edits the name, description or source locale of a glossary. This will completely replace the name, description and source locale of the target glossary. If you do not provide a field, or leave it blank, any existing information will be deleted.'
       tags:
         - Glossaries
       parameters:
@@ -3204,8 +3208,8 @@ paths:
             $ref: '#/definitions/ErrorResponse'
 
     delete:
+      summary: Delete a glossary
       description: Deletes a Glossary. Note that if a Glossary has been assigned to a Linguistic Package, you will not be able to delete it. Linguistic Packages are managed in the Smartling Dashboard.
-      summary: Delete Glossary
       tags:
         - Glossaries
       parameters:
@@ -3255,7 +3259,7 @@ paths:
   /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms:
     get:
       description: Returns terms from a Glossary. Only the source term is included in this response.
-      summary: Get glossary terms
+      summary: Find terms in a glossary
       tags:
         - Glossaries
       parameters:
@@ -3331,8 +3335,8 @@ paths:
             $ref: '#/definitions/ErrorResponse'
 
     post:
+      summary: Create a glossary term
       description: Creates a new glossary term. The only required parameter is termText. See our Glossary documentation for details on each term parameter. You can only add one translation object in this request. To add additional translations, use Edit Glossary term.
-      summary: Create glossary term
       tags:
         - Glossaries
       parameters:
@@ -3385,8 +3389,8 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/batch:
     post:
-      description: Creates a new glossary terms.Validation for the endpoint works in atomic fashion - either all terms passed validation, and then they all will be created, or non of them will be. Translation section is optional.
-      summary: Create glossary terms in batch
+      summary: Add glossary terms in bulk
+      description: Creates a new glossary terms. Validation for the endpoint works in atomic fashion - either all terms passed validation, and then they all will be created, or non of them will be. Translation section is optional.
       tags:
         - Glossaries
       parameters:
@@ -3454,8 +3458,11 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/locales/{localeId}/terms:
     get:
-      description: 'Returns terms from a Glossary, including translations for the specified locale.'
-      summary: Get Glossary Terms and Translations
+      summary: Find translations of terms
+      description: |-
+        Searches translations of glossary terms across all glossaries in account.
+
+        Response contains a list of original glossary terms and translations.
       tags:
         - Glossaries
       parameters:
@@ -3565,11 +3572,12 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/locales/{localeId}/terms:
     get:
+      summary: Find translations of terms across all glossaries
       description: |-
-        If performance is an issue, and client wants to avoid makeing several calls to get terms from different glossaries - this call serves this purpose. Glossary uid is omitted from URI path, but security check is performed that all requested terms belong to glossaries which are connected to account specified in path. Validation works in atomic fashion - either all terms comply criteria, or non is accepted.
-        Response contains glossary uids for every term, to show which glossary term belongs to (glossaryUid field in response is specific for this API call only).
+        Searches translations of glossary terms across all glossaries in account.
 
-      summary: Returns terms with translations for particular locale for multiple glossaries
+        Response contains a list of original glossary terms and translations. There is a glossary UID for every term
+        to show which glossary it belongs to.
       tags:
         - Glossaries
       parameters:
@@ -3679,8 +3687,13 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/{termUid}:
     put:
-      description: 'Edits the details of a glossary term. With the exception of the translation object, you must provide all desired fields every time you edit the term. If you do not provide a field or leave it blank, any existing value for that field will be deleted. To add translations for multiple locales, make a separate request for each locale. Keep all fields except for the translation object identical in each request.'
-      summary: Edit glossary term
+      summary: Edit a glossary term
+      description: |-
+        Edits the details of a glossary term. With the exception of the translation object, you must provide all desired
+        fields every time you edit the term. If you do not provide a field or leave it blank, any existing value for
+        that field will be deleted. To add translations for multiple locales, make a separate request for each locale.
+        Keep all fields except for the translation object identical in each request.
+
       tags:
         - Glossaries
       parameters:
@@ -3740,8 +3753,8 @@ paths:
 
   /glossary-api/v2/projects/{projectUid}/glossaries/{glossaryUid}/terms/authorization:
     put:
-      description: Sends selected terms for translation via specified workflows to chosen target locales.
       summary: Authorize terms for translation
+      description: Sends selected terms for translation via specified workflows to chosen target locales.
       tags:
         - Glossaries
       parameters:
@@ -3770,8 +3783,8 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/download:
     get:
-      description: Downloads a glossary as a CSV, TBX or XLSX (Open Excel) file.
-      summary: Download glossary
+      summary: Download a glossary
+      description: Downloads a glossary as a CSV, TBX, or XLSX (Open Excel) file.
       tags:
         - Glossaries
       parameters:
@@ -3804,8 +3817,11 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/import-jobs:
     post:
-      description: Creates a new Glossary in your account from an uploaded Excel spreadsheet. The format of the spreadsheet is important. See Import Glossary and Glossary Spreadsheet Format.
-      summary: Create new glossary from Excel file
+      summary: Import a glossary from an Excel file
+      description: |-
+        Creates a new Glossary in your account from an uploaded Excel spreadsheet. The format of the spreadsheet is
+        important. See Import Glossary and Glossary Spreadsheet Format.
+
       tags:
         - Glossaries
       consumes:
@@ -3870,8 +3886,8 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/import-jobs/{glossaryImportJobUid}:
     get:
+      summary: Status of glossary import
       description: Checks the status of a glossary import.
-      summary: Create new Glossary from Excel file - check status
       tags:
         - Glossaries
       parameters:
@@ -3917,8 +3933,8 @@ paths:
             $ref: '#/definitions/ErrorResponse'
   /glossary-api/v2/dictionary/parts-of-speech:
     get:
+      summary: List parts of speech
       description: Order is fixed and consistent throughout the calls.
-      summary: Get list of parts of speech
       tags:
         - Glossaries
       responses:
@@ -4484,7 +4500,8 @@ definitions:
                 description: File name for IMAGE context, URL for HTML Context and video URL for VIDEO context.
                 type: string
               created:
-                description: ISO8601 date and time string
+                description: |-
+                  A date when the context was created. Format: ISO8601 date and time string
                 type: string
                 format: date-time
 
