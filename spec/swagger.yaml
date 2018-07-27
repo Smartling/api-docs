@@ -1311,7 +1311,7 @@ paths:
           description: Optional parameter that overrides the file name of *content* part.
       responses:
         200:
-          description: Created context object
+          description: OK
           schema:
             $ref: '#/definitions/ContextResponse'
           examples:
@@ -1374,6 +1374,7 @@ paths:
           description: Optional context type filter.
       responses:
         200:
+          description: OK
           schema:
             $ref: '#/definitions/ContextListResponse'
           examples:
@@ -1394,6 +1395,7 @@ paths:
                         created: "2016-11-11T13:23:32Z"
                     offset: null
         default:
+          description: Unexpected error
           schema:
             $ref: '#/definitions/ErrorResponse'
 
@@ -1416,6 +1418,7 @@ paths:
           format: uuid
       responses:
         200:
+          description: OK
           schema:
             $ref: '#/definitions/ContextResponse'
           examples:
@@ -1428,6 +1431,7 @@ paths:
                   name: 'http://custom-video-hosting.com/path/to/video.mp4'
                   created: '2017-05-03T20:47:38Z'
         404:
+          description: Context not found
           schema:
             $ref: '#/definitions/ErrorResponse'
           examples:
@@ -1455,6 +1459,7 @@ paths:
           format: uuid
       responses:
         200:
+          description: OK
           schema:
             $ref: '#/definitions/SuccessResponse'
           examples:
@@ -1463,6 +1468,7 @@ paths:
                 code: SUCCESS
                 data:
         404:
+          description: Context not found
           schema:
             $ref: '#/definitions/ErrorResponse'
           examples:
@@ -1510,7 +1516,7 @@ paths:
               </html>
 
         404:
-          description: Context not found error.
+          description: Context not found
           schema:
             $ref: '#/definitions/ErrorResponse'
           examples:
@@ -1569,15 +1575,15 @@ paths:
         200:
           description: OK
         202:
-                  description: Successful response
-                  schema:
-                    $ref: '#/definitions/AsyncMatchResponse'
-                  examples:
-                    application/json:
-                      response:
-                        code: 'SUCCESS'
-                        data:
-                          matchId: 'ffd90ec4-5ca8-4720-8ecf-15dce3404823'
+          description: ACCEPTED
+          schema:
+            $ref: '#/definitions/AsyncMatchResponse'
+          examples:
+            application/json:
+              response:
+                code: 'SUCCESS'
+                data:
+                  matchId: 'ffd90ec4-5ca8-4720-8ecf-15dce3404823'
         400:
           description: Validation error
           schema:
@@ -1634,7 +1640,7 @@ paths:
             $ref: '#/definitions/MatchRequest'
       responses:
         202:
-          description: Successful response
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/AsyncMatchResponse'
           examples:
@@ -1707,7 +1713,7 @@ paths:
                       anchors:
                       - '12'
         404:
-          description: Not found response for the match request that is not found or expired
+          description: Match request expired or does not exist
           schema:
             $ref: '#/definitions/ErrorResponse'
           examples:
