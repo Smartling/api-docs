@@ -317,9 +317,11 @@ paths:
             A GET request that creates a callback to a URL when a file is 100% published for a locale. The callback gives the fileUri and locale with the format ```http[/s]://your.url?locale=xx-XX&fileUri=your.file```. If you upload the file again, without a callbackUrl, it will remove any previous callbackUrl for that file. The RequestBin (http://requestb.in) service is a convenient way to test callback. RequestBin generates a short-lived disposable URL that displays all posted requests.
 
             If a callback fails, Smartling will make multiple attempts to reach the designated URL, however, we do not keep retrying a failed callback indefinitely. Try to make sure your callback URL is as stable as possible and be aware that callbacks are not a 100% reliable way of being notified that a file is published.
+
+            If the upload has begun but is taking more than a minute to complete it responds with status **202**.
       responses:
         200:
-          description: Files API Upload success response
+          description: OK
           schema:
             $ref: '#/definitions/FilesAPIUploadSuccessResponse'
           examples:
@@ -331,7 +333,7 @@ paths:
                     stringCount: 10
                     wordCount: 2
         202:
-          description: If the upload has begun but is taking more than a minute to complete
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/FilesAPIUploadAcceptedResponse'
           examples:
@@ -415,7 +417,7 @@ paths:
           description: Value that uniquely identifies the downloaded file
       responses:
         200:
-          description: Download original file
+          description: OK
           schema:
             type: file
         default:
@@ -448,7 +450,7 @@ paths:
           description: Smartling value that uniquely identifies a file in Smartling
       responses:
         200:
-          description: |
+          description: OK
           schema:
             $ref: '#/definitions/FilesAPIStatusAllLocalesSuccessResponse'
           examples:
@@ -511,7 +513,7 @@ paths:
           description: Smartling value that uniquely identifies a file in Smartling
       responses:
         200:
-          description: |
+          description: OK
           schema:
             $ref: '#/definitions/FilesAPIStatusSingleLocaleSuccessResponse'
           examples:
@@ -557,6 +559,7 @@ paths:
           curl -H "Authorization: Bearer {token}" "https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file?fileUri={your-file-Uri}"
         ```
 
+        **Note**: The filename in response is based on the fileUri associated with the requested file. In most cases, the filename is exactly the fileUri provided. The only exception to this is with .pot gettext files. When a .pot file is specified as the fileUri, Smartling returns a .po file
       tags:
         - Translated Files
       parameters:
@@ -605,10 +608,7 @@ paths:
 
       responses:
         200:
-          description: |
-            Download file translated to specified locale
-
-            **Note**: The filename in response is based on the fileUri associated with the requested file. In most cases, the filename is exactly the fileUri provided. The only exception to this is with .pot gettext files. When a .pot file is specified as the fileUri, Smartling returns a .po file
+          description: OK
           schema:
             type: file
         default:
@@ -802,7 +802,7 @@ paths:
           description: Name for the downloaded zip file. If unset, default is ```translations.zip```
       responses:
         200:
-          description: |
+          description: OK
           schema:
             type: file
         default:
@@ -884,7 +884,7 @@ paths:
           description: See [Limit and Offset](https://developer.smartling.com/v1.0/docs/list-get-1)
       responses:
         200:
-          description: |
+          description: OK
           schema:
             $ref: '#/definitions/FilesAPIListFilesSuccessResponse'
           examples:
@@ -923,7 +923,7 @@ paths:
           type: string
       responses:
         200:
-          description: |
+          description: OK
           schema:
             $ref: '#/definitions/FilesAPIListFileTypesSuccessResponse'
           examples:
@@ -970,7 +970,7 @@ paths:
             The new value for fileUri. We recommend that you use file path + file name, similar to how version control systems identify the file. Example: /myproject/i18n/ui.properties. This must be a fileUri that does not exist in the current Smartling project.
       responses:
         200:
-          description: |
+          description: OK
           schema:
             $ref: '#/definitions/EmptyResponse'
           examples:
@@ -1010,7 +1010,7 @@ paths:
           description: Smartling value that uniquely identifies a file in Smartling
       responses:
         200:
-          description: |
+          description: OK
           schema:
             $ref: '#/definitions/EmptyResponse'
           examples:
@@ -1058,7 +1058,7 @@ paths:
           description: Limits the return to only those file and locale combinations that have a ```lastModified``` date after the parameter ```lastModifiedAfter```. The items array will be empty if the file has not been modified in any of the locales since the lastModifiedAfter date specified.
       responses:
         200:
-          description: |
+          description: OK
           schema:
             $ref: '#/definitions/FilesAPILastModifiedSingleLocaleSuccessResponse'
           examples:
@@ -1104,7 +1104,7 @@ paths:
           description: Limits the return to only those file and locale combinations that have a ```lastModified``` date after the parameter ```lastModifiedAfter```. The items array will be empty if the file has not been modified in any of the locales since the lastModifiedAfter date specified.
       responses:
         200:
-          description: |
+          description: OK
           schema:
             $ref: '#/definitions/FilesAPILastModifiedAllLocalesSuccessResponse'
           examples:
@@ -1183,7 +1183,7 @@ paths:
 
       responses:
         200:
-          description: |
+          description: OK
           schema:
             $ref: '#/definitions/FilesAPITranslationImportSuccessResponse'
           examples:
@@ -1270,7 +1270,7 @@ paths:
 
       responses:
         200:
-          description: |
+          description: OK
           schema:
             type: file
         default:
@@ -1542,7 +1542,7 @@ paths:
           format: uuid
       responses:
         200:
-          description: ''
+          description: OK
           schema:
             type: file
           examples:
@@ -1729,7 +1729,7 @@ paths:
           format: uuid
       responses:
         200:
-          description: Successful response for the completed match request.
+          description: OK
           schema:
             $ref: '#/definitions/AsyncMatchStatsResponse'
           examples:
@@ -1785,7 +1785,7 @@ paths:
           format: uuid
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/SuccessResponse'
           examples:
@@ -1829,7 +1829,7 @@ paths:
           format: uuid
       responses:
         200:
-          description: Successful Response
+          description: OK
           schema:
             $ref: '#/definitions/BindingsResponse'
           examples:
@@ -1987,7 +1987,7 @@ paths:
             $ref: '#/definitions/BindingsRequest'
       responses:
         200:
-          description: Bindings
+          description: OK
           schema:
             $ref: '#/definitions/CreateBindingsResponse'
           examples:
@@ -2053,7 +2053,7 @@ paths:
             $ref: '#/definitions/MatchRequest'
       responses:
         200:
-          description: Added bindings and matched but not bound strings
+          description: OK
           schema:
             $ref: '#/definitions/MatchResponse'
           examples:
@@ -2941,7 +2941,7 @@ paths:
                       type: string
       responses:
         200:
-          description: Strings
+          description: OK
           schema:
             $ref: '#/definitions/CreateStringResponse'
           examples:
@@ -2960,7 +2960,7 @@ paths:
                       hashcode: "bd603147d945h3ec74d6874422ebe4e0"
                       overWritten: "true"
         202:
-          description: Strings
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/CreateStringResponse'
 
@@ -2996,7 +2996,7 @@ paths:
           format: uuid
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/CreateStringStatusResponse'
         default:
@@ -3048,7 +3048,7 @@ paths:
           type: number
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/StringResponse'
         default:
@@ -3113,7 +3113,7 @@ paths:
           type: number
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/TranslationResponse'
         default:
@@ -3147,7 +3147,7 @@ paths:
           description:  filter for glossary uid in IN manner (might contain up to 100 uids separated by comma e.g glossaryUids=1234,4567)
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/GlossaryListResponse'
           examples:
@@ -3191,7 +3191,7 @@ paths:
             $ref: '#/definitions/CreateGlossary'
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/GlossaryResponse'
           examples:
@@ -3228,7 +3228,7 @@ paths:
           type: string
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/GlossaryResponse'
         default:
@@ -3257,7 +3257,7 @@ paths:
             $ref: '#/definitions/UpdateGlossary'
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/GlossaryResponse'
         default:
@@ -3281,7 +3281,7 @@ paths:
           type: string
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/SuccessResponse'
           examples:
@@ -3347,7 +3347,7 @@ paths:
           description:  sorting instructions. represents field to sort by and direction separated by coma (i.e. sort=termText,desc). We support sorting by all fields.
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/SourceTermListResponse'
           examples:
@@ -3413,7 +3413,7 @@ paths:
             $ref: '#/definitions/CreateTerm'
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/TranslatedTermResponse'
           examples:
@@ -3469,7 +3469,7 @@ paths:
               $ref: '#/definitions/CreateTerm'
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/TranslatedTermResponse'
           examples:
@@ -3564,7 +3564,7 @@ paths:
           description:  sorting instructions. represents field to sort by and direction separated by coma (i.e. sort=termText,desc). We support sorting by all fields.
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/TranslatedTermResponse'
           examples:
@@ -3675,7 +3675,7 @@ paths:
           description:  sorting instructions. represents field to sort by and direction separated by coma (i.e. sort=termText,desc). We support sorting by all fields.
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/TermWithGlossaryUidListResponse'
           examples:
@@ -3774,7 +3774,7 @@ paths:
             $ref: '#/definitions/UpdateTerm'
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/TranslatedTermResponse'
         default:
@@ -3801,7 +3801,7 @@ paths:
           type: string
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/SuccessResponse'
         default:
@@ -3831,7 +3831,7 @@ paths:
             $ref: '#/definitions/AuthorizeTerms'
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/SuccessResponse'
         default:
@@ -3865,7 +3865,7 @@ paths:
           description: 'Comma-separated list of locales for which to return translations'
       responses:
         200:
-          description: 'CSV File'
+          description: OK
           schema:
             type: file
         default:
@@ -3911,7 +3911,7 @@ paths:
           description: 'File containing the Glossary you want to import. See Glossary Spreadsheet Format for details.'
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/GlossaryImportJob'
           examples:
@@ -3959,7 +3959,7 @@ paths:
           type: string
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/GlossaryImportJob'
           examples:
@@ -3997,7 +3997,7 @@ paths:
         - Glossaries
       responses:
         200:
-          description: Success response
+          description: OK
           schema:
             $ref: '#/definitions/PartsOfSpeechList'
           examples:
@@ -4136,7 +4136,7 @@ paths:
             $ref: '#/definitions/CreateJobRequest'
       responses:
         200:
-          description: Response after successfully creating a job.
+          description: OK
           schema:
             $ref: '#/definitions/ShallowJobResponse'
           examples:
@@ -4175,7 +4175,10 @@ paths:
       summary: "Add strings to a job"
       tags:
         - Jobs
-      description: "Add strings to a job. This is useful for clients who do not manage strings / content through files, but instead need to add strings by some other means other than files."
+      description: |
+        Add strings to a job. This is useful for clients who do not manage strings / content through files, but instead need to add strings by some other means other than files.
+
+        Returns status **200** when strings successfully added strings to a job. When the system can not quickly add the strings to the job, then a response with **202** status is returned. The response contains a link and processUid to check the progress of the request. When a 202 is received, then the process of adding the content to the job will not be complete until the returned process has completed.
       consumes:
         - application/json
       parameters:
@@ -4194,7 +4197,7 @@ paths:
             $ref: '#/definitions/AddStringsJobRequest'
       responses:
         200:
-          description: Response after successfully adding strings to a job
+          description: OK
           schema:
             $ref: '#/definitions/SuccessFailCountJobResponse'
           examples:
@@ -4205,7 +4208,7 @@ paths:
                   successCount: 100 # number of strings added to the job
                   failCount: 0 # number of strings that could not be added to the job
         202:
-          description: Async response when adding strings to a job. When the system can not quickly add the strings to the job, then a 202 response is returned. The response contains a link and processUid to check the progress of the request. When a 202 is received, then the process of adding the content to the job will not be complete until the returned process has completed.
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/AsyncProcessJobResponse'
           examples:
@@ -4232,7 +4235,10 @@ paths:
       summary: "Remove strings from a job"
       tags:
         - Jobs
-      description: "Remove strings from a job. Any strings removed from the job will also be unathorized within Smartling."
+      description: |
+        Remove strings from a job. Any strings removed from the job will also be unathorized within Smartling.
+
+        Responds with status **200** after successfully removing strings to a job. When the system cannot quickly add the strings to the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of removing the content from the job will not be complete until the returned process has completed.
       consumes:
         - application/json
       parameters:
@@ -4251,7 +4257,7 @@ paths:
             $ref: '#/definitions/RemoveStringsJobRequest'
       responses:
         200:
-          description: Response after successfully removing strings to a job
+          description: OK
           schema:
             $ref: '#/definitions/SuccessFailCountJobResponse'
           examples:
@@ -4262,7 +4268,7 @@ paths:
                   successCount: 100 # number of strings removed from the job
                   failCount: 0 # number of strings that could not be removed from the job
         202:
-          description: Async response when adding strings to a job. When the system cannot quickly add the strings to the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of removing the content from the job will not be complete until the returned process has completed.
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/AsyncProcessJobResponse'
           examples:
@@ -4293,7 +4299,7 @@ paths:
           type: string
       responses:
         200:
-          description: Response after successfully closing the job
+          description: OK
           schema:
             $ref: '#/definitions/NullDataJobResponse'
           examples:
@@ -4317,7 +4323,10 @@ paths:
       summary: "Cancel a job"
       tags:
         - Jobs
-      description: "Cancel the job. All content within the job will be removed from the job and the content will be unauthorized."
+      description: |
+        Cancel the job. All content within the job will be removed from the job and the content will be unauthorized.
+
+        Responds with status **200** after successfully cancelling the job. When the system can not quickly cancel the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of canceling and removing the content from the job will not be complete until the returned process has completed.
       consumes:
         - application/json
       parameters:
@@ -4336,7 +4345,7 @@ paths:
             $ref: '#/definitions/CancelJobRequest'
       responses:
         200:
-          description: Response after successfully cancelling the job
+          description: OK
           schema:
             $ref: '#/definitions/NullDataJobResponse'
           examples:
@@ -4345,7 +4354,7 @@ paths:
                 code: SUCCESS
                 data: null
         202:
-          description: Async response when cancelling a job. When the system can not quickly cancel the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of canceling and removing the content from the job will not be complete until the returned process has completed.
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/AsyncProcessJobResponse'
           examples:
@@ -4400,7 +4409,7 @@ paths:
             $ref: '#/definitions/AuthorizeJobRequest'
       responses:
         200:
-          description: Response after successfully authorizing the job
+          description: OK
           schema:
             $ref: '#/definitions/NullDataJobResponse'
           examples:
@@ -4437,7 +4446,7 @@ paths:
           type: string
       responses:
         200:
-          description: Response for retrieving a job
+          description: OK
           schema:
             $ref: '#/definitions/DetailedJobResponse'
           examples:
@@ -4498,7 +4507,7 @@ paths:
             $ref: '#/definitions/UpdateJobRequest'
       responses:
         200:
-          description: Response after successfully updating a job
+          description: OK
           schema:
             $ref: '#/definitions/DetailedJobResponse'
           examples:
@@ -4620,7 +4629,7 @@ paths:
           type: string
       responses:
         200:
-          description: Ok
+          description: OK
           schema:
             $ref: '#/definitions/ProcessCheckJobResponse'
           examples:
@@ -4638,11 +4647,16 @@ paths:
       summary: "Add a file to a job"
       tags:
         - Jobs
-      description: "Adds a file to the job. By default, the file will be added for all locales of the job. This can be changed by specifying the targetLocaleIds for the job to add the file into. <br>Validation rules:<ul>
-        <li>A job can contain a maximum of 300 files</li>
-        <li>Content can not be added to the job if the job contains no locales and the request to add a file does not specify any locales</li>
-        <li>The file (specified by the fileUri) cannot be in the process of being uploaded / modified within Smartling. It should complete its upload process before being added to a job.</li>
-        <li>Any targetLocale's specified must be valid within the project the job has been created for.</li></ul>"
+      description: |
+        Adds a file to the job. By default, the file will be added for all locales of the job. This can be changed by specifying the targetLocaleIds for the job to add the file into.
+
+        **Validation rules:**
+        - A job can contain a maximum of 300 files
+        - Content can not be added to the job if the job contains no locales and the request to add a file does not specify any locales
+        - The file (specified by the fileUri) cannot be in the process of being uploaded / modified within Smartling. It should complete its upload process before being added to a job
+        - Any targetLocale's specified must be valid within the project the job has been created for
+
+        When the system can quickly add the file and its content to the job synchronously responds with status **200**. When the system cannot quickly add the file and its content to the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of adding the content to the job will not be complete until the returned process has completed.
       consumes:
         - application/json
       parameters:
@@ -4662,7 +4676,7 @@ paths:
             $ref: '#/definitions/AddFileJobRequest'
       responses:
         200:
-          description: Sync response when adding a file to a job. This is received when the system can quickly add the file and its content to the job.
+          description: OK
           schema:
             $ref: '#/definitions/SuccessFailCountJobResponse'
           examples:
@@ -4673,7 +4687,7 @@ paths:
                   successCount: 1 # The number of strings added to the job
                   failCount: 1 # The number of strings that could not be added to the job
         202:
-          description: Async response when adding a file to a job. When the system cannot quickly add the file and its content to the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of adding the content to the job will not be complete until the returned process has completed.
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/AsyncProcessJobResponse'
           examples:
@@ -4698,7 +4712,10 @@ paths:
       summary: "Remove a file from a job"
       tags:
         - Jobs
-      description: "Removes a file from a job. All content that is part of the file contained within that job will be removed from the job and will become unuathorized content."
+      description: |
+        Removes a file from a job. All content that is part of the file contained within that job will be removed from the job and will become unuathorized content.
+
+        When the system can quickly remove the file and its content from the job synchronously responds with status **200**. When the system cannot quickly remove the file and its content to the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of removing the file and it's contents from the job will not be complete until the returned process has completed.
       consumes:
         - application/json
       parameters:
@@ -4718,7 +4735,7 @@ paths:
             $ref: '#/definitions/RemoveFileJobRequest'
       responses:
         200:
-          description: Sync response when removing a file to a job. This is received when the system can quickly remove the file and its content from the job.
+          description: OK
           schema:
             $ref: '#/definitions/SuccessFailCountJobResponse'
           examples:
@@ -4729,7 +4746,7 @@ paths:
                   successCount: 1 # The number of strings removed from the job
                   failCount: 1 # The number of strings that could not be removed from the job
         202:
-          description: Async response when removing a file from a job. When the system cannot quickly remove the file and its content to the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of removing the file and it's contents from the job will not be complete until the returned process has completed.
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/AsyncProcessJobResponse'
           examples:
@@ -4795,7 +4812,10 @@ paths:
       summary: "Add a locale to a job"
       tags:
         - Jobs
-      description: "Adds a locale to the job."
+      description: |
+        Adds a locale to the job.
+
+        When the system can quickly add the locale and any content to the job synchronously responds with status **200**. When the system cannot quickly add the locale and any content to the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of adding the content to the job will not be complete until the returned process has completed.
       consumes:
         - application/json
       produces:
@@ -4820,7 +4840,7 @@ paths:
           description: Default to true. When a new locale is being added to a job, by default all content in the job will be added to the job for the new locale. If set to false, then no content will be added to the job, but just a locale placeholder will be added to the job.
       responses:
         200:
-          description: Sync response when adding a locale to a job. This is received when the system can quickly add the locale and any content to the job.
+          description: OK
           schema:
             $ref: '#/definitions/NullDataJobResponse'
           examples:
@@ -4829,7 +4849,7 @@ paths:
                 code: SUCCESS
                 data: null
         202:
-          description: Async response when adding a locale to a job. When the system cannot quickly add the locale and any content to the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of adding the content to the job will not be complete until the returned process has completed.
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/AsyncProcessJobResponse'
           examples:
@@ -4843,7 +4863,10 @@ paths:
       summary: "Removes a locale from the job"
       tags:
         - Jobs
-      description: "Removes a locale from the job. When removing a locale from a job (and thus any content within that job for that locale), the content being removed will be unauthorized."
+      description: |
+        Removes a locale from the job. When removing a locale from a job (and thus any content within that job for that locale), the content being removed will be unauthorized.
+
+        When the system can quickly remove the locale and any content from the job synchronously responds with status **200**. When the system cannot quickly remove the locale and any content from the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of removing the content from the job will not be complete until the returned process has completed.
       consumes:
         - application/json
       parameters:
@@ -4861,7 +4884,7 @@ paths:
           type: string
       responses:
         200:
-          description: "Sync response when removing a locale from a job. This is received when the system can quickly remove the locale and any content from the job."
+          description: OK
           schema:
             $ref: '#/definitions/NullDataJobResponse'
           examples:
@@ -4870,7 +4893,7 @@ paths:
                 code: SUCCESS
                 data: null
         202:
-          description: "Async response when removing a locale from a job. When the system cannot quickly remove the locale and any content from the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of removing the content from the job will not be complete until the returned process has completed."
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/AsyncProcessJobResponse'
           examples:
@@ -4903,7 +4926,7 @@ paths:
           type: string
       responses:
         200:
-          description: Response for getting job progress of a file
+          description: OK
           schema:
             $ref: '#/definitions/ProgressResponse'
           examples:
@@ -4992,7 +5015,7 @@ paths:
           type: string
       responses:
         200:
-          description: Response for getting job progress.
+          description: OK
           schema:
             $ref: '#/definitions/ProgressResponse'
           examples:
