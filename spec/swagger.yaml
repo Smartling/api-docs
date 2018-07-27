@@ -12,7 +12,7 @@ info:
   title: Smartling REST API Reference
   
   description: |
-    The **Smartling API** enables you to automate many of the actions that users ordinarily perform in Smartling's 
+    Smartling APIs enable you to automate many of the actions that users ordinarily perform in Smartling's 
     web-based application. It also allows you to build integrations to connect your content sources directly 
     with Smartling.
 
@@ -34,20 +34,71 @@ externalDocs:
 
 tags:
   - name: "Authentication"
+    description: |-
+      Smartling uses OAuth2 for authentication. To access the Smartling APIs, you'll first need to authenticate with your user identifier and user secret. An access token is returned that can be attached to the header of any API request. A refresh token is also returned.
+      
+      To obtain your user identifier and user secret, log in to Smartling.com and go to **API > Create Token**. Authenticating is as simple as calling the `/api.smartling.com/auth-api/v2/authenticate` with your `userIdentifier` and `userSecret`. 
+
+      **Example**:
+
+      ```bash 
+        curl -X POST https://api.smartling.com/auth-api/v2/authenticate  -H 'content-type: application/json' -d '{    "userIdentifier": "userIdasdklj4348dk34!", "userSecret": "userSecret34i34kkd5634f" }'`
+      ```
+      ```
+      {
+          "response": {
+              "code": "SUCCESS",
+              "data": {
+                      "accessToken": "eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOasdlkjn",
+                      "refreshToken": "eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJkMTdkMmEw",
+                      "expiresIn": 480,
+                      "refreshExpiresIn": 3660,
+                      "tokenType": "Bearer"
+              }
+          }
+      }
+      ```
+      The `accessToken` returned is valid for 5-minutes, and is used in the header of all subsequent requests.
+
+      For example, if you want to list all projects for your account, you'd make the following call using your `accessToken` value. 
+
+      **Example**:
+
+      ```bash
+        curl -X GET -H "Authorization: Bearer {accessToken}" 'https://api.smartling.com/accounts-api/v2/accounts/{accountUid}/projects
+      ```
+      ```
+      {
+          "response": {
+              "code": "SUCCESS",
+              "data": {
+                  "totalCount": 1,
+                  "items": [{
+                               "projectId": "df324sdf5",
+                               "projectName": "iOS Strings files",
+                               "accountUid": "ab5f1939",
+                               "archived": false,
+                               "projectTypeCode": "APPLICATION RESOURCES",
+                               "sourceLocaleId": "en",
+                               "sourceLocaleDescription": "English"
+                           }
+                  ]
+              }
+          }
+      }
 
   - name: "Strings"
     description: |-
       The Strings API allows you to directly upload strings to a Smartling project and fetch original strings or translations.
 
-      For each string in a Smartling project there is a unique identifier, made by hashing together the parsed string
-      text, variant metadata and, in some cases, namespace. When adding strings via the String API, each string will
+      For each string in a Smartling project there is a unique identifier created by hashing together the parsed string
+      text, variant metadata, and in some cases, namespace. When adding strings via the Strings API, each string will
       be unique. If you try to create a string with identical variant metadata and string text to a string that already
       exists in the project, the string will be overwritten.
 
   - name: "Issues"
     description: |-
-      The Issues API provides methods for creating issues, changing the state of an issue, commenting on an issue and
-      requesting detailed information and reports on issues and comments.
+      The Issues API provides methods for creating issues, changing the state of an issue, commenting on an issue, requesting detailed information, as well as creating reports on issues and comments.
 
   - name: "Issue watchers"
     description: |-
@@ -55,17 +106,17 @@ tags:
 
   - name: "Glossaries"
     description: |-
-      The Glossary API allows you to create and edit Glossaries in a Smartling account and populate it with Glossary terms. You can also download your Glossaries as CSV or TBX files and import Excel spreadsheets to create new Glossaries.
+      The Glossaries API allows you to create and edit glossaries in a Smartling account, and populate it with glossary terms. You can also download your glossaries as CSV or TBX files and import Excel spreadsheets to create new glossaries.
 
-      **Glossary API introduces following limitations on its usage:**
+      **Glossaries API Usage Limitations**:
       * Maximum request size is 10MB
       * Maximum file upload size is 10MB
       * Maximum HTTP header size is 128KB
-      * For requests that uses pagination, maximum page size is 5000 elements
-      * For requests that returns entities by their UIDs - maximum 100 elements
+      * For requests that use pagination, maximum page size is 5000 elements
+      * For requests that return entities by their UIDs, maximum is 100 elements
       Rate limits:
       * Maximum 5 concurrent requests
-      * Maximum rate is 200 requests per 15 seconds window frame
+      * Maximum rate is 200 requests per 15-second window frame
 
 x-tagGroups:
   - name: "Basics"
@@ -93,16 +144,7 @@ paths:
   '/auth-api/v2/authenticate':
     post:
       description: >-
-        Authenticates the user with a User Identifier and Secret. Returns an
-        access token that can be attached to the header of any API request to
-        authenticate the user, and a refresh token which can be used to obtain a
-        new access token.
-
-
-        To obtain `userIdentifier` and `userSecret` log in to `Smartling > API > Create Token`.
-
-
-        See ["How to Authenticate" article](https://developer.smartling.com/docs/how-to-authenticate) for more details.
+        Verifies the credentials of the connection attempt.
       summary: Authenticate
       tags:
         - Authentication
@@ -135,9 +177,8 @@ paths:
   '/files-api/v2/auth-api/v2/authenticate/refresh':
     post:
       description: >-
-        Returns a renewed access token that can be attached to the header of any
-        API request to authenticate the user, and a refresh token which can be
-        used to obtain a new access token.
+        A renewed access token that can be attached to the header of any
+        API request.
       summary: Refresh access token
       tags:
         - Authentication
@@ -2814,13 +2855,13 @@ paths:
     post:
       summary: "Add strings"
       description: |-
-        Uploads an array of strings to a Smartling project. A maximum of 100 strings can be created per request. A request with more than 100 items will return an error. Each string has a character limit of 10 000.
+        Uploads an array of strings to a Smartling project. A maximum of 100 strings can be created per request. A request with more than 100 items will return an error. Each string has a character limit of 10,000.
 
-        Note that you cannot authorize a string via API. Once you have created the strings, they will need to be authorized by a content owner in the Smartling Dashboard.
+        **Note**: You cannot authorize a string via API. Once you have created the strings, they will need to be authorized by a content owner in the Smartling Dashboard.
 
-        Smartling creates a unique hashcode for each string based on the parsed string text and any variant or namespace metadata provided. If you upload a string with the same text, variant and namespace, and therefore the same hashcode, the existng string will be overwritten. This will not change the text of the string, but may update other metadata, such as placeholder and callback values. If the string is currently inactive, overwriting it will cause it to be reactivated. Overwritten strings return "overWritten": "true" in the response object.
+        Smartling creates a unique hashcode for each string based on the parsed string text and any variant or namespace metadata provided. If you upload a string with the same text, variant and namespace, and therefore the same hashcode, the existng string will be overwritten. This will not change the text of the string, but may update other metadata, such as placeholder and callback values. If the string is currently inactive, overwriting it will cause it to be reactivated. Overwritten strings return `"overWritten": "true"` in the response object.
 
-        Most uploads will return a `200` response indicating success. If processing the request takes longer than 60 seconds, a `202` request will be returned, including a processUid value that can be used to check on the progress of the request.
+        Most uploads will return a `200` response indicating success. If processing the request takes longer than 60 seconds, a `202` request will be returned, including a `processUid` value that can be used to check on the progress of the request.
 
         If you set up a POST callback for the string, you can automatically receive the translation for a string as soon as it is complete. See Callbacks for more details.
 
@@ -2920,9 +2961,14 @@ paths:
     get:
       summary: "Check string status"
       description: |-
-        If a Create Strings request takes longer than 60 seconds to process, a `202` response will be returned, indicating that the process of creating strings is continuing but not yet complete. This response will include a proccessUid value which can be used to check the progress of the request. This request returns a processState value of open, indicating that the request is still continuing, closed, indicating the request has successfully completed, and failed, meaning the request could not be completed.
+        If an **Add strings** request takes longer than 60 seconds to process, a `202` response will be returned, indicating that the process of creating strings is continuing but not yet complete. This response will include a `proccessUid` value which can be used to check the progress of the request. 
 
-        Processes have a limited lifespan after they are complete. This request will fail if you specify an expired processUid.
+        This request can return:
+          * `"processState": "OPEN"` which indicates that the request is still continuing. 
+          * `"processState": "CLOSED"` indicates the request has successfully completed.
+          * `"processState": "FAILED"` means the request could not be completed.
+
+        Processes have a limited lifespan after they are complete. This request will fail if you specify an expired `processUid`.
       tags:
         - Strings
       parameters:
@@ -2954,10 +3000,10 @@ paths:
 
         _If you do not specify at least one of these parameters (`hashcodes` or `fileUri`) no results will be returned._
 
-        Note that if you use this call to get strings not created with the strings API, you may see differences in the response.
+        **Note**: If you use this call to get strings that are not added via the Strings API, you may see differences in the response.
 
-        > You may see a value for `parsedStringText` but a `null` value for `stringText`. The `stringText` records the raw input received by the String API so will only appear for strings uploaded via String API.
-        > If you are getting a GDN string, the original placeholder values you used will not be returned, as these are not saved by Smartling. GDN strings will have placeholders in the format `{0}`, `{1}`, etc.
+        You may see a value for `parsedStringText` but a `null` value for `stringText`. The `stringText` records the raw input received by the Strings API, and therefore will only appear for strings uploaded via the Strings API.
+        If you are getting a GDN string, the original placeholder values you used will not be returned as these are not saved by Smartling. GDN strings will have placeholders in the format `{0}`, `{1}`, etc.
       tags:
         - Strings
       parameters:
@@ -3006,12 +3052,12 @@ paths:
 
         _If you do not specify at least one of these parameters (`hashcodes` or `fileUri`) no results will be returned._
 
-        Note that if you use this call to get strings not created with the strings API, you may see differences in the response.
+        **Note**: If you use this call to get strings that were not created via the Strings API, you may see differences in the response.
 
-        Only authorized and active strings will be returned. Excluded, unauthorized & inactive strings will not be returned.
+        Only authorized and active strings will be returned. Excluded, unauthorized, and inactive strings will not be returned.
 
-        > You may see a value for `parsedStringText` but a `null` value for `stringText`. The `stringText` records the raw input received by the String API so will only appear for strings uploaded via String API.
-        > If you are getting a GDN string, the original placeholder values you used will not be returned, as these are not saved by Smartling. GDN strings will have placeholders in the format `{0}`, `{1}`, etc.
+        You may see a value for `parsedStringText` but a `null` value for `stringText`. The `stringText` records the raw input received by the Strings API, and therefore will only appear for strings uploaded via the Strings API.
+        If you are getting a GDN string, the original placeholder values you used will not be returned as these are not saved by Smartling. GDN strings will have placeholders in the format `{0}`, `{1}`, etc.
       tags:
         - Strings
       parameters:
