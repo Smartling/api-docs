@@ -125,8 +125,10 @@ tags:
       * Maximum rate is 200 requests per 15-second window frame
 
   - name: "Jobs"
-    description: ''
+    description: |-
+      A Smartling project (such as a mobile, web, files, or connector project) may contain one or more jobs. You may also have multiple projects, each containing multiple jobs. A job typically has a name, due date, description, reference number (optional), and the content you want translated.
 
+      From the Jobs API, you can Create a job, Add a file to a job, Authorize a job, and Cancel a job, among many other actions. You have full control via the APIs, or within the Smartling Dashboard to manage jobs and the content within them.
 
 paths:
   '/auth-api/v2/authenticate':
@@ -4013,10 +4015,10 @@ paths:
 
   /jobs-api/v3/projects/{projectId}/jobs:
     get:
-      summary: "List Jobs"
+      summary: "List the jobs"
       tags:
         - Jobs
-      description: "List / Search jobs within a project."
+      description: "List / search the jobs within a project."
       consumes:
         - application/json
       parameters:
@@ -4028,21 +4030,21 @@ paths:
           in: query
           type: string
           required: false
-          description: Param used for searching for jobs by jobName. Any entry is treated as a LIKE query on the name of the job.
+          description: Used for searching jobs by `jobName`. Any entry is treated as a LIKE query on the name of the job.
         - name: translationJobUids
           in: query
           type: array
           items:
             type: string
           required: false
-          description: Param used for searching for jobs by translationJobUid. Supports up to 500 translationJobUids.
+          description: Used for searching jobs by `translationJobUid`. Supports up to 500 `translationJobUid`s.
         - name: translationJobStatus
           in: query
           type: array
           items:
             type: string
           required: false
-          description: Param used for searching for jobs by jobStatus.
+          description: Used for searching jobs by `jobStatus`.
         - name: limit
           in: query
           type: integer
@@ -4069,7 +4071,7 @@ paths:
             - ASC
             - DESC
           required: false
-          description: The direction fo sort.
+          description: The direction to sort.
       responses:
         200:
           description: OK
@@ -4099,7 +4101,7 @@ paths:
                     createdDate : "2015-11-21T11:51:17Z"
                     jobStatus : "IN_PROGRESS"
     post:
-      summary: "Create Job"
+      summary: "Create a job"
       tags:
         - Jobs
       description: "Creates a job within Smartling."
@@ -4158,9 +4160,9 @@ paths:
       tags:
         - Jobs
       description: |
-        Add strings to a job. This is useful for clients who do not manage strings / content through files, but instead need to add strings by some other means other than files.
+        Adding strings to a job is useful if you don't manage strings / content through files, but instead need to add strings by some other means other than files.
 
-        Returns status **200** when strings successfully added strings to a job. When the system can not quickly add the strings to the job, then a response with **202** status is returned. The response contains a link and processUid to check the progress of the request. When a 202 is received, then the process of adding the content to the job will not be complete until the returned process has completed.
+        When strings are successfully added to a job, a `200` status is returned. When the system can't quickly add strings to the job, a `202` response status is returned. The response contains a link and `processUid` to check the progress of the request. When a `202` is received, the process of adding the content to the job will not be complete until the returned process has completed.
       consumes:
         - application/json
       parameters:
@@ -4218,9 +4220,9 @@ paths:
       tags:
         - Jobs
       description: |
-        Remove strings from a job. Any strings removed from the job will also be unathorized within Smartling.
+        Remove strings from a job. Any strings removed from the job will also be unauthorized within Smartling.
 
-        Responds with status **200** after successfully removing strings to a job. When the system cannot quickly add the strings to the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of removing the content from the job will not be complete until the returned process has completed.
+        If strings are successfully removed from a job, a `200` status will be returned. When the system can't quickly add the strings to the job, a `202` response is returned. The response contains a link to check the progress of the request. When a `202` is received, the process of removing the content from the job will not be complete until the returned process has completed.
       consumes:
         - application/json
       parameters:
@@ -4265,7 +4267,7 @@ paths:
       summary: "Close a job"
       tags:
         - Jobs
-      description: "Close a completed job. In order for a Job to be closed, it must be in a Completed state. All content from the job will be removed when it is Closed. Closing a job guarentees that no additional work will be done against the job."
+      description: "This closes a completed job. In order for a job to be closed, it must be in a completed state. All content from the job will be removed when it is closed. Closing a job guarantees that no additional work will be done against the job."
       produces:
         - application/json
       consumes:
@@ -4306,9 +4308,9 @@ paths:
       tags:
         - Jobs
       description: |
-        Cancel the job. All content within the job will be removed from the job and the content will be unauthorized.
+        This cancels a job. All content within the job will be removed from the job and the content will be unauthorized.
 
-        Responds with status **200** after successfully cancelling the job. When the system can not quickly cancel the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of canceling and removing the content from the job will not be complete until the returned process has completed.
+        If a job is successfully cancelled, a `200` response status will be returned. When the system can't quickly cancel the job, a `202` response is returned. The response contains a link to check the progress of the request. When a `202` is received, the process of canceling and removing the content from the job will not be complete until the returned process has completed.
       consumes:
         - application/json
       parameters:
@@ -4372,7 +4374,7 @@ paths:
       summary: "Authorize a job"
       tags:
         - Jobs
-      description: "Authorize all content within the job. A job can only be authorized when it a) has content and b) is in an AWAITING_AUTHORIZATION state."
+      description: "This authorizes all content within a job. A job can only be authorized when it has content and is in an AWAITING_AUTHORIZATION state."
       consumes:
         - application/json
       parameters:
@@ -4411,10 +4413,10 @@ paths:
                   details: null
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}:
     get:
-      summary: "Get a job"
+      summary: "Get details of a job"
       tags:
         - Jobs
-      description: "Get the details of a job."
+      description: "This gets the details of a job such as job name, description, due date, and reference number."
       consumes:
         - application/json
       parameters:
@@ -4470,7 +4472,7 @@ paths:
       summary: "Update a job"
       tags:
         - Jobs
-      description: "Updates the attributes of the job."
+      description: "This updates the attributes of the job, such as job name, description, due date, and reference number."
       consumes:
         - application/json
       parameters:
@@ -4539,10 +4541,10 @@ paths:
                   details: null
   /jobs-api/v3/projects/{projectId}/jobs/search:
     post:
-      summary: "Job Search"
+      summary: "Search for a job"
       tags:
         - Jobs
-      description: "Search for jobs based on hashcodes, fileUri's, and translationJobUid's"
+      description: "This searches for jobs based on hashcodes (string identifiers), `fileUri`s, and `translationJobUid`s."
       consumes:
         - application/json
       parameters:
@@ -4593,7 +4595,7 @@ paths:
       summary: "Check for an async process for a job"
       tags:
         - Jobs
-      description: "Check for an async process for a job"
+      description: "This checks for an asynchronous process for a job."
       consumes:
         - application/json
       parameters:
@@ -6654,17 +6656,17 @@ definitions:
         type: array
         items:
           type: string
-        description: (Optional) The hashcodes (string identifiers) to use to search for jobs. Any job containing the hashcodes specified will be returned.
+        description: (Optional) The hashcodes (string identifiers) to use to search for jobs. Any job containing specified hashcodes will be returned.
       fileUris:
         type: array
         items:
           type: string
-        description: (Optional) The fileUris (file identifiers) to use to search for jobs. Any job containing the fileUri specified will be returned.
+        description: (Optional) The `fileUri`s (file identifiers) used to search for jobs. Any job containing the specified `fileUri` will be returned.
       translationJobUids:
         type: array
         items:
           type: string
-        description: (Optional) The translationJobUids (translation job identifiers) to use to search for jobs. Any job containing the fileUri specified will be returned.
+        description: (Optional) The `translationJobUid`s (translation job identifiers) used to search for jobs. Any job containing the specified `fileUri` will be returned.
   RemoveStringsJobRequest:
     description: The payload to use when removing strings from a job.
     type: object
@@ -6688,18 +6690,18 @@ definitions:
       moveEnabled:
         type: boolean
         default: false
-        description: (Optional), default to false. By rule, a string for a locale can only be in one job. If the string identified in the request is already in a job for a locale then it won't be added. But, moveEnalbed=true can be specified and in this case the string will be moved into the specified job.
+        description: (Optional), default is false. A string for a locale can only be in one job. If the string identified in the request is already in a job for a locale then it won't be added. However, `moveEnalbed=true` can be specified, and in this case, the string will be moved into the specified job.
       hashcodes:
         type: array
         items:
           type: string
-        description: The array of hashcodes to use to add to the job. The hashcodes must exist within Smartling for the project in order to be added to a job. Hashcodes are required when adding strings to a job. Hashcodes is limited to 1000 per API call.
+        description: The array of hashcodes to use to add to the job. The hashcodes must exist within Smartling for the project in order to be added to a job. Hashcodes are required when adding strings to a job. Hashcodes are limited to 1000 per API call.
         maxItems: 1000
       targetLocaleIds:
         type: array
         items:
           type: string
-        description: The array of localeId's that the strings should be added to. If not specified, the strings will be added to all locales within that job. If specified, the strings will only be added for the locales provided. If the locale\'s were not already part of the job, then the job will be extended to contain the additional locales.
+        description: The array of `localeId`s that strings should be added to. If it's not specified, the strings will be added to all locales within that job. If it's specified, the strings will only be added for the locales provided. If the locales were not already part of the job, the job will be extended to contain the additional locales.
   AddFileJobRequest:
     description: The payload to use when adding a file to a job.
     type: object
@@ -6719,13 +6721,13 @@ definitions:
       jobName:
         type: string
         example: This is my job name.
-        description: The name of the job to create. The name of the job must be unique within the Smartling project. jobName is required.
+        description: The name of the job to create. It must be unique within the Smartling project. `jobName` is **required**.
         maxLength: 170
       targetLocaleIds:
         type: array
         items:
           type: string
-        description: The array of localeId's to be used when creating the job. The locale\'s specified must be valid within the Smartling project.
+        description: The array of `localeId`'s to be used when creating the job. The locale\'s specified must be valid within the Smartling project.
         example: ["ru-RU"]
       description:
         type: string
@@ -6747,7 +6749,7 @@ definitions:
       callbackMethod:
         type: string
         example: "GET"
-        description: The http method to call (GET|POST) when invoking the callbackUrl.
+        description: The HTTP method to call (GET|POST) when invoking the `callbackUrl`.
   AuthorizeJobRequest:
     description: The payload to use when authorizing a job. If not provided, Smartling will authorize the job for the default workflows for the given Project.
     type: object
@@ -6762,17 +6764,17 @@ definitions:
     properties:
       targetLocaleId:
         type: string
-        description: The locale identifier to use when indicating the locale to authorize content for. If targetLocaleId is specified, then workflowUid is required as well. Both can be ommitted and then the default workflow for that locale will be used.
+        description: The locale identifier to use when indicating the locale to authorize content for. If `targetLocaleId` is specified, then `workflowUid` is required as well. Both can be ommitted, and the default workflow for that locale will be used.
       workflowUid:
         type: string
-        description: The uid of the workflow to authorize content into.
+        description: The UID of the workflow to authorize content into.
   UpdateJobRequest:
     description: The payload to use when updating a job.
     type: object
     properties:
       jobName:
         type: string
-        description: The name of the job. The name of the job must be unique within the Smartling project.
+        description: The name of the job. It must be unique within the Smartling project.
         maxLength: 170
       description:
         type: string
@@ -6781,19 +6783,19 @@ definitions:
         type: string
         format: date-time
         example: '2020-11-21T01:51:17Z'
-        description: The date the job is requested to be completed by.
+        description: The date by which the job is requested to be completed.
       referenceNumber:
         type: string
         description: Customer specific number/identifier for the job.
         example: 'CustomerReferenceNum1'
       callbackUrl:
         type: string
-        description: "The URL for Smartling to invoke when the job is completed."
+        description: "The URL for Smartling to invoke once the job is completed."
         example: "https://myDomain.com"
       callbackMethod:
         type: string
         example: "GET"
-        description: "The http method to call (GET|POST) when invoking the callbackUrl."
+        description: "The HTTP method to call (GET|POST) when invoking the `callbackUrl`."
   ProgressResponse:
     required:
       - response
