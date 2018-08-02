@@ -16,6 +16,8 @@ info:
     web-based application. It also allows you to build integrations to connect your content sources directly 
     with Smartling.
 
+    **Smartling APIs**
+
     | **API** | **Description** | 
     |---------|-----------------|
     | Authentication | Smartling APIs use OAuth 2.0 authentication. The Authentication API provides the access token to authenticate API calls. The access token needs to be included in the header of every request: `-H “Authorization: Bearer {accesstoken}"`|
@@ -25,6 +27,20 @@ info:
     | Issues | The Issues API allows for manipulation of source and translation issues. |
     | Glossaries | The Glossaries API allows for managing individual glossary terms and translations, as well as importing and exporting glossary files. |
     | Strings | The Strings API allows for creating individual strings not associated with files, and downloading translated strings.| 
+
+    **Response Format**
+
+    | Value | Description | HTTP Code |
+    |-------|-------------|-----------|
+    | SUCCESS | If the service request was processed normally. | 200 |
+    | ACCEPTED | If an asynchronous task has begun, such as a file upload, but hasn't completed at the time the response is sent. | 202 |
+    | VALIDATION_ERROR | If something specific was wrong with the request parameters provided. One or more will describe the particular invalid parameter. | 400 |
+    | AUTHENTICATION_ERROR | If the provided credentials were not valid. | 401 |
+    | AUTHORIZATION_ERROR | Legacy error code from API. | 401 |
+    | RESOURCE_LOCKED | The requested file is currently being processed by another operation. The file will be unlocked after the operation completes. See Upload for more details. | 423 |
+    | MAX_OPERATIONS_LIMIT_EXCEEDED | Too many simultaneous API requests per project or file. | 429 |
+    | GENERAL_ERROR | If an unexpected error occurred during the service request processing. | 500 |
+    | MAINTENANCE_MODE_ERROR | If Smartling has entered maintenance mode, all API services will return this error. After exiting maintenance mode all services should return to normal. | 503 |
 
   version: '2.0.0'
   
@@ -99,15 +115,15 @@ tags:
     description: |-
       Files are typically how you can exchange your content with Smartling to get translations. Smartling supports a wide variety of [file types](https://help.smartling.com/hc/en-us/articles/360001404234). When you upload a file to Smartling, it gets parsed into strings, which will then be sent into the translation queue.
 
-  - name: "Context"
-    description: |-
-      Visual context helps Translators make linguistic, layout, and spacing decisions based on where strings appear in your mobile or desktop application. The Context API supports uploading various forms of context (images and HTML), and associate the context with content in Smartling.
-
   - name: "Jobs"
     description: |-
       A Smartling project (such as a mobile, web, files, or connector project) may contain one or more jobs. You may also have multiple projects, each containing multiple jobs. A job typically has a name, due date, description, reference number (optional), and the content you want translated.
 
       From the Jobs API, you can Create a job, Add a file to a job, Authorize a job, and Cancel a job, among many other actions. You have full control via the APIs, or within the Smartling Dashboard to manage jobs and the content within them.
+
+  - name: "Context"
+    description: |-
+      Visual context helps Translators make linguistic, layout, and spacing decisions based on where strings appear in your mobile or desktop application. The Context API supports uploading various forms of context (images and HTML), and associate the context with content in Smartling.
 
   - name: "Issues"
     description: |-
