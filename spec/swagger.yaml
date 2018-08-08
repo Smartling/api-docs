@@ -12,35 +12,8 @@ info:
   title: Smartling REST API Reference
   
   description: |
-    Smartling APIs enable you to automate many of the actions that users ordinarily perform in Smartling's 
-    web-based application. It also allows you to build integrations to connect your content sources directly 
-    with Smartling.
-
-    **Smartling APIs**
-
-    | **API** | **Description** | 
-    |---------|-----------------|
-    | Authentication | Smartling APIs use OAuth 2.0 authentication. The Authentication API provides the access token to authenticate API calls. The access token needs to be included in the header of every request: `-H “Authorization: Bearer {accesstoken}"`|
-    | Files | The Files API allows for uploading, downloading, and checking status on files in the Smartling platform. |
-    | Context | The Context API supports uploading various forms of context (images and HTML), and associate the context with content in Smartling. |
-    | Jobs | The Jobs API allows for creation, authorization, and modification of translation jobs. | 
-    | Issues | The Issues API allows for manipulation of source and translation issues. |
-    | Glossaries | The Glossaries API allows for managing individual glossary terms and translations, as well as importing and exporting glossary files. |
-    | Strings | The Strings API allows for creating individual strings not associated with files, and downloading translated strings.| 
-
-    **Response Format**
-
-    | Value | Description | HTTP Code |
-    |-------|-------------|-----------|
-    | SUCCESS | If the service request was processed normally. | 200 |
-    | ACCEPTED | If an asynchronous task has begun, such as a file upload, but hasn't completed at the time the response is sent. | 202 |
-    | VALIDATION_ERROR | If something specific was wrong with the request parameters provided. One or more will describe the particular invalid parameter. | 400 |
-    | AUTHENTICATION_ERROR | If the provided credentials were not valid. | 401 |
-    | AUTHORIZATION_ERROR | Legacy error code from API. | 401 |
-    | RESOURCE_LOCKED | The requested file is currently being processed by another operation. The file will be unlocked after the operation completes. See Upload for more details. | 423 |
-    | MAX_OPERATIONS_LIMIT_EXCEEDED | Too many simultaneous API requests per project or file. | 429 |
-    | GENERAL_ERROR | If an unexpected error occurred during the service request processing. | 500 |
-    | MAINTENANCE_MODE_ERROR | If Smartling has entered maintenance mode, all API services will return this error. After exiting maintenance mode all services should return to normal. | 503 |
+    Before you begin using the Smartling APIs, we recommend going through our [Getting Started](https://help.smartling.com/hc/en-us/categories/360000731893) section.
+    
 
   version: '2.0.0'
   
@@ -53,7 +26,7 @@ info:
   x-logo:
     url: 'smartling_logo.png'
 externalDocs:
-  description: Documentation
+  description: Smartling Help Center
   url: 'https://help.smartling.com'
 
 
@@ -62,11 +35,9 @@ tags:
     description: |-
       Smartling uses OAuth2 for authentication. To access the Smartling APIs, you'll first need to authenticate with your user identifier and user secret. An access token is returned that can be attached to the header of any API request. A refresh token is also returned.
       
-      To obtain your user identifier and user secret, log in to Smartling.com and go to **API > Create Token**. Authenticating is as simple as calling the `/api.smartling.com/auth-api/v2/authenticate` with your `userIdentifier` and `userSecret`. 
+      To obtain your user identifier and user secret, log in to Smartling.com and go to **API > Create Token**. Authenticating is as simple as calling the `/api.smartling.com/auth-api/v2/authenticate` with your `userIdentifier` and `userSecret`. The access token returned is valid for 5-minutes, and is used in the header of all subsequent requests.
 
-      **Example for generating your accessToken:**
-
-        Note: The `accessToken` returned is valid for 5-minutes, and is used in the header of all subsequent requests.
+      **Example for generating your access token:**
 
       ```bash 
         curl -X POST https://api.smartling.com/auth-api/v2/authenticate  -H 'content-type: application/json' -d '{    "userIdentifier": "userIdasdklj4348dk34!", "userSecret": "userSecret34i34kkd5634f" }'`
@@ -86,7 +57,7 @@ tags:
       }
       ```
 
-      **Example of using your accessToken to list all projects for your account:**
+      **Example of using your access token to list all projects for your account:**
 
       ```bash
         curl -X GET -H "Authorization: Bearer {accessToken}" 'https://api.smartling.com/accounts-api/v2/accounts/{accountUid}/projects
@@ -117,9 +88,10 @@ tags:
 
   - name: "Jobs"
     description: |-
-      A Smartling project (such as a mobile, web, files, or connector project) may contain one or more jobs. You may also have multiple projects, each containing multiple jobs. A job typically has a name, due date, description, reference number (optional), and the content you want translated.
+      A Smartling project (such as a mobile, web, files, or connector project) may contain one or more jobs. You may have multiple projects, each containing multiple jobs. Each job contains strings, consisting of words or phrases.
+      The Jobs feature allows you to group and prioritize your content by name, due date, description, and reference number (optional). It also enables you to monitor the progress of your translations throughout completion.
 
-      From the Jobs API, you can Create a job, Add a file to a job, Authorize a job, and Cancel a job, among many other actions. You have full control via the APIs, or within the Smartling Dashboard to manage jobs and the content within them.
+      The Jobs API allows you to create a job, add a file to a job, authorize a job, and cancel a job, among many other actions. You have full control via the API to manage your job(s).
 
   - name: "Context"
     description: |-
@@ -127,6 +99,11 @@ tags:
 
   - name: "Issues"
     description: |-
+      The Issues feature is a way for users who are working on a translation workflow to communicate with other users about source content and translations. For example, a Translator might create an issue to ask a question about terminology in a particular string. 
+
+      By using Issues, you can record any communication about a string, and this can be seen by anyone working on it. Issues streamline the translation workflow. Translators get answers to their questions about the original content so they can translate it quickly and correctly. Translation resources can review and provide feedback about translations collaboratively. 
+
+
       The Issues API provides methods for creating issues, changing the state of an issue, commenting on an issue, requesting detailed information, as well as creating reports on issues and comments.
 
   - name: "Glossaries"
@@ -134,23 +111,22 @@ tags:
       The Glossaries API allows you to create and edit glossaries in a Smartling account, and populate it with glossary terms. You can also download your glossaries as CSV or TBX files and import Excel spreadsheets to create new glossaries.
 
       **Glossaries API Usage Limitations**:
-      * Maximum request size is 10MB
-      * Maximum file upload size is 10MB
-      * Maximum HTTP header size is 128KB
-      * For requests that use pagination, maximum page size is 5000 elements
-      * For requests that return entities by their UIDs, maximum is 100 elements
+      * Maximum request size is 10MB.
+      * Maximum file upload size is 10MB.
+      * Maximum HTTP header size is 128KB.
+      * For requests that use pagination, maximum page size is 5000 elements.
+      * For requests that return entities by their UIDs, maximum is 100 elements.
       Rate limits:
-      * Maximum 5 concurrent requests
-      * Maximum rate is 200 requests per 15-second window frame
+      * Maximum 5 concurrent requests.
+      * Maximum rate is 200 requests per 15-second window frame.
 
   - name: "Strings"
     description: |-
+      A string is a piece of translation. Based on the source content, strings can be parsed differently. A string is then broken down further, into one or more segments.
+      
       The Strings API allows you to directly upload strings to a Smartling project and fetch original strings or translations.
 
-      For each string in a Smartling project there is a unique identifier created by hashing together the parsed string
-      text, variant metadata, and in some cases, namespace. When adding strings via the Strings API, each string will
-      be unique. If you try to create a string with identical variant metadata and string text to a string that already
-      exists in the project, the string will be overwritten.
+      For each string in a Smartling project, there is a unique identifier created by hashing together the parsed string text, variant metadata, and in some cases, namespace. When adding strings via the Strings API, each string will be unique. If you try to create a string with identical variant metadata and string text to a string that already exists in the project, the string will be overwritten.
 
 paths:
   '/auth-api/v2/authenticate':
@@ -228,7 +204,7 @@ paths:
 #
   '/files-api/v2/projects/{projectId}/file':
     post:
-      summary: Upload a file
+      summary: Upload file
       description: |
         This uploads original source content to Smartling. 
         
@@ -249,22 +225,25 @@ paths:
           required: true
           type: string
           format: uid
+          description: A unique identifier for a project.
         - name: file
           in: formData
           required: true
           type: file
-          description: The file contents to upload
+          description: The file contents to upload.
         - name: fileUri
           in: formData
           required: true
           type: string
           description: |
-            Value that uniquely identifies the uploaded file. This ID can be used to request the file back. We recommend you use file path + file name, similar to how version control systems identify the file. Example: /myproject/i18n/ui.properties
+            A value that uniquely identifies the uploaded file. This ID can be used to request the file back. We recommend that you use file path and file name, similar to how version control systems identify the file. 
+
+            Example: `/myproject/i18n/ui.properties`
         - name: fileType
           in: formData
           required: true
           type: string
-          description: Unique identifier for the file type
+          description: A unique identifier for the file type.
           enum: &fileTypes
             - android
             - ios
@@ -291,12 +270,14 @@ paths:
           type: boolean
           default: false
           description: |
-            Determines whether content in the file is authorized (available for translation) in all locales upon submitting the file via the Smartling Dashboard. An error message will return if there are insufficient translation funds and authorized is set to true. If a string has been completely excluded for translation from all languages, or excluded from translation for a specific language, ```authorize``` will NOT authorize it. Note: to specify a limited list of locales to authorize, use the ```localeIdsToAuthorize[]``` parameter
+            Determines whether content in the file is authorized (available for translation) in all locales upon submitting the file via the Smartling Dashboard. An error message will be returned if there are insufficient translation funds and authorized is set to `true`. If a string has been completely excluded for translation from all languages, or excluded from translation for a specific language, `authorize` will NOT authorize it. 
+
+            To specify a limited list of locales to authorize, use the `localeIdsToAuthorize[]` parameter.
             
               Value | Description
-              -- | --
-              true |  Content will be available for translation in all locales on upload
-              false |  Content will be added to the "Awaiting Authorization" queue on upload
+              ----- | -----------
+              true |  Content will be available for translation in all locales upon upload.
+              false |  Content will be added to the "Awaiting Authorization" queue upon upload.
         - name: localeIdsToAuthorize[]
           in: formData
           required: false
@@ -305,13 +286,19 @@ paths:
             type: string
           collectionFormat: multi
           description: |
-            This value, if set, authorizes strings for translation into specific locales. Use the project/locale/list call to get the list of locales for the project or see them in the dashboard on the API settings page. Use multiple ```localeIdsToAuthorize``` parameter pairs to authorize more than one locale. You can add languages by uploading the file again and indicating the language to authorize with ```localeIdsToAuthorize``` or all languages with ```authorize```, or in the dashboard using the "Show Partially Authorized" filter option from the Awaiting Authorization list. If string has been completely excluded for translation from all languages, or excluded from translation for a specific language, localesIdsToAuthorize will NOT authorize it. **Note**: Do not set the ```authorize``` parameter to TRUE if you want to specify individual locales to authorize. Submitting an upload with both of these parameters set will result in a validation error.
+            This value, if set, authorizes strings for translation into specific locales. Use the project/locale/list call to get the list of locales for the project, or view them in the dashboard on the API settings page. Use multiple the `localeIdsToAuthorize` parameter pairs to authorize more than one locale. You can add languages by uploading the file again and indicating the language to authorize with `localeIdsToAuthorize` or all languages with `authorize`, or in the dashboard using the "Show Partially Authorized" filter option from the Awaiting Authorization list. 
+
+            If the string has been completely excluded for translation from all languages, or excluded from translation for a specific language, `localesIdsToAuthorize` will NOT authorize it. 
+
+            **Note**: Do not set the `authorize` parameter to `true` if you want to specify individual locales to authorize. Submitting an upload with both of these parameters set will result in a validation error.
         - name: smartling.namespace
           in: formData
           required: false
           type: string
           description: |
-            For accounts created after July 31st 2015 only. Define a custom [namespace](https://developer.smartling.com/v1.0/docs/string-sharing-namespaces) for the file. This works for Application Resource Files only. For Business Documents, see [Update File](https://developer.smartling.com/v1.0/docs/managing-business-documents). **Note**: while this parameter shares the format of other file directives, it will not work as an inline directive and must be specified in the API call.
+            This is only for accounts created after July 31st, 2015. Define a custom [namespace](https://developer.smartling.com/v2.0/docs/string-sharing-namespaces) for the file. This works for Application Resource Files only. For Business Documents, see [Update File](https://developer.smartling.com/docs/managing-business-documents). 
+
+            **Note**: While this parameter shares the format of other file directives, it will not work as an inline directive and must be specified in the API call.
         - name: smartling.file_charset
           in: formData
           required: false
@@ -334,11 +321,11 @@ paths:
           type: string
           format: url
           description: |
-            A GET request that creates a callback to a URL when a file is 100% published for a locale. The callback gives the fileUri and locale with the format ```http[/s]://your.url?locale=xx-XX&fileUri=your.file```. If you upload the file again, without a callbackUrl, it will remove any previous callbackUrl for that file. The RequestBin (http://requestb.in) service is a convenient way to test callback. RequestBin generates a short-lived disposable URL that displays all posted requests.
+            A GET request that creates a callback to a URL when a file is 100% published for a locale. The callback gives the fileUri and locale with the format `http[/s]://your.url?locale=xx-XX&fileUri=your.file`. If you upload the file again, without a callbackUrl, it will remove any previous callbackUrl for that file. The RequestBin (http://requestb.in) service is a convenient way to test callback. RequestBin generates a short-lived disposable URL that displays all posted requests.
 
             If a callback fails, Smartling will make multiple attempts to reach the designated URL, however, we do not keep retrying a failed callback indefinitely. Try to make sure your callback URL is as stable as possible and be aware that callbacks are not a 100% reliable way of being notified that a file is published.
 
-            If the upload has begun but is taking more than a minute to complete it responds with status **202**.
+            If the upload has begun but is taking more than a minute to complete, it responds with status `202`.
       responses:
         200:
           description: OK
@@ -406,9 +393,9 @@ paths:
             $ref: '#/definitions/ErrorResponse'
             
     get:
-      summary: Download an original file
+      summary: Download source file
       description: |
-        Download the original version of the requested file from Smartling
+        This downloads the original version of the requested file from Smartling.
 
         **Example:**
         ```bash
@@ -447,7 +434,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/file/status':
     get:
-      summary: Status of the file for each locale
+      summary: Status of file for each locale
       description: |
         Return information on a specific file 
 
@@ -506,7 +493,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file/status':
     get:
-      summary: Status of the file for a single locale
+      summary: Status of file for a single locale
       description: |
         Return detailed status information on a specific file
 
@@ -564,9 +551,9 @@ paths:
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file':
     get:
-      summary: Download translated file
+      summary: Download translated file (single locale)
       description: |
-        Download the requested file from Smartling
+        This downloads the requested file from Smartling.
 
         It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a 200 SUCCESS response. If you receive any other response status code than 200, the requested file will not be part of the response.
 
@@ -638,7 +625,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/locales/all/file/zip':
     get:
-      summary: Download all translations of the file
+      summary: Download all translations of file
       description: |
         Download a ZIP archive with all translations for the requested file.
 
@@ -959,7 +946,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/file/rename':
     post:
-      summary: Rename a file
+      summary: Rename file
       description: |
         This renames an uploaded file by changing the `fileUri`. After renaming the file, it will only be identified by the new `fileUri` that you provide.
 
@@ -1003,7 +990,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/file/delete':
     post:
-      summary: Delete a file
+      summary: Delete file
       description: |
         This removes the file from Smartling. The file will no longer be available for download. Any complete translations for the file remain available for use within the system.
 
@@ -1043,7 +1030,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file/last-modified':
     get:
-      summary: Last modified date for a single locale
+      summary: Last modified date (single locale)
       description: |
         This returns the date that a file was last modified in a specified locale.
 
@@ -1059,6 +1046,7 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: localeId
           in: path
           required: true
@@ -1067,13 +1055,13 @@ paths:
           in: query
           required: true
           type: string
-          description: Smartling value that uniquely identifies a file in Smartling
+          description: A unique identifier for a file in Smartling.
         - name: lastModifiedAfter
           in: query
           required: false
           type: string
           format: YYYY-MM-DDThh:mm:ssZ
-          description: Limits the return to only those file and locale combinations that have a ```lastModified``` date after the parameter ```lastModifiedAfter```. The items array will be empty if the file has not been modified in any of the locales since the lastModifiedAfter date specified.
+          description: Limits the return to only those file and locale combinations that have a ```lastModified``` date after the parameter ```lastModifiedAfter```. The items array will be empty if the file has not been modified in any of the locales since the `lastModifiedAfter` date specified.
       responses:
         200:
           description: OK
@@ -1093,7 +1081,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/file/last-modified':
     get:
-      summary: Last modified date for each locale
+      summary: Last modified date (all locales)
       description: |
         This returns the date that a file was last modified in a each locale.
 
@@ -1109,17 +1097,18 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project. 
         - name: fileUri
           in: query
           required: true
           type: string
-          description: Smartling value that uniquely identifies a file in Smartling
+          description: A unique identifier for a file in Smartling.
         - name: lastModifiedAfter
           in: query
           required: false
           type: string
           format: YYYY-MM-DDThh:mm:ssZ
-          description: Limits the return to only those file and locale combinations that have a ```lastModified``` date after the parameter ```lastModifiedAfter```. The items array will be empty if the file has not been modified in any of the locales since the lastModifiedAfter date specified.
+          description: Limits the return to only those file and locale combinations that have a ```lastModified``` date after the parameter ```lastModifiedAfter```. The items array will be empty if the file has not been modified in any of the locales since the `lastModifiedAfter` date specified.
       responses:
         200:
           description: OK
@@ -1303,8 +1292,8 @@ paths:
     post:
       summary: Upload new context
       description: |-
-        Upload HTML file that can later be linked to the translations and shown to linguists as a visual context for the
-        string they are working on.
+        This uploads an HTML file which can be linked to translations and shown to linguists as visual context for the strings they're working on.
+
 
         The upload context endpoint request body takes the form of a **multi-part POST request**,
         with each part having its own content type, e.g. for **HTML** context:
@@ -1337,7 +1326,7 @@ paths:
           /path/to/custom_context-name.html
           ------WebKitFormBoundary7MA4YWxkTrZu0gW--
         ```
-        For **VIDEO** context, "content" part should be omitted and the "name" part should contain the public link to video:
+        For **video** context, the "content" part should be omitted, and the "name" part should contain the public link to the video:
         ```
           POST /context-api/v2/projects/a06b5c7e1/contexts HTTP/1.1
           Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -1540,7 +1529,7 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/{contextUid}/content:
     get:
-      summary: Download the context file content
+      summary: Download context file content
       description: |-
         Returns binary image data for **image** context,
         HTML document with *bindings anchors* for **HTML** context.
@@ -1829,7 +1818,7 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/{contextUid}/bindings:
     get:
-      summary: Return all bindings for the context
+      summary: Return all bindings for context
       description: |-
         Return all bindings that reference a given piece of context.
       tags:
@@ -1884,7 +1873,7 @@ paths:
 
   /context-api/v2/projects/{projectId}/strings/{stringHashcode}/bindings:
     get:
-      summary: Get bindings for the string
+      summary: Get bindings for string
       description: Return all bindings that reference a given string.
       tags:
         - Context
@@ -2173,7 +2162,7 @@ paths:
                       issueStateCode: RESOLVED
   '/issues-api/v2/projects/{projectId}/issues':
     post:
-      summary: Open an issue
+      summary: Open issue
       description: >-
         Creates a new issue for a string.
 
@@ -2224,7 +2213,7 @@ paths:
                   issueTextModifiedDate: null
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/issueText':
     put:
-      summary: Edit an issue
+      summary: Edit issue
       description: >-
         Replaces the text of an issue with new text. Note that only the author
         of the issue can perform this action. The `issueTextModifiedDate`
@@ -2353,7 +2342,7 @@ paths:
                   issueTextModifiedDate: null
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/comments':
     post:
-      summary: Add an issue comment
+      summary: Add issue comment
       description: >-
         Create a comment for an issue.
 
@@ -2400,7 +2389,7 @@ paths:
                   createdDate: '2015-12-22T12:34:49Z'
                   commentTextModifiedDate: null
     get:
-      summary: List all comments of an issue
+      summary: List all comments of issue
       description: >-
         Returns all comments on an issue. Note that the `createdByUserUid` value
         is not currently usable for identifying the users who created comments.
@@ -2624,7 +2613,7 @@ paths:
     post:
       description: >-
         Create a new watcher. Any email address can be added as a watcher to receive notifications about an issue being opened, commented on, or closed.
-      summary: Create a watcher
+      summary: Create watcher
       tags:
         - Issues
       consumes:
@@ -2712,7 +2701,7 @@ paths:
     put:
       description: >-
         Update the attributes of a watcher.
-      summary: Update a watcher
+      summary: Update watcher
       tags:
         - Issues
       consumes:
@@ -2754,7 +2743,7 @@ paths:
 
   '/issues-api/v2/accounts/{accountUid}/projects/{projectId}/issues/{issueUid}/watchers/{watcherUid}':
     put:
-      summary: Link a watcher to an issue
+      summary: Link watcher to issue
       description: >-
        Associate or assign the watcher to an issue. The watcher will then begin receiving email notifications.
       tags:
@@ -2794,7 +2783,7 @@ paths:
                 code: SUCCESS
                 data: null
     delete:
-      summary: Remove a watcher from an issue
+      summary: Remove watcher from issue
       description: >-
         An update to an issue is sent to the associated/linked watcher. Once watchers are removed from an issue, email notifications will no longer be received by them.
       tags:
@@ -2836,7 +2825,7 @@ paths:
 
   '/issues-api/v2/accounts/{accountUid}/projects/{projectId}/issues/{issueUid}/watchers':
     get:
-      summary: List watchers linked to an issue
+      summary: List watchers linked to issue
       description: >-
        Get a list of watchers that are linked to the issue.
       tags:
@@ -2989,7 +2978,7 @@ paths:
 
   /strings-api/v2/projects/{projectId}/processes/{processUid}:
     get:
-      summary: "Check the string status"
+      summary: "Check string status"
       description: |-
         If an **Add strings** request takes longer than 60 seconds to process, a `202` response will be returned, indicating that the process of creating strings is continuing but not yet complete. This response will include a `proccessUid` value which can be used to check the progress of the request. 
 
@@ -3145,7 +3134,7 @@ paths:
   /glossary-api/v2/accounts/{accountUid}/glossaries:
     get:
       description: 'Returns a list of all glossaries in an account. Optional filters for glossary name and UID can be added.'
-      summary: List glossaries for an account
+      summary: List glossaries for account
       tags:
         - Glossaries
       parameters:
@@ -3193,7 +3182,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
 
     post:
-      summary: Create a glossary
+      summary: Create glossary
       description: 'Creates a new Glossary in an account.'
       tags:
         - Glossaries
@@ -3255,7 +3244,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
 
     put:
-      summary: Edit a glossary
+      summary: Edit glossary
       description: 'Edits the name, description or source locale of a glossary. This will completely replace the name, description and source locale of the target glossary. If you do not provide a field, or leave it blank, any existing information will be deleted.'
       tags:
         - Glossaries
@@ -3284,7 +3273,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
 
     delete:
-      summary: Delete a glossary
+      summary: Delete glossary
       description: Deletes a Glossary. Note that if a Glossary has been assigned to a Linguistic Package, you will not be able to delete it. Linguistic Packages are managed in the Smartling Dashboard.
       tags:
         - Glossaries
@@ -3335,7 +3324,7 @@ paths:
   /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms:
     get:
       description: Returns terms from a Glossary. Only the source term is included in this response.
-      summary: Find terms in a glossary
+      summary: Find terms in glossary
       tags:
         - Glossaries
       parameters:
@@ -3411,7 +3400,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
 
     post:
-      summary: Create a glossary term
+      summary: Create glossary term
       description: Creates a new glossary term. The only required parameter is termText. See our Glossary documentation for details on each term parameter. You can only add one translation object in this request. To add additional translations, use Edit Glossary term.
       tags:
         - Glossaries
@@ -3763,7 +3752,7 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/{termUid}:
     put:
-      summary: Edit a glossary term
+      summary: Edit glossary term
       description: |-
         Edits the details of a glossary term. With the exception of the translation object, you must provide all desired
         fields every time you edit the term. If you do not provide a field or leave it blank, any existing value for
@@ -3801,7 +3790,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
     delete:
       description: 'Delete a Glossary term. This will remove the term and all translations.'
-      summary: Delete term
+      summary: Delete glossary term
       tags:
         - Glossaries
       parameters:
@@ -3859,7 +3848,7 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/download:
     get:
-      summary: Download a glossary
+      summary: Download glossary
       description: Downloads a glossary as a CSV, TBX, or XLSX (Open Excel) file.
       tags:
         - Glossaries
@@ -3893,7 +3882,7 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/import-jobs:
     post:
-      summary: Import a glossary from an Excel file
+      summary: Import glossary from Excel file
       description: |-
         Creates a new Glossary in your account from an uploaded Excel spreadsheet. The format of the spreadsheet is
         important. See Import Glossary and Glossary Spreadsheet Format.
@@ -4049,7 +4038,7 @@ paths:
 
   /jobs-api/v3/projects/{projectId}/jobs:
     get:
-      summary: "List the jobs within a project"
+      summary: "List jobs within a project"
       tags:
         - Jobs
       description: "List / search the jobs within a project."
@@ -4135,7 +4124,7 @@ paths:
                     createdDate : "2015-11-21T11:51:17Z"
                     jobStatus : "IN_PROGRESS"
     post:
-      summary: "Create a job"
+      summary: "Create job"
       tags:
         - Jobs
       description: "Creates a job within Smartling."
@@ -4190,7 +4179,7 @@ paths:
                   field: jobName
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/strings/add:
     post:
-      summary: "Add strings to a job"
+      summary: "Add strings to job"
       tags:
         - Jobs
       description: |
@@ -4250,7 +4239,7 @@ paths:
 
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/strings/remove:
     post:
-      summary: "Remove strings from a job"
+      summary: "Remove strings from job"
       tags:
         - Jobs
       description: |
@@ -4298,7 +4287,7 @@ paths:
                   url: "https://api.smartling.com/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}"
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/close:
     post:
-      summary: "Close a job"
+      summary: "Close job"
       tags:
         - Jobs
       description: "This closes a completed job. In order for a job to be closed, it must be in a completed state. All content from the job will be removed when it is closed. Closing a job guarantees that no additional work will be done against the job."
@@ -4338,7 +4327,7 @@ paths:
 
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/cancel:
     post:
-      summary: "Cancel a job"
+      summary: "Cancel job"
       tags:
         - Jobs
       description: |
@@ -4405,7 +4394,7 @@ paths:
                     details: {}
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/authorize:
     post:
-      summary: "Authorize a job"
+      summary: "Authorize job"
       tags:
         - Jobs
       description: "This authorizes all content within a job. A job can only be authorized when it has content and is in an AWAITING_AUTHORIZATION state."
@@ -4447,7 +4436,7 @@ paths:
                   details: null
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}:
     get:
-      summary: "Get details of a job"
+      summary: "Get details of job"
       tags:
         - Jobs
       description: "This gets the details of a job such as job name, description, due date, and reference number."
@@ -4503,7 +4492,7 @@ paths:
                     message: null
                     details: null
     put:
-      summary: "Update a job"
+      summary: "Update job"
       tags:
         - Jobs
       description: "This updates the attributes of the job, such as job name, description, due date, and reference number."
@@ -4575,7 +4564,7 @@ paths:
                   details: null
   /jobs-api/v3/projects/{projectId}/jobs/search:
     post:
-      summary: "Search for a job"
+      summary: "Search for job"
       tags:
         - Jobs
       description: "This searches for jobs based on hashcodes (string identifiers), `fileUri`s, and `translationJobUid`s."
@@ -4626,7 +4615,7 @@ paths:
                     jobStatus : "IN_PROGRESS"
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}:
     get:
-      summary: "Check for an async process for a job"
+      summary: "Check for an async process for job"
       tags:
         - Jobs
       description: "This checks for an asynchronous process for a job."
@@ -4662,7 +4651,7 @@ paths:
                   modifiedDate : "2015-11-21T11:51:17Z"
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/file/add:
     post:
-      summary: "Add a file to a job"
+      summary: "Add file to job"
       tags:
         - Jobs
       description: |
@@ -4727,7 +4716,7 @@ paths:
                     details: null
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/file/remove:
     post:
-      summary: "Remove a file from a job"
+      summary: "Remove file from job"
       tags:
         - Jobs
       description: |
@@ -4786,7 +4775,7 @@ paths:
                     details: null
   /jobs-api/v3/projects/{projectId}/job/{translationJobUid}/files:
     get:
-      summary: "List files within a job"
+      summary: "List files within job"
       tags:
         - Jobs
       description: "This lists all files within a job."
@@ -4827,7 +4816,7 @@ paths:
                   - uri : "/file/app2.properties"
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/locales/{localeId}:
     post:
-      summary: "Add a locale to a job"
+      summary: "Add locale to job"
       tags:
         - Jobs
       description: |
@@ -4876,7 +4865,7 @@ paths:
                   message: This process will continue asynchronously and may take up to a few minutes.
                   url: "https://api.smartling.com/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}"
     delete:
-      summary: "Remove a locale from a job"
+      summary: "Remove locale from job"
       tags:
         - Jobs
       description: |
@@ -4921,7 +4910,7 @@ paths:
                   url: "https://api.smartling.com/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}"
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/file/progress:
     get:
-      summary: "Get the progress of a file within a job"
+      summary: "Get progress of file within job"
       tags:
         - Jobs
       description: "This shows the progress of a file within a job."
@@ -5010,7 +4999,7 @@ paths:
                     percentComplete: 50
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/progress:
     get:
-      summary: "Get the progress of a job"
+      summary: "Get progress of job"
       tags:
         - Jobs
       description: "This gets the progress of a job."
@@ -5175,11 +5164,11 @@ definitions:
     properties:
       userIdentifier:
         type: string
-        description: API v2 user identifier
+        description: Unique integer used to identify a user.
         example: Qw**********
       userSecret:
         type: string
-        description: API v2 user secret
+        description: A personal code that identifies an authorized user of the API endpoint.
         example: Zj**********
 
   AuthenticationResponse:
@@ -5196,19 +5185,18 @@ definitions:
       - refreshToken
     properties:
       accessToken:
-        description: the access token
+        description: Contains the security credentials for a login session and identifies the user.
         type: string
       refreshToken:
-        description: the refresh token
-        type: string
+        description: A kind of token that can be used to obtain a renewed access token.
       expiresIn:
-        description: TTL in seconds for the access token
+        description: TTL (time-to-live) in seconds for the access token.
         type: integer
       refreshExpiresIn:
-        description: TTL in seconds for the refresh token
+        description: TTL (time-to-live) in seconds for the refresh token.
         type: integer
       tokenType:
-        description: The access token type
+        description: The access token type.
         type: string
         enum:
           - Bearer
@@ -5220,7 +5208,7 @@ definitions:
     properties:
       refreshToken:
         type: string
-        description: The refresh token returned from a previous authentication request
+        description: The refresh token returned from a previous authentication request.
 
         
   FilesAPIUploadSuccessResponse:
