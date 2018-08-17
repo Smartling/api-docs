@@ -350,6 +350,57 @@ paths:
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
 
+  '/projects-api/v2/projects/{projectId}/targetLocales':
+    post:
+      summary: Add a new target locale
+      description: |
+        Add a new target locale to the project.
+      tags:
+        - Account & Projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+        - name: localeId
+          in: formData
+          required: true
+          type: string
+          description: The locale identifier (localeId) of the locale to be added to the project.
+        - name: defaultWorkflowUid
+          in: formData
+          required: false
+          type: string
+          description: |
+            The default workflow that should be used when content is authorized. If not specified, the default workflow for the project will be used.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ProjectDetailsSuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  - projectId: fd7244365
+                    projectName: Android XML Content
+                    accountUid: at724e365
+                    archived: false
+                    projectTypeCode: APPLICATION_RESOURCES
+                    sourceLocaleId: en-US
+                    sourceLocaleDescription: English
+                    targetLocales:
+                    - localeId: de-DE
+                      description: German (Germany)
+                      enabled: true
+                    - localeId: ru-RU
+                      description: Russian (Russia)
+                      enabled: true
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
 
 #
 # File API
