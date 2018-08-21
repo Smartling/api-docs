@@ -82,6 +82,10 @@ tags:
           }
       }
 
+  - name: "Account & Projects"
+    description: |-
+      Each client within Smartling is given their own account with a designated `accountUid`. Within each account is any number of projects. All files, content, and jobs are tied to a particular project. The Accounts & Projects API will allow you to programmatically find and use the projects within your account.
+  
   - name: "Files"
     description: |-
       Files are typically how you can exchange your content with Smartling to get translations. Smartling supports a wide variety of [file types](https://help.smartling.com/hc/en-us/articles/360001404234). When you upload a file to Smartling, it gets parsed into strings, which will then be sent into the translation queue.
@@ -204,7 +208,7 @@ paths:
             curl -X POST https://api.smartling.com/auth-api/v2/authenticate \
                -H 'content-type: application/json' \
                -d '{"userIdentifier": "Qw**********", "userSecret": "Zj**********"}'
-  '/files-api/v2/auth-api/v2/authenticate/refresh':
+  '/auth-api/v2/authenticate/refresh':
     post:
       description: >-
         A renewed access token that can be attached to the header of any
@@ -235,6 +239,73 @@ paths:
             -H 'content-type: application/json' \
             -d '{"refreshToken": "eyJhbGciO..."}'
 
+#
+# Accounts & Projects
+#
+
+  '/accounts-api/v2/accounts/{accountUid}/projects':
+    get:
+      summary: List projects
+      description: |
+        Returns the list of projects for the account.
+      tags:
+        - Account & Projects
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          type: string
+        - name: projectNameFilter
+          in: query
+          required: false
+          type: string
+          description: Substring search of the name of the project. Search is case insensitive.
+        - name: includeArchived
+          in: query
+          required: false
+          type: boolean
+          description: Indicator whether or not archived projects should be returned. Defaults to false if not specified.
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Standard Smartling limit and offset to paginate through results.
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Standard Smartling limit and offset to paginate through results. 500 projects are returned by default if not specified.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountAPIProjectListSuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
+                data:
+                  totalCount: 2
+                  items:
+                    - projectId: fd7244365
+                      projectName: Android XML Content
+                      accountUid: at724e365
+                      archived: false
+                      projectTypeCode: APPLICATION_RESOURCES
+                      sourceLocaleId: en-US
+                      sourceLocaleDescription: English
+                    - projectId: eqb7243x5
+                      projectName: Marketing Website GDN
+                      accountUid: at724e365
+                      archived: false
+                      projectTypeCode: GDN
+                      sourceLocaleId: en-US
+                      sourceLocaleDescription: English
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
 #
 # File API
 #
@@ -5647,7 +5718,66 @@ definitions:
         type: string
         description: The refresh token returned from a previous authentication request.
 
-        
+  AccountAPIProjectListSuccessResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          required:
+            - totalCount
+            - items
+          properties:
+            totalCount:
+              type: integer
+              description: The number of projects that match your specified criteria
+            items:
+              type: array
+              items:
+                $ref: '#/definitions/AccountAPIListProjectItem'
+
+  AccountAPIListProjectItem:
+    type: object
+    required:
+      - projectId
+      - projectName
+      - accountUid
+      - archived
+      - projectTypeCode
+      - sourceLocaleId
+      - sourceLocaleDescription
+    properties:
+      projectId:
+        type: string
+        description: A unique identifier for the project
+      projectName:
+        type: string
+        description: The name of the project. Names of projects are not guaranteed to be unique within an account.
+      accountUid:
+        type: string
+        description: The unique identifier for the account
+      archived:
+        type: boolean
+        description: Indicator whether or not the project has been archived. Archived projects are typically hidden from a user's view, but can still be accessible
+      projectTypeCode:
+        type: string
+        description: Indicator for the type of the project.
+      sourceLocaleId:
+        type: string
+        description: The locale identifier for the source locale of the project. This indicates the base locale for which content should be uploaded to the project.
+      sourceLocaleDescription:
+        type: string
+        description: The full name of the sourceLocaleId
+    example:
+      projectId: "fd7244365"
+      projectName: "fd7244365"
+      accountUid: "ab5f1939"
+      archived: false
+      projectTypeCode: "APPLICATION_RESOURCES"
+      sourceLocaleId: "en-US"
+      sourceLocaleDescription: "English"
+
   FilesAPIUploadSuccessResponse:
     allOf:
     - $ref: '#/definitions/SuccessResponse'
