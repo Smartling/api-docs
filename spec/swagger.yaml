@@ -1387,7 +1387,6 @@ paths:
             application/json:
                 response:
                   code: SUCCESS
-                  requestId: '9d0f96fa-9969-487f-8cfd-639b41d9c9ec'
                   data:
                     contextUid: '6e66fe6b-b508-4849-9e65-1e502d65755d'
                     contextType: 'IMAGE'
@@ -1401,7 +1400,6 @@ paths:
             application/json:
               response:
                 code: 'VALIDATION_ERROR'
-                requestId: '2b963af9-c1bc-4f9e-80b6-0d6cb8fa55cf'
                 data:
                   errors:
                   -
@@ -1457,7 +1455,6 @@ paths:
             application/json:
                 response:
                   code: SUCCESS
-                  requestId: '9d0f96fa-9969-487f-8cfd-639b41d9c9ec'
                   data:
                     items:
                       -
@@ -1505,7 +1502,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: '9d0f96fa-9969-487f-8cfd-639b41d9c9ec'
                 data:
                   contextUid: '6e66fe6b-b508-4849-9e65-1e502d65755d'
                   contextType: 'VIDEO'
@@ -1556,7 +1552,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: '9d0f96fa-9969-487f-8cfd-639b41d9c9ec'
                 data:
         400: *Error400ResponseDefinition
         401: *Error401ResponseDefinition
@@ -1684,7 +1679,7 @@ paths:
           type: string
       responses:
         202:
-          description: Request Accepted and processing started
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/AsyncMatchResponse'
           examples:
@@ -1701,7 +1696,6 @@ paths:
             application/json:
               response:
                 code: 'VALIDATION_ERROR'
-                requestId: '2b963af9-c1bc-4f9e-80b6-0d6cb8fa55cf'
                 data:
                   errors:
                   -
@@ -1719,7 +1713,7 @@ paths:
         Optionally, you can restrict matching to only a set of strings that you specify to ensure that no unwanted
         bindings are created.
 
-        Optical Character Recognition (OCR) is used for **image** context, while **HTML** context uses approximate string matching algorithm.
+        Optical Character Recognition (OCR) is used for `IMAGE` context, while `HTML` context uses approximate string matching algorithm.
 
         This is a convenience method provided to save time and complexity in your integration.
         While our OCR functionality is advanced, it cannot match 100% of strings. If you need complete context coverage,
@@ -1754,7 +1748,7 @@ paths:
             $ref: '#/definitions/MatchRequest'
       responses:
         202:
-          description: Request accepted and processing started
+          description: ACCEPTED
           schema:
             $ref: '#/definitions/AsyncMatchResponse'
           examples:
@@ -1802,7 +1796,7 @@ paths:
           format: uuid
       responses:
         200:
-          description: Successful response
+          description: OK
           schema:
             $ref: '#/definitions/AsyncMatchStatsResponse'
           examples:
@@ -1866,7 +1860,7 @@ paths:
           format: uuid
       responses:
         200:
-          description: Successful response
+          description: OK
           schema:
             $ref: '#/definitions/SuccessResponse'
           examples:
@@ -1914,14 +1908,13 @@ paths:
           format: uuid
       responses:
         200:
-          description: Successful Response
+          description: OK
           schema:
             $ref: '#/definitions/BindingsResponse'
           examples:
             application/json:
               response:
                 code: SUCCESS
-                requestId: '9d0f96fa-9969-487f-8cfd-639b41d9c9ec'
                 data:
                   totalCount: 1
                   items:
@@ -1954,7 +1947,7 @@ paths:
   /context-api/v2/projects/{projectId}/strings/{stringHashcode}/bindings:
     get:
       summary: Get bindings for string
-      description: Return all bindings that reference a given string.
+      description: Return all bindings that reference given string.
       tags:
         - Context
       parameters:
@@ -1972,7 +1965,7 @@ paths:
           format: hash
       responses:
         200:
-          description: Successful Response
+          description: OK
           schema:
             $ref: '#/definitions/BindingsResponse'
           examples:
@@ -2004,7 +1997,6 @@ paths:
         Link context files with the strings they contain. 
         The binding tells Smartling which context images to show translators for which strings.
         A maximum of `150` bindings can be created per request. 
-        A request with more than `150` items will return a **400** response indicating validation error.
         
         Basic bindings request should contain an object with `bindings` JSON array with at least one element (binding), featuring `contextUid` and `stringHashcode` properties:
         ```JSON
@@ -2083,14 +2075,13 @@ paths:
             $ref: '#/definitions/BindingsRequest'
       responses:
         200:
-          description: Successful response
+          description: OK
           schema:
             $ref: '#/definitions/CreateBindingsResponse'
           examples:
             application/json:
               response:
                 code: SUCCESS
-                requestId: '9d0f96fa-9969-487f-8cfd-639b41d9c9ec'
                 data:
                   totalCount: 1
                   items:
