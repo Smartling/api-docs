@@ -73,7 +73,7 @@ tags:
                                "projectName": "iOS Strings files",
                                "accountUid": "ab5f1939",
                                "archived": false,
-                               "projectTypeCode": "APPLICATION RESOURCES",
+                               "projectTypeCode": "APPLICATION_RESOURCES",
                                "sourceLocaleId": "en",
                                "sourceLocaleDescription": "English"
                            }
@@ -304,6 +304,102 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+
+  '/projects-api/v2/projects/{projectId}':
+    get:
+      summary: Get project details
+      description: |
+        Returns the details of a project.
+      tags:
+        - Account & Projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+        - name: includeDisabledLocales
+          in: query
+          required: false
+          type: boolean
+          description: Indicator whether or not disabled locales configured for the project should be returned as part of the targetLocales. By default disabled target locales are not returned.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ProjectDetailsSuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  - projectId: fd7244365
+                    projectName: Android XML Content
+                    accountUid: at724e365
+                    archived: false
+                    projectTypeCode: APPLICATION_RESOURCES
+                    sourceLocaleId: en-US
+                    sourceLocaleDescription: English
+                    targetLocales:
+                    - localeId: de-DE
+                      description: German (Germany)
+                      enabled: true
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+
+  '/projects-api/v2/projects/{projectId}/targetLocales':
+    post:
+      summary: Add a new target locale
+      description: |
+        Add a new target locale to the project.
+      tags:
+        - Account & Projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+        - name: localeId
+          in: formData
+          required: true
+          type: string
+          description: The locale identifier (localeId) of the locale to be added to the project.
+        - name: defaultWorkflowUid
+          in: formData
+          required: false
+          type: string
+          description: |
+            The default workflow that should be used when content is authorized. If not specified, the default workflow configured for the project will be used.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ProjectDetailsSuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  - projectId: fd7244365
+                    projectName: Android XML Content
+                    accountUid: at724e365
+                    archived: false
+                    projectTypeCode: APPLICATION_RESOURCES
+                    sourceLocaleId: en-US
+                    sourceLocaleDescription: English
+                    targetLocales:
+                    - localeId: de-DE
+                      description: German (Germany)
+                      enabled: true
+                    - localeId: ru-RU
+                      description: Russian (Russia)
+                      enabled: true
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+
 #
 # File API
 #
@@ -1384,51 +1480,21 @@ paths:
     post:
       summary: Upload new context
       description: |-
-        This uploads an HTML file which can be linked to translations and shown to linguists as visual context for the strings they're working on.
+        Uploads a file or web link that can be linked to translations and shown to linguists as visual context for the strings they're working on.
+        
+        The following context types are supported:
+        
+        - *HTML* - HTML files or files with content type text/html
+        - *IMAGE* - Image files
+        - *VIDEO* - Public link to video:
+          - YouTube link
+          - Vimeo link
+          - Link to .mp4 file
+          
+        Context type is not specified directly, but rather inferred via analyzing the request body.    
 
-
-        The upload context endpoint request body takes the form of a **multi-part POST request**,
-        with each part having its own content type, e.g. for **HTML** context:
-        ```
-          POST /context-api/v2/projects/a06b5c7e1/contexts HTTP/1.1
-          Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
-
-          ------WebKitFormBoundary7MA4YWxkTrZu0gW
-          Content-Disposition: form-data; name="content"; filename="context.html"
-          Content-Type: text/html
-
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <title>Page title</title>
-          </head>
-          <body>
-              <div class="sl-translate">
-                  <p>String 1</p>
-              </div>
-              <div class="sl-translate">
-                  <p>String 2</p>
-              </div>
-          </body>
-          </html>
-
-          ------WebKitFormBoundary7MA4YWxkTrZu0gW
-          Content-Disposition: form-data; name="name"
-
-          /path/to/custom_context-name.html
-          ------WebKitFormBoundary7MA4YWxkTrZu0gW--
-        ```
-        For **video** context, the "content" part should be omitted, and the "name" part should contain the public link to the video:
-        ```
-          POST /context-api/v2/projects/a06b5c7e1/contexts HTTP/1.1
-          Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
-
-          ------WebKitFormBoundary7MA4YWxkTrZu0gW
-          Content-Disposition: form-data; name="name"
-
-          http://video.domain.com/path_to_video.mp4
-          ------WebKitFormBoundary7MA4YWxkTrZu0gW--
-        ```
+        This endpoint accepts *multipart/form-data* request body.
+        
       tags:
         - Context
       consumes:
@@ -1438,17 +1504,34 @@ paths:
           in: path
           required: true
           type: string
+          description: Unique identifier of a project
           format: uuid
         - name: content
-          description: The context file part with content type. Supported content types are image/\* and text/html.
+          description: |- 
+            The context file to upload. 
+            If specified, should be one of the supported content types:
+             - `image/\*` 
+             - `text/html`
+             
+            Maximum file upload size is `20MB`
+             
+            *Note*: should be omitted for **VIDEO** context 
           in: formData
-          required: true
+          required: false
           type: file
         - name: name
           in: formData
           required: false
           type: string
-          description: Optional parameter that overrides the file name of *content* part.
+          description: |
+            Context name. Will override context file name if specified.
+            Parameter meaning for different context types:
+            
+            |Context Type|Meaning|
+            |----------|--------|
+            | `HTML` | Context URL or file name. If valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If file name is used, context file should have `<base />` tag specified with valid URL to resolve all the relative links to resources. In all other cases links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
+            | `IMAGE` | Image file name, defaults to context file name if not specified. |
+            | `VIDEO` | Publicly available link to video. Required for this context type. |
       responses:
         200:
           description: OK
@@ -1481,24 +1564,30 @@ paths:
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
     get:
-      summary: List context for project
-      description: Returns a list of metadata for all context files in a project, including the unique ID, type of context, file name and created date.
-                   Response is limited to *100* items, to retreive all items the request should be repeated with **offset** parameter specified.
+      summary: List contexts for the project
+      description: |
+        Returns a paginated list of metadata for all contexts in a project.
+        
+        Response is limited to *100* items, to retrieve all items the request should be repeated with **offset** parameter specified.
       tags:
         - Context
       parameters:
         - name: projectId
           in: path
           required: true
+          description: Unique identifier of a project.
           type: string
           format: uuid
         - name: nameFilter
           in: query
           type: string
           required: false
-          description: Optional filter for context names
+          description: Context name (or url) filter.
         - name: offset
-          description: If your original request returns an offset value, the set of results is incomplete. Run the request again, with the given offset value to see more results. When offset is null, there are no more results to return.
+          description: |-
+            If your original request returns an *offset* value, the set of results is incomplete.
+            Run the request again, with the given offset value to see more results.
+            When offset is null, there are no more results to return.
           in: query
           type: string
           required: false
@@ -1510,7 +1599,7 @@ paths:
           - HTML
           - VIDEO
           required: false
-          description: Optional context type filter.
+          description: Context type filter.
       responses:
         200:
           description: OK
@@ -1541,18 +1630,20 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/{contextUid}:
     get:
-      summary: Get context metadata
+      summary: Get context info
       description: Retrieves basic information about the context.
       tags:
         - Context
       parameters:
         - name: projectId
           in: path
+          description: Unique identifier of a project
           required: true
           type: string
           format: uuid
         - name: contextUid
           in: path
+          description: Unique identifier of a context
           required: true
           type: string
           format: uuid
@@ -1586,19 +1677,24 @@ paths:
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
     delete:
-      summary: Delete context
-      description: Removes the context and all associated bindings of this context to strings.
+      summary: Delete the context
+      description: |- 
+        Removes the context metadata and the content.
+        All linked context resources (e.g. CSS, images and fonts) will also be eventually cleaned up if no other context has them linked.
+        Bindings of this context to strings are removed as well and strings are marked as having no context.
       tags:
         - Context
       parameters:
         - name: projectId
           in: path
           required: true
+          description: Unique identifier of a project
           type: string
           format: uuid
         - name: contextUid
           in: path
           required: true
+          description: Unique identifier of a context
           type: string
           format: uuid
       responses:
@@ -1631,20 +1727,27 @@ paths:
     get:
       summary: Download context file content
       description: |-
-        Returns binary image data for **image** context,
-        HTML document with *bindings anchors* for **HTML** context.
-        Empty response for **video** context.
+        Returns the context content:
+        
+        |Context Type|Content|
+        |---------|--------|
+        |`HTML`|HTML document enriched with `data-sl-anchor` attributes for most of the elements, also known as *binding anchors*.|
+        |`IMAGE`| Binary image data. Response is accompanied with appropriate `Content-Type` header|
+        |`VIDEO`| Empty response|
+        
       tags:
         - Context
       parameters:
         - name: projectId
           in: path
           required: true
+          description: Unique identifier of a project
           type: string
           format: uuid
         - name: contextUid
           in: path
           required: true
+          description: Unique identifier of a context
           type: string
           format: uuid
       responses:
@@ -1681,16 +1784,19 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/upload-and-match-async:
     post:
-      summary: Upload HTML and match it with content
+      summary: Upload HTML and match it with strings to create context bindings
       description: |-
         Uploads a new HTML context and asynhronously matches it with strings in the project.
 
         Equivalent to calling:
         - `POST /projects/{projectId}/contexts`
         - `POST /projects/{projectId}/contexts/{contextUid}/match/async`
+        
+        Except the fact that `matchParams` parameter has to be present in `formData` rather than request body.
 
-        If the matching process returns no bindings the context wouldn't be created.
-        Supports only **HTML** context.
+        If the matching process returns no bindings the context won't be created.
+        Supported for `HTML` context only.
+        
       tags:
         - Context
       consumes:
@@ -1699,28 +1805,33 @@ paths:
         - name: projectId
           in: path
           required: true
+          description: Unique identifier of a project
           type: string
           format: uuid
         - name: content
-          description: The context file part with content type. Supported content types are image/\* and text/html.
           in: formData
           required: true
           type: file
+          description: |-
+            The context file part with content type. Supported content type is `text/html`.
         - name: name
           in: formData
           required: false
           type: string
-          description: Optional parameter that overrides the file name of *content* part.
+          description: |-
+            Context URL or whatever has to be served as context name.
+            Overrides the filename in `content` part.
         - name: matchParams
           in: formData
+          description: |-
+            Array of string hashcodes to match against, and / or context override specifier.
+            If string hashcodes not specified, *all strings from the project will be included in match*.
+            If context override not specified, *strings with context will not be bound to this context*.
+            
+            See parameter type description for `/context-api/v2/projects/{projectId}/contexts/{contextUid}/match/async`
           required: false
           type: string
-          description: A part containing JSON object with an array of string hashcodes to match against.
-                       If the part content is missing, or empty array is passed, *all strings in the project* will be included in the match.
-                       This part contains the same parameters as a body of `/projects/{projectId}/contexts/{contextUid}/match/async` request.
       responses:
-        200:
-          description: OK
         202:
           description: ACCEPTED
           schema:
@@ -1756,7 +1867,7 @@ paths:
         Optionally, you can restrict matching to only a set of strings that you specify to ensure that no unwanted
         bindings are created.
 
-        Optical Character Recognition (OCR) is used for **image** context, while **HTML** context uses approximate string matching algorithm.
+        Optical Character Recognition (OCR) is used for `IMAGE` context, while `HTML` context uses approximate string matching algorithm.
 
         This is a convenience method provided to save time and complexity in your integration.
         While our OCR functionality is advanced, it cannot match 100% of strings. If you need complete context coverage,
@@ -1770,16 +1881,22 @@ paths:
       parameters:
         - name: projectId
           in: path
+          description: Unique identifier of a project
           required: true
           type: string
           format: uuid
         - name: contextUid
           in: path
+          description: Unique identifier of a context
           required: true
           type: string
           format: uuid
-        - name: matchRequest
+        - name: matchParams
           in: body
+          description: |-
+            Array of string hashcodes to match against, and / or context override specifier.
+            If string hashcodes not specified, *all strings from the project will be included in match*.
+            If context override not specified, *strings with context will not be bound to this context*.
           required: false
           schema:
             $ref: '#/definitions/MatchRequest'
@@ -1822,6 +1939,7 @@ paths:
         - name: projectId
           in: path
           required: true
+          description: Unique identifier of a project
           type: string
           format: uuid
         - name: matchId
@@ -1875,18 +1993,21 @@ paths:
 
   /context-api/v2/projects/{projectId}/bindings/{bindingUid}:
     delete:
-      summary: Remove binding
-      description: Deletes a context binding. The context referenced by the binding will no longer be displayed for the referenced string in the Translation Interface.
+      summary: Remove binding of a string to a context
+      description: |- 
+        Deletes a context binding. 
+        The context referenced by the binding will no longer be displayed for the referenced string in the CAT Tool.
       tags:
         - Context
       parameters:
         - name: projectId
           in: path
           required: true
+          description: Unique identifier of a project
           type: string
           format: uuid
         - name: bindingUid
-          description: Unique identifier for the binding you want to delete
+          description: Unique identifier for the binding to be deleted
           in: path
           required: true
           type: string
@@ -1920,19 +2041,22 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/{contextUid}/bindings:
     get:
-      summary: Return all bindings for context
+      summary: Return all strings bindings for the context
       description: |-
-        Return all bindings that reference a given piece of context.
+        Return all bindings that reference the given context. 
+        Result is not paginated.
       tags:
         - Context
       parameters:
         - name: projectId
           in: path
           required: true
+          description: Unique identifier of a project
           type: string
           format: uuid
         - name: contextUid
           in: path
+          description: Unique identifier of a context
           required: true
           type: string
           format: uuid
@@ -1977,17 +2101,18 @@ paths:
   /context-api/v2/projects/{projectId}/strings/{stringHashcode}/bindings:
     get:
       summary: Get bindings for string
-      description: Return all bindings that reference a given string.
+      description: Return all bindings that reference given string.
       tags:
         - Context
       parameters:
         - name: projectId
           in: path
+          description: Unique identifier of a project
           required: true
           type: string
           format: uuid
         - name: stringHashcode
-          description: Hashcode for the string you want to get bindings for.
+          description: Hashcode for the string to get bindings for
           in: path
           required: true
           type: string
@@ -2021,11 +2146,13 @@ paths:
 
   /context-api/v2/projects/{projectId}/bindings:
     post:
-      summary: Create bindings
+      summary: Create string to context bindings
       description: |-
-        Link context images with the strings they contain. The binding tells Smartling which context images to show translators for which strings.
-        A maximum of **150** bindings can be created per request. A request with more than **150** items will return a **400** response indicating validation error.
-        Basic bindings request should contain an object with "bindings" JSON array with at least one element (binding), featuring *contextUid* and *stringHashcode* properties:
+        Link context files with the strings they contain. 
+        The binding tells Smartling which context images to show translators for which strings.
+        A maximum of `150` bindings can be created per request. 
+        
+        Basic bindings request should contain an object with `bindings` JSON array with at least one element (binding), featuring `contextUid` and `stringHashcode` properties:
         ```JSON
         {
           "bindings": [
@@ -2036,7 +2163,8 @@ paths:
           ]
         }
         ```
-        For **IMAGE** context, each binding may have additional *coordinates* data, which specifies rectangular area, where the string is located in the image. If not specified, binding will still be created with coordinates [0,0,0,0]:
+        
+        For `IMAGE` context, each binding may have additional `coordinates` data, which specifies rectangular area, where the string is located in the image. If not specified, binding will still be created with coordinates `[0,0,0,0]`:
         ```JSON
         {
           "bindings": [
@@ -2052,7 +2180,9 @@ paths:
             }
           ]
         }```
-        For **HTML** context, each binding may have the *anchors* array, specifying the enclosing the string HTML elements with the corresponding value of the *data-sl-anchor* attribute. If not specified, binding will still be created with the empty *anchors* array:
+        
+        For `HTML` context, each binding may have the `selector` element with `anchors` array, specifying the enclosing the string HTML elements with the corresponding value of the `data-sl-anchor` attribute. 
+        If not specified, binding will still be created with the empty `anchors` array, effectively making it not anchored to a particular element and thus invisible in CAT Tool:
         ```JSON
         {
           "bindings": [
@@ -2065,7 +2195,8 @@ paths:
             }
           ]
         }```
-        For **VIDEO** context, each binding mave the *timecode* data, specifying the start and end time of the string appearance in the video:
+        
+        For `VIDEO` context, each binding mave the `timecode` data, specifying the start and end time of the string appearance in the video:
         ```JSON
         {
           "bindings": [
@@ -2085,13 +2216,13 @@ paths:
         - Context
       parameters:
         - name: projectId
-          description: Project ID
+          description: Unique identifier of a project
           in: path
           required: true
           type: string
           format: uuid
         - name: request
-          description: String-to-context JSON bindings
+          description: String-to-context bindings
           in: body
           required: true
           schema:
@@ -2128,69 +2259,6 @@ paths:
                 errors:
                 - key: 'wrong_parameters'
                   message: 'Please, limit number of bindings to no more than 150 in one request'
-        401: *Error401ResponseDefinition
-        429: *Error429ResponseDefinition
-        500: *Error500ResponseDefinition
-
-  /context-api/v2/projects/{projectId}/contexts/{contextUid}/match:
-    post:
-      summary: '**DEPRECATED** Run automatic match'
-      description: |-
-        Automatically matches a Context Image against strings in the project using Optical Character Recognition (OCR) for **IMAGE** context and creates bindings for any found matches.
-        Optionally, you can restrict OCR matching to only a set of strings that you specify to ensure that no unwanted bindings are created.
-        This is a convenience method provided to save time and complexity in your integration. While our OCR functionality is advanced, it cannot match 100% of strings.
-        If you need complete context coverage, either use the manual Create Bindings request or check your context images in the Smartling Dashboard after running this request to fill in any blanks.
-        Be mindful of the limitations of OCR if you are using an unusual or script-like font.
-        **DEPRECATED** in favor of asynchronous matching.
-      tags:
-        - Context
-      deprecated: true
-      parameters:
-        - name: projectId
-          in: path
-          required: true
-          type: string
-          format: uuid
-        - name: contextUid
-          in: path
-          required: true
-          type: string
-          format: uuid
-        - name: matchRequest
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/MatchRequest'
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/MatchResponse'
-          examples:
-            application/json:
-              response:
-                  code: "SUCCESS"
-                  data:
-                    newBindings:
-                      -
-                        bindingUid: "fc2azc89-f0fc-43c4-9c3a-8e6u0521b092"
-                        contextUid: "456efpe5-0bf5-4482-365f-a0nce127abb0"
-                        stringHashcode: "4d70a525c0e49fe8a3b43e5b76ae33d9"
-                        coordinates:
-                          top: 114
-                          left: 589
-                          height: 33
-                          width: 346
-                      -
-                        bindingUid: "4c0a343c-d361-4315-9580-60cdfed3dc37"
-                        contextUid: "456ef9e5-0zf5-4382-b65f-a00ce127abb0"
-                        stringHashcode: "e5a03bi0d4cd78e1c29bde61e6898fa1"
-                        coordinates:
-                          top: 55
-                          left: 16
-                          height: 20
-                          width: 90
-        400: *Error400ResponseDefinition
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
@@ -5707,6 +5775,80 @@ definitions:
       sourceLocaleId: "en-US"
       sourceLocaleDescription: "English"
 
+  ProjectDetailsSuccessResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          required:
+            - projectId
+            - projectName
+            - accountUid
+            - archived
+            - projectTypeCode
+            - sourceLocaleId
+            - sourceLocaleDescription
+            - targetLocales
+          properties:
+            projectId:
+              type: string
+              description: A unique identifier for the project
+            projectName:
+              type: string
+              description: The name of the project.
+            accountUid:
+              type: string
+              description: The unique identifier for the account
+            archived:
+              type: boolean
+              description: Indicator whether or not the project has been archived. Archived projects are typically hidden from a user's view, but can still be accessible
+            projectTypeCode:
+              type: string
+              description: Indicator for the type of the project.
+            sourceLocaleId:
+              type: string
+              description: The locale identifier for the source locale of the project. This indicates the base locale for which content should be uploaded to the project.
+            sourceLocaleDescription:
+              type: string
+              description: The full name of the sourceLocaleId
+            targetLocales:
+              description: The locales configured for translation for this project.
+              type: array
+              items:
+                $ref: '#/definitions/ProjectDetailsLocaleItem'
+          example:
+            projectId: "fd7244365"
+            projectName: "fd7244365"
+            accountUid: "ab5f1939"
+            archived: false
+            projectTypeCode: "APPLICATION_RESOURCES"
+            sourceLocaleId: "en-US"
+            sourceLocaleDescription: "English"
+            targetLocales:
+
+  ProjectDetailsLocaleItem:
+    type: object
+    required:
+      - localeId
+      - description
+      - enabled
+    properties:
+      localeId:
+        type: string
+        description: The identifier for the specific locale configured for the project.
+      description:
+        type: string
+        description: The name of the locale.
+      enabled:
+        type: boolean
+        description: Boolean indicator of the locale is enabled for the project.
+    example:
+      localeId: "ru-RU"
+      description: "Russian (Russia)"
+      enabled: "true"
+
   FilesAPIUploadSuccessResponse:
     allOf:
     - $ref: '#/definitions/SuccessResponse'
@@ -6236,20 +6378,6 @@ definitions:
               items:
                 $ref: '#/definitions/Binding'
 
-  MatchResponse:
-    allOf:
-    - $ref: '#/definitions/SuccessResponse'
-    - type: object
-      properties:
-        data:
-          type: object
-          properties:
-            newBindings:
-              description: Array of new bindings by matching. For details on each binding object see the Get Bindings response.
-              type: array
-              items:
-                $ref: '#/definitions/Binding'
-
   Context:
     description: Basic information about the context.
     type: object
@@ -6360,16 +6488,21 @@ definitions:
                     type: string
 
   MatchRequest:
-    description: |-
-      Array of string hashcodes to match against.
-      If the request body is left blank, or empty array is passed, *all strings in the project* will be included in the match.
     type: object
     properties:
+      overrideContextOlderThanDays:
+        type: integer
+        minimum: 1
+        description: |-
+          Specifies whether to override context for strings that were already bound to other context and that context is at least as "overrideContextOlderThanDays" old.
       stringHashcodes:
         type: array
+        description: |-
+            String hashcodes
         items:
           type: string
           format: hash
+          
 
   WatcherRequest:
     type: object
