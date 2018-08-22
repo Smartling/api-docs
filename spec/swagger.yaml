@@ -73,7 +73,7 @@ tags:
                                "projectName": "iOS Strings files",
                                "accountUid": "ab5f1939",
                                "archived": false,
-                               "projectTypeCode": "APPLICATION RESOURCES",
+                               "projectTypeCode": "APPLICATION_RESOURCES",
                                "sourceLocaleId": "en",
                                "sourceLocaleDescription": "English"
                            }
@@ -306,6 +306,102 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+
+  '/projects-api/v2/projects/{projectId}':
+    get:
+      summary: Get project details
+      description: |
+        Returns the details of a project.
+      tags:
+        - Account & Projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+        - name: includeDisabledLocales
+          in: query
+          required: false
+          type: boolean
+          description: Indicator whether or not disabled locales configured for the project should be returned as part of the targetLocales. By default disabled target locales are not returned.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ProjectDetailsSuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  - projectId: fd7244365
+                    projectName: Android XML Content
+                    accountUid: at724e365
+                    archived: false
+                    projectTypeCode: APPLICATION_RESOURCES
+                    sourceLocaleId: en-US
+                    sourceLocaleDescription: English
+                    targetLocales:
+                    - localeId: de-DE
+                      description: German (Germany)
+                      enabled: true
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+
+  '/projects-api/v2/projects/{projectId}/targetLocales':
+    post:
+      summary: Add a new target locale
+      description: |
+        Add a new target locale to the project.
+      tags:
+        - Account & Projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+        - name: localeId
+          in: formData
+          required: true
+          type: string
+          description: The locale identifier (localeId) of the locale to be added to the project.
+        - name: defaultWorkflowUid
+          in: formData
+          required: false
+          type: string
+          description: |
+            The default workflow that should be used when content is authorized. If not specified, the default workflow configured for the project will be used.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ProjectDetailsSuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  - projectId: fd7244365
+                    projectName: Android XML Content
+                    accountUid: at724e365
+                    archived: false
+                    projectTypeCode: APPLICATION_RESOURCES
+                    sourceLocaleId: en-US
+                    sourceLocaleDescription: English
+                    targetLocales:
+                    - localeId: de-DE
+                      description: German (Germany)
+                      enabled: true
+                    - localeId: ru-RU
+                      description: Russian (Russia)
+                      enabled: true
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+
 #
 # File API
 #
@@ -5768,6 +5864,80 @@ definitions:
       projectTypeCode: "APPLICATION_RESOURCES"
       sourceLocaleId: "en-US"
       sourceLocaleDescription: "English"
+
+  ProjectDetailsSuccessResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          required:
+            - projectId
+            - projectName
+            - accountUid
+            - archived
+            - projectTypeCode
+            - sourceLocaleId
+            - sourceLocaleDescription
+            - targetLocales
+          properties:
+            projectId:
+              type: string
+              description: A unique identifier for the project
+            projectName:
+              type: string
+              description: The name of the project.
+            accountUid:
+              type: string
+              description: The unique identifier for the account
+            archived:
+              type: boolean
+              description: Indicator whether or not the project has been archived. Archived projects are typically hidden from a user's view, but can still be accessible
+            projectTypeCode:
+              type: string
+              description: Indicator for the type of the project.
+            sourceLocaleId:
+              type: string
+              description: The locale identifier for the source locale of the project. This indicates the base locale for which content should be uploaded to the project.
+            sourceLocaleDescription:
+              type: string
+              description: The full name of the sourceLocaleId
+            targetLocales:
+              description: The locales configured for translation for this project.
+              type: array
+              items:
+                $ref: '#/definitions/ProjectDetailsLocaleItem'
+          example:
+            projectId: "fd7244365"
+            projectName: "fd7244365"
+            accountUid: "ab5f1939"
+            archived: false
+            projectTypeCode: "APPLICATION_RESOURCES"
+            sourceLocaleId: "en-US"
+            sourceLocaleDescription: "English"
+            targetLocales:
+
+  ProjectDetailsLocaleItem:
+    type: object
+    required:
+      - localeId
+      - description
+      - enabled
+    properties:
+      localeId:
+        type: string
+        description: The identifier for the specific locale configured for the project.
+      description:
+        type: string
+        description: The name of the locale.
+      enabled:
+        type: boolean
+        description: Boolean indicator of the locale is enabled for the project.
+    example:
+      localeId: "ru-RU"
+      description: "Russian (Russia)"
+      enabled: "true"
 
   FilesAPIUploadSuccessResponse:
     allOf:
