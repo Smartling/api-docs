@@ -4381,6 +4381,9 @@ paths:
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
 
+  #
+  # Jobs API endpoints
+  #
   /jobs-api/v3/projects/{projectId}/jobs:
     get:
       summary: "List jobs within a project"
@@ -5075,7 +5078,7 @@ paths:
         This adds a file to a job. By default, the file will be added for all locales of the job, but you can change this by specifying `targetLocaleId`s for the job you wish to add the file into. 
 
         **Validation rules:**
-        - A job can contain a maximum of 300 files.
+        - A job can contain a maximum of 5000 files.
         - Content can't be added to the job if the job doesn't contain any locales, and the request to add a file doesn't specify any locales.
         - The file (specified by the `fileUri`) can't be in the process of being uploaded / modified within Smartling. It should complete its upload process before being added to a job.
         - Any targetLocale's specified must be valid within the project the job has been created for
@@ -5248,7 +5251,7 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
-  /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/locales/{localeId}:
+  /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/locales/{targetLocaleId}:
     post:
       summary: "Add locale to job"
       tags:
@@ -5268,7 +5271,7 @@ paths:
           in: path
           required: true
           type: string
-        - name: localeId
+        - name: targetLocaleId
           in: path
           required: true
           type: string
@@ -5323,7 +5326,7 @@ paths:
           in: path
           required: true
           type: string
-        - name: localeId
+        - name: targetLocaleId
           in: path
           required: true
           type: string
@@ -7695,6 +7698,7 @@ definitions:
             type: array
             items:
               type: string
+              example: de-DE
           description:
             description: The description of the job.
             type: string
@@ -7745,6 +7749,7 @@ definitions:
               type: array
               items:
                 type: string
+                example: de-DE
             description:
               description: The description of the job.
               type: string
@@ -7777,7 +7782,7 @@ definitions:
             jobStatus:
               description: The status of the job.
               type: string
-              example: "DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED | CANCELLED | CLOSED"
+              example: DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED | CANCELLED | CLOSED
             firstCompletedDate:
               description: The UTC value of when the job was first completed.
               type: string
@@ -7894,7 +7899,7 @@ definitions:
             jobStatus:
               description: The status of the job.
               type: string
-              example: "DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED | CANCELLED | CLOSED"
+              example: DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED | CANCELLED | CLOSED
             firstCompletedDate:
               description: The UTC value of when the job was first completed.
               type: string
