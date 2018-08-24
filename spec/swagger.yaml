@@ -35,7 +35,9 @@ tags:
     description: |-
       Smartling uses OAuth2 for authentication. To access the Smartling APIs, you'll first need to authenticate with your user identifier and user secret. An access token is returned that can be attached to the header of any API request. A refresh token is also returned.
       
-      To obtain your user identifier and user secret, log in to Smartling.com and go to **API > Create Token**. Authenticating is as simple as calling the `/api.smartling.com/auth-api/v2/authenticate` with your `userIdentifier` and `userSecret`. The access token returned is valid for 5-minutes, and is used in the header of all subsequent requests.
+      To obtain your user identifier and user secret, log in to Smartling.com and go to **API > Create Token**. Authenticating is as simple as calling the `/api.smartling.com/auth-api/v2/authenticate` with your `userIdentifier` and `userSecret`. The access token returned is valid for `expiresIn` seconds. After `expiresIn` seconds, the authentication must be refreshed.
+      
+      The access token is used as a bearer token in the `authorization` header of all subsequent requests.
 
       **Example for generating your access token:**
 
@@ -81,6 +83,7 @@ tags:
               }
           }
       }
+      ```
 
   - name: "Account & Projects"
     description: |-
@@ -136,7 +139,7 @@ paths:
   '/auth-api/v2/authenticate':
     post:
       description: >-
-        Verifies the credentials of the connection attempt.
+        Authenticates your API user to Smartling.
       summary: Authenticate
       tags:
         - Authentication
@@ -210,8 +213,7 @@ paths:
   '/auth-api/v2/authenticate/refresh':
     post:
       description: >-
-        A renewed access token that can be attached to the header of any
-        API request.
+        Returns a new fresh access token and refresh token you may use to continue to interact with Smartling's API.
       summary: Refresh access token
       tags:
         - Authentication
@@ -5694,6 +5696,7 @@ definitions:
         type: string
       refreshToken:
         description: A kind of token that can be used to obtain a renewed access token.
+        type: string
       expiresIn:
         description: TTL (time-to-live) in seconds for the access token.
         type: integer
