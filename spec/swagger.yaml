@@ -6107,7 +6107,7 @@ definitions:
             items:
               type: array
               items:
-                $ref: '#/definitions/ProjectDetailsLocaleItem'
+                $ref: '#/definitions/LocaleApiItem'
 
   LocaleApiItem:
     type: object
@@ -6124,10 +6124,34 @@ definitions:
         description: The name of the locale.
       language:
         type: object
-        description: The language that makes up the locale.
+        description: The language that makes up the locale. All locales have a language.
+        properties:
+          languageId:
+            type: string
+            description: The identifier of the language.
+          description:
+            type: string
+            description: The name of the language.
+          direction:
+            type: string
+            enum:
+              - LTR
+              - RTL
+          wordDelimiter:
+            type: string
+            enum:
+              - SPACE
+              - CHARACTER
       country:
         type: object
-        description: The country that makes up the locale.
+        description: The country that makes up the locale. Not all locales have a country specified.
+        properties:
+          countryId:
+            type: string
+            description: The identifier of the country.
+          description:
+            type: string
+            description: The name of the country.
     example:
       localeId: "en-US"
       description: "English (United States)"
