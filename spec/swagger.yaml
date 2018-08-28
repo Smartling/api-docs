@@ -156,7 +156,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   accessToken: b816424c-2e95-11e7-93ae-92361f002671
                   refreshToken: c0a6f410-2e95-11e7-93ae-92361f002671
@@ -284,7 +283,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount: 2
                   items:
@@ -362,17 +360,21 @@ paths:
           in: path
           required: true
           type: string
-        - name: localeId
-          in: formData
-          required: true
-          type: string
-          description: The locale identifier (localeId) of the locale to be added to the project.
-        - name: defaultWorkflowUid
-          in: formData
-          required: false
-          type: string
-          description: |
-            The default workflow that should be used when content is authorized. If not specified, the default workflow configured for the project will be used.
+        - name: addLocaleRequest
+          in: body
+          schema:
+            type: object
+            properties:
+              localeId:
+                description: |-
+                  The locale identifier (localeId) of the locale to be added to the project.
+                type: string
+                example: ru-RU
+              defaultWorkflowUid:
+                description: |-
+                  The default workflow that should be used when content is authorized. If not specified, the default workflow configured for the project will be used.
+                type: string
+                example: ac48ht4qy
       responses:
         200:
           description: OK
@@ -397,6 +399,90 @@ paths:
                     - localeId: ru-RU
                       description: Russian (Russia)
                       enabled: true
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+
+  '/projects-api/v2/projects/{projectId}/copy':
+    post:
+      summary: Copy an existing project
+      description: |
+        Make a copy of an existing project, thereby creating a new one with a new name
+      tags:
+        - Account & Projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+        - name: copyProject
+          in: body
+          schema:
+            type: object
+            properties:
+              projectName:
+                description: The name of the new project to create.
+                type: string
+                example: New Android Project
+              targetLocaleIds:
+                type: array
+                items:
+                  type: string
+                description: The list of target locales the new project should be created for. Note, each target locale specified must valid within the source project you are copying, i.e. you can copy all or a subset of locales from the source project to the target project.
+                example: ["ru-RU"]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ProjectCopySuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  processUid: 7908ae61-3489-48e1-9e28-10652634d34e
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+  '/projects-api/v2/projects/{projectId}/copy/{processUid}':
+    get:
+      summary: Get the status of the project copy request
+      description: |
+        Used to check if the copy project request is complete and to retrieve the new projectId
+      tags:
+        - Account & Projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+        - name: processUid
+          in: path
+          required: true
+          type: string
+          description: The uid of the process to check for
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ProjectCopyProcessSuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  processuid: 7908ae61-3489-48e1-9e28-10652634d34e
+                  newProjectUid: 8t7q4d643
+                  processState: OPEN
+                  createdDate: 2016-08-21T0B1:51:17Z
+                  modifiedDate: 2016-08-21T0B1:51:17Z
+                  processStatistics:
+                    requested: 8
+                    processed: 6
+                    errored: 0
+                    skipped: 0
         400: *Error400ResponseDefinition
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
@@ -467,6 +553,14 @@ paths:
             - cvs
             - srt
             - stringsdict
+            - phpResource
+            - freemaker
+            - xls
+            - doc
+            - ppt
+            - pres
+            - madcap
+            - xliffCat
         - name: authorize
           in: formData
           required: false
@@ -499,7 +593,7 @@ paths:
           required: false
           type: string
           description: |
-            This is only for accounts created after July 31st, 2015. Define a custom [namespace](https://developer.smartling.com/v2.0/docs/string-sharing-namespaces) for the file. This works for Application Resource Files only. For Business Documents, see [Update File](https://developer.smartling.com/docs/managing-business-documents). 
+            This is only for accounts created after July 31st, 2015. Define a custom [namespace](https://developer.smartling.com/v2.0/docs/string-sharing-namespaces) for the file. 
 
             **Note**: While this parameter shares the format of other file directives, it will not work as an inline directive and must be specified in the API call.
         - name: smartling.file_charset
@@ -538,7 +632,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   overWritten: true
                   stringCount: 10
@@ -551,7 +644,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   message: Your file was successfully uploaded. Word and string counts are not available right now.
 
@@ -596,6 +688,7 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: fileUri
           in: query
           required: true
@@ -629,6 +722,7 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: fileUri
           in: query
           required: true
@@ -643,7 +737,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   fileUri: "/files/test_translation_import.csv"
                   lastUploaded: '2017-09-06T20:29:15Z'
@@ -690,10 +783,12 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: localeId
           in: path
           required: true
           type: string
+          description: Identifier for a locale.
         - name: fileUri
           in: query
           required: true
@@ -708,7 +803,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   fileUri: "/files/4.properties"
                   lastUploaded: '2017-05-27T12:45:36Z'
@@ -757,10 +851,12 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: localeId
           in: path
           required: true
           type: string
+          description: Identifier for a locale.
         - name: fileUri
           in: query
           required: true
@@ -833,6 +929,7 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: fileUri
           in: query
           required: true
@@ -910,6 +1007,7 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: fileUris[]
           in: query
           required: true
@@ -1007,7 +1105,7 @@ paths:
     get:
       summary: List recently uploaded files
       description: |
-        This lists recently uploaded files, and returns a maximum of 500 files.
+        This lists recently uploaded files, and returns a maximum of 100 files.
 
         **Example:**
         ```bash
@@ -1021,6 +1119,7 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: uriMask
           in: query
           required: false
@@ -1064,7 +1163,7 @@ paths:
           in: query
           required: false
           type: integer
-          default: 500
+          default: 100
           description: |
             See [Limit and Offset](https://developer.smartling.com/v1.0/docs/list-get-1). In order to get consistent pagination, please make sure to specify the ```orderBy``` parameter
         - name: offset
@@ -1082,7 +1181,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount: 2
                   items:
@@ -1107,6 +1205,12 @@ paths:
       summary: List all file types
       description: |
         This returns a list of all file types currently represented in the project.
+
+        **Example:**
+        ```bash
+          curl -H "Authorization: Bearer {token}" "https://api.smartling.com/files-api/v2/projects/{projectId}/file-types"
+        ```
+
       tags:
         - Files
       parameters:
@@ -1114,6 +1218,7 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
       responses:
         200:
           description: OK
@@ -1123,7 +1228,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   items:
                     - csv
@@ -1152,6 +1256,7 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: fileUri
           in: formData
           required: true
@@ -1172,7 +1277,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
 
         400: *Error400ResponseDefinition
@@ -1200,6 +1304,7 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: fileUri
           in: formData
           required: true
@@ -1214,7 +1319,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
 
         400: *Error400ResponseDefinition
@@ -1245,6 +1349,7 @@ paths:
           in: path
           required: true
           type: string
+          description: Identifier for a locale.
         - name: fileUri
           in: query
           required: true
@@ -1265,7 +1370,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   localeId: ru-RU
                   lastModified: '2017-09-06T20:25:18Z'
@@ -1314,7 +1418,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount: 1
                   items:
@@ -1333,7 +1436,7 @@ paths:
 
         **Example:**
         ```bash
-          curl -X POST -H "Authorization: Bearer {token}" -F "file=@filename.properties" -F 'fileUri=filename.properties' -f fileType=javaProperties -F translationState=PUBLISHED 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/import'
+          curl -X POST -H "Authorization: Bearer {token}" -F "file=@filename.properties" -F "fileUri=filename.properties" -F "fileType=javaProperties" -F "translationState=PUBLISHED" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/import'
         ```
 
       tags:
@@ -1345,10 +1448,12 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: localeId
           in: path
           required: true
           type: string
+          description: Identifier for a locale.
         - name: file
           in: formData
           required: true
@@ -1395,7 +1500,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   wordCount: 6
                   stringCount: 3
@@ -1431,10 +1535,12 @@ paths:
           in: path
           required: true
           type: string
+          description: A unique identifier for a project.
         - name: localeId
           in: path
           required: true
           type: string
+          description: Identifier for a locale.
         - name: file
           in: formData
           required: true
@@ -2296,7 +2402,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount: 2
                   items:
@@ -2343,7 +2448,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount: 2
                   items:
@@ -2387,7 +2491,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   string:
                     hashcode: c32c16cddafd63dfa0dc12449372a093
@@ -2451,7 +2554,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   issueText: Edited issue text.
                   issueTextModifiedDate: '2015-11-10T16:01:22Z'
@@ -2489,7 +2591,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   issueStateCode: RESOLVED
 
@@ -2529,7 +2630,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   string:
                     hashcode: c32c16cddafd63dfa0dc12449372a093
@@ -2593,7 +2693,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   issueCommentUid: a75fea779bbb
                   commentText: comment text
@@ -2635,7 +2734,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   items:
                     - issueCommentUid: a75fea779bbb
@@ -2698,7 +2796,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   issueCommentUid: a75fea779bbb
                   commentText: comment text
@@ -2746,7 +2843,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   createdByUserUid: 661801f19693
                   createdDate: '2015-12-22T11:54:27Z'
@@ -2793,7 +2889,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   items:
                     - string:
@@ -2849,7 +2944,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   count: 2
 
@@ -2887,7 +2981,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                       uid: 323323wsss
                       email: my@mail.com
@@ -2940,7 +3033,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   items:
                     - uid: 323323wsss
@@ -2993,7 +3085,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                       uid: 323323wsss
                       email: my@mail.com
@@ -3047,7 +3138,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data: null
 
         400: *Error400ResponseDefinition
@@ -3093,7 +3183,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data: null
 
         400: *Error400ResponseDefinition
@@ -3135,7 +3224,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   items:
                     - uid: 323323wsss
@@ -3239,7 +3327,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   wordCount: 4
                   stringCount: 1
@@ -3449,7 +3536,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount: 2
                   items:
@@ -3496,7 +3582,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   glossaryUid: 50d9dab5-6b8b-11e5-ba24-127b00b163a3
                   name: Another document tester-Glossary
@@ -3595,7 +3680,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   termText: cold call
                   partOfSpeechCode: VERB
@@ -3665,7 +3749,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount: 2
                   items:
@@ -3735,7 +3818,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   termText: cold call
                   partOfSpeechCode: VERB
@@ -3795,7 +3877,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount: 2
                   items:
@@ -3895,7 +3976,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount: 2
                   items:
@@ -4010,7 +4090,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount: 2
                   items:
@@ -4263,7 +4342,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   glossaryImportJobUid: 78d93dde-5e3d-4beb-8171-415f82ca2c7b
                   glossary:
@@ -4314,7 +4392,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   glossaryImportJobUid: 78d93dde-5e3d-4beb-8171-415f82ca2c7b
                   glossary:
@@ -4353,7 +4430,6 @@ paths:
           examples:
             response:
               code: SUCCESS
-              requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
               data:
                 totalCount: 9
                 items:
@@ -4452,7 +4528,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount : 2
                   items:
@@ -4504,7 +4579,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   translationJobUid : "abc123abc"
                   jobName : "myJobName"
@@ -4571,7 +4645,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   successCount: 100 # number of strings added to the job
                   failCount: 0 # number of strings that could not be added to the job
@@ -4637,7 +4710,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   successCount: 100 # number of strings removed from the job
                   failCount: 0 # number of strings that could not be removed from the job
@@ -4685,7 +4757,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data: null
         400:
           description: Validation error when closing a job
@@ -4738,7 +4809,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data: null
         202:
           description: ACCEPTED
@@ -4771,7 +4841,6 @@ paths:
             application/json:
               response:
                 code: AUTHENTICATION_ERROR
-                requestId: 47f37e51-b071-4384-84e2-6fefd510e354
                 errors:
                   - message: Invalid token
                     key: invalid_token
@@ -4810,7 +4879,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data: null
         400:
           description: Validation error when authorizing a job
@@ -4853,7 +4921,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   translationJobUid: jhcgalvnb6za
                   jobName: 'test job (Cancelled 2017/11/04 12:01:28)'
@@ -4921,7 +4988,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   translationJobUid: jhcgalvnb6za
                   jobName: 'Test Job'
@@ -4998,7 +5064,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount : 2
                   items:
@@ -5057,7 +5122,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   processUid : "13424r5-qaswerxs-43435ff"
                   translationJobUid : "784578f-qaswerxs-43435ff"
@@ -5110,7 +5174,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   successCount: 1 # The number of strings added to the job.
                   failCount: 1 # The number of strings that could not be added to the job.
@@ -5175,7 +5238,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   successCount: 1 # The number of strings removed from the job
                   failCount: 1 # The number of strings that could not be removed from the job
@@ -5240,7 +5302,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   totalCount : 2
                   items:
@@ -5289,7 +5350,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data: null
         202:
           description: ACCEPTED
@@ -5339,7 +5399,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data: null
         202:
           description: ACCEPTED
@@ -5387,7 +5446,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   contentProgressReport:
                     - targetLocaleId: uk-UA
@@ -5482,7 +5540,6 @@ paths:
             application/json:
               response:
                 code: SUCCESS
-                requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
                 data:
                   contentProgressReport:
                     - targetLocaleId: uk-UA
@@ -5572,10 +5629,6 @@ definitions:
         enum:
           - SUCCESS
         description: Indicates whether the response was successful or what error has occured
-      requestId:
-        type: string
-        example: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
-        description: Unique identifier of your request. Send this to technical support in case you have any issues with your request.
 
   Error:
     type: object
@@ -5610,10 +5663,6 @@ definitions:
               - GENERAL_ERROR
               - MAINTENANCE_MODE_ERROR
             description: Indicates whether the response was successful or what error has occured
-          requestId:
-            type: string
-            example: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
-            description: Unique identifier of your request. Send this to technical support in case you have any issues with your request.
           errors:
             type: array
             items:
@@ -5635,10 +5684,6 @@ definitions:
             description: Indicates whether the response was successful or what error has occured
             enum:
             - VALIDATION_ERROR
-          requestId:
-            type: string
-            example: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
-            description: Unique identifier of your request. Send this to technical support in case you have any issues with your request.
           errors:
             type: array
             items:
@@ -5661,10 +5706,6 @@ definitions:
             enum:
             - AUTHENTICATION_ERROR
             - AUTHORIZATION_ERROR
-          requestId:
-            type: string
-            example: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
-            description: Unique identifier of your request. Send this to technical support in case you have any issues with your request.
           errors:
             type: array
             items:
@@ -5686,10 +5727,6 @@ definitions:
             description: Indicates whether the response was successful or what error has occured
             enum:
             - NOT_FOUND_ERROR
-          requestId:
-            type: string
-            example: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
-            description: Unique identifier of your request. Send this to technical support in case you have any issues with your request.
           errors:
             type: array
             items:
@@ -5711,10 +5748,6 @@ definitions:
             description: Indicates whether the response was successful or what error has occured
             enum:
             - RESOURCE_LOCKED
-          requestId:
-            type: string
-            example: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
-            description: Unique identifier of your request. Send this to technical support in case you have any issues with your request.
           errors:
             type: array
             items:
@@ -5736,10 +5769,6 @@ definitions:
             description: Indicates whether the response was successful or what error has occured
             enum:
             - MAX_OPERATIONS_LIMIT_EXCEEDED
-          requestId:
-            type: string
-            example: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
-            description: Unique identifier of your request. Send this to technical support in case you have any issues with your request.
           errors:
             type: array
             items:
@@ -5867,6 +5896,71 @@ definitions:
       projectTypeCode: "APPLICATION_RESOURCES"
       sourceLocaleId: "en-US"
       sourceLocaleDescription: "English"
+
+  ProjectCopySuccessResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          required:
+            - processUid
+          properties:
+            processUid:
+              type: string
+              description: A unique identifier for a long running process
+
+  ProjectCopyProcessSuccessResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          required:
+            - processUid
+            - newProjectUid
+            - processState
+            - createdDate
+            - modifiedDate
+            - processStatistics
+          properties:
+            processUid:
+              type: string
+              description: A unique identifier for a long running process
+            newProjectUid:
+              type: string
+              description: A unique identifier for the newly created project. This is available once the project copying has finished, which is indicated once it has a processState of CLOSED.
+            processState:
+              type: string
+              enum:
+                - OPEN
+                - CLOSED
+                - FAILED
+              description: The status of the copy request. The new projectId will be available once the state is marked as CLOSED.
+            createdDate:
+              type: string
+              format: date-time
+            modifiedDate:
+              type: string
+              format: date-time
+            processStatistics:
+              description: Information on the copying of the project
+              type: object
+              properties:
+                requested:
+                  description: The number of entities being copied
+                  type: string
+                processed:
+                  description: The number of entities processed successfully
+                  type: string
+                errored:
+                  description: The number of entities that failed to copy
+                  type: string
+                skipped:
+                  description: The number of entities that were skipped
+                  type: string
 
   ProjectDetailsSuccessResponse:
     allOf:
@@ -6060,7 +6154,6 @@ definitions:
       application/json:
         response:
           code: SUCCESS
-          requestId: 9d0f96fa-9969-487f-8cfd-639b41d9c9ec
           data:
             items:
               - android
