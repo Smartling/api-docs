@@ -2455,6 +2455,34 @@ paths:
                       issueStateCode: OPENED
                     - description: Resolved
                       issueStateCode: RESOLVED
+  '/dictionary/issue-severity-levels':
+      get:
+        summary: Get Issue Severity levels
+        description: >-
+          Get list of issue severity levels
+        tags:
+          - Issues
+        produces:
+          - application/json
+        responses:
+          200:
+            description: OK
+            schema:
+              $ref: '#/definitions/IssueSeverityLevelsResponse'
+            examples:
+              application/json:
+                response:
+                  code: SUCCESS
+                  data:
+                    totalCount: 3
+                    items:
+                      - description: Low
+                        issueSeverityLevelCode: LOW
+                      - description: Medium
+                        issueSeverityLevelCode: MEDIUM
+                      - description: High
+                        issueSeverityLevelCode: HIGH
+
   '/issues-api/v2/accounts/{accountUid}/issue-types':
     get:
       summary: Get account issue types
@@ -2557,6 +2585,7 @@ paths:
                   issueStateCode: OPENED
                   issueTextModifiedDate: null
                   answered: false
+                  issueSeverityLevelCode: LOW
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/issueText':
     put:
       summary: Edit Issue
@@ -2693,6 +2722,7 @@ paths:
                   issueStateCode: OPENED
                   issueTextModifiedDate: null
                   answered: false
+                  issueSeverityLevelCode: LOW
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/answered':
     put:
       summary: Change issue attribute "answered"
@@ -2732,6 +2762,45 @@ paths:
                 code: SUCCESS
                 data:
                   answered: true
+  '/projects/{projectId}/issues/{issueUid}/severity-level':
+      put:
+        summary: Change issue attribute "severity level"
+        description: >-
+          Change issue attribute "severity level" (LOW / MEDIUM / HIGH)
+        tags:
+          - Issues
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        parameters:
+          - name: projectId
+            in: path
+            required: true
+            type: string
+            description: Unique identifier of corresponding project
+          - name: issueUid
+            in: path
+            required: true
+            type: string
+            description: Unique identifier of corresponding issue
+          - name: request
+            description: ''
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/IssueSeverityLevelRequest'
+        responses:
+          200:
+            description: OK
+            schema:
+              $ref: '#/definitions/IssueSeverityLevelResponse'
+            examples:
+              application/json:
+                response:
+                  code: SUCCESS
+                  data:
+                    issueSeverityLevelCode: LOW
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/comments':
     post:
       summary: Create Comment
@@ -2976,6 +3045,7 @@ paths:
                       issueStateCode: OPENED
                       issueTextModifiedDate: null
                       answered: false
+                      issueSeverityLevelCode: LOW
                   totalCount: 1
   '/issues-api/v2/projects/{projectId}/issues/count':
     post:
@@ -6799,6 +6869,13 @@ definitions:
             type: string
             description: An identifying code for a language in Smartling.
             example: ru-RU
+      issueSeverityLevelCode:
+        type: string
+        enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+        description: Issue Severity Level identifier
   IssueTextRequest:
     type: object
     required:
@@ -6826,6 +6903,19 @@ definitions:
     properties:
       answered:
         type: boolean
+        description: Issue flag "answered"
+  IssueSeverityLevelRequest:
+      type: object
+      required:
+        - issueSeverityLevelCode
+      properties:
+        issueSeverityLevelCode:
+          type: string
+          enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+          description: Issue Severity Level identifier
   CommentRequest:
     type: object
     required:
@@ -7002,6 +7092,13 @@ definitions:
       answered:
         type: boolean
         example: true
+      issueSeverityLevelCode:
+        type: string
+        enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+
 
 #
 # Strings API definitions
@@ -8175,6 +8272,32 @@ definitions:
                       - OPENED
                       - RESOLVED
                     description: Issue State identifier
+  IssueSeverityLevelsResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          properties:
+            totalCount:
+              type: integer
+              description: Total element count
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    description: Issue Severity Level description
+                  issueSeverityLevelCode:
+                    type: string
+                    enum:
+                      - LOW
+                      - MEDIUM
+                      - HIGH
+                    description: Issue Severity Level identifier
   AccountIssueTypesResponse:
     allOf:
     - $ref: '#/definitions/SuccessResponse'
@@ -8268,6 +8391,13 @@ definitions:
             answered:
               type: boolean
               description: Issue flag "aswered"
+            issueSeverityLevelCode:
+              type: string
+              enum:
+                - LOW
+                - MEDIUM
+                - HIGH
+              description: Issue Severity Level identifier
   IssueTextResponse:
     allOf:
     - $ref: '#/definitions/SuccessResponse'
@@ -8364,6 +8494,13 @@ definitions:
             answered:
               type: boolean
               description: Issue flag "aswered"
+            issueSeverityLevelCode:
+              type: string
+              enum:
+                - LOW
+                - MEDIUM
+                - HIGH
+              description: Issue Severity Level identifier
   IssueAnsweredResponse:
     allOf:
     - $ref: '#/definitions/SuccessResponse'
@@ -8375,6 +8512,21 @@ definitions:
             answered:
               type: boolean
               description: Issue flag "aswered"
+  IssueSeverityLevelResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          properties:
+            issueSeverityLevelCode:
+              type: string
+              enum:
+                - LOW
+                - MEDIUM
+                - HIGH
+              description: Issue Severity Level identifier
   IssueCommentAddResponse:
     allOf:
       - $ref: '#/definitions/SuccessResponse'
@@ -8551,6 +8703,13 @@ definitions:
                     answered:
                       type: boolean
                       description: Issue flag "aswered"
+                    issueSeverityLevelCode:
+                      type: string
+                      enum:
+                        - LOW
+                        - MEDIUM
+                        - HIGH
+                      description: Issue Severity Level identifier
   IssuesCountResponse:
     allOf:
       - $ref: '#/definitions/SuccessResponse'
