@@ -85,7 +85,11 @@ tags:
   - name: "Account & Projects"
     description: |-
       Each client within Smartling is given their own account with a designated `accountUid`. Within each account is any number of projects. All files, content, and jobs are tied to a particular project. The Accounts & Projects API will allow you to programmatically find and use the projects within your account.
-  
+
+  - name: "Locales"
+    description: |-
+      Locales are the language and country pairs that are used to identify the source content and the desired target locale for your translated content.
+
   - name: "Files"
     description: |-
       Files are typically how you can exchange your content with Smartling to get translations. Smartling supports a wide variety of [file types](https://help.smartling.com/hc/en-us/articles/360001404234). When you upload a file to Smartling, it gets parsed into strings, which will then be sent into the translation queue.
@@ -483,6 +487,59 @@ paths:
                     processed: 6
                     errored: 0
                     skipped: 0
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+
+#
+# Locales API
+#
+  '/locales-api/v2/dictionary/locales':
+    get:
+      summary: List locales
+      description: |
+        The list of available locales within Smartling
+      tags:
+        - Locales
+      parameters:
+        - name: localeIds
+          in: query
+          type: array
+          items:
+            type: string
+          required: false
+          description: Optional param to filter to the specified list of locales
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/LocalesAPISuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 2
+                  items:
+                    - localeId: en
+                      description: English
+                      language:
+                        languageId: en
+                        description: English
+                        direction: RTL
+                        wordDelimiter: CHARACTER
+                      country:
+                    - localeId: en-US
+                      description: English (United States)
+                      language:
+                        languageId: en
+                        description: English
+                        direction: RTL
+                        wordDelimiter: CHARACTER
+                      country:
+                        countryId: US
+                        description: United States
         400: *Error400ResponseDefinition
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
@@ -6146,6 +6203,80 @@ definitions:
       localeId: "ru-RU"
       description: "Russian (Russia)"
       enabled: "true"
+
+  LocalesAPISuccessResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          required:
+            - totalCount
+            - items
+          properties:
+            totalCount:
+              type: integer
+              description: The total number of locales matching the request
+            items:
+              type: array
+              items:
+                $ref: '#/definitions/LocaleApiItem'
+
+  LocaleApiItem:
+    type: object
+    required:
+      - localeId
+      - description
+      - language
+    properties:
+      localeId:
+        type: string
+        description: The identifier for the locale. Locales are defined as a unique combination of language and country pairs.
+      description:
+        type: string
+        description: The name of the locale.
+      language:
+        type: object
+        description: The language that makes up the locale. All locales have a language.
+        properties:
+          languageId:
+            type: string
+            description: The identifier of the language.
+          description:
+            type: string
+            description: The name of the language.
+          direction:
+            type: string
+            enum:
+              - LTR
+              - RTL
+          wordDelimiter:
+            type: string
+            enum:
+              - SPACE
+              - CHARACTER
+      country:
+        type: object
+        description: The country that makes up the locale. Not all locales have a country specified.
+        properties:
+          countryId:
+            type: string
+            description: The identifier of the country.
+          description:
+            type: string
+            description: The name of the country.
+    example:
+      localeId: "en-US"
+      description: "English (United States)"
+      language:
+        languageId: "en"
+        description: "English"
+        direction: "LTR"
+        wordDelimiter: "SPACE"
+      country:
+        countryId: "US"
+        description: "United States"
 
   FilesAPIUploadSuccessResponse:
     allOf:
