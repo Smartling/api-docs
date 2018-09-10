@@ -136,7 +136,132 @@ tags:
 
       For each string in a Smartling project, there is a unique identifier created by hashing together the parsed string text, variant metadata, and in some cases, namespace. When adding strings via the Strings API, each string will be unique. If you try to create a string with identical variant metadata and string text to a string that already exists in the project, the string will be overwritten.
 
+  - name: "Jobs Batches"
+    description: |-
+      Jobs Batches take care about asynchronous processes when uploading files and attaching them to jobs.
+
 paths:
+
+#
+# Jobs Batches
+#
+
+  'jobs-batch-api/v1/projects/{projectId}/batches':
+    post:
+      description: >-
+        Creates batch
+      summary: Create Batch
+      tags:
+        - Jobs Batches
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        type: string
+        format: uid
+        description: A unique identifier for a project.
+      - name: createBatchRequest
+        in: body
+        description: Create Batch Request
+        schema:
+          $ref: '#/definitions/CreateBatchRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateBatchResponse'
+    get:
+      description: >-
+        List batches
+      summary: List Batches
+      tags:
+      - Jobs Batches
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        type: string
+        format: uid
+        description: A unique identifier for a project.
+      - name: translationJobUid
+        in: request
+        required: false
+        type: string
+        format: uid
+        description: A unique identifier for a translationJob.
+      - name: status
+        in: request
+        required: false
+        type: string
+        enum: &BatchStatus
+          - draft
+          - addingFiles
+          - executing
+          - completed
+        description: The status of filtered batches
+      - name: sortBy
+        in: request
+        required: false
+        type: string
+        enum:
+          - createdDate
+          - status
+        default: createdDate
+        description: The field to sort by
+      - name: orderBy
+        in: request
+        required: false
+        type: string
+        enum:
+          - asc
+          - desc
+        default: desc
+        description: Sorting direction
+      - name: offset
+        in: query
+        required: false
+        type: integer
+        default: 0
+        description: Standard Smartling limit and offset to paginate through results. 0 if not specified.
+      - name: limit
+        in: query
+        required: false
+        type: integer
+        default: 20
+        description: Standard Smartling limit and offset to paginate through results. 20 batches are returned by default if not specified.
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ListBatchesResponse'
+
+  'jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}':
+    post:
+      description: >-
+        Get Batch Status
+      summary: Get Batch Status
+      tags:
+        -Job Batches
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        type: string
+        format: uid
+        description: A unique identifier for a project.
+      - name: batchUid
+        in: body
+        required: true
+        type: string
+        format: uid
+        description: A unique identifier for a batch.
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ListBatchesResponse'
+
+
   '/auth-api/v2/authenticate':
     post:
       description: >-
@@ -9003,3 +9128,68 @@ definitions:
                       type: string
                       description: Watcher modification date
 
+#
+# Jobs Batches
+#
+  Batch:
+    description: The Job Batch
+    type: object
+    properties:
+      batchUid:
+        type: string
+        description:
+      status:
+        type: string
+        description:
+      authorized:
+        type: boolean
+        description:
+      translationJobUid:
+        type: string
+        description:
+      projectId:
+        type: string
+        description:
+      createdDate:
+        type: string
+        description:
+      modifiedDate:
+        type: string
+        description:
+      hasError:
+        type: boolean
+        description:
+
+  CreateBatchRequest:
+    description: The payload to use when creating a job batch.
+    type: object
+    properties:
+      translationJobUid:
+        type: string
+        description: The UID of the previously createdtranslation job.
+      authorize:
+        type: boolean
+        description: if set true then job will be authorized when upload and attach processes completed for all files in the batch.
+  CreateBatchResponse:
+    description: Info about created batch.
+    type: object
+    properties:
+      batchUid:
+        type: string
+        description: The UID of the created batch.
+  ListBatchesResponse:
+    description: A list of found, filtered and sorted batches
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: number of batches in the current rsponse
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/Batch'
