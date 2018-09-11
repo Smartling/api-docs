@@ -141,127 +141,6 @@ tags:
       Jobs Batches take care about asynchronous processes when uploading files and attaching them to jobs.
 
 paths:
-
-#
-# Jobs Batches
-#
-
-  'jobs-batch-api/v1/projects/{projectId}/batches':
-    post:
-      description: >-
-        Creates batch
-      summary: Create Batch
-      tags:
-        - Jobs Batches
-      parameters:
-      - name: projectId
-        in: path
-        required: true
-        type: string
-        format: uid
-        description: A unique identifier for a project.
-      - name: createBatchRequest
-        in: body
-        description: Create Batch Request
-        schema:
-          $ref: '#/definitions/CreateBatchRequest'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/CreateBatchResponse'
-    get:
-      description: >-
-        List batches
-      summary: List Batches
-      tags:
-      - Jobs Batches
-      parameters:
-      - name: projectId
-        in: path
-        required: true
-        type: string
-        format: uid
-        description: A unique identifier for a project.
-      - name: translationJobUid
-        in: request
-        required: false
-        type: string
-        format: uid
-        description: A unique identifier for a translationJob.
-      - name: status
-        in: request
-        required: false
-        type: string
-        enum: &BatchStatus
-          - draft
-          - addingFiles
-          - executing
-          - completed
-        description: The status of filtered batches
-      - name: sortBy
-        in: request
-        required: false
-        type: string
-        enum:
-          - createdDate
-          - status
-        default: createdDate
-        description: The field to sort by
-      - name: orderBy
-        in: request
-        required: false
-        type: string
-        enum:
-          - asc
-          - desc
-        default: desc
-        description: Sorting direction
-      - name: offset
-        in: query
-        required: false
-        type: integer
-        default: 0
-        description: Standard Smartling limit and offset to paginate through results. 0 if not specified.
-      - name: limit
-        in: query
-        required: false
-        type: integer
-        default: 20
-        description: Standard Smartling limit and offset to paginate through results. 20 batches are returned by default if not specified.
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/ListBatchesResponse'
-
-  'jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}':
-    post:
-      description: >-
-        Get Batch Status
-      summary: Get Batch Status
-      tags:
-        -Job Batches
-      parameters:
-      - name: projectId
-        in: path
-        required: true
-        type: string
-        format: uid
-        description: A unique identifier for a project.
-      - name: batchUid
-        in: body
-        required: true
-        type: string
-        format: uid
-        description: A unique identifier for a batch.
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/ListBatchesResponse'
-
-
   '/auth-api/v2/authenticate':
     post:
       description: >-
@@ -5910,6 +5789,300 @@ paths:
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
 
+  #
+  # Jobs Batches
+  #
+
+  '/jobs-batch-api/v1/projects/{projectId}/batches':
+    post:
+      description: >-
+        Creates batch
+      summary: Create Batch
+      tags:
+      - Jobs Batches
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        type: string
+        format: uid
+        description: A unique identifier for a project.
+      - name: createBatchRequest
+        in: body
+        schema:
+          $ref: '#/definitions/CreateBatchRequest'
+        description: Create Batch Request
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateBatchResponse'
+    get:
+      description: >-
+        List batches
+      summary: List Batches
+      tags:
+      - Jobs Batches
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        type: string
+        format: uuid
+        description: An unique identifier for a project.
+      - name: translationJobUid
+        in: query
+        type: string
+        format: uid
+        description: A unique identifier for a translationJob.
+      - name: status
+        in: query
+        type: string
+        enum: &BatchStatus
+        - draft
+        - addingFiles
+        - executing
+        - completed
+        description: The status of the Batch
+      - name: sortBy
+        in: query
+        type: string
+        enum:
+        - createdDate
+        - status
+        default: createdDate
+        description: The field to sort by
+      - name: orderBy
+        in: query
+        type: string
+        enum:
+        - asc
+        - desc
+        default: desc
+        description: Sorting direction
+      - name: offset
+        in: query
+        type: integer
+        default: 0
+        description: Standard Smartling limit and offset to paginate through results. 0 if not specified.
+      - name: limit
+        in: query
+        type: integer
+        default: 20
+        description: Standard Smartling limit and offset to paginate through results. 20 batches are returned by default if not specified.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ListBatchesResponse'
+
+  '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}':
+    get:
+      description: >-
+        Get Batch Status
+      summary: Get Batch Status
+      tags:
+      - Job Batches
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        type: string
+        format: uid
+        description: A unique identifier for a project.
+      - name: batchUid
+        in: path
+        required: true
+        type: string
+        format: uid
+        description: A unique identifier for a batch.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/BatchStatusResponse'
+    post:
+      description: >-
+        Execute Batch
+      summary: Execute Batch
+      tags:
+      - Job Batches
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        type: string
+        format: uid
+        description: A unique identifier for a project.
+      - name: batchUid
+        in: path
+        required: true
+        type: string
+        format: uid
+        description: A unique identifier for a batch.
+      - name: batchActionRequest
+        in: body
+        schema:
+          $ref: '#/definitions/BatchActionRequest'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ListBatchesResponse'
+
+  '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}/file':
+    post:
+      summary: Add file to a Batch
+      description: |
+        This endpoints is actually a proxy for Upload File in Files API, and works with the two differences
+         1. it additionally gets `batchUid` as path parameter
+         2. it doesn't relay `localeIdsToAuthorize` to *Files Api* so the file stays unauthorized. Instead, `localeIdsToAuthorize` are saved just for this batch session and are used when file is being attached to a job.
+
+        Adds original source content to a Job Batch Smartling.
+
+        **Example**
+        ```bash
+          curl -X POST -H "Authorization: Bearer {token}" -F "file=@file.properties;type=text/plain" -F "fileUri=file.properties"  -F "fileType=javaProperties" 'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}/file'
+        ```
+
+        The example above will upload your Java properties file directly into the Smartling project identified by the `projectId`. Smartling will ingest this file, parse out the keys and text as strings for translation. At this point, content is ready for translation.
+
+      tags:
+      - Job Batches
+      consumes:
+      - multipart/form-data
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        type: string
+        format: uid
+        description: A unique identifier for a project.
+      - name: batchUid
+        in: path
+        required: true
+        type: string
+        format: uid
+        description: A unique identifier for a batch.
+      - name: file
+        in: formData
+        required: true
+        type: file
+        description: The file contents to upload.
+      - name: fileUri
+        in: formData
+        required: true
+        type: string
+        description: |
+          A value that uniquely identifies the uploaded file. This ID can be used to request the file back. We recommend that you use file path and file name, similar to how version control systems identify the file.
+
+          Example: `/myproject/i18n/ui.properties`
+      - name: fileType
+        in: formData
+        required: true
+        type: string
+        description: A unique identifier for the file type.
+        enum: *fileTypes
+      - name: authorize
+        in: formData
+        required: false
+        type: boolean
+        default: false
+        description: |
+          Determines whether content in the file is authorized (available for translation) in all locales upon submitting the file via the Smartling Dashboard. An error message will be returned if there are insufficient translation funds and authorized is set to `true`. If a string has been completely excluded for translation from all languages, or excluded from translation for a specific language, `authorize` will NOT authorize it.
+
+          To specify a limited list of locales to authorize, use the `localeIdsToAuthorize[]` parameter.
+
+            Value | Description
+            ----- | -----------
+            true |  Content will be available for translation in all locales upon upload.
+            false |  Content will be added to the "Awaiting Authorization" queue upon upload.
+      - name: localeIdsToAuthorize[]
+        in: formData
+        required: true
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+        description: |
+          This value declares locales list which should be used when file is attached to a job.
+
+          **Note**: File will not be authorized for these locales once it is uploaded. Authorization is happened only when job is authorized.
+      - name: smartling.namespace
+        in: formData
+        required: false
+        type: string
+        description: |
+          This is only for accounts created after July 31st, 2015. Define a custom [namespace](https://developer.smartling.com/v2.0/docs/string-sharing-namespaces) for the file.
+
+          **Note**: While this parameter shares the format of other file directives, it will not work as an inline directive and must be specified in the API call.
+      - name: smartling.file_charset
+        in: formData
+        required: false
+        type: string
+        description: |
+          Specifies a custom charset for text-format files. The value should be the name of the character set. See a full list of supported character sets here.
+
+          If this directive is not used, Smartling will use the ```Content-Type``` request header to determine if the content is encoded with UTF-16, UTF-16B or UTF-16LE. If there is no ```Content-Type``` header, Smartling will examine the file for UTF-16 characters. If none are detected, UTF-8 encoding will be used.
+
+          **Note**: Once this property has been set for a file, it cannot be changed. If you reupload the file, it will use the original charset, even if you change the directive. An error will be returned if this directive is used when uploading binary-format file types, such as Office or IDML files.
+      - name: smartling.[command]
+        in: formData
+        required: false
+        type: string
+        description: |
+          Provides custom parser configuration for supported file types. See [Supported File Types](https://developer.smartling.com/docs/supported-file-types) for more details.
+      - name: callbackUrl
+        in: formData
+        required: false
+        type: string
+        format: url
+        description: |
+          A GET request that creates a callback to a URL when a file is 100% published for a locale. The callback gives the fileUri and locale with the format `http[/s]://your.url?locale=xx-XX&fileUri=your.file`. If you upload the file again, without a callbackUrl, it will remove any previous callbackUrl for that file. The RequestBin (http://requestb.in) service is a convenient way to test callback. RequestBin generates a short-lived disposable URL that displays all posted requests.
+
+          If a callback fails, Smartling will make multiple attempts to reach the designated URL, however, we do not keep retrying a failed callback indefinitely. Try to make sure your callback URL is as stable as possible and be aware that callbacks are not a 100% reliable way of being notified that a file is published.
+
+          If the upload has begun but is taking more than a minute to complete, it responds with status `202`.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/FilesAPIUploadSuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  overWritten: true
+                  stringCount: 10
+                  wordCount: 2
+        202:
+          description: ACCEPTED
+          schema:
+            $ref: '#/definitions/FilesAPIUploadAcceptedResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  message: Your file was successfully uploaded. Word and string counts are not available right now.
+
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        423:
+          description: The requested file is currently being processed by another operation. The file will be unlocked after the operation completes.
+          schema:
+            $ref: '#/definitions/Error423Response'
+          examples:
+            application/json:
+              response:
+                code: RESOURCE_LOCKED
+                errors:
+                  key: resource.locked
+                  message: The file is currently being processed and will be available in a few minutes.
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+
 definitions:
 
   SuccessResponse:
@@ -9128,37 +9301,83 @@ definitions:
                       type: string
                       description: Watcher modification date
 
-#
-# Jobs Batches
-#
+  #
+  # Jobs Batches
+  #
+
   Batch:
-    description: The Job Batch
+    description: The Job Batch is a session for uploading multiple files into tms, attaching them to a translationJob and authorizing this job.
     type: object
     properties:
       batchUid:
         type: string
-        description:
+        format: uid
+        description: A unique identifier for a batch.
       status:
         type: string
-        description:
+        description: The status of the Batch
+        enum: *BatchStatus
       authorized:
         type: boolean
-        description:
+        description: The flag showing if authorizing job is requested for this Batch
       translationJobUid:
         type: string
-        description:
+        format: uid
+        description: The UID of the translationJob
       projectId:
         type: string
-        description:
+        format: uid
+        description: The UID of the project
       createdDate:
         type: string
-        description:
+        format: date-time
       modifiedDate:
         type: string
-        description:
+        format: date-time
       hasError:
         type: boolean
-        description:
+        description: Shows if any error occured while batch processing.
+
+  BatchItem:
+    description: Associates an uploaded file with particular Batch. BatchItem is handled
+    type: object
+    properties:
+      fileUri:
+        type: string
+        description: Uri of the file linked to the Batch
+      status:
+        type: string
+        enum: &BatchItemStatus
+        - UPLOADING
+        - UPLOAD_FAILED
+        - ATTACHING
+        - ATTACH_FAILED
+        - COMPLETED
+        description: The status of the BatchItem
+      targetLocales:
+        type: array
+        items:
+          $ref: '#/definitions/BatchItemLocale'
+      errors:
+        type: string
+        description: A list of errors occured while uploading or attaching file linked to this batchItem
+      updatedDate:
+        type: string
+        format: date-time
+
+  BatchItemLocale:
+    description: A smartling locale which file should be authorized to
+    type: object
+    properties:
+      localeId:
+        type: string
+        description: Smartling locale identifier
+      stringsAdded:
+        type: integer
+        description: Number of strings added to the translationJob from this file
+      stringsSkipped:
+        type: integer
+        description: Number of strings not added to the translationJob from this file
 
   CreateBatchRequest:
     description: The payload to use when creating a job batch.
@@ -9172,24 +9391,71 @@ definitions:
         description: if set true then job will be authorized when upload and attach processes completed for all files in the batch.
   CreateBatchResponse:
     description: Info about created batch.
-    type: object
-    properties:
-      batchUid:
-        type: string
-        description: The UID of the created batch.
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          properties:
+            batchUid:
+              type: string
+              description: The UID of the created batch.
   ListBatchesResponse:
     description: A list of found, filtered and sorted batches
     allOf:
     - $ref: '#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              totalCount:
-                type: integer
-                description: number of batches in the current rsponse
+    - type: object
+      properties:
+        data:
+          type: object
+          properties:
+            totalCount:
+              type: integer
+              description: number of batches in the current rsponse
+            items:
+              type: array
               items:
-                type: array
-                items:
-                  $ref: '#/definitions/Batch'
+                $ref: '#/definitions/Batch'
+  BatchStatusResponse:
+    description: A list of found, filtered and sorted batches
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              description: The status of the Batch
+              enum: *BatchStatus
+            authorized:
+              type: boolean
+              description: The flag showing if authorizing job is requested for this Batch
+            jobUid:
+              type: string
+              format: uid
+              description: The UID of the translationJob
+            projectId:
+              type: string
+              format: uid
+              description: The UID of the project
+            generalErrors:
+              type: string
+              description: Describe errors list occured while batch processing
+            files:
+              type: array
+              items:
+                $ref: '#/definitions/BatchItem'
+            updatedDate:
+              type: string
+              format: date-time
+  BatchActionRequest:
+    description: Describes action to be done with the Batch
+    type: object
+    properties:
+      action:
+        type: string
+        enum:
+        - execute
