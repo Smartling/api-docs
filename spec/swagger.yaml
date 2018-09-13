@@ -138,7 +138,7 @@ tags:
 
   - name: "Jobs Batches"
     description: |-
-      Jobs Batches take care about asynchronous processes when uploading files and attaching them to jobs.
+      Jobs Batches take care of asynchronous processes when uploading files and attaching them to jobs.
       Generally, adding multiple files to a job is associated with polling - file is parsed asynchronously and can't be added to a job until it is completed, adding file to a job is also asynchronous, and job can't be authorized until all background tasks completed.
       This forces third-party integration poll every file after every step.
 
@@ -155,8 +155,8 @@ tags:
       After Batch is completed it can't be reused.
 
       **Jobs Batches Limitations**
-      Service doesn't guarantees correct processing of multiple batches for the same job in parallel. Adding files to a new batch should be done only after previous batch reached "completed" state.
-      Service doesn't guarantees correct processing of Batch if Job and Files are modified in UI or with another integration.
+      Service doesn't guarantee correct processing of multiple batches for the same job in parallel. Adding files to a new batch should be done only after previous batch reached "completed" state.
+      Service doesn't guarantee correct processing of Batch if Job and Files are modified in UI or with another integration.
 
 paths:
   '/auth-api/v2/authenticate':
@@ -6043,7 +6043,7 @@ paths:
     post:
       summary: Execute Batch
       description: |-
-        Trigers asynchronous executing Batch.
+        Triggers asynchronous executing Batch.
         In the Execute flow Batch waits until all files are uploaded and attached or failed on one of these operations.
         When all these asynchronous processes are completed job `authorize` is triggered if was requested and Batch is turned into the `COMPLETED` status
 
@@ -6052,7 +6052,7 @@ paths:
         **Example**
         ```bash
           curl -X POST \
-            'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}' \
+            'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}' \
             -H "Authorization: Bearer {token}"  \
             -d '{
         	      "action": "execute"
@@ -6109,7 +6109,7 @@ paths:
          1. it additionally gets `batchUid` as path parameter
          2. it doesn't relay `localeIdsToAuthorize` to *Files Api* so the file stays unauthorized. Instead, `localeIdsToAuthorize` are saved just for this batch session and are used when file is being attached to a job.
 
-        when first file is added into the new batch it turns into the `ADDING_FILES` status
+        When the first file is added into the new batch it turns into the `ADDING_FILES` status.
 
         Adds original source content to a Job Batch Smartling.
 
@@ -9557,7 +9557,7 @@ definitions:
     properties:
       translationJobUid:
         type: string
-        description: The UID of the previously createdtranslation job.
+        description: The UID of the previously created translation job.
       authorize:
         type: boolean
         description: if set true then job will be authorized when upload and attach processes completed for all files in the batch.
@@ -9615,7 +9615,7 @@ definitions:
               description: The UID of the project
             generalErrors:
               type: string
-              description: Describe errors list occured while batch processing
+              description: Describes a list of errors which occured while batch processing
             files:
               type: array
               items:
@@ -9624,7 +9624,7 @@ definitions:
               type: string
               format: date-time
   BatchActionRequest:
-    description: Describes action to be done with the Batch
+    description: Describes the action to be done with the Batch
     type: object
     properties:
       action:
