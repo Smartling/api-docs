@@ -8,7 +8,7 @@
 - Look full spec:
     + JSON https://smartling.github.io/api-docs/swagger.json
     + YAML https://smartling.github.io/api-docs/swagger.yaml
-- Preview spec version for branch `[branch]`: https://smartling.github.io/api-docs/preview/[branch]
+- Preview spec version for branch `[branch]`: https://smartling.github.io/api-docs/preview/[branch] (note: use lower case name in the url for the branch)
 
 **Warning:** All above links are updated only after Travis CI finishes deployment
 
