@@ -101,13 +101,13 @@ tags:
 
       The Jobs API allows you to create a job, add a file to a job, authorize a job, and cancel a job, among many other actions. You have full control via the API to manage your job(s).
 
-  - name: "Jobs Batches"
+  - name: "Job batches"
     description: |-
-      Jobs Batches take care of asynchronous processes when uploading files and attaching them to jobs.  
+      Job batches take care of asynchronous processes when uploading files and attaching them to jobs.
       Generally, adding multiple files to a job is associated with polling - file is parsed asynchronously and can't be added to a job until it is completed, adding file to a job is also asynchronous, and job can't be authorized until all background tasks completed.  
       This forces third-party integration poll every file after every step.  
 
-      Batches hide these asynchronous processes from 3rd party integration - after it accepted file from client it conducts this file through all steps up to the Job authorization. As Jobs Batch Service utilizes internal Smartling events it gets more effective than just polling files and jobs.  
+      Batches hide these asynchronous processes from 3rd party integration - after it accepted file from client it conducts this file through all steps up to the Job authorization. As Job batch Service utilizes internal Smartling events it gets more effective than just polling files and jobs.
       From the client side flow consists of simple steps:
 
       1. Client creates Job (or uses existing one, which isn't currently processed with another Batch)
@@ -119,7 +119,7 @@ tags:
 
       After Batch is completed it can't be reused.
 
-      **Jobs Batches Limitations**
+      **Job batches Limitations**
       - Service doesn't guarantee correct processing of multiple batches for the same job in parallel. Adding files to a new batch should be done only after previous batch reached "completed" state.
       - Service doesn't guarantee correct processing of Batch if Job and Files are modified in UI or with another integration.
 
@@ -5808,7 +5808,7 @@ paths:
         500: *Error500ResponseDefinition
 
   #
-  # Jobs Batches
+  # Job batches
   #
 
   '/jobs-batch-api/v1/projects/{projectId}/batches':
@@ -5830,7 +5830,7 @@ paths:
                }'
         ```
       tags:
-      - Jobs Batches
+      - Job batches
       parameters:
       - name: projectId
         in: path
@@ -5881,7 +5881,7 @@ paths:
             -H "Authorization: Bearer {token}"
         ```
       tags:
-      - Jobs Batches
+      - Job batches
       parameters:
       - name: projectId
         in: path
@@ -5973,7 +5973,7 @@ paths:
            -H "Authorization: Bearer {token}"
         ```
       tags:
-      - Jobs Batches
+      - Job batches
       parameters:
       - name: projectId
         in: path
@@ -6059,7 +6059,7 @@ paths:
         	   }'
         ```
       tags:
-      - Jobs Batches
+      - Job batches
       parameters:
       - name: projectId
         in: path
@@ -6101,7 +6101,7 @@ paths:
                   message: "Bob {batchUid} not found for project {projectId}."
         401: *Error401ResponseDefinition
         500: *Error500ResponseDefinition
-  '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}/file':
+  '/jobs-batch-api/v1/projects/{projectId}/batches/batchUid/file':
     post:
       summary: Add file to a Batch
       description: |
@@ -6127,7 +6127,7 @@ paths:
         Response is returned right after file content is accepted by File Api. But after that Batch service controls if the file upload finished - content parsed and all strings are ingested, and then file is attached to the Job linked with Batch for locales described in `localeIdsToAuthorize`
 
       tags:
-      - Jobs Batches
+      - Job batches
       consumes:
       - multipart/form-data
       parameters:
@@ -9474,7 +9474,7 @@ definitions:
                       description: Watcher modification date
 
   #
-  # Jobs Batches
+  # Job batches
   #
 
   Batch:
@@ -9503,9 +9503,13 @@ definitions:
       createdDate:
         type: string
         format: date-time
+        description: The UTC value of the date the batch was created.
+        example: 2015-11-21T01:51:17Z
       modifiedDate:
         type: string
         format: date-time
+        description: The UTC value of the date the batch was modified.
+        example: 2015-11-21T01:51:17Z
       hasError:
         type: boolean
         description: Shows if any error occured while batch processing.
