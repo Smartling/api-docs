@@ -101,6 +101,28 @@ tags:
 
       The Jobs API allows you to create a job, add a file to a job, authorize a job, and cancel a job, among many other actions. You have full control via the API to manage your job(s).
 
+  - name: "Jobs Batches"
+    description: |-
+      Jobs Batches take care of asynchronous processes when uploading files and attaching them to jobs.  
+      Generally, adding multiple files to a job is associated with polling - file is parsed asynchronously and can't be added to a job until it is completed, adding file to a job is also asynchronous, and job can't be authorized until all background tasks completed.  
+      This forces third-party integration poll every file after every step.  
+
+      Batches hide these asynchronous processes from 3rd party integration - after it accepted file from client it conducts this file through all steps up to the Job authorization. As Jobs Batch Service utilizes internal Smartling events it gets more effective than just polling files and jobs.  
+      From the client side flow consists of simple steps:
+
+      1. Client creates Job (or uses existing one, which isn't currently processed with another Batch)
+      2. Client Creates a new Batch for this Job
+      3. Client adds (uploads) files into the batch giving target locales list for each file
+      4. When all files are uploaded, client triggers "execute" for the batch.
+      5. Batch execution process waiting until all files are uploaded and added to the Job and then, if was requested, authorizes the Job.
+      6. Clients can check batch status and see if all files uploaded and attached successfully, what errors happened for each file, and statistics for added/skipped strings.
+
+      After Batch is completed it can't be reused.
+
+      **Jobs Batches Limitations**
+      - Service doesn't guarantee correct processing of multiple batches for the same job in parallel. Adding files to a new batch should be done only after previous batch reached "completed" state.
+      - Service doesn't guarantee correct processing of Batch if Job and Files are modified in UI or with another integration.
+
   - name: "Context"
     description: |-
       Visual context helps Translators make linguistic, layout, and spacing decisions based on where strings appear in your mobile or desktop application. The Context API supports uploading various forms of context (images and HTML), and associate the context with content in Smartling.
@@ -135,28 +157,6 @@ tags:
       The Strings API allows you to directly upload strings to a Smartling project and fetch original strings or translations.
 
       For each string in a Smartling project, there is a unique identifier created by hashing together the parsed string text, variant metadata, and in some cases, namespace. When adding strings via the Strings API, each string will be unique. If you try to create a string with identical variant metadata and string text to a string that already exists in the project, the string will be overwritten.
-
-  - name: "Jobs Batches"
-    description: |-
-      Jobs Batches take care of asynchronous processes when uploading files and attaching them to jobs.
-      Generally, adding multiple files to a job is associated with polling - file is parsed asynchronously and can't be added to a job until it is completed, adding file to a job is also asynchronous, and job can't be authorized until all background tasks completed.
-      This forces third-party integration poll every file after every step.
-
-      Batches hide these asynchronous processes from 3rd party integration - after it accepted file from client it conducts this file through all steps up to the Job authorization. As Jobs Batch Service utilizes internal Smartling events it gets more effective than just polling files and jobs.
-      From the client side flow consists of simple steps:
-
-      1. Client creates Job (or uses existing one, which isn't currently processed with another Batch)
-      2. Client Creates a new Batch for this Job
-      3. Client adds (uploads) files into the batch giving target locales list for each file
-      4. When all files are uploaded, client triggers "execute" for the batch.
-      5. Batch execution process waiting until all files are uploaded and added to the Job and then, if was requested, authorizes the Job.
-      6. Clients can check batch status and see if all files uploaded and attached successfully, what errors happened for each file, and statistics for added/skipped strings.
-
-      After Batch is completed it can't be reused.
-
-      **Jobs Batches Limitations**
-      Service doesn't guarantee correct processing of multiple batches for the same job in parallel. Adding files to a new batch should be done only after previous batch reached "completed" state.
-      Service doesn't guarantee correct processing of Batch if Job and Files are modified in UI or with another integration.
 
 paths:
   '/auth-api/v2/authenticate':
@@ -6168,7 +6168,7 @@ paths:
         type: boolean
         default: false
         description: |
-          Inored
+          Ignored
           Endpoint accepts this field to be consistent with `File Upload` but it doesn't relay it to File Api
       - name: localeIdsToAuthorize[]
         in: formData
