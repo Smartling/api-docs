@@ -1649,6 +1649,51 @@ paths:
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
 
+  '/published-files-api/v2/projects/{projectId}/files/list/recently-published':
+    get:
+      summary: List recently published files in project
+      description: |
+        Return list of files that were published in last 14 days
+
+        **Example:**
+        ```bash
+          curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/published-files-api/v2/projects/{projectId}/files/list/recently-published?publishedAfter=2015-11-21T11:51:17Z'
+        ```
+
+      tags:
+        - Files
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: A unique identifier for a project.
+        - name: publishedAfter
+          in: query
+          required: true
+          type: string
+          format: YYYY-MM-DDThh:mm:ssZ
+          description: List files published after specified date, up to 14 days from now
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/PublishedFilesRecentlyPublishedFilesListSuccessResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  items:
+                  - fileUri: "/files/application.json"
+                    localeId: 'es-ES'
+                    publishDate: '2017-09-06T20:29:15Z'
+
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+
 #
 # Context API endpoints
 #
@@ -9005,3 +9050,25 @@ definitions:
                       type: string
                       description: Watcher modification date
 
+  PublishedFilesRecentlyPublishedFilesListSuccessResponse:
+    allOf:
+      - $ref: '#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    fileUri:
+                      type: string
+                    localeId:
+                      type: string
+                      example: en-US
+                    publishDate:
+                      type: string
+                      format: YYYY-MM-DDThh:mm:ssZ
+                      example: "2015-11-21T11:51:17Z"
