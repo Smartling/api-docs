@@ -92,7 +92,7 @@ tags:
 
   - name: "Files"
     description: |-
-      Files are typically how you can exchange your content with Smartling to get translations. Smartling supports a wide variety of [file types](https://help.smartling.com/hc/en-us/articles/360001404234). When you upload a file to Smartling, it gets parsed into strings, which will then be sent into the translation queue.
+      Files are typically how you can exchange your content with Smartling to get translations. Smartling supports a wide variety of [file types](https://help.smartling.com/hc/en-us/articles/360007998893). When you upload a file to Smartling, it gets parsed into strings, which will then be sent into the translation queue.
 
   - name: "Jobs"
     description: |-
@@ -499,7 +499,7 @@ paths:
     get:
       summary: List locales
       description: |
-        The list of available locales within Smartling
+        The list of available locales within Smartling.
       tags:
         - Locales
       parameters:
@@ -509,7 +509,7 @@ paths:
           items:
             type: string
           required: false
-          description: Optional param to filter to the specified list of locales
+          description: Optional parameter to filter to the specified list of locales.
       responses:
         200:
           description: OK
@@ -640,7 +640,7 @@ paths:
             type: string
           collectionFormat: multi
           description: |
-            This value, if set, authorizes strings for translation into specific locales. Use the project/locale/list call to get the list of locales for the project, or view them in the dashboard on the API settings page. Use multiple the `localeIdsToAuthorize` parameter pairs to authorize more than one locale. You can add languages by uploading the file again and indicating the language to authorize with `localeIdsToAuthorize` or all languages with `authorize`, or in the dashboard using the "Show Partially Authorized" filter option from the Awaiting Authorization list. 
+            This value, if set, authorizes strings for translation into specific locales. Use the `project/locale/list` call to get the list of locales for the project, or view them in the dashboard on the API settings page. Use multiple the `localeIdsToAuthorize` parameter pairs to authorize more than one locale. You can add languages by uploading the file again and indicating the language to authorize with `localeIdsToAuthorize` or all languages with `authorize`, or in the dashboard using the "Show Partially Authorized" filter option from the Awaiting Authorization list. 
 
             If the string has been completely excluded for translation from all languages, or excluded from translation for a specific language, `localesIdsToAuthorize` will NOT authorize it. 
 
@@ -650,7 +650,7 @@ paths:
           required: false
           type: string
           description: |
-            This is only for accounts created after July 31st, 2015. Define a custom [namespace](https://developer.smartling.com/v2.0/docs/string-sharing-namespaces) for the file. 
+            This is only for accounts created after July 31st, 2015. Define a custom [namespace](https://help.smartling.com/hc/en-us/articles/360008143833) for the file. 
 
             **Note**: While this parameter shares the format of other file directives, it will not work as an inline directive and must be specified in the API call.
         - name: smartling.file_charset
@@ -668,18 +668,18 @@ paths:
           required: false
           type: string
           description: |
-            Provides custom parser configuration for supported file types. See [Supported File Types](https://developer.smartling.com/docs/supported-file-types) for more details.
+            Provides custom parser configuration for supported file types. See [Supported File Types](https://help.smartling.com/hc/en-us/articles/360007998893) for more details.
         - name: callbackUrl
           in: formData
           required: false
           type: string
           format: url
           description: |
-            A GET request that creates a callback to a URL when a file is 100% published for a locale. The callback gives the fileUri and locale with the format `http[/s]://your.url?locale=xx-XX&fileUri=your.file`. If you upload the file again, without a callbackUrl, it will remove any previous callbackUrl for that file. The RequestBin (http://requestb.in) service is a convenient way to test callback. RequestBin generates a short-lived disposable URL that displays all posted requests.
+            A GET request that creates a callback to a URL when a file is 100% published for a locale. The callback gives the fileUri and locale with the format `http[/s]://your.url?locale=xx-XX&fileUri=your.file`. If you upload the file again, without a callbackUrl, it will remove any previous callbackUrl for that file. The RequestBin (http://requestb.in) service is a convenient way to test a callback. RequestBin generates a short-lived disposable URL that displays all posted requests.
 
-            If a callback fails, Smartling will make multiple attempts to reach the designated URL, however, we do not keep retrying a failed callback indefinitely. Try to make sure your callback URL is as stable as possible and be aware that callbacks are not a 100% reliable way of being notified that a file is published.
+            If a callback fails, Smartling will make multiple attempts to reach the designated URL. However, we do not keep retrying a failed callback indefinitely. Try to make sure your callback URL is as stable as possible and be aware that callbacks are not a 100% reliable way of being notified that a file is published.
 
-            If the upload has begun but is taking more than a minute to complete, it responds with status `202`.
+            If the upload has begun but is taking more than a minute to complete, it responds with a `202`status.
       responses:
         200:
           description: OK
@@ -730,7 +730,7 @@ paths:
           curl -H "Authorization: Bearer {token}" "https://api.smartling.com/files-api/v2/projects/{projectId}/file?fileUri={your-file-URI}"
         ```
         
-        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a 200 SUCCESS response. If you receive any other response status code than 200, the requested file will not be part of the response.
+        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a `200` SUCCESS response. If you receive a response status code other than `200`, the requested file will not be part of the response.
 
         When you upload a UTF-16 character encoded file, then /file/get requests for that file will have a character encoding of UTF-16. All other uploaded files will return with a character encoding of UTF-8.
 
@@ -5798,7 +5798,7 @@ definitions:
         type: string
         enum:
           - SUCCESS
-        description: Indicates whether the response was successful or what error has occured
+        description: Indicates whether the response was successful or what error has occured.
 
   Error:
     type: object
@@ -5832,7 +5832,7 @@ definitions:
             enum:
               - GENERAL_ERROR
               - MAINTENANCE_MODE_ERROR
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
           errors:
             type: array
             items:
@@ -5851,7 +5851,7 @@ definitions:
         properties:
           code:
             type: string
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
             enum:
             - VALIDATION_ERROR
           errors:
@@ -5872,7 +5872,7 @@ definitions:
         properties:
           code:
             type: string
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
             enum:
             - AUTHENTICATION_ERROR
             - AUTHORIZATION_ERROR
@@ -5894,7 +5894,7 @@ definitions:
         properties:
           code:
             type: string
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
             enum:
             - NOT_FOUND_ERROR
           errors:
@@ -5915,7 +5915,7 @@ definitions:
         properties:
           code:
             type: string
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
             enum:
             - RESOURCE_LOCKED
           errors:
@@ -5936,7 +5936,7 @@ definitions:
         properties:
           code:
             type: string
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
             enum:
             - MAX_OPERATIONS_LIMIT_EXCEEDED
           errors:
@@ -6294,7 +6294,7 @@ definitions:
           properties:
             overWritten:
               type: boolean
-              description: Indicates whether the uploaded file has overwritten an existing file
+              description: Indicates whether the uploaded file has overwritten an existing file.
             stringCount:
               type: integer
               description: The number of strings in the uploaded file
