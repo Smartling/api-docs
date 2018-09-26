@@ -5865,6 +5865,8 @@ paths:
           required: true
           schema:
             type: object
+            required:
+              - stringHashcodes
             properties:
               stringHashcodes:
                 type: array
@@ -5884,32 +5886,33 @@ paths:
         - Tags
       description: "Add list of tags to list of strings"
       parameters:
-        - name: projectId
-          in: path
-          required: true
-          type: string
-          description: "Project Id."
-        - name: tagsWithStrings
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              tags:
-                type: array
-                required: true
-                minItems: 1
-                maxItems: 100
-                description: "List of tags"
-                items:
-                  type: string
-              stringHashcodes:
-                type: array
-                required: true
-                maxItems: 1000
-                description: "List of string hashcodes"
-                items:
-                  type: string
+      - name: projectId
+        in: path
+        required: true
+        type: string
+        description: "Project Id."
+      - name: tagsWithStrings
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - tags
+            - stringHashcodes
+          properties:
+            tags:
+              type: array
+              minItems: 1
+              maxItems: 100
+              description: "List of tags"
+              items:
+                type: string
+            stringHashcodes:
+              type: array
+              maxItems: 1000
+              description: "List of string hashcodes"
+              items:
+                type: string
       responses:
         200:
           description: OK
@@ -5932,10 +5935,12 @@ paths:
         required: true
         schema:
           type: object
+          required:
+            - tags
+            - stringHashcodes
           properties:
             tags:
               type: array
-              required: true
               minItems: 1
               maxItems: 100
               description: "List of tags"
@@ -5943,7 +5948,6 @@ paths:
                 type: string
             stringHashcodes:
               type: array
-              required: true
               maxItems: 1000
               description: "List of string hashcodes"
               items:
@@ -5970,10 +5974,11 @@ paths:
         required: true
         schema:
           type: object
+          required:
+            - stringHashcodes
           properties:
             stringHashcodes:
               type: array
-              required: true
               maxItems: 1000
               description: "List of string hashcodes"
               items:
