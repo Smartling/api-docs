@@ -136,6 +136,10 @@ tags:
 
       For each string in a Smartling project, there is a unique identifier created by hashing together the parsed string text, variant metadata, and in some cases, namespace. When adding strings via the Strings API, each string will be unique. If you try to create a string with identical variant metadata and string text to a string that already exists in the project, the string will be overwritten.
 
+  - name: Tags
+    description: |-
+      The Tags API allows you to add and remove tags for strings, search for tags in project.
+      Tags can help you to manage your strings.
 paths:
   '/auth-api/v2/authenticate':
     post:
@@ -5787,6 +5791,199 @@ paths:
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
 
+  #
+  # Tags
+  #
+  /tags-api/v2/projects/{projectId}/tags:
+    get:
+      summary: "List tags within a project"
+      tags:
+        - Tags
+      description: "List / search tags within a project."
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: "Project Id for search."
+        - name: tagMask
+          in: query
+          required: false
+          type: string
+          default: ""
+          description: "Tag mask for search."
+        - name: limit
+          in: query
+          type: number
+          required: false
+          default: 100
+          minimum: 0
+          maximum: 100
+          description: "The limit on the number of tags returned."
+        - name: offset
+          in: query
+          type: number
+          required: false
+          default: 0
+          minimum: 0
+          description: "The offset to use when searching for tags."
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/GetProjectTagsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 2
+                  items:
+                  - tag: "StringTag"
+                  - tag: "AnotherTag"
+  /tags-api/v2/projects/{projectId}/strings/tags/search:
+    post:
+      summary: "Get all tags for strings"
+      tags:
+        - Tags
+      description: "Retrieve all tags linked to strings"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: "Project Id for search."
+        - name: stringHashcodes
+          in: body
+          description: "List of string hashcodes"
+          required: true
+          schema:
+            type: object
+            properties:
+              stringHashcodes:
+                type: array
+                maxItems: 1000
+                items:
+                  type: string
+                  description: "String hashcode"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/GetStringsTagsResponse'
+  /tags-api/v2/projects/{projectId}/strings/tags/add:
+    post:
+      summary: "Add tags to strings"
+      tags:
+        - Tags
+      description: "Add list of tags to list of strings"
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: "Project Id."
+        - name: tagsWithStrings
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              tags:
+                type: array
+                required: true
+                minItems: 1
+                maxItems: 100
+                description: "List of tags"
+                items:
+                  type: string
+              stringHashcodes:
+                type: array
+                required: true
+                maxItems: 1000
+                description: "List of string hashcodes"
+                items:
+                  type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+  /tags-api/v2/projects/{projectId}/strings/tags/remove:
+    post:
+      summary: "Remove tags from strings"
+      tags:
+        - Tags
+      description: "Remove list of tags from list of strings"
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        type: string
+        description: "Project Id."
+      - name: tagsWithStrings
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            tags:
+              type: array
+              required: true
+              minItems: 1
+              maxItems: 100
+              description: "List of tags"
+              items:
+                type: string
+            stringHashcodes:
+              type: array
+              required: true
+              maxItems: 1000
+              description: "List of string hashcodes"
+              items:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+  /tags-api/v2/projects/{projectId}/strings/tags/remove/all:
+    post:
+      summary: "Remove all tags from strings"
+      tags:
+        - Tags
+      description: "Remove all tags from list of strings"
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        type: string
+        description: "Project Id."
+      - name: strings
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            stringHashcodes:
+              type: array
+              required: true
+              maxItems: 1000
+              description: "List of string hashcodes"
+              items:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+
 definitions:
 
   SuccessResponse:
@@ -9004,4 +9201,58 @@ definitions:
                     modified:
                       type: string
                       description: Watcher modification date
+
+  TagInfo:
+    required:
+      - tag
+    properties:
+      tag:
+        description: Tag text
+        type: string
+        example: "SomeTag"
+  GetProjectTagsResponse:
+    required:
+    - response
+    properties:
+      response:
+        allOf:
+        - $ref: '#/definitions/SuccessResponse'
+        - required:
+          - data
+          properties:
+            data:
+              properties:
+                totalCount:
+                  type: number
+                items:
+                  type: array
+                  items:
+                    $ref: '#/definitions/TagInfo'
+  GetStringsTagsResponse:
+    required:
+    - response
+    properties:
+      response:
+        allOf:
+        - $ref: '#/definitions/SuccessResponse'
+        - required:
+          - data
+          properties:
+            data:
+              properties:
+                totalCount:
+                  type: number
+                  example: 1
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      stringHashcode:
+                        type: string
+                        example: "stringHashcode"
+                      tags:
+                        type: array
+                        items:
+                          $ref: '#/definitions/TagInfo'
 
