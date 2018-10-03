@@ -92,7 +92,7 @@ tags:
 
   - name: "Files"
     description: |-
-      Files are typically how you can exchange your content with Smartling to get translations. Smartling supports a wide variety of [file types](https://help.smartling.com/hc/en-us/articles/360001404234). When you upload a file to Smartling, it gets parsed into strings, which will then be sent into the translation queue.
+      Files are typically how you can exchange your content with Smartling to get translations. Smartling supports a wide variety of [file types](https://help.smartling.com/hc/en-us/articles/360007998893). When you upload a file to Smartling, it gets parsed into strings, which will then be sent into the translation queue.
 
   - name: "Jobs"
     description: |-
@@ -124,6 +124,7 @@ tags:
       * Maximum HTTP header size is 128KB.
       * For requests that use pagination, maximum page size is 5000 elements.
       * For requests that return entities by their UIDs, maximum is 100 elements.
+      
       Rate limits:
       * Maximum 5 concurrent requests.
       * Maximum rate is 200 requests per 15-second window frame.
@@ -503,7 +504,7 @@ paths:
     get:
       summary: List locales
       description: |
-        The list of available locales within Smartling
+        The list of available locales within Smartling.
       tags:
         - Locales
       parameters:
@@ -513,7 +514,7 @@ paths:
           items:
             type: string
           required: false
-          description: Optional param to filter to the specified list of locales
+          description: Optional parameter to filter to the specified list of locales.
       responses:
         200:
           description: OK
@@ -644,7 +645,7 @@ paths:
             type: string
           collectionFormat: multi
           description: |
-            This value, if set, authorizes strings for translation into specific locales. Use the project/locale/list call to get the list of locales for the project, or view them in the dashboard on the API settings page. Use multiple the `localeIdsToAuthorize` parameter pairs to authorize more than one locale. You can add languages by uploading the file again and indicating the language to authorize with `localeIdsToAuthorize` or all languages with `authorize`, or in the dashboard using the "Show Partially Authorized" filter option from the Awaiting Authorization list. 
+            This value, if set, authorizes strings for translation into specific locales. Use the `project/locale/list` call to get the list of locales for the project, or view them in the dashboard on the API settings page. Use multiple the `localeIdsToAuthorize` parameter pairs to authorize more than one locale. You can add languages by uploading the file again and indicating the language to authorize with `localeIdsToAuthorize` or all languages with `authorize`, or in the dashboard using the "Show Partially Authorized" filter option from the Awaiting Authorization list. 
 
             If the string has been completely excluded for translation from all languages, or excluded from translation for a specific language, `localesIdsToAuthorize` will NOT authorize it. 
 
@@ -654,7 +655,7 @@ paths:
           required: false
           type: string
           description: |
-            This is only for accounts created after July 31st, 2015. Define a custom [namespace](https://developer.smartling.com/v2.0/docs/string-sharing-namespaces) for the file. 
+            This is only for accounts created after July 31st, 2015. Define a custom [namespace](https://help.smartling.com/hc/en-us/articles/360008143833) for the file. 
 
             **Note**: While this parameter shares the format of other file directives, it will not work as an inline directive and must be specified in the API call.
         - name: smartling.file_charset
@@ -672,18 +673,18 @@ paths:
           required: false
           type: string
           description: |
-            Provides custom parser configuration for supported file types. See [Supported File Types](https://developer.smartling.com/docs/supported-file-types) for more details.
+            Provides custom parser configuration for supported file types. See [Supported File Types](https://help.smartling.com/hc/en-us/articles/360007998893) for more details.
         - name: callbackUrl
           in: formData
           required: false
           type: string
           format: url
           description: |
-            A GET request that creates a callback to a URL when a file is 100% published for a locale. The callback gives the fileUri and locale with the format `http[/s]://your.url?locale=xx-XX&fileUri=your.file`. If you upload the file again, without a callbackUrl, it will remove any previous callbackUrl for that file. The RequestBin (http://requestb.in) service is a convenient way to test callback. RequestBin generates a short-lived disposable URL that displays all posted requests.
+            A GET request that creates a callback to a URL when a file is 100% published for a locale. The callback gives the fileUri and locale with the format `http[/s]://your.url?locale=xx-XX&fileUri=your.file`. If you upload the file again, without a callbackUrl, it will remove any previous callbackUrl for that file. The RequestBin (http://requestb.in) service is a convenient way to test a callback. RequestBin generates a short-lived disposable URL that displays all posted requests.
 
-            If a callback fails, Smartling will make multiple attempts to reach the designated URL, however, we do not keep retrying a failed callback indefinitely. Try to make sure your callback URL is as stable as possible and be aware that callbacks are not a 100% reliable way of being notified that a file is published.
+            If a callback fails, Smartling will make multiple attempts to reach the designated URL. However, we do not keep retrying a failed callback indefinitely. Try to make sure your callback URL is as stable as possible and be aware that callbacks are not a 100% reliable way of being notified that a file is published.
 
-            If the upload has begun but is taking more than a minute to complete, it responds with status `202`.
+            If the upload has begun but is taking more than a minute to complete, it responds with a `202` status.
       responses:
         200:
           description: OK
@@ -734,7 +735,7 @@ paths:
           curl -H "Authorization: Bearer {token}" "https://api.smartling.com/files-api/v2/projects/{projectId}/file?fileUri={your-file-URI}"
         ```
         
-        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a 200 SUCCESS response. If you receive any other response status code than 200, the requested file will not be part of the response.
+        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a `200` SUCCESS response. If you receive a response status code other than `200`, the requested file will not be part of the response.
 
         When you upload a UTF-16 character encoded file, then /file/get requests for that file will have a character encoding of UTF-16. All other uploaded files will return with a character encoding of UTF-8.
 
@@ -754,7 +755,7 @@ paths:
           in: query
           required: true
           type: string
-          description: Value that uniquely identifies the downloaded file
+          description: Value that uniquely identifies the downloaded file.
       responses:
         200:
           description: OK
@@ -769,7 +770,7 @@ paths:
     get:
       summary: Status of file for each locale
       description: |
-        Return information on a specific file 
+        Returns information on a specific file. 
 
         **Example:**
         ```bash
@@ -830,7 +831,7 @@ paths:
     get:
       summary: Status of file for a single locale
       description: |
-        Return detailed status information on a specific file
+        Returns detailed status information on a specific file.
 
         **Example:**
         ```bash
@@ -893,7 +894,7 @@ paths:
       description: |
         This downloads the requested file from Smartling.
 
-        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a 200 SUCCESS response. If you receive any other response status code than 200, the requested file will not be part of the response.
+        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a `200` SUCCESS response. If you receive any other response status code than `200`, the requested file will not be part of the response.
 
         When you upload a UTF-16 character encoded file, then /file/get requests for that file will have a character encoding of UTF-16. All other uploaded files will return with a character encoding of UTF-8.
 
@@ -934,8 +935,8 @@ paths:
             |---------------|-------------|
             | pending | Smartling returns any translations (including non-published translations)|
             | published | Smartling returns only published/pre-published translations.|
-            | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application|
-            | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension|
+            | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application.|
+            | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension.|
           enum:
             - pending
             - published
@@ -946,12 +947,12 @@ paths:
           required: false
           type: boolean
           description: |
-            Specifies whether Smartling will return the original string or an empty string where no translation is available. This parameter is supported for gettext, java properties, custom XML, and JSON files only
+            Specifies whether Smartling will return the original string or an empty string where no translation is available. This parameter is only supported for gettext, Java properties, custom XML, and JSON files.
 
             | Value | Description |
             |-------|-------------|
-            | true | If there is no translation, Smartling returns the original string |
-            | false | If there is no translation, Smartling returns an empty string |
+            | true | If there is no translation, Smartling returns the original string. |
+            | false | If there is no translation, Smartling returns an empty string. |
 
       responses:
         200:
@@ -970,9 +971,9 @@ paths:
       description: |
         Download a ZIP archive with all translations for the requested file.
 
-        Unlike "Download translated file" endpoint you get a ZIP archive with all translations of a specific file.
+        Unlike the "Download translated file" endpoint, you get a ZIP archive with all translations of a specific file.
 
-        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a 200 SUCCESS response. If you receive any other response status code than 200, the requested files will not be part of the response.
+        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a `200` SUCCESS response. If you receive any other response status code than `200`, the requested files will not be part of the response.
 
         When you upload a UTF-16 character encoded file, then /file/get requests for that file will have a character encoding of UTF-16. All other uploaded files will return with a character encoding of UTF-8.
 
@@ -1010,26 +1011,26 @@ paths:
 
             | retrievalType | Description |
             |---------------|-------------|
-            | pending | Smartling returns any translations (including non-published translations)|
+            | pending | Smartling returns any translations (including non-published translations).|
             | published | Smartling returns only published/pre-published translations.|
-            | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application|
-            | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension|
+            | pseudo | Smartling returns a modified version of the original text with certain characters transformed, and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application.|
+            | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension.|
         - name: includeOriginalStrings
           in: query
           required: false
           type: boolean
           description: |
-            Specifies whether Smartling will return the original string or an empty string where no translation is available. This parameter is supported for gettext, java properties, custom XML, and JSON files only
+            Specifies whether Smartling will return the original string or an empty string where no translation is available. This parameter is only supported for gettext, Java properties, custom XML, and JSON files.
 
             | Value | Description |
             |-------|-------------|
-            | true | If there is no translation, Smartling returns the original string |
-            | false | If there is no translation, Smartling returns an empty string |
+            | true | If there is no translation, Smartling returns the original string. |
+            | false | If there is no translation, Smartling returns an empty string. |
         - name: zipFileName
           in: query
           required: false
           type: string
-          description: Name for the downloaded zip file. If unset, default is ```translations.zip```
+          description: Name for the downloaded zip file. If unset, the default is ```translations.zip```
       responses:
         200:
           description: OK
@@ -1050,7 +1051,7 @@ paths:
         Unlike "Download all translations of the file" you can specify multiple file URIs and locale IDs to select which
         files and languages you want to download.
 
-        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a 200 SUCCESS response. If you receive any other response status code than 200, the requested files will not be part of the response.
+        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a `200` SUCCESS response. If you receive any other response status code than `200`, the requested files will not be part of the response.
 
         When you upload a UTF-16 character encoded file, then /file/get requests for that file will have a character encoding of UTF-16. All other uploaded files will return with a character encoding of UTF-8.
 
@@ -1076,7 +1077,7 @@ paths:
           items:
             type: string
           collectionFormat: multi
-          description: Smartling Values that each uniquely identify a file
+          description: Smartling values that each uniquely identify a file.
         - name: localeIds[]
           in: query
           required: true
@@ -1084,7 +1085,7 @@ paths:
           items:
             type: string
           collectionFormat: multi
-          description: List of locales to download
+          description: List of locales to download.
         - name: retrievalType
           in: query
           required: false
@@ -1095,25 +1096,25 @@ paths:
             - pseudo
             - contextMatchingInstrumented
           description: |
-            Determines the desired format for the download. Applies to translated files only.
+            Determines the desired format for the download. Applies only to translated files.
 
             | retrievalType | Description |
             |---------------|-------------|
             | pending | Smartling returns any translations (including non-published translations)|
             | published | Smartling returns only published/pre-published translations.|
-            | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application|
-            | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension|
+            | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application.|
+            | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension.|
         - name: includeOriginalStrings
           in: query
           required: false
           type: boolean
           description: |
-            Specifies whether Smartling will return the original string or an empty string where no translation is available. This parameter is supported for gettext, java properties, custom XML, and JSON files only
+            Specifies whether Smartling will return the original string or an empty string where no translation is available. This parameter is only supported for gettext, Java properties, custom XML, and JSON files.
 
             | Value | Description |
             |-------|-------------|
-            | true | If there is no translation, Smartling returns the original string |
-            | false | If there is no translation, Smartling returns an empty string |
+            | true | If there is no translation, Smartling returns the original string. |
+            | false | If there is no translation, Smartling returns an empty string. |
         - name: fileNameMode
           in: query
           required: false
@@ -1123,7 +1124,7 @@ paths:
             - TRIM_LEADING
             - LOCALE_LAST
           description: |
-            Determines how files in the zip file will be named. If not set, the full original file path will be used as the filename
+            Determines how files in the ZIP file will be named. If not set, the full original file path will be used as the filename.
 
             | fileNameMode | Description |
             |--------------|-------------|
@@ -1143,14 +1144,14 @@ paths:
 
             | localeMode | Description |
             |------------|-------------|
-            | LOCALE_IN_PATH | Locale code is added to the end of the file path. e.g. ```/strings/es-ES/nav.properties``` |
-            | LOCALE_IN_NAME | Locale code is added to the end of the file name e.g. ```/strings/nav_es-ES.properties``` |
-            | LOCALE_IN_NAME_AND_PATH | Locale code is added to both the path and the filename. e.g. ```/strings/es-ES/nav_es-ES.properties``` |
+            | LOCALE_IN_PATH | Locale code is added to the end of the file path. e.g. ```/strings/es-ES/nav.properties```. |
+            | LOCALE_IN_NAME | Locale code is added to the end of the file name e.g. ```/strings/nav_es-ES.properties```. |
+            | LOCALE_IN_NAME_AND_PATH | Locale code is added to both the path and the filename. e.g. ```/strings/es-ES/nav_es-ES.properties```. |
         - name: zipFileName
           in: query
           required: false
           type: string
-          description: Name for the downloaded zip file. If unset, default is ```translations.zip```
+          description: Name for the downloaded ZIP file. If unset, default is ```translations.zip```
       responses:
         200:
           description: OK
@@ -1185,7 +1186,7 @@ paths:
           in: query
           required: false
           type: string
-          description: Return only files with a URI containing the given substring. Case is ignored. For example, the value ```.json``` will match ```strings.json``` and ```STRINGS.JSON``` but not ```json.strings```
+          description: Returns only files with a URI containing the given substring. Case is ignored. For example, the value ```.json``` will match ```strings.json``` and ```STRINGS.JSON``` but not ```json.strings```
         - name: fileTypes[]
           in: query
           required: false
@@ -1199,13 +1200,13 @@ paths:
           required: false
           type: string
           format: YYYY-MM-DDThh:mm:ssZ
-          description: Return all files uploaded after the specified date
+          description: Returns all files uploaded after the specified date.
         - name: lastUploadedBefore
           in: query
           required: false
           type: string
           format: YYYY-MM-DDThh:mm:ssZ
-          description: Return all files uploaded before the specified date
+          description: Returns all files uploaded before the specified date.
         - name: orderBy
           in: query
           type: string
@@ -1226,13 +1227,13 @@ paths:
           type: integer
           default: 100
           description: |
-            See [Limit and Offset](https://developer.smartling.com/v1.0/docs/list-get-1). In order to get consistent pagination, please make sure to specify the ```orderBy``` parameter
+            In order to get consistent pagination, make sure to specify the ```orderBy``` parameter.
         - name: offset
           in: query
           required: false
           type: integer
           default: 0
-          description: See [Limit and Offset](https://developer.smartling.com/v1.0/docs/list-get-1)
+          description: Standard Smartling limit and offset to paginate through results.
       responses:
         200:
           description: OK
@@ -1328,7 +1329,7 @@ paths:
           required: true
           type: string
           description: |
-            The new value for fileUri. We recommend that you use file path + file name, similar to how version control systems identify the file. Example: /myproject/i18n/ui.properties. This must be a fileUri that does not exist in the current Smartling project.
+            The new value for fileUri. We recommend that you use file path and file name, similar to how version control systems identify the file. Example: /myproject/i18n/ui.properties. This must be a fileUri that does not exist in the current Smartling project.
       responses:
         200:
           description: OK
@@ -1421,7 +1422,7 @@ paths:
           required: false
           type: string
           format: YYYY-MM-DDThh:mm:ssZ
-          description: Limits the return to only those file and locale combinations that have a ```lastModified``` date after the parameter ```lastModifiedAfter```. The items array will be empty if the file has not been modified in any of the locales since the `lastModifiedAfter` date specified.
+          description: Limits the return to only those file and locale combinations that have a ```lastModified``` date after the ```lastModifiedAfter```parameter . The items array will be empty if the file has not been modified in any of the locales since the `lastModifiedAfter` date specified.
       responses:
         200:
           description: OK
@@ -1444,7 +1445,7 @@ paths:
     get:
       summary: Last modified date (all locales)
       description: |
-        This returns the date that a file was last modified in a each locale.
+        This returns the date that a file was last modified in each locale.
 
         **Example:**
         ```bash
@@ -1519,17 +1520,17 @@ paths:
           in: formData
           required: true
           type: file
-          description: The file contents to upload
+          description: The file contents to upload.
         - name: fileUri
           in: formData
           required: true
           type: string
-          description: The Smartling URI for file that contains the original language strings already uploaded to Smartling
+          description: The Smartling URI for a file that contains the original language strings that are already uploaded to Smartling.
         - name: fileType
           in: formData
           required: true
           type: string
-          description: Unique identifier for the file type. To allow translation imports, XML and JSON files must be uploaded with source_key_paths defined
+          description: Unique identifier for the file type. To allow translation imports, XML and JSON files must be uploaded with `source_key_paths` defined.
           enum: *fileTypes
         - name: translationState
           in: formData
@@ -1539,18 +1540,18 @@ paths:
             - PUBLISHED
             - POST_TRANSLATION
           description: |
-            Value indicating the workflow state to import the translations into. Content will be imported into the language's default workflow
+            Value indicating the workflow state to import the translations into. Content will be imported into the language's default workflow.
 
             | Value | Description |
             |-------|-------------|
-            | PUBLISHED | The translated content is published |
-            | POST_TRANSLATION | The translated content is imported into the first step after translation - if there are none, it will be published |
+            | PUBLISHED | The translated content is published. |
+            | POST_TRANSLATION | The translated content is imported into the first step after translation - if there is none, it will be published. |
 
         - name: overwrite
           in: formData
           required: false
           type: boolean
-          description: Whether or not to overwrite existing translations
+          description: Whether or not to overwrite existing translations.
 
       responses:
         200:
@@ -1606,12 +1607,12 @@ paths:
           in: formData
           required: true
           type: file
-          description: The file contents to upload
+          description: The file contents to upload.
         - name: fileUri
           in: formData
           required: true
           type: string
-          description: The Smartling URI for file that contains the original language strings already uploaded to Smartling
+          description: The Smartling URI for a file that contains the original language strings that are already uploaded to Smartling
         - name: retrievalType
           in: formData
           required: false
@@ -1626,21 +1627,21 @@ paths:
 
             | retrievalType | Description |
             |---------------|-------------|
-            | pending | Smartling returns any translations (including non-published translations)|
+            | pending | Smartling returns any translations (including non-published translations).|
             | published | Smartling returns only published/pre-published translations.|
-            | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application|
-            | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension|
+            | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application.|
+            | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension.|
         - name: includeOriginalStrings
           in: formData
           required: false
           type: boolean
           description: |
-            Specifies whether Smartling will return the original string or an empty string where no translation is available. This parameter is supported for gettext, java properties, custom XML, and JSON files only
+            Specifies whether Smartling will return the original string or an empty string where no translation is available. This parameter is only supported for gettext, Java properties, custom XML, and JSON files.
 
             | Value | Description |
             |-------|-------------|
-            | true | If there is no translation, Smartling returns the original string |
-            | false | If there is no translation, Smartling returns an empty string |
+            | true | If there is no translation, Smartling returns the original string. |
+            | false | If there is no translation, Smartling returns an empty string. |
 
       responses:
         200:
@@ -1664,14 +1665,14 @@ paths:
         
         The following context types are supported:
         
-        - *HTML* - HTML files or files with content type text/html
-        - *IMAGE* - Image files
-        - *VIDEO* - Public link to video:
+        - **HTML**: HTML files or files with content type text/html
+        - **Image**: Image files 
+        - **VIDEO**: Public link to a video, such as:
           - YouTube link
           - Vimeo link
-          - Link to .mp4 file
+          - Link to an .mp4 file
           
-        Context type is not specified directly, but rather inferred via analyzing the request body.    
+        Context type is not specified directly, but rather, inferred via analyzing the request body.    
 
         This endpoint accepts *multipart/form-data* request body.
         
@@ -1689,13 +1690,13 @@ paths:
         - name: content
           description: |- 
             The context file to upload. 
-            If specified, should be one of the supported content types:
+            If specified, it should be one of the supported content types:
              - `image/\*` 
              - `text/html`
              
-            Maximum file upload size is `20MB`
+            Maximum file upload size is `20MB`.
              
-            *Note*: should be omitted for **VIDEO** context 
+            **Note**: Should be omitted for video context.
           in: formData
           required: false
           type: file
@@ -1705,12 +1706,12 @@ paths:
           type: string
           description: |
             Context name. Will override context file name if specified.
-            Parameter meaning for different context types:
+            Parameter meanings for different context types:
             
             |Context Type|Meaning|
             |----------|--------|
-            | `HTML` | Context URL or file name. If valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If file name is used, context file should have `<base />` tag specified with valid URL to resolve all the relative links to resources. In all other cases links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
-            | `IMAGE` | Image file name, defaults to context file name if not specified. |
+            | `HTML` | Context URL or file name. If a valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If the file name is used, the context file should have the `<base />` tag specified with the valid URL to resolve all relative links to resources. In all other cases, links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
+            | `IMAGE` | Image file name defaults to context file name if not specified. |
             | `VIDEO` | Publicly available link to video. Required for this context type. |
       responses:
         200:
@@ -1860,8 +1861,8 @@ paths:
       summary: Delete the context
       description: |- 
         Removes the context metadata and the content.
-        All linked context resources (e.g. CSS, images and fonts) will also be eventually cleaned up if no other context has them linked.
-        Bindings of this context to strings are removed as well and strings are marked as having no context.
+        All linked context resources (e.g. CSS, images, and fonts) will also eventually be cleaned up if no other context has them linked.
+        As well, bindings of this context to strings are removed, and strings are marked as having no context.
       tags:
         - Context
       parameters:
@@ -1912,8 +1913,8 @@ paths:
         |Context Type|Content|
         |---------|--------|
         |`HTML`|HTML document enriched with `data-sl-anchor` attributes for most of the elements, also known as *binding anchors*.|
-        |`IMAGE`| Binary image data. Response is accompanied with appropriate `Content-Type` header|
-        |`VIDEO`| Empty response|
+        |`IMAGE`| Binary image data. Response is accompanied with appropriate `Content-Type` header.|
+        |`VIDEO`| Empty response.|
         
       tags:
         - Context
@@ -1964,7 +1965,7 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/upload-and-match-async:
     post:
-      summary: Upload HTML and match it with strings to create context bindings
+      summary: Upload HTML and match strings to create context bindings
       description: |-
         Uploads a new HTML context and asynhronously matches it with strings in the project.
 
@@ -1972,9 +1973,9 @@ paths:
         - `POST /projects/{projectId}/contexts`
         - `POST /projects/{projectId}/contexts/{contextUid}/match/async`
         
-        Except the fact that `matchParams` parameter has to be present in `formData` rather than request body.
+        Except that the `matchParams` parameter has to be present in `formData` rather than the request body.
 
-        If the matching process returns no bindings the context won't be created.
+        If the matching process returns no bindings, the context won't be created.
         Supported for `HTML` context only.
         
       tags:
@@ -2000,12 +2001,12 @@ paths:
           type: string
           description: |-
             Context URL or whatever has to be served as context name.
-            Overrides the filename in `content` part.
+            Overrides the filename in the `content` part.
         - name: matchParams
           in: formData
           description: |-
-            Array of string hashcodes to match against, and / or context override specifier.
-            If string hashcodes not specified, *all strings from the project will be included in match*.
+            Array of string hashcodes to match against, and/or context override specifier.
+            If the string hashcodes are not specified, all strings from the project will be included in the match.
             If context override not specified, *strings with context will not be bound to this context*.
             
             See parameter type description for `/context-api/v2/projects/{projectId}/contexts/{contextUid}/match/async`
@@ -2047,11 +2048,11 @@ paths:
         Optionally, you can restrict matching to only a set of strings that you specify to ensure that no unwanted
         bindings are created.
 
-        Optical Character Recognition (OCR) is used for `IMAGE` context, while `HTML` context uses approximate string matching algorithm.
+        Optical Character Recognition (OCR) is used for `IMAGE` context, while `HTML` context uses an approximate string matching algorithm.
 
-        This is a convenience method provided to save time and complexity in your integration.
+        This is a convenient method provided to save time and complexity in your integration.
         While our OCR functionality is advanced, it cannot match 100% of strings. If you need complete context coverage,
-        either use the manual Create Bindings request or check your context images in the Smartling Dashboard after
+        use either the manual Create Bindings request or check your context images in the Smartling Dashboard after
         running this request to fill in any blanks. Be mindful of the limitations of OCR if you are using an unusual or
         script-like font.
       consumes:
@@ -2074,9 +2075,9 @@ paths:
         - name: matchParams
           in: body
           description: |-
-            Array of string hashcodes to match against, and / or context override specifier.
-            If string hashcodes not specified, *all strings from the project will be included in match*.
-            If context override not specified, *strings with context will not be bound to this context*.
+            Array of string hashcodes to match against, and/or context override specifier.
+            If string hashcodes are not specified, all strings from the project will be included in the match.
+            If context override is not specified, strings with context will not be bound to this context.
           required: false
           schema:
             $ref: '#/definitions/MatchRequest'
@@ -2176,18 +2177,18 @@ paths:
       summary: Remove binding of a string to a context
       description: |- 
         Deletes a context binding. 
-        The context referenced by the binding will no longer be displayed for the referenced string in the CAT Tool.
+        The context referenced by the binding will no longer be displayed for the referenced string in the CAT tool.
       tags:
         - Context
       parameters:
         - name: projectId
           in: path
           required: true
-          description: Unique identifier of a project
+          description: Unique identifier of a project.
           type: string
           format: uuid
         - name: bindingUid
-          description: Unique identifier for the binding to be deleted
+          description: Unique identifier for the binding to be deleted.
           in: path
           required: true
           type: string
@@ -2221,10 +2222,10 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/{contextUid}/bindings:
     get:
-      summary: Return all strings bindings for the context
+      summary: Return all strings bindings for context
       description: |-
-        Return all bindings that reference the given context. 
-        Result is not paginated.
+        Returns all bindings that reference the given context. 
+        Results are not paginated.
       tags:
         - Context
       parameters:
@@ -2281,18 +2282,18 @@ paths:
   /context-api/v2/projects/{projectId}/strings/{stringHashcode}/bindings:
     get:
       summary: Get bindings for string
-      description: Return all bindings that reference given string.
+      description: Returns all bindings that reference a given string.
       tags:
         - Context
       parameters:
         - name: projectId
           in: path
-          description: Unique identifier of a project
+          description: Unique identifier of a project.
           required: true
           type: string
           format: uuid
         - name: stringHashcode
-          description: Hashcode for the string to get bindings for
+          description: Hashcode for the string to get bindings for.
           in: path
           required: true
           type: string
@@ -2329,10 +2330,11 @@ paths:
       summary: Create string to context bindings
       description: |-
         Link context files with the strings they contain. 
-        The binding tells Smartling which context images to show translators for which strings.
+        
+        The binding tells Smartling to show Translators which context images for which strings.
         A maximum of `150` bindings can be created per request. 
         
-        Basic bindings request should contain an object with `bindings` JSON array with at least one element (binding), featuring `contextUid` and `stringHashcode` properties:
+        A basic bindings request should contain an object with a `bindings` JSON array, with at least one element (binding) featuring `contextUid` and `stringHashcode` properties:
         ```JSON
         {
           "bindings": [
@@ -2344,7 +2346,7 @@ paths:
         }
         ```
         
-        For `IMAGE` context, each binding may have additional `coordinates` data, which specifies rectangular area, where the string is located in the image. If not specified, binding will still be created with coordinates `[0,0,0,0]`:
+        For `IMAGE` context, each binding may have additional `coordinates` data that specifies a rectangular area where the string is located in the image. If not specified, binding will still be created with coordinates `[0,0,0,0]`:
         ```JSON
         {
           "bindings": [
@@ -2450,9 +2452,8 @@ paths:
     get:
       summary: Get issue states
       description: >-
-        Currently the only allowed issue states are `OPENED` and `RESOLVED` but
-        Smartling may introduce additional states in future. This request
-        returns all current allowed states.
+        This request returns all current allowed states. Currently, the only allowed issue states are `OPENED` and `RESOLVED`. However, in the future, 
+        Smartling may introduce additional states. 
       tags:
         - Issues
       produces:
@@ -2477,7 +2478,7 @@ paths:
       get:
         summary: Get issue severity levels
         description: >-
-          Get list of issue severity levels
+          Returns a list of issue severity levels.
         tags:
           - Issues
         produces:
@@ -2516,7 +2517,7 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier of corresponding account.
       responses:
         200:
           description: OK
@@ -2553,13 +2554,8 @@ paths:
     post:
       summary: Create issue
       description: >-
-        Creates a new issue for a string.
-
-        ##### Issue text is treated as plain text. Smartling will save the text
-        as provided and will not attempt to render this text with any special
-        formatting in its UIs. It will not be rendered as HTML or markdown.
-        Users of the Issues API should be aware, and escape the text as needed
-        before attempting to render it. Maximum length is 4000 characters.
+        Creates a new issue for a string. Issue text is treated as plain text. Smartling will save the text as provided, and will not attempt to render this text with any special formatting in its UIs. It will not be rendered as HTML or markdown.
+        Users of the Issues API should be aware, and escape the text as needed before attempting to render it. Maximum length is 4000 characters.
       tags:
         - Issues
       consumes:
@@ -2608,15 +2604,13 @@ paths:
     put:
       summary: Edit issue
       description: >-
-        Replaces the text of an issue with new text. Note that only the author
-        of the issue can perform this action. The `issueTextModifiedDate`
+        Replaces the text of an issue with new text. 
+
+        **Note**: Only the author of the issue can perform this action. The `issueTextModifiedDate`
         property of an issue object shows when it was last updated.
 
-        ##### Issue text is treated as plain text. Smartling will save the text
-        as provided and will not attempt to render this text with any special
-        formatting in its UIs; it will not be rendered as HTML or markdown.
-        Consumers of the issue API should be aware and escape the text as needed
-        before attempting to render it. Maximum length is 4000 characters.
+        Issue text is treated as plain text. Smartling will save the text as provided and will not attempt to render this text with any special
+        formatting in its UIs; it will not be rendered as HTML or markdown. When using the Issues API, you should escape the text as needed before attempting to render it. Maximum length is 4000 characters.
       tags:
         - Issues
       consumes:
@@ -2628,12 +2622,12 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding project
+          description: Unique identifier of corresponding project.
         - name: issueUid
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding issue
+          description: Unique identifier of corresponding issue.
         - name: request
           description: ''
           in: body
@@ -2655,7 +2649,7 @@ paths:
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/state':
     put:
       summary: Open or close issue
-      description: The state of the issue. Accepted values are `OPENED` or `RESOLVED`.
+      description: The state of an issue. Accepted values are `OPENED` or `RESOLVED`.
       tags:
         - Issues
       consumes:
@@ -2667,12 +2661,12 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding project
+          description: Unique identifier of corresponding project.
         - name: issueUid
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding issue
+          description: Unique identifier of corresponding issue.
         - name: request
           description: ''
           in: body
@@ -2694,10 +2688,10 @@ paths:
     get:
       summary: Get issue details
       description: >-
-        Returns detailed information on a single issue. Note that the
-        `resolvedByUserUid` and `reportedByUserUid` values are not currently
-        usable for identifying the users who created or resolved issues. In
-        future, a People API will be exposed for looking up user details.
+        Returns detailed information of a single issue. 
+
+        **Note**: The `resolvedByUserUid` and `reportedByUserUid` values are not currently
+        usable for identifying the users who created or resolved issues. In the future, a People API will be exposed for looking up user details.
       tags:
         - Issues
       consumes:
@@ -2743,9 +2737,9 @@ paths:
                   issueSeverityLevelCode: LOW
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/answered':
     put:
-      summary: Change issue attribute "answered"
+      summary: Update issue attribute (answered)
       description: >-
-        Change issue attribute "answered" (true/false)
+        Update issue attribute (answered). "Answered" is a boolean; (true/false).
       tags:
         - Issues
       consumes:
@@ -2757,12 +2751,12 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding project
+          description: Unique identifier of corresponding project.
         - name: issueUid
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding issue
+          description: Unique identifier of corresponding issue.
         - name: request
           description: ''
           in: body
@@ -2782,9 +2776,9 @@ paths:
                   answered: true
   '/projects/{projectId}/issues/{issueUid}/severity-level':
       put:
-        summary: Change issue attribute "severity level"
+        summary: Update issue attribute (severity level)
         description: >-
-          Change issue attribute "severity level" (LOW / MEDIUM / HIGH)
+          Update issue attribute (severity level) (LOW / MEDIUM / HIGH)
         tags:
           - Issues
         consumes:
@@ -2796,12 +2790,12 @@ paths:
             in: path
             required: true
             type: string
-            description: Unique identifier of corresponding project
+            description: Unique identifier of corresponding project.
           - name: issueUid
             in: path
             required: true
             type: string
-            description: Unique identifier of corresponding issue
+            description: Unique identifier of corresponding issue.
           - name: request
             description: ''
             in: body
@@ -2823,13 +2817,8 @@ paths:
     post:
       summary: Create comment
       description: >-
-        Create a comment for an issue.
-
-        ##### Comment text is treated as plain text. Smartling will save the
-        text as provided and will not attempt to render this text with any
-        special formatting in its UIs; it will not be rendered as HTML or
-        markdown. Consumers of the issue API should be aware and escape the text
-        as needed before attempting to render it. Maximum length is 4000
+        Create a comment for an issue. Comment text is treated as plain text. Smartling will save the text as provided, and will not attempt to render this text with any
+        special formatting in its UIs. It will not be rendered as HTML or markdown. If you're using the Issues API, escape the text as needed before attempting to render it. Maximum length is 4000
         characters.
       tags:
         - Issues
@@ -2872,9 +2861,9 @@ paths:
     get:
       summary: Get comments
       description: >-
-        Returns all comments on an issue. Note that the `createdByUserUid` value
-        is not currently usable for identifying the users who created comments.
-        In future, a People API will be exposed for looking up user details.
+        Returns all comments on an issue. 
+
+        **Note**: The `createdByUserUid` value is not currently usable for identifying the users who created comments. In the future, a People API will be exposed for looking up user details.
       tags:
         - Issues
       consumes:
@@ -2913,16 +2902,12 @@ paths:
     post:
       summary: Edit comment text
       description: >-
-        Replaces the text of an issue with new text. Note that only the author
-        of the issue can perform this action. The `commentTextModifiedDate`
-        property of an issue object shows when it was last updated.
+        Replaces the text of an issue with new text. 
 
-        ##### Comment text is treated as plain text. Smartling will save the
-        text as provided and will not attempt to render this text with any
-        special formatting in its UIs; it will not be rendered as HTML or
-        markdown. Consumers of the issue API should be aware and escape the text
-        as needed before attempting to render it. Maximum length is 4000
-        characters.
+        **Note**: Only the author of an issue can perform this action. The `commentTextModifiedDate` property of an issue object shows when it was last updated.
+
+        Comment text is treated as plain text. Smartling will save the text as provided and will not attempt to render this text with any special formatting in its UIs. It will not be rendered as HTML or
+        markdown. If you're using the Issues API, escape the text as needed before attempting to render it. Maximum length is 4000 characters.
       tags:
         - Issues
       consumes:
@@ -2934,17 +2919,17 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding project
+          description: Unique identifier of corresponding project.
         - name: issueUid
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding issue
+          description: Unique identifier of corresponding issue.
         - name: issueCommentUid
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding issue commment
+          description: Unique identifier of corresponding issue commment.
         - name: request
           description: ''
           in: body
@@ -2969,10 +2954,10 @@ paths:
     get:
       summary: Get comment details
       description: >-
-        Returns detailed information on a single issue comment. Note that the
-        `createdByUserUid` value is not currently usable for identifying the
-        users who created comments. In future, a People API will be exposed for
-        looking up user details.
+        Returns detailed information on a single issue comment. 
+
+        **Note**: The `createdByUserUid` value is not currently usable for identifying the
+        users who created comments. In the future, a People API will be exposed for looking up user details.
       tags:
         - Issues
       consumes:
@@ -2984,17 +2969,17 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding project
+          description: Unique identifier of corresponding project.
         - name: issueUid
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding issue
+          description: Unique identifier of corresponding issue.
         - name: issueCommentUid
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding issue comment
+          description: Unique identifier of corresponding issue comment.
       responses:
         200:
           description: OK
@@ -3014,10 +2999,8 @@ paths:
     post:
       summary: Find issues
       description: >-
-        Returns a list of issues matching specified filter options. You can
-        filter based on the date issues were created, target languages, strings,
-        issue types and states and the user who opened the issue. Unless
-        otherwise specified, request will return a maximum of 30 results. All
+        Returns a list of issues matching specified filter options. You can filter based on the date issues were created, target languages, strings,
+        issue types, states, and which user opened the issue. Unless otherwise specified, the request will return a maximum of 30 results. All
         parameters are optional.
       tags:
         - Issues
@@ -3030,7 +3013,7 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding project
+          description: Unique identifier of the corresponding project.
         - name: request
           description: ''
           in: body
@@ -3070,7 +3053,7 @@ paths:
       description: >-
         Returns a count of issues matching specified filter options. You can
         filter based on the date issues were created, strings, target languages,
-        issue types and states and the user who opened the issue.. All
+        issue types, states, and which user opened the issue. All
         parameters are optional.
       summary: Count issues
       tags:
@@ -3084,7 +3067,7 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding project
+          description: Unique identifier of corresponding project.
         - name: request
           description: ''
           in: body
@@ -3105,8 +3088,8 @@ paths:
   '/issues-api/v2/accounts/{accountUid}/watchers':
     get:
       description: >-
-       Get a list of all watchers.
-      summary: List watchers
+       Get a list of all issue watchers for the entire account.
+      summary: List Account Watchers
       tags:
         - Issues
       consumes:
@@ -3118,7 +3101,7 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier of corresponding account.
         - name: email
           in: query
           required: false
@@ -3169,7 +3152,7 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier of the corresponding account.
         - name: request
           description: ''
           in: body
@@ -3208,12 +3191,12 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier of the corresponding account.
         - name: watcherUid
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding watcher
+          description: Unique identifier of the corresponding watcher.
         - name: request
           description: ''
           in: body
@@ -3240,7 +3223,7 @@ paths:
   '/issues-api/v2/accounts/{accountUid}/projects/{projectId}/issues/{issueUid}/watchers/{watcherUid}':
     put:
       description: >-
-       Associate or assign the watcher to an issue. The watcher will then begin receiving email notifications.
+       Associate or assign the watcher to an issue. The watcher will then begin receiving email notifications.  Emails do not have to have access to the Smartling account to be added as a Watcher. If they have access to the account the emails include links to view the issue in the dashboard.
       summary: Link watcher to issue
       tags:
         - Issues
@@ -3371,9 +3354,7 @@ paths:
     get:
       summary: Get issue types
       description: >-
-        It is deprecated now: use the endpoint /issues-api/v2/accounts/{accountUid}/issue-types.
-
-        This request returns all current issue types. Smartling may occasionally
+        This is deprecated. Instead, use this endpoint: /issues-api/v2/accounts/{accountUid}/issue-types. This request returns all current issue types. Smartling may occasionally
         add or change the list of allowed issue types.
       tags:
         - Issues
@@ -3428,7 +3409,7 @@ paths:
 
         Most uploads will return a `200` response indicating success. If processing the request takes longer than 60 seconds, a `202` request will be returned, including a `processUid` value that can be used to check on the progress of the request.
 
-        If you set up a POST callback for the string, you can automatically receive the translation for a string as soon as it is complete. See Callbacks for more details.
+        If you set up a POST callback for the string, you can automatically receive the translation for a string as soon as it is complete. See [Callbacks](https://help.smartling.com/hc/en-us/articles/360007829194) for more details.
 
       tags:
         - Strings
@@ -3447,11 +3428,11 @@ paths:
             properties:
               placeholderFormat:
                 description: |-
-                  Specifies a standard placeholder format. Accepted values are none, c, ios, python, java, yaml, qt, resx. For more detail on placeholders see Placeholders in Resource Files
+                  Specifies a standard placeholder format. Accepted values are none, c, ios, python, java, yaml, qt, resx. See [Placeholders in Resource Files](https://help.smartling.com/hc/en-us/articles/360008143433) for more detail.
                 type: string
               placeholderFormatCustom:
                 description: |-
-                  Specifies a custom placeholder with a Java Regular Expression. For example \\[.+?\\] would capture all values surrounded by square brackets as placeholders. For more detail on placeholders see Placeholders in Resource Files
+                  Specifies a custom placeholder with a Java Regular Expression. For example \\[.+?\\] would capture all values surrounded by square brackets as placeholders. See [Placeholders in Resource Files](https://help.smartling.com/hc/en-us/articles/360008143433) for more detail.
                 type: string
               namespace:
                 description: |-
@@ -3593,7 +3574,7 @@ paths:
         - name: limit
           in: formData
           description: |-
-            Pagination setting. By default responses will be limited to 500 per request. This is also the maximum allowed value.
+             tting. By default, responses will be limited to 500 per request. This is also the maximum allowed value.
           type: number
         - name: offset
           in: formData
@@ -3659,7 +3640,7 @@ paths:
         - name: limit
           in: formData
           description: |-
-            Pagination setting. By default responses will be limited to 500 per request. This is also the maximum allowed value.
+            Pagination setting. By default, responses will be limited to 500 per request. This is also the maximum allowed value.
           type: number
         - name: offset
           in: formData
@@ -3694,13 +3675,13 @@ paths:
         - name: name
           in: query
           type: string
-          description: filter for glossary name in LIKE manner (case-insensitive)
+          description: Filter for glossary name in LIKE manner (case-insensitive).
         - name: glossaryUids
           in: query
           type: array
           items:
             type: string
-          description:  filter for glossary uid in IN manner (might contain up to 100 uids separated by comma e.g glossaryUids=1234,4567)
+          description:  Filter for glossary UID in IN manner (may contain up to 100 UIDs separated by comma e.g., glossaryUids=1234,4567)
       responses:
         200:
           description: OK
@@ -3733,7 +3714,7 @@ paths:
 
     post:
       summary: Create glossary
-      description: 'Creates a new Glossary in an account.'
+      description: 'Creates a new glossary in an account.'
       tags:
         - Glossaries
       parameters:
@@ -3741,7 +3722,7 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier of corresponding account.
         - name: glossary
           in: body
           required: true
@@ -3781,12 +3762,12 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier for the corresponding account.
         - name: glossaryUid
           in: path
           required: true
           type: string
-          description: Unique identifier of glossary
+          description: Unique identifier of a glossary.
       responses:
         200:
           description: OK
@@ -3799,7 +3780,7 @@ paths:
 
     put:
       summary: Edit glossary
-      description: 'Edits the name, description or source locale of a glossary. This will completely replace the name, description and source locale of the target glossary. If you do not provide a field, or leave it blank, any existing information will be deleted.'
+      description: 'Edits the name, description or source locale of a glossary. This will completely replace the name, description, and source locale of the target glossary. If you do not provide a field, or leave it blank, any existing information will be deleted.'
       tags:
         - Glossaries
       parameters:
@@ -3807,12 +3788,12 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier for the corresponding account.
         - name: glossaryUid
           in: path
           required: true
           type: string
-          description: Unique identifier of glossary
+          description: Unique identifier of the glossary.
         - name: glossary
           in: body
           required: true
@@ -3831,7 +3812,7 @@ paths:
 
     delete:
       summary: Delete glossary
-      description: Deletes a Glossary. Note that if a Glossary has been assigned to a Linguistic Package, you will not be able to delete it. Linguistic Packages are managed in the Smartling Dashboard.
+      description: Deletes a glossary. **Note:** If a glossary has been assigned to a Linguistic Package, you will not be able to delete it. Linguistic Packages are managed in the Smartling Dashboard.
       tags:
         - Glossaries
       parameters:
@@ -3839,12 +3820,12 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier for the corresponding account.
         - name: glossaryUid
           in: path
           required: true
           type: string
-          description: Unique identifier of glossary
+          description: Unique identifier of the glossary.
       responses:
         200:
           description: OK
@@ -3883,7 +3864,7 @@ paths:
 
   /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms:
     get:
-      description: Returns terms from a Glossary. Only the source term is included in this response.
+      description: Returns terms from a glossary. Only the source term is included in this response.
       summary: Find terms in glossary
       tags:
         - Glossaries
@@ -3892,28 +3873,28 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier of corresponding account.
         - name: glossaryUid
           in: path
           required: true
           type: string
-          description: Unique identifier of glossary
+          description: Unique identifier of glossary.
         - name: termText
           in: query
           type: string
-          description: filter for term text in LIKE manner (case-insensitive).
+          description: Filter for term text in LIKE manner (case-insensitive).
         - name: limit
           in: query
           type: integer
-          description: pagination portion size
+          description: Pagination portion size.
         - name: offset
           in: query
           type: integer
-          description: pagination offset value
+          description: Pagination offset value.
         - name: sort
           in: query
           type: string
-          description:  sorting instructions. represents field to sort by and direction separated by coma (i.e. sort=termText,desc). We support sorting by all fields.
+          description: Sorting instructions. This represents a field to sort by, with direction separated by a comma (i.e. sort=termText,desc). We support sorting by all fields.
       responses:
         200:
           description: OK
@@ -3964,7 +3945,7 @@ paths:
 
     post:
       summary: Create glossary term
-      description: Creates a new glossary term. The only required parameter is termText. See our Glossary documentation for details on each term parameter. You can only add one translation object in this request. To add additional translations, use Edit Glossary term.
+      description: Creates a new glossary term. The only required parameter is `termText`. See our Glossary documentation for details on each term parameter. You can only add one translation object in this request. To add additional translations, use Edit Glossary term.
       tags:
         - Glossaries
       parameters:
@@ -3972,12 +3953,12 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier for the corresponding account.
         - name: glossaryUid
           in: path
           required: true
           type: string
-          description: Unique identifier of glossary
+          description: Unique identifier of the glossary.
         - name: term
           in: body
           required: true
@@ -4021,7 +4002,7 @@ paths:
   /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/batch:
     post:
       summary: Add glossary terms in bulk
-      description: Creates a new glossary terms. Validation for the endpoint works in atomic fashion - either all terms passed validation, and then they all will be created, or non of them will be. Translation section is optional.
+      description: Creates new glossary terms. Validation for the endpoint works in atomic fashion - all terms either pass validation (and will be created), or none of them will be. Translation section is optional.
       tags:
         - Glossaries
       parameters:
@@ -4029,12 +4010,12 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier for the corresponding account.
         - name: glossaryUid
           in: path
           required: true
           type: string
-          description: Unique identifier of glossary
+          description: Unique identifier of the glossary.
         - name: term
           in: body
           required: true
@@ -4094,9 +4075,7 @@ paths:
     get:
       summary: Find translations of terms
       description: |-
-        Searches translations of glossary terms across all glossaries in account.
-
-        Response contains a list of original glossary terms and translations.
+        Searches translations of glossary terms across all glossaries in the account. The response contains a list of original glossary terms and translations.
       tags:
         - Glossaries
       parameters:
@@ -4104,43 +4083,43 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier of corresponding account.
         - name: glossaryUid
           in: path
           required: true
           type: string
-          description: Unique identifier of glossary
+          description: Unique identifier of glossary.
         - name: localeId
           in: path
           required: true
           type: string
-          description: A valid Smartling Locale ID
+          description: A valid Smartling Locale ID.
         - name: termUids
           in: query
           type: array
           items:
             type: string
-          description: UIDs of specific terms to be retrieved (validation allows not more than 100 in single request)
+          description: UIDs of specific terms to be retrieved (validation allows no more than 100 in a single request).
         - name: termText
           in: query
           type: string
-          description: filter for term text in LIKE manner (case-insensitive).
+          description: Filter for the term text in LIKE manner (case-insensitive).
         - name: translated
           in: query
           type: boolean
-          description: flag to filter out terms by criteria of presence of translation. if not specified - it is not taken into account
+          description: Flag to filter out terms by criteria of presence of translation. Ff not specified, it is not taken into account.
         - name: limit
           in: query
           type: integer
-          description: pagination portion size
+          description: Pagination portion size.
         - name: offset
           in: query
           type: integer
-          description: pagination offset value
+          description: Pagination offset value.
         - name: sort
           in: query
           type: string
-          description:  sorting instructions. represents field to sort by and direction separated by coma (i.e. sort=termText,desc). We support sorting by all fields.
+          description: Sorting instructions. This represents the field to sort by, and the direction is separated by a comma (i.e. sort=termText,desc). We support sorting by all fields.
       responses:
         200:
           description: OK
@@ -4212,10 +4191,9 @@ paths:
     get:
       summary: Find translations of terms across all glossaries
       description: |-
-        Searches translations of glossary terms across all glossaries in account.
+        Searches translations of glossary terms across all glossaries in the account.
 
-        Response contains a list of original glossary terms and translations. There is a glossary UID for every term
-        to show which glossary it belongs to.
+        The response contains a list of original glossary terms and translations. There is a glossary UID for each term, in order to show to which glossary it belongs.
       tags:
         - Glossaries
       parameters:
@@ -4223,38 +4201,38 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier for the corresponding account.
         - name: localeId
           in: path
           required: true
           type: string
-          description: A valid Smartling Locale ID
+          description: A valid Smartling Locale ID.
         - name: termUids
           in: query
           type: array
           items:
             type: string
-          description: UIDs of specific terms to be retrieved (validation allows not more than 100 in single request)
+          description: UIDs of specific terms to be retrieved (validation allows no more than 100 in single request).
         - name: termText
           in: query
           type: string
-          description: filter for term text in LIKE manner (case-insensitive).
+          description: Filter for the term text in LIKE manner (case-insensitive).
         - name: translated
           in: query
           type: boolean
-          description: flag to filter out terms by criteria of presence of translation. if not specified - it is not taken into account
+          description: Flag to filter out terms by criteria of presence of translation. Ff not specified, it is not taken into account.
         - name: limit
           in: query
           type: integer
-          description: pagination portion size
+          description: Pagination portion size.
         - name: offset
           in: query
           type: integer
-          description: pagination offset value
+          description: Pagination offset value.
         - name: sort
           in: query
           type: string
-          description:  sorting instructions. represents field to sort by and direction separated by coma (i.e. sort=termText,desc). We support sorting by all fields.
+          description: Sorting instructions. Represents field to sort by and direction separated by comma (i.e. sort=termText,desc). We support sorting by all fields.
       responses:
         200:
           description: OK
@@ -4342,17 +4320,17 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier for the corresponding account.
         - name: glossaryUid
           in: path
           required: true
           type: string
-          description: Unique identifier of glossary
+          description: Unique identifier of the glossary.
         - name: termUid
           in: path
           required: true
           type: string
-          description: Unique identifier of specific glossary term
+          description: Unique identifier of a specific glossary term.
         - name: term
           in: body
           required: true
@@ -4368,7 +4346,7 @@ paths:
           schema:
             $ref: '#/definitions/Error500Response'
     delete:
-      description: 'Delete a Glossary term. This will remove the term and all translations.'
+      description: 'Delete a glossary term. This will remove the term and all translations.'
       summary: Delete glossary term
       tags:
         - Glossaries
@@ -4377,17 +4355,17 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier of a corresponding account.
         - name: glossaryUid
           in: path
           required: true
           type: string
-          description: Unique identifier of glossary
+          description: Unique identifier of a glossary.
         - name: termUid
           in: path
           required: true
           type: string
-          description: Unique identifier of specific glossary term
+          description: Unique identifier of a specific glossary term.
       responses:
         200:
           description: OK
@@ -4410,12 +4388,12 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding project
+          description: Unique identifier for the corresponding project.
         - name: glossaryUid
           in: path
           required: true
           type: string
-          description: Unique identifier of glossary
+          description: Unique identifier of a glossary.
         - name: request
           in: body
           required: true
@@ -4443,22 +4421,22 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier of corresponding account.
         - name: glossaryUid
           in: path
           required: true
           type: string
-          description: Unique identifier of glossary
+          description: Unique identifier of glossary.
         - name: format
           in: query
           required: true
           type: string
-          description: Format that is used for glossary export
+          description: Format that is used for glossary export.
           enum: [csv, tbx, xlsx]
         - name: localeIds
           in: query
           type: string
-          description: 'Comma-separated list of locales for which to return translations'
+          description: 'Comma-separated list of locales for which to return translations.'
       responses:
         200:
           description: OK
@@ -4474,8 +4452,8 @@ paths:
     post:
       summary: Import glossary from Excel file
       description: |-
-        Creates a new Glossary in your account from an uploaded Excel spreadsheet. The format of the spreadsheet is
-        important. See Import Glossary and Glossary Spreadsheet Format.
+        Creates a new glossary in your account from an uploaded Excel spreadsheet. The format of the spreadsheet is
+        important. See [Import Glossary](https://help.smartling.com/hc/en-us/articles/115003144633) and [Glossary Spreadsheet Format](https://help.smartling.com/hc/article_attachments/360002278634/Glossary%20Import%20Template.xlsx).
 
       tags:
         - Glossaries
@@ -4486,7 +4464,7 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier of corresponding account.
         - name: name
           in: formData
           required: true
@@ -4501,12 +4479,12 @@ paths:
           in: formData
           required: true
           type: string
-          description: 'Description for the glossary'
+          description: 'Description for the glossary.'
         - name: importFile
           in: formData
           required: true
           type: file
-          description: 'File containing the Glossary you want to import. See Glossary Spreadsheet Format for details.'
+          description: 'File containing the glossary you wish to import. See [Glossary Spreadsheet Format](https://help.smartling.com/hc/article_attachments/360002278634/Glossary%20Import%20Template.xlsx) for details.'
       responses:
         200:
           description: OK
@@ -4552,7 +4530,7 @@ paths:
           in: path
           required: true
           type: string
-          description: Unique identifier of corresponding account
+          description: Unique identifier of corresponding account.
         - name: glossaryImportJobUid
           in: path
           required: true
@@ -5041,7 +5019,7 @@ paths:
         - name: AuthorizeJobRequest
           in: body
           required: true
-          description: The payload to use when authorizing a job. If no target locales and workflows are provided, empty body `{}` should be provided. Smartling will authorize the job for the default workflows for the given Project.
+          description: The payload to use when authorizing a job. If no target locales and workflows are provided, the empty body `{}` should be provided. Smartling will authorize the job for the default workflows for the given project.
           schema:
             $ref: '#/definitions/AuthorizeJobRequest'
       responses:
@@ -5319,7 +5297,7 @@ paths:
         - A job can contain a maximum of 5000 files.
         - Content can't be added to the job if the job doesn't contain any locales, and the request to add a file doesn't specify any locales.
         - The file (specified by the `fileUri`) can't be in the process of being uploaded / modified within Smartling. It should complete its upload process before being added to a job.
-        - Any targetLocale's specified must be valid within the project the job has been created for
+        - Any `targetLocale`s specified must be valid within the project the job has been created for.
 
         When the system can quickly add the file and its content to the job, it synchronously responds with status `200`. When the system cannot quickly add the file and its content to the job, then a `202` response is returned. The response contains a link to check the progress of the request. When a `202` is received, the process of adding the content to the job will not be complete until the returned process has completed.
       consumes:
@@ -5385,7 +5363,7 @@ paths:
       description: |
         Removes a file from a job. All content that is part of the file contained within that job will be removed from the job and will become unuathorized content.
 
-        When the system can quickly remove the file and its content from the job synchronously responds with status **200**. When the system cannot quickly remove the file and its content to the job, then a 202 response is returned. The response contains a link to check the progress of the request. When a 202 is received, then the process of removing the file and it's contents from the job will not be complete until the returned process has completed.
+        When the system can quickly remove the file and its content from the job synchronously, it responds with a `200` status. When the system cannot quickly remove the file and its content from the job, a `202` response is returned. The response contains a link to check the progress of the request. When a `202` is received, the process of removing the file and its content from the job will not be complete until the returned process has completed.
       consumes:
         - application/json
       parameters:
@@ -5400,7 +5378,7 @@ paths:
         - name: RemoveFileJobRequest
           in: body
           required: true
-          description: The fileUri (unique URI of the file) that is to be removed from the job.
+          description: The `fileUri` (unique URI of the file) that is to be removed from the job.
           schema:
             $ref: '#/definitions/RemoveFileJobRequest'
       responses:
@@ -6000,7 +5978,7 @@ definitions:
         type: string
         enum:
           - SUCCESS
-        description: Indicates whether the response was successful or what error has occured
+        description: Indicates whether the response was successful or what error has occured.
 
   Error:
     type: object
@@ -6034,7 +6012,7 @@ definitions:
             enum:
               - GENERAL_ERROR
               - MAINTENANCE_MODE_ERROR
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
           errors:
             type: array
             items:
@@ -6053,7 +6031,7 @@ definitions:
         properties:
           code:
             type: string
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
             enum:
             - VALIDATION_ERROR
           errors:
@@ -6074,7 +6052,7 @@ definitions:
         properties:
           code:
             type: string
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
             enum:
             - AUTHENTICATION_ERROR
             - AUTHORIZATION_ERROR
@@ -6096,7 +6074,7 @@ definitions:
         properties:
           code:
             type: string
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
             enum:
             - NOT_FOUND_ERROR
           errors:
@@ -6117,7 +6095,7 @@ definitions:
         properties:
           code:
             type: string
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
             enum:
             - RESOURCE_LOCKED
           errors:
@@ -6138,7 +6116,7 @@ definitions:
         properties:
           code:
             type: string
-            description: Indicates whether the response was successful or what error has occured
+            description: Indicates whether the response was successful or what error has occured.
             enum:
             - MAX_OPERATIONS_LIMIT_EXCEEDED
           errors:
@@ -6496,7 +6474,7 @@ definitions:
           properties:
             overWritten:
               type: boolean
-              description: Indicates whether the uploaded file has overwritten an existing file
+              description: Indicates whether the uploaded file has overwritten an existing file.
             stringCount:
               type: integer
               description: The number of strings in the uploaded file
@@ -7032,7 +7010,7 @@ definitions:
         type: string
 
   Coordinates:
-    description: Describes the location and size of a box enclosing the string in a context image. ‘top’ and ‘left’ are the distance in pixels of the top left corner of the string from the top and left of the image. ‘width’ and ‘height’ are the dimensions of the string in pixels. This information is used to highlight the position of the string when displaying the context image in the Translation Interface. If coordinates are not provided, Smartling will attempt to locate the string on the image using Optical Character Recognition. If OCR fails, coordinates will default to 0, 0, 0, 0, meaning the image will be displayed when the string is translated, without any highlighting to show the position of the string.
+    description: Describes the location and size of a box enclosing the string in a context image. ‘top’ and ‘left’ are the distances in pixels of the top left corner of the string (from the top left of the image). ‘width’ and ‘height’ are the dimensions of the string in pixels. This information is used to highlight the position of the string when displaying the context image in the translation interface (CAT tool). If coordinates are not provided, Smartling will attempt to locate the string on the image using Optical Character Recognition. If OCR fails, coordinates will default to 0, 0, 0, 0. This meaans that the image will be displayed when the string is translated, without any highlighting to show the position of the string.
     type: object
     required:
       - top
@@ -7050,7 +7028,7 @@ definitions:
         type: number
 
   Timecode:
-    description: Number of seconds for the period of string appearance in a video relative to the video start time.
+    description: Number of seconds for the period of time that a string appears in a video, relative to the video start time.
     type: object
     properties:
       startTime:
@@ -7112,7 +7090,7 @@ definitions:
             timecode:
               $ref: '#/definitions/Timecode'
             selector:
-              description: Values of "data-sl-anchor" attributes of HTML elements
+              description: Values for "data-sl-anchor" attributes of HTML elements.
               type: object
               properties:
                 anchors:
@@ -7127,7 +7105,7 @@ definitions:
         type: integer
         minimum: 1
         description: |-
-          Specifies whether to override context for strings that were already bound to other context and that context is at least as "overrideContextOlderThanDays" old.
+          Specifies whether to override context for strings that were already bound to other context, and that context is at least as "overrideContextOlderThanDays" old.
       stringHashcodes:
         type: array
         description: |-
@@ -7152,7 +7130,7 @@ definitions:
         example: Alonso
       enabled:
         type: boolean
-        description: should send email notification to this email
+        description: Should send email notification to this email.
         example: true
 
   IssueRequest:
@@ -7174,7 +7152,7 @@ definitions:
           - TRANSLATION
         description: >-
           Identifies the issue type. issueTypeCode is either `SOURCE` or
-          `TRANSLATION`. Each have their own set of issueSubType values
+          `TRANSLATION`. Each have their own set of ```issueSubType``` values.
       issueSubTypeCode:
         type: string
         enum:
@@ -7268,23 +7246,23 @@ definitions:
     properties:
       createdDateBefore:
         type: string
-        description: Filter issues which created before this date
+        description: Filter issues which were created before this date.
         example: '2015-12-23T18:14:09Z'
       createdDateAfter:
         type: string
-        description: Filter issues which created after this date
+        description: Filter issues which were created after this date.
         example: '2015-11-10T15:14:09Z'
       resolvedDateBefore:
         type: string
-        description: Filter issues which resolved before this date
+        description: Filter issues which were resolved before this date.
         example: '2015-12-23T18:14:09Z'
       resolvedDateAfter:
         type: string
-        description: Filter issues which resolved after this date
+        description: Filter issues which were resolved after this date.
         example: '2015-11-10T15:14:09Z'
       answered:
         type: boolean
-        description: Issue flag "answered"
+        description: Issue flag "answered".
         example: false
       stringFilter:
         type: object
@@ -7293,7 +7271,7 @@ definitions:
             type: array
             items:
               type: string
-              description: Unique identifier for a string in Smartling. Used by the Issues API to attach an issue to a string. You can get the hashcode for a string via String API.
+              description: Unique identifier for a string in Smartling. Used by the Issues API to attach an issue to a string. You can get the hashcode for a string via the Strings API.
             example:
               - afe47cdaffe0c0226506919c291d9c1a
               - afe37cdaffe0c0226508919c291d9c1a
@@ -7349,7 +7327,7 @@ definitions:
         description: offset
       reportedByUserUid:
         type: string
-        description: User identifier who created issue
+        description: User identifier who created the issue.
         example: 661801f19693
       issueStateCodes:
         type: array
@@ -7358,7 +7336,7 @@ definitions:
           enum: 
             - OPENED
             - RESOLVED
-          description: Issue State identifier
+          description: Issue State identifier.
       issueTypeCodes:
         type: array
         items:
@@ -7366,7 +7344,7 @@ definitions:
           enum: 
             - SOURCE 
             - TRANSLATION
-          description: Issue Type identifier
+          description: Issue Type identifier.
       issueSubTypeCodes:
         type: array
         items:
@@ -7631,7 +7609,7 @@ definitions:
         type: string
       stringText:
         type: string
-        description: The text for this string
+        description: The text for this string.
       parsedStringText:
         type: string
         description: The text for this string used to define its uniqueness in the Smartling system.  This is after placeholders have been processed and escaping normalization has been applied.
@@ -7683,7 +7661,7 @@ definitions:
       - sourceLocaleId
     properties:
       glossaryUid:
-        description: Unique identifier for the glossary
+        description: Unique identifier for the glossary.
         type: string
         example: 50d9dab5-6b8b-11e5-ba24-127b00b163a3
       name:
@@ -7691,7 +7669,7 @@ definitions:
         type: string
         example: Another document tester-Glossary
       description:
-        description: Description of a Glossary
+        description: Description of a Glossary.
         type: string
         example: Description of a Glossary
       sourceLocaleId:
@@ -7713,39 +7691,39 @@ definitions:
       - termText
     properties:
       termText:
-        description: Glossary term text
+        description: Glossary term text.
         type: string
         example: cold calls
       partOfSpeechCode:
-        description: Glossary term part of speech
+        description: Glossary term part of speech.
         type: string
         example: UNSPECIFIED
       definition:
-        description: Glossary term definition
+        description: Glossary term definition.
         type: string
       notes:
         description: Notes
         type: string
       caseSensitive:
-        description: Is matching of this glossarry term should be case sensitive
+        description: Matching of this glossarry term should be case sensitive.
         type: boolean
       exactMatch:
-        description: Should be matched exactly
+        description: Should be matched exactly.
         type: boolean
       variations:
-        description: Glossary term variations
+        description: Glossary term variations.
         type: string
       synonyms:
-        description: Glossary term synonyms
+        description: Glossary term synonyms.
         type: string
       antonyms:
-        description: Glossary term antonyms
+        description: Glossary term antonyms.
         type: string
       seo:
-        description: It is an indicator to users whether the term is for search engine optimziation
+        description: An indicator to users whether the term is for search engine optimziation.
         type: boolean
       doNotTranslate:
-        description: It is an indicator to users that term is not translatable
+        description: An indicator to users that the term is not translatable.
         type: boolean
   SourceTerm:
     allOf:
@@ -7753,7 +7731,7 @@ definitions:
     - type: object
       properties:
         termUid:
-          description: Unique identifier of specific glossary term
+          description: Unique identifier of a specific glossary term.
           type: string
           example: e390a4d6-aef2-11e5-b159-0ad0c2f6b537
         createdDate:
@@ -7790,7 +7768,7 @@ definitions:
       - translatedTerm
     properties:
       localeId:
-        description: A valid Smartling Locale ID
+        description: A valid Smartling Locale ID.
         type: string
         example: fr-CA
       translatedTerm:
@@ -7801,7 +7779,7 @@ definitions:
         description: Notes
         type: string
       lockTranslation:
-        description: It is an indicator that shows if translation is editable
+        description: It is an indicator that shows if the translation is editable.
         type: boolean
   TermTranslation:
     allOf:
@@ -7809,7 +7787,7 @@ definitions:
       - type: object
         properties:
           translatorUserUid:
-            description: Unique identifier of translator user
+            description: Unique identifier of translator user.
             type: string
           createdDate:
             description: Created date
@@ -7858,40 +7836,40 @@ definitions:
   GlossaryImportJob:
     properties:
       glossaryImportJobUid:
-        description: Unique identifier that corresponds to a single glossary import session
+        description: Unique identifier that corresponds to a single glossary import session.
         type: string
       glossary:
         $ref: '#/definitions/Glossary'
       fileName:
-        description: File name
+        description: File name.
         type: string
       accountUid:
-        description: Unique identifier for corresponding account
+        description: Unique identifier for the corresponding account.
         type: string
       glossaryImportJobStatus:
-        description: Status of glossary import jobs
+        description: Status of glossary import jobs.
         type: string
         enum: [PENDING, IN_PROGRESS, SUCCESSFUL, FAILED]
       termsNumber:
-        description: Number of terms in the import file
+        description: Number of terms in the import file.
         type: integer
         format: int32
       termsProcessed:
-        description: Number of processed terms
+        description: Number of processed terms.
         type: integer
         format: int32
       localesNumber:
-        description: Number of locales
+        description: Number of locales.
         type: integer
         format: int32
       createdByUserUid:
-        description: Unique identifier of creator user
+        description: Unique identifier of creator user.
         type: string
       createdDate:
-        description: Created date
+        description: Created date.
         type: string
       modifiedDate:
-        description: Modified date
+        description: Modified date.
         type: string
 
   CreateGlossary:
@@ -8063,7 +8041,7 @@ definitions:
     properties:
       fileUri:
         type: string
-        description: The uri of the file that is to be removed from the job.
+        description: The URI of the file that is to be removed from the job.
   SearchJobRequest:
     description: The payload to use for searching for jobs. At least one of hashcodes, fileUris, and translationJobUids must be specified. The individual param results are AND'd together.
     type: object
@@ -8072,7 +8050,7 @@ definitions:
         type: array
         items:
           type: string
-        description: (Optional) The hashcodes (string identifiers) to use to search for jobs. Any job containing specified hashcodes will be returned.
+        description: (Optional) The hashcodes (string identifiers) used to search for jobs. Any job containing specified hashcodes will be returned.
       fileUris:
         type: array
         items:
@@ -8098,7 +8076,7 @@ definitions:
         items:
           type: string
           example: ["ru-RU"]
-        description: (Optional) The array of localeId's that the strings should be removed from. If not specified, the strings will be removed from all locales within that job.
+        description: (Optional) The array of `localeId`s that the strings should be removed from. If not specified, the strings will be removed from all locales within that job.
   AddStringsJobRequest:
     description: The payload to use when adding strings to a job.
     type: object
@@ -8111,7 +8089,7 @@ definitions:
         type: array
         items:
           type: string
-        description: The array of hashcodes to use to add to the job. The hashcodes must exist within Smartling for the project in order to be added to a job. Hashcodes are required when adding strings to a job. Hashcodes are limited to 1000 per API call.
+        description: The array of hashcodes to use to add to the job. The hashcodes must exist within Smartling, for the project, in order to be added to a job. Hashcodes are required when adding strings to a job. Hashcodes are limited to 1000 per API call.
         maxItems: 1000
       targetLocaleIds:
         type: array
@@ -8124,12 +8102,12 @@ definitions:
     properties:
       fileUri:
         type: string
-        description: The uri of the file that has been uploaded to Smartling. fileUri is required.
+        description: The URI of the file that has been uploaded to Smartling. `fileUri` is required.
       targetLocaleIds:
         type: array
         items:
           type: string
-        description: The array of localeId's that the file should be added to. If not specified, the file will be added to all locales. If specified, the file will only be added for the locales provided. If the locale\'s were not already part of the job, then the job will be extended to contain the additional locales.
+        description: The array of `localeId`s that the file should be added to. If not specified, the file will be added to all locales. If specified, the file will only be added for the locales provided. If the locales were not already part of the job, then the job will be extended to contain the additional locales.
   CreateJobRequest:
     description: The payload to use when creating a job.
     type: object
@@ -8143,7 +8121,7 @@ definitions:
         type: array
         items:
           type: string
-        description: The array of `localeId`'s to be used when creating the job. The locale\'s specified must be valid within the Smartling project.
+        description: The array of `localeId`s to be used when creating the job. The locales specified must be valid within the Smartling project.
         example: ["ru-RU"]
       description:
         type: string
@@ -8179,7 +8157,7 @@ definitions:
     properties:
       targetLocaleId:
         type: string
-        description: The locale identifier to use when indicating the locale to authorize content for. If `targetLocaleId` is specified, then `workflowUid` is required as well. Both can be ommitted, and the default workflow for that locale will be used.
+        description: The locale identifier to use when indicating the locale to authorize content for. If `targetLocaleId` is specified, then `workflowUid` is required as well. Both can be omitted, and the default workflow for that locale will be used.
       workflowUid:
         type: string
         description: The UID of the workflow to authorize content into.
