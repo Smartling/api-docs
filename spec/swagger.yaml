@@ -86,6 +86,8 @@ tags:
     description: |-
       Each client within Smartling is given their own account with a designated `accountUid`. Within each account is any number of projects. All files, content, and jobs are tied to a particular project. The Accounts & Projects API will allow you to programmatically find and use the projects within your account.
 
+      You may wish to reference the [Overview of Smartling APIs](https://help.smartling.com/hc/en-us/articles/360007811673) article to better understand how content is organized within Smartling.
+
   - name: "Locales"
     description: |-
       Locales are the language and country pairs that are used to identify the source content and the desired target locale for your translated content.
@@ -116,7 +118,7 @@ tags:
 
   - name: "Jobs"
     description: |-
-      A Smartling project (such as a mobile, web, files, or connector project) may contain one or more jobs. You may have multiple projects, each containing multiple jobs. Each job contains strings, consisting of words or phrases.
+      A Smartling project (such as a mobile, web, files, or connector project) may contain one or more [jobs](https://help.smartling.com/hc/en-us/articles/360007790014). You may have multiple projects, each containing multiple jobs. Each job contains strings, consisting of words or phrases.
       The Jobs feature allows you to group and prioritize your content by name, due date, description, and reference number (optional). It also enables you to monitor the progress of your translations throughout completion.
 
       The Jobs API allows you to create a job, add a file to a job, authorize a job, and cancel a job, among many other actions. You have full control via the API to manage your job(s).
@@ -127,7 +129,7 @@ tags:
 
   - name: "Issues"
     description: |-
-      The Issues feature is a way for users who are working on a translation workflow to communicate with other users about source content and translations. For example, a Translator might create an issue to ask a question about terminology in a particular string. 
+      The Issues feature is a way for users who are working on a translation workflow to communicate with other users about source content and translations. For example, a Translator might create an [issue](https://help.smartling.com/hc/en-us/articles/115003139313) to ask a question about terminology in a particular string. 
 
       By using Issues, you can record any communication about a string, and this can be seen by anyone working on it. Issues streamline the translation workflow. Translators get answers to their questions about the original content so they can translate it quickly and correctly. Translation resources can review and provide feedback about translations collaboratively. 
 
@@ -155,12 +157,11 @@ tags:
       
       The Strings API allows you to directly upload strings to a Smartling project and fetch original strings or translations.
 
-      For each string in a Smartling project, there is a unique identifier created by hashing together the parsed string text, variant metadata, and in some cases, namespace. When adding strings via the Strings API, each string will be unique. If you try to create a string with identical variant metadata and string text to a string that already exists in the project, the string will be overwritten.
+      For each string in a Smartling project, there is a unique identifier created by hashing together the parsed string text, [variant metadata](https://help.smartling.com/hc/en-us/articles/360008143853), and in some cases, [namespace](https://help.smartling.com/hc/en-us/articles/360008143833). When adding strings via the Strings API, each string will be unique. If you try to create a string with identical variant metadata and string text to a string that already exists in the project, the string will be overwritten.
 
   - name: Tags
     description: |-
-      The Tags API allows you to add and remove tags for strings, search for tags in project.
-      Tags can help you to manage your strings.
+      Tags can help you manage your strings. The Tags API allows you to add/remove string tags, and search for tags in a project.
 paths:
   '/auth-api/v2/authenticate':
     post:
@@ -524,7 +525,9 @@ paths:
     get:
       summary: List locales
       description: |
-        The list of available locales within Smartling.
+        The list of available locales within Smartling. 
+
+        To find out the `localedID` for a specific project, refer to [Get project details](http://localhost:3000/#tag/Account-and-Projects%2Fpaths%2F~1projects-api~1v2~1projects~1%7BprojectId%7D%2Fget).
       tags:
         - Locales
       parameters:
@@ -3109,7 +3112,7 @@ paths:
     get:
       description: >-
        Get a list of all issue watchers for the entire account.
-      summary: List Account Watchers
+      summary: List account watchers
       tags:
         - Issues
       consumes:
@@ -5846,7 +5849,7 @@ paths:
       summary: "Get all tags for strings"
       tags:
         - Tags
-      description: "Retrieve all tags linked to strings"
+      description: "Retrieve all tags linked to strings."
       consumes:
         - application/json
       produces:
@@ -5882,7 +5885,7 @@ paths:
       summary: "Add tags to strings"
       tags:
         - Tags
-      description: "Add list of tags to list of strings"
+      description: "Add a list of tags to a list of strings."
       parameters:
       - name: projectId
         in: path
@@ -5921,7 +5924,7 @@ paths:
       summary: "Remove tags from strings"
       tags:
         - Tags
-      description: "Remove list of tags from list of strings"
+      description: "Remove a list of tags from a list of strings."
       parameters:
       - name: projectId
         in: path
@@ -5960,7 +5963,7 @@ paths:
       summary: "Remove all tags from strings"
       tags:
         - Tags
-      description: "Remove all tags from list of strings"
+      description: "Remove all tags from a list of strings."
       parameters:
       - name: projectId
         in: path
