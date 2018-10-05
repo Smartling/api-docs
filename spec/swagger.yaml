@@ -8,7 +8,6 @@ produces:
 consumes:
   - application/json
 info:
-
   title: Smartling REST API Reference
   
   description: |
@@ -3449,20 +3448,9 @@ paths:
           schema:
             type: object
             properties:
-              placeholderFormat:
-                description: |-
-                  Specifies a standard placeholder format. Accepted values are none, c, ios, python, java, yaml, qt, resx. See [Placeholders in Resource Files](https://help.smartling.com/hc/en-us/articles/360008143433) for more detail.
-                type: string
-              placeholderFormatCustom:
-                description: |-
-                  Specifies a custom placeholder with a Java Regular Expression. For example \\[.+?\\] would capture all values surrounded by square brackets as placeholders. See [Placeholders in Resource Files](https://help.smartling.com/hc/en-us/articles/360008143433) for more detail.
-                type: string
-              namespace:
-                description: |-
-                  Used to generate the unique hashcode for all strings in the request. If you want to have two versions of a string with the same text and variant metadata, you can keep them unique by assigning a different namespace to each string. If not provided, default value is _smartling.strings-api.default.namespace_. A _NULL_ value is permitted.
-                type: string
-              strings:
+              strings (Required):
                 type: array
+                minItems: 1
                 items:
                   type: object
                   required:
@@ -3496,6 +3484,18 @@ paths:
 
                         "When strings are parsed as HTML, Smartling will automatically ampersand-escape special characters such as angle brackets (<) and quotes (&quot;). For example, if you upload the string _Dave says &quot;hello&quot;_. and set format to HTML, Smartling will return the string with ampersand-escaping: _Dave says &amp;quot;hello&amp;quot;_."
                       type: string
+              placeholderFormat:
+                description: |-
+                  Specifies a standard placeholder format. Accepted values are none, c, ios, python, java, yaml, qt, resx. See [Placeholders in Resource Files](https://help.smartling.com/hc/en-us/articles/360008143433) for more detail.
+                type: string
+              placeholderFormatCustom:
+                description: |-
+                  Specifies a custom placeholder with a Java Regular Expression. For example \\[.+?\\] would capture all values surrounded by square brackets as placeholders. See [Placeholders in Resource Files](https://help.smartling.com/hc/en-us/articles/360008143433) for more detail.
+                type: string
+              namespace:
+                description: |-
+                  Used to generate the unique hashcode for all strings in the request. If you want to have two versions of a string with the same text and variant metadata, you can keep them unique by assigning a different namespace to each string. If not provided, default value is _smartling.strings-api.default.namespace_. A _NULL_ value is permitted.
+                type: string
       responses:
         200:
           description: OK
