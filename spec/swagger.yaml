@@ -3544,6 +3544,10 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringJSON" https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId
 
   /strings-api/v2/projects/{projectId}/processes/{processUid}:
     get:
@@ -3633,6 +3637,10 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -G -d "fileUri=$smartlingFileUri" https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/source-strings
 
   /strings-api/v2/projects/{projectId}/translations:
     get:
@@ -5920,6 +5928,10 @@ paths:
                   items:
                   - tag: "StringTag"
                   - tag: "AnotherTag"
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/tags
   /tags-api/v2/projects/{projectId}/strings/tags/search:
     post:
       summary: "Get all tags for strings"
@@ -5995,6 +6007,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/SuccessResponse'
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTagJSON"  https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/strings/tags/add
   /tags-api/v2/projects/{projectId}/strings/tags/remove:
     post:
       summary: "Remove tags from strings"
@@ -6364,7 +6380,7 @@ paths:
 
         When the first file is added to the new batch, it becomes an `ADDING_FILES` status. Adds original source content to a Job batch in Smartling.
 
-        The example will upload your Java properties file directly to a Smartling project, identified by the `projectId`, and attaches it to a Job linked to `batchUid`. The response is returned right after the content of a file is accepted by the Files API. After that, the Batch service controls whether the file upload finished. Content is parsed, all strings are ingested, and the file is then attached to the Job which is linked to the batch for locales, described in `localeIdsToAuthorize`.
+        The curl example provided will upload your Java properties file directly to a Smartling project, identified by the `projectId`, and attaches it to a Job linked to `batchUid`. The response is returned right after the content of a file is accepted by the Files API. After that, the Batch service controls whether the file upload finished. Content is parsed, all strings are ingested, and the file is then attached to the Job which is linked to the batch for locales, described in `localeIdsToAuthorize`.
 
       tags:
       - Job batches
