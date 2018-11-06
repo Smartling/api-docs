@@ -1303,7 +1303,7 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -H "Authorization: Bearer $smartlingToken" "https://api.smartling.com/files-api/v2/projects/{projectId}/files/list?fileTypes[]=json&uriMask=strings"
+            curl -H "Authorization: Bearer $smartlingToken" "https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/files/list?fileTypes[]=json&uriMask=strings"
 
   '/files-api/v2/projects/{projectId}/file-types':
     get:
@@ -1340,7 +1340,7 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -H "Authorization: Bearer $smartlingToken" "https://api.smartling.com/files-api/v2/projects/{projectId}/file-types"
+            curl -H "Authorization: Bearer $smartlingToken" "https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file-types"
 
 
   '/files-api/v2/projects/{projectId}/file/rename':
@@ -1386,7 +1386,7 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -X POST -H "Authorization: Bearer $smartlingToken" -F "fileUri=filename.properties" -F "newFileUri=filename2.properties" 'https://api.smartling.com/files-api/v2/projects/{projectId}/file/rename'
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -F "fileUri=filename.properties" -F "newFileUri=filename2.properties" 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file/rename'
 
 
   '/files-api/v2/projects/{projectId}/file/delete':
@@ -1428,7 +1428,7 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -X POST -H "Authorization: Bearer $smartlingToken" -F "fileUri=filename.properties" 'https://api.smartling.com/files-api/v2/projects/{projectId}/file/delete'
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -F "fileUri=filename.properties" 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file/delete'
 
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file/last-modified':
@@ -1481,7 +1481,7 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -X GET -H "Authorization: Bearer $smartlingToken" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/last-modified?fileUri=filename.properties'
+            curl -X GET -H "Authorization: Bearer $smartlingToken" 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/last-modified?fileUri=filename.properties'
 
   '/files-api/v2/projects/{projectId}/file/last-modified':
     get:
@@ -1530,7 +1530,7 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -X GET -H "Authorization: Bearer $smartlingToken" 'https://api.smartling.com/files-api/v2/projects/{projectId}/file/last-modified?fileUri=filename.properties'
+            curl -X GET -H "Authorization: Bearer $smartlingToken" 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file/last-modified?fileUri=filename.properties'
 
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file/import':
@@ -1613,7 +1613,7 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -H "Authorization: Bearer $smartlingToken" -F "file=@filename.properties" -F "fileUri=filename.properties" -F "fileType=javaProperties" -F "translationState=PUBLISHED" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/import'
+            curl -H "Authorization: Bearer $smartlingToken" -F "file=@filename.properties" -F "fileUri=filename.properties" -F "fileType=javaProperties" -F "translationState=PUBLISHED" 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/import'
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file/get-translations':
     post:
@@ -1693,7 +1693,7 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -H "Authorization: Bearer $smartlingToken" -F "file=@filename.properties" -F 'fileUri=filename.properties' 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/get-translations'
+            curl -H "Authorization: Bearer $smartlingToken" -F "file=@filename.properties" -F 'fileUri=filename.properties' 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/get-translations'
 
 #
 # Context API endpoints
@@ -6135,7 +6135,7 @@ paths:
         - lang: curl
           source: |
             curl -X POST \
-            'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}/batches' \
+            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches' \
             -H "Authorization: Bearer $smartlingToken"  \
             -d '{
                 "translationJobUid": "abc123def456",
@@ -6231,7 +6231,7 @@ paths:
         - lang: curl
           source: |
             curl -X GET \
-            'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}/batches?translationJobUid={translationJobUid}&status={status}&sortBy=createdDate&orderBy=desc&offset=0&limit=20' \
+            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches?translationJobUid={translationJobUid}&status={status}&sortBy=createdDate&orderBy=desc&offset=0&limit=20' \
             -H "Authorization: Bearer $smartlingToken"
 
   '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}':
@@ -6364,7 +6364,7 @@ paths:
         - lang: curl
           source: |
             curl -X POST \
-            'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}' \
+            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches/{batchUid}' \
             -H "Authorization: Bearer {token}"  \
             -d '{
                 "action": "execute"
@@ -6514,7 +6514,7 @@ paths:
         - lang: curl
           source: |
             curl -X POST \
-            'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}/file' \
+            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches/{batchUid}/file' \
             -H "Authorization: Bearer {token}" \
             -F "file=@file.properties;type=text/plain" \
             -F "fileUri=file.properties"  \
