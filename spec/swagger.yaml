@@ -6134,13 +6134,7 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -X POST \
-            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches' \
-            -H "Authorization: Bearer $smartlingToken"  \
-            -d '{
-                "translationJobUid": "abc123def456",
-                "authorize": true
-               }'
+            curl -X POST "https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches" -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d '{"translationJobUid": "$translationJobUid","authorize": true}'
 
     get:
       summary: List batches
@@ -6365,7 +6359,7 @@ paths:
           source: |
             curl -X POST \
             'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches/{batchUid}' \
-            -H "Authorization: Bearer {token}"  \
+            -H "Authorization: Bearer $smartlingToken"  \
             -d '{
                 "action": "execute"
              }'
@@ -6515,7 +6509,7 @@ paths:
           source: |
             curl -X POST \
             'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches/{batchUid}/file' \
-            -H "Authorization: Bearer {token}" \
+            -H "Authorization: Bearer $smartlingToken" \
             -F "file=@file.properties;type=text/plain" \
             -F "fileUri=file.properties"  \
             -F "fileType=javaProperties"
