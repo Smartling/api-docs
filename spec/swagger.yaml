@@ -255,9 +255,7 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -X POST https://api.smartling.com/auth-api/v2/authenticate \
-               -H 'content-type: application/json' \
-               -d '{"userIdentifier": "Qw**********", "userSecret": "Zj**********"}'
+            smartlingToken=$(curl -s -X POST -H "Content-Type: application/json" -d "{\"userIdentifier\": \"$smartlingId\", \"userSecret\": \"$smartlingSecret\"}" "https://api.smartling.com/auth-api/v2/authenticate" | sed -E 's/^.*accessToken":"//' | sed -E 's/","refreshToken.*//')
   '/auth-api/v2/authenticate/refresh':
     post:
       description: >-
@@ -289,7 +287,6 @@ paths:
             -H 'content-type: application/json' \
             -d '{"refreshToken": "eyJhbGciO..."}'
 
-#
 # Accounts & Projects
 #
 
@@ -355,7 +352,10 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
-
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/accounts-api/v2/accounts/$smartlingAccountId/projects
   '/projects-api/v2/projects/{projectId}':
     get:
       summary: Get project details
@@ -398,6 +398,10 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+      - lang: curl
+        source: |
+          curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/projects-api/v2/projects/$smartlingProjectId
 
   '/projects-api/v2/projects/{projectId}/targetLocales':
     post:
@@ -603,12 +607,7 @@ paths:
       description: |
         This uploads original source content to Smartling. 
         
-        **Example**
-        ```bash
-          curl -X POST -H "Authorization: Bearer {token}" -F "file=@file.properties;type=text/plain" -F "fileUri=file.properties"  -F "fileType=javaProperties" 'https://api.smartling.com/files-api/v2/projects/{projectId}/file'
-        ```
-
-        The example above will upload your Java properties file directly into the Smartling project identified by the `projectId`. Smartling will ingest this file, parse out the keys and text as strings for translation. At this point, content is ready for translation. 
+        The curl example provided will upload your Java properties file directly into the Smartling project identified by the `projectId`. Smartling will ingest this file, parse out the keys and text as strings for translation. At this point, content is ready for translation. 
         
       tags:
         - Files
@@ -768,16 +767,14 @@ paths:
                   message: The file is currently being processed and will be available in a few minutes.
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
-            
+      x-code-samples:
+        - lang: curl
+          source: |
+              curl -X POST -H "Authorization: Bearer $smartlingToken" -F "file=@$uploadFilePath;type=text/plain" -F "fileUri=$uploadFileSmartlingUri"  -F "fileType=$uploadFileSmartlingType" "https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file"
     get:
       summary: Download source file
       description: |
         This downloads the original version of the requested file from Smartling.
-
-        **Example:**
-        ```bash
-          curl -H "Authorization: Bearer {token}" "https://api.smartling.com/files-api/v2/projects/{projectId}/file?fileUri={your-file-URI}"
-        ```
         
         It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a `200` SUCCESS response. If you receive a response status code other than `200`, the requested file will not be part of the response.
 
@@ -809,6 +806,10 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -G --data-urlencode "fileUri=$smartlingFileUri" "https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file"
 
   '/files-api/v2/projects/{projectId}/file/status':
     get:
@@ -938,18 +939,13 @@ paths:
       description: |
         This downloads the requested file from Smartling.
 
-        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a `200` SUCCESS response. If you receive any other response status code than `200`, the requested file will not be part of the response.
+        It is important to check the HTTP response status code. If Smartling finds and returns the file normally, you will receive a `200` SUCCESS response. If you receive any other response status code other than `200`, the requested file will not be part of the response.
 
         When you upload a UTF-16 character encoded file, then /file/get requests for that file will have a character encoding of UTF-16. All other uploaded files will return with a character encoding of UTF-8.
 
         You can always use the content-type header in the response of a file/get request to determine the character encoding.
 
-        **Example:**
-        ```bash
-          curl -H "Authorization: Bearer {token}" "https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file?fileUri={your-file-Uri}"
-        ```
-
-        **Note**: The filename in response is based on the fileUri associated with the requested file. In most cases, the filename is exactly the fileUri provided. The only exception to this is with .pot gettext files. When a .pot file is specified as the fileUri, Smartling returns a .po file
+        **Note**: The filename in the response header is based on the fileUri associated with the requested file. In most cases, the filename is exactly the fileUri provided. The only exception to this is with .pot gettext files. When a .pot file is specified as the fileUri, Smartling returns a .po file.`
       tags:
         - Files
       parameters:
@@ -1008,6 +1004,10 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -o $smartlingLocaleId$smartlingFileUri -G --data-urlencode "fileUri=$smartlingFileUri" "https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file" 
 
   '/files-api/v2/projects/{projectId}/locales/all/file/zip':
     get:
@@ -1022,11 +1022,6 @@ paths:
         When you upload a UTF-16 character encoded file, then /file/get requests for that file will have a character encoding of UTF-16. All other uploaded files will return with a character encoding of UTF-8.
 
         You can always use the content-type header in the response of a file/get request to determine the character encoding.
-
-        **Example:**
-        ```bash
-          curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/all/file/zip?fileUri=yourfile.json&retrievalType=published'
-        ```
 
       tags:
         - Files
@@ -1085,6 +1080,11 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/all/file/zip?fileUri=yourfile.json&retrievalType=published'
+
 
   '/files-api/v2/projects/{projectId}/files/zip':
     get:
@@ -1213,11 +1213,6 @@ paths:
       description: |
         This lists recently uploaded files, and returns a maximum of 100 files.
 
-        **Example:**
-        ```bash
-          curl -H "Authorization: Bearer {token}" "https://api.smartling.com/files-api/v2/projects/{projectId}/files/list?fileTypes[]=json&uriMask=strings"
-        ```
-
       tags:
         - Files
       parameters:
@@ -1305,17 +1300,16 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" "https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/files/list?fileTypes[]=json&uriMask=strings"
 
   '/files-api/v2/projects/{projectId}/file-types':
     get:
       summary: List all file types
       description: |
         This returns a list of all file types currently represented in the project.
-
-        **Example:**
-        ```bash
-          curl -H "Authorization: Bearer {token}" "https://api.smartling.com/files-api/v2/projects/{projectId}/file-types"
-        ```
 
       tags:
         - Files
@@ -1343,17 +1337,17 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" "https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file-types"
+
 
   '/files-api/v2/projects/{projectId}/file/rename':
     post:
       summary: Rename file
       description: |
         This renames an uploaded file by changing the `fileUri`. After renaming the file, it will only be identified by the new `fileUri` that you provide.
-
-        **Example:**
-        ```bash
-          curl -X POST -H "Authorization: Bearer {token}" -F "fileUri=filename.properties" -F "newFileUri=filename2.properties" 'https://api.smartling.com/files-api/v2/projects/{projectId}/file/rename'
-        ```
 
       tags:
         - Files
@@ -1389,6 +1383,11 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -F "fileUri=filename.properties" -F "newFileUri=filename2.properties" 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file/rename'
+
 
   '/files-api/v2/projects/{projectId}/file/delete':
     post:
@@ -1397,11 +1396,6 @@ paths:
         This removes the file from Smartling. The file will no longer be available for download. Any complete translations for the file remain available for use within the system.
 
         Smartling deletes files asynchronously and it typically takes a few minutes to complete. While deleting a file, you can not upload a file with the same `fileUri`.
-
-        **Example:**
-        ```bash
-          curl -X POST -H "Authorization: Bearer {token}" -F "fileUri=filename.properties" 'https://api.smartling.com/files-api/v2/projects/{projectId}/file/delete'
-        ```
 
       tags:
         - Files
@@ -1431,17 +1425,17 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -F "fileUri=filename.properties" 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file/delete'
+
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file/last-modified':
     get:
       summary: Last modified date (single locale)
       description: |
         This returns the date that a file was last modified in a specified locale.
-
-        **Example:**
-        ```bash
-          curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/last-modified?fileUri=filename.properties'
-        ```
 
       tags:
         - Files
@@ -1484,17 +1478,16 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/last-modified?fileUri=filename.properties'
 
   '/files-api/v2/projects/{projectId}/file/last-modified':
     get:
       summary: Last modified date (all locales)
       description: |
         This returns the date that a file was last modified in each locale.
-
-        **Example:**
-        ```bash
-          curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/file/last-modified?fileUri=filename.properties'
-        ```
 
       tags:
         - Files
@@ -1534,16 +1527,18 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file/last-modified?fileUri=filename.properties'
+
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file/import':
     post:
       summary: Import translations
       description: |
 
-        **Example:**
-        ```bash
-          curl -X POST -H "Authorization: Bearer {token}" -F "file=@filename.properties" -F "fileUri=filename.properties" -F "fileType=javaProperties" -F "translationState=PUBLISHED" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/import'
-        ```
+        
 
       tags:
         - Files
@@ -1615,6 +1610,10 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -F "file=@filename.properties" -F "fileUri=filename.properties" -F "fileType=javaProperties" -F "translationState=PUBLISHED" 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/import'
 
   '/files-api/v2/projects/{projectId}/locales/{localeId}/file/get-translations':
     post:
@@ -1625,12 +1624,6 @@ paths:
         This call can be used instead of a standard upload/download if you keep different versions of a file in multiple branches or are triggering rebuilds, and don’t want your files in Smartling to be overwritten by out-of-date versions of a file.
 
         To use the call, you upload a file and identify the Smartling URI where the main version of that file is saved. Smartling will match strings shared between the uploaded file and the main file and return any available translations.
-
-
-        **Example:**
-        ```bash
-          curl -X POST -H "Authorization: Bearer {token}" -F "file=@filename.properties" -F 'fileUri=filename.properties' 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/get-translations'
-        ```
 
       tags:
         - Files
@@ -1697,6 +1690,10 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -F "file=@filename.properties" -F 'fileUri=filename.properties' 'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/get-translations'
 
 #
 # Context API endpoints
@@ -3566,6 +3563,10 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringJSON" https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId
 
   /strings-api/v2/projects/{projectId}/processes/{processUid}:
     get:
@@ -3655,6 +3656,10 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -G -d "fileUri=$smartlingFileUri" https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/source-strings
 
   /strings-api/v2/projects/{projectId}/translations:
     get:
@@ -4768,6 +4773,11 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/jobs-api/v3/projects/$smartlingProjectId/jobs
+
     post:
       summary: "Create job"
       tags:
@@ -4827,6 +4837,10 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingJobJSON" https://api.smartling.com/jobs-api/v3/projects/$smartlingProjectId/jobs
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/strings/add:
     post:
       summary: "Add strings to job"
@@ -4891,7 +4905,6 @@ paths:
         401: *Error401ResponseDefinition
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
-
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/strings/remove:
     post:
       summary: "Remove strings from job"
@@ -5934,6 +5947,10 @@ paths:
                   items:
                   - tag: "StringTag"
                   - tag: "AnotherTag"
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/tags
   /tags-api/v2/projects/{projectId}/strings/tags/search:
     post:
       summary: "Get all tags for strings"
@@ -6009,6 +6026,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/SuccessResponse'
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTagJSON"  https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/strings/tags/add
   /tags-api/v2/projects/{projectId}/strings/tags/remove:
     post:
       summary: "Remove tags from strings"
@@ -6086,22 +6107,10 @@ paths:
 
   '/jobs-batch-api/v1/projects/{projectId}/batches':
     post:
-      summary: Create Batch
+      summary: Create batch
       description: |-
-        Creates a new Batch for the given Job.
-        If `authorize` is set to `true` then Job authorize will be triggered on the batch execute step
-        When Batch is created it has `NEW` status
+        Creates a new batch for the given Job. If `authorize` is set to `true`, then Job authorize will be triggered on the batch execute step. When the batch is created, it has the status: `NEW`.
 
-        **Example**
-        ```bash
-          curl -X POST \
-            'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}/batches' \
-            -H "Authorization: Bearer {token}"  \
-            -d '{
-        	      "translationJobUid": "abc123def456",
-        	      "authorize": true
-               }'
-        ```
       tags:
       - Job batches
       parameters:
@@ -6126,7 +6135,7 @@ paths:
               response:
                 code: "SUCCESS"
                 data:
-                  batchuid: "qwe0rty98poi"
+                  batchUid: "qwe0rty98poi"
         400: *Error400ResponseDefinition
         401: *Error401ResponseDefinition
         404:
@@ -6141,18 +6150,16 @@ paths:
                   key: "job.not.found"
                   message: "Job {translationJobUid} not found for project {projectId}."
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST "https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches" -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d '{"translationJobUid": "$translationJobUid","authorize": true}'
 
     get:
-      summary: List Batches
+      summary: List batches
       description: |-
-        List existing batches for the project filtered by given criteria
+        List existing batches for the project, filtered by the given criteria.
 
-        **Example**
-        ```bash
-          curl -X GET \
-            'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}/batches?translationJobUid={translationJobUid}&status={status}&sortBy=createdDate&orderBy=desc&offset=0&limit=20' \
-            -H "Authorization: Bearer {token}"
-        ```
       tags:
       - Job batches
       parameters:
@@ -6233,18 +6240,19 @@ paths:
         400: *Error400ResponseDefinition
         401: *Error401ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET \
+            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches?translationJobUid={translationJobUid}&status={status}&sortBy=createdDate&orderBy=desc&offset=0&limit=20' \
+            -H "Authorization: Bearer $smartlingToken"
+
   '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}':
     get:
-      summary: Get Batch Status
+      summary: Get batch status
       description: |-
-        Returns Batch Status with detailed statuses of all batch items and their locales.
+        Returns batch status with detailed statuses of all batch items and their locales.
 
-        **Example**
-        ```bash
-         curl -X GET \
-           'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid} \
-           -H "Authorization: Bearer {token}"
-        ```
       tags:
       - Job batches
       parameters:
@@ -6314,23 +6322,14 @@ paths:
         401: *Error401ResponseDefinition
         500: *Error500ResponseDefinition
     post:
-      summary: Execute Batch
+      summary: Execute batch
       description: |-
-        Triggers asynchronous executing Batch.
-        In the Execute flow Batch waits until all files are uploaded and attached or failed on one of these operations.
-        When all these asynchronous processes are completed job `authorize` is triggered if was requested and Batch is turned into the `COMPLETED` status
+        Triggers asynchronous execution of a batch.
+        
+        In the execution flow, the batch waits until upload and attach processes are completed successfully (or failed for any reason). When all of these asynchronous processes are completed, job `authorize` is triggered if it was requested, and the batch becomes a status of `COMPLETED`.
 
-        Batch execution is allowed only if batch is in `ADDING_FILES` status.
+        Batch execution is allowed only if the batch is in `ADDING_FILES` status.
 
-        **Example**
-        ```bash
-          curl -X POST \
-            'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}' \
-            -H "Authorization: Bearer {token}"  \
-            -d '{
-        	      "action": "execute"
-        	   }'
-        ```
       tags:
       - Job batches
       parameters:
@@ -6374,30 +6373,28 @@ paths:
                   message: "Bob {batchUid} not found for project {projectId}."
         401: *Error401ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST \
+            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches/$batchUid' \
+            -H "Authorization: Bearer $smartlingToken" \
+            -H "Content-Type: application/json" \
+            -d '{
+                "action": "execute"
+             }'
+
   '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}/file':
     post:
-      summary: Add file to a Batch
+      summary: Add file to a batch
       description: |
-        This endpoints is actually a proxy for Upload File in Files API, and works with the two differences
-         1. it additionally gets `batchUid` as path parameter
-         2. it doesn't relay `localeIdsToAuthorize` to *Files Api* so the file stays unauthorized. Instead, `localeIdsToAuthorize` are saved just for this batch session and are used when file is being attached to a job.
+        This endpoint is actually a proxy for Upload File in the Files API, and it works with these two differences:
+         1. It additionally gets `batchUid` as a path parameter.
+         2. It doesn't relay `localeIdsToAuthorize` to Files Api, therefore the file stays unauthorized. Instead, `localeIdsToAuthorize` are saved just for this batch session and are used when a file is being attached to a job.
 
-        When the first file is added into the new batch it turns into the `ADDING_FILES` status.
+        When the first file is added to the new batch, it becomes an `ADDING_FILES` status. Adds original source content to a Job batch in Smartling.
 
-        Adds original source content to a Job Batch Smartling.
-
-        **Example**
-        ```bash
-          curl -X POST \
-            'https://api.smartling.com/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}/file' \
-            -H "Authorization: Bearer {token}" \
-            -F "file=@file.properties;type=text/plain" \
-            -F "fileUri=file.properties"  \
-            -F "fileType=javaProperties"
-        ```
-
-        The example above will upload your Java properties file directly into the Smartling project identified by the `projectId` and attaches it to a Job linked to batchUid.
-        Response is returned right after file content is accepted by File Api. But after that Batch service controls if the file upload finished - content parsed and all strings are ingested, and then file is attached to the Job linked with Batch for locales described in `localeIdsToAuthorize`
+        The curl example provided will upload your Java properties file directly to a Smartling project, identified by the `projectId`, and attaches it to a Job linked to `batchUid`. The response is returned right after the content of a file is accepted by the Files API. After that, the Batch service controls whether the file upload finished. Content is parsed, all strings are ingested, and the file is then attached to the Job which is linked to the batch for locales, described in `localeIdsToAuthorize`.
 
       tags:
       - Job batches
@@ -6527,6 +6524,15 @@ paths:
                   message: "The file is currently being processed and will be available in a few minutes."
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST \
+            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches/{batchUid}/file' \
+            -H "Authorization: Bearer $smartlingToken" \
+            -F "file=@file.properties;type=text/plain" \
+            -F "fileUri=file.properties"  \
+            -F "fileType=javaProperties"
 
 definitions:
 
