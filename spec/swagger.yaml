@@ -183,6 +183,11 @@ tags:
   - name: Tags
     description: |-
       Tags can help you manage your strings. The Tags API allows you to add/remove string tags, and search for tags in a project.
+
+  - name: Vendors
+    description: |-
+      The Vendors API is for Language Service Providers to view work that's available in Smartling.
+
 paths:
   '/auth-api/v2/authenticate':
     post:
@@ -6555,6 +6560,32 @@ paths:
             -F "localeIdsToAuthorize[]=fr-FR" \
             -F "localeIdsToAuthorize[]=ru-RU"
 
+  '/vendors-api/v2/agencies/{agencyUid}/jobs':
+    get:
+      summary: List available jobs
+      description: |
+        Returns the list of jobs available for the agency.
+      tags:
+        - Vendors
+      parameters:
+        - name: agencyUid
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/VendorsAPIJobsListSuccessResponse'
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/vendors-api/v2/agencies/{agencyUid}/jobs
+
 definitions:
 
   SuccessResponse:
@@ -10033,3 +10064,142 @@ definitions:
         type: string
         enum:
         - execute
+
+  #
+  # Vendors API
+  #
+  VendorsAPIJobsListSuccessResponse:
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          required:
+            - lastUpdatedDate
+            - agency
+            - translationJobs
+          properties:
+            lastUpdatedDate:
+              type: string
+              format: date-time
+              description: Date when data for the API response was last refreshed.
+            agency:
+              $ref: '#/definitions/VendorsAPIJobsListAgencyItem'
+            translationJobs:
+              type: array
+              items:
+                $ref: '#/definitions/VendorsAPIJobsListTranslationJobItem'
+
+  VendorsAPIJobsListAgencyItem:
+    type: object
+    required:
+      - agencyUid
+      - agencyName
+    properties:
+      agencyUid:
+        type: string
+      agencyName:
+        type: string
+
+  VendorsAPIJobsListTranslationJobItem:
+    type: object
+    required:
+      - account
+      - project
+      - progressDetails
+      - translationJob
+    properties:
+      account:
+        type: object
+        properties:
+          accountName:
+            type: string
+          accountUid:
+            type: string
+      project:
+        type: object
+        properties:
+          projectId:
+            type: string
+          projectName:
+            type: string
+      progressDetails:
+        $ref: '#/definitions/VendorsAPIJobsListAgencyItemProgressDetailsItem'
+      translationJob:
+        $ref: '#/definitions/VendorsAPIJobsListAgencyItemTranslationJobItem'
+
+  VendorsAPIJobsListAgencyItemProgressDetailsItem:
+    type: object
+    properties:
+      aggregatedPerWorkflow:
+        type: object
+        properties:
+          workflows:
+            type: array
+            items:
+              $ref: '#/definitions/VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItem'
+
+  VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItem:
+    type: object
+    properties:
+      workflowUid:
+        type: string
+      workflowName:
+        type: string
+      targetLocales:
+        type: array
+        items:
+          $ref: '#/definitions/VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItemTargetLocalesItem'
+
+  VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItemTargetLocalesItem:
+    type: object
+    properties:
+      localeId:
+        type: string
+      issues:
+        type: object
+        properties:
+          totalIssuesCount:
+            type: integer
+      workflowSteps:
+        $ref: '#/definitions/VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItemTargetLocalesItemWorkflowStepsItem'
+
+  VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItemTargetLocalesItemWorkflowStepsItem:
+    type: object
+    properties:
+      wordCount:
+        type: integer
+      unassignedWordCount:
+        type: integer
+      workflowStepName:
+        type: string
+      workflowStepOrder:
+        type: integer
+        description: A workflow step position in workflow
+      workflowStepUid:
+        type: string
+
+  VendorsAPIJobsListAgencyItemTranslationJobItem:
+    type: object
+    properties:
+      translationJobAuthorizedDate:
+        type: string
+        format: date-time
+      translationJobDueDate:
+        type: string
+        format: date-time
+      translationJobName:
+        type: string
+      translationJobUid:
+        type: string
+      translationJobRisk:
+        type: object
+        properties:
+          status:
+            type: string
+            enum:
+              - AT_RISK
+              - ON_TRACK
+              - LATE
+
