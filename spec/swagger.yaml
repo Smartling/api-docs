@@ -2550,6 +2550,11 @@ paths:
                       issueStateCode: OPENED
                     - description: Resolved
                       issueStateCode: RESOLVED
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/issues-api/v2/dictionary/issue-states
+
   '/dictionary/issue-severity-levels':
       get:
         summary: Get issue severity levels
@@ -2577,6 +2582,10 @@ paths:
                         issueSeverityLevelCode: MEDIUM
                       - description: High
                         issueSeverityLevelCode: HIGH
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/issues-api/v2/dictionary/issue-severity-levels
 
   '/issues-api/v2/accounts/{accountUid}/issue-types':
     get:
@@ -2626,6 +2635,11 @@ paths:
                           description: General issue
                         - issueSubTypeCode: REVIEW_TRANSLATION
                           description: Review translation
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/issues-api/v2/accounts/${accountUid}/issue-types
+
   '/issues-api/v2/projects/{projectId}/issues':
     post:
       summary: Create issue
@@ -2676,6 +2690,11 @@ paths:
                   issueTextModifiedDate: null
                   answered: false
                   issueSeverityLevelCode: LOW
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingIssueTemlateJSON" https://api.smartling.com/issues-api/v2/projects/${projectId}/issues
+
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/issueText':
     put:
       summary: Edit issue
@@ -2722,6 +2741,11 @@ paths:
                 data:
                   issueText: Edited issue text.
                   issueTextModifiedDate: '2015-11-10T16:01:22Z'
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingIssueTextJSON" https://api.smartling.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/issueText
+
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/state':
     put:
       summary: Open or close issue
@@ -2760,6 +2784,11 @@ paths:
                 code: SUCCESS
                 data:
                   issueStateCode: RESOLVED
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingIssueStateJSON" https://api.smartling.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/state
+
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}':
     get:
       summary: Get issue details
@@ -2811,6 +2840,11 @@ paths:
                   issueTextModifiedDate: null
                   answered: false
                   issueSeverityLevelCode: LOW
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/issues-api/v2/projects/${projectId}/issues/${issueUid}
+
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/answered':
     put:
       summary: Update issue attribute (answered)
@@ -2850,6 +2884,11 @@ paths:
                 code: SUCCESS
                 data:
                   answered: true
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingIssueAnsweredJSON" https://api.smartling.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/answered
+
   '/projects/{projectId}/issues/{issueUid}/severity-level':
       put:
         summary: Update issue attribute (severity level)
@@ -2889,6 +2928,11 @@ paths:
                   code: SUCCESS
                   data:
                     issueSeverityLevelCode: LOW
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingSeverityLevelJSON" https://api.smartling.com/projects/${projectId}/issues/${issueUid}/severity-level
+
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/comments':
     post:
       summary: Create comment
@@ -2934,6 +2978,10 @@ paths:
                   createdByUserUid: 661801f19693
                   createdDate: '2015-12-22T12:34:49Z'
                   commentTextModifiedDate: null
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingIssueCommentJSON" https://api.smartling.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/comments
     get:
       summary: Get comments
       description: >-
@@ -2974,6 +3022,11 @@ paths:
                       createdDate: '2015-12-22T12:34:49Z'
                       commentTextModifiedDate: null
                   totalCount: 1
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/comments
+
   '/issues-api/v2/projects/{projectId}/issues/{issueUid}/comments/{issueCommentUid}':
     post:
       summary: Edit comment text
@@ -3027,6 +3080,10 @@ paths:
                   createdByUserUid: 661801f19693
                   createdDate: '2015-12-22T12:34:49Z'
                   commentTextModifiedDate: '2016-12-22T12:34:49Z'
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingIssueCommentJSON" https://api.smartling.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/comments/${issueCommentUid}
     get:
       summary: Get comment details
       description: >-
@@ -3071,6 +3128,11 @@ paths:
                   commentText: test comment
                   issueCommentUid: ac5211a26eca
                   commentTextModifiedDate: null
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/comments/${issueCommentUid}
+
   '/issues-api/v2/projects/{projectId}/issues/list':
     post:
       summary: Find issues
@@ -3124,6 +3186,11 @@ paths:
                       answered: false
                       issueSeverityLevelCode: LOW
                   totalCount: 1
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingIssuesFilterJSON" https://api.smartling.com/issues-api/v2/projects/${projectId}/issues/list
+
   '/issues-api/v2/projects/{projectId}/issues/count':
     post:
       description: >-
@@ -3161,6 +3228,11 @@ paths:
                 code: SUCCESS
                 data:
                   count: 2
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingIssuesFilterJSON" https://api.smartling.com/issues-api/v2/projects/${projectId}/issues/count
+
   '/issues-api/v2/accounts/{accountUid}/watchers':
     get:
       description: >-
@@ -3213,6 +3285,10 @@ paths:
                       created: '2015-12-21T16:38:48Z'
                       modified: '2015-12-21T16:38:48Z'
                   totalCount: 1
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/issues-api/v2/accounts/${accountUid}/watchers
     post:
       description: >-
         Create a new watcher.
@@ -3251,6 +3327,11 @@ paths:
                       enabled: true
                       created: '2015-12-21T16:38:48Z'
                       modified: '2015-12-21T16:38:48Z'
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingIssueWatcherJSON" https://api.smartling.com/issues-api/v2/accounts/${accountUid}/watchers
+
   '/issues-api/v2/accounts/{accountUid}/watchers/{watcherUid}':
     put:
       description: >-
@@ -3296,6 +3377,11 @@ paths:
                       enabled: true
                       created: '2015-12-21T16:38:48Z'
                       modified: '2015-12-21T16:38:48Z'
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingIssueWatcherJSON" https://api.smartling.com/issues-api/v2/accounts/${accountUid}/watchers/${watcherUid}
+
   '/issues-api/v2/accounts/{accountUid}/projects/{projectId}/issues/{issueUid}/watchers/{watcherUid}':
     put:
       description: >-
@@ -3338,6 +3424,10 @@ paths:
               response:
                 code: SUCCESS
                 data: null
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/issues-api/v2/accounts/${accountUid}/projects/${projectId}/issues/${issueUid}/watchers/${watcherUid}
     delete:
       description: >-
         An update to an issue is sent to the associated/linked watcher. Once watchers are removed from an issue, email notifications will no longer be received by them.
@@ -3380,6 +3470,10 @@ paths:
               response:
                 code: SUCCESS
                 data: null
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/issues-api/v2/accounts/${accountUid}/projects/${projectId}/issues/${issueUid}/watchers/${watcherUid}
 
   '/issues-api/v2/accounts/{accountUid}/projects/{projectId}/issues/{issueUid}/watchers':
     get:
@@ -3426,6 +3520,11 @@ paths:
                       enabled: true
                       created: '2015-12-21T16:38:48Z'
                       modified: '2015-12-21T16:38:48Z'
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/issues-api/v2/accounts/${accountUid}/projects/$projectId/issues/${issueUid}/watchers
+
   '/issues-api/v2/dictionary/issue-types':
     get:
       summary: Get issue types
