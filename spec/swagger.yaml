@@ -6126,6 +6126,146 @@ paths:
             $ref: '#/definitions/SuccessResponse'
 
   #
+  # GDN url management
+  #
+  /gdn-url-management-api/v2/projects/{projectId}/web-pages/list:
+    post:
+      description: >-
+        Get list of urls.
+      summary: Get list urls
+      tags:
+        - GDN url management
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of the project account.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/WebPageListRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/WebPageListResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 1
+                  items:
+                    - webPageUid: "23dsd23md"
+                      domain:
+                        name: "my.domain.com"
+                      urlPath: "/home/page.htm"
+                      created: "2015-11-21T11:51:17Z"
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/list
+
+  /gdn-url-management-api/v2/projects/{projectId}/web-pages/details:
+    post:
+      description: >-
+        Get details for urls.
+      summary: Get details for urls
+      tags:
+        - GDN url management
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of the project account.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/WebPageDetailListRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/WebPageDetailListResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 1
+                  items:
+                    - webPageUid: "23dsd23md"
+                      domain:
+                        name: "my.domain.com"
+                      urlPath: "/home/page.htm"
+                      created: "2015-11-21T11:51:17Z"
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/details
+
+  /gdn-url-management-api/v2/projects/{projectId}/web-pages/{webPageUid}:
+    get:
+      description: >-
+        Get details for urls.
+      summary: Get details for urls
+      tags:
+        - GDN url management
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of the project account.
+        - name: webPageUid
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of the url.
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/WebPageDetailsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 1
+                  items:
+                    - webPageUid: "23dsd23md"
+                      domain:
+                        name: "my.domain.com"
+                      urlPath: "/home/page.htm"
+                      created: "2015-11-21T11:51:17Z"
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/details
+
+  #
   # Job batches
   #
 
@@ -7755,6 +7895,89 @@ definitions:
         type: boolean
         description: Should send email notification to this email.
         example: true
+
+  WebPageListRequest:
+    type: object
+    properties:
+      urlPath:
+        type: string
+        description: url
+        example: /home/page.htm
+      urlPathExactMatch:
+        type: boolean
+        description: Should apply exact match or not.
+        example: false
+      domainName:
+        type: string
+        description: domain name
+        example: my.domain.com
+      urlCaptureDateAfter:
+        type: string
+        format: date-time
+        example: '2020-11-21T01:51:17Z'
+        description: The date after which the url was captured.
+      urlCaptureDateBefore:
+        type: string
+        format: date-time
+        example: '2020-11-21T01:51:17Z'
+        description: The date by which the url was captured.
+      localeIds:
+        type: array
+        items:
+          type: string
+          description: An identifying code for a language in Smartling.
+        example:
+          - ru-RU
+      limit:
+        type: integer
+        default: 100
+        example: 30
+        minimum: 1
+        maximum: 200
+        description: limit
+      offset:
+        type: integer
+        default: 0
+        example: 0
+        minimum: 0
+        minimum: 100
+        description: offset
+      orderBy:
+        type: object
+        description: Sort result by fields
+        properties:
+          items:
+            type: array
+            items:
+              type: object
+              properties:
+                direction:
+                  type: string
+                  enum:
+                    - DOMAIN
+                    - URL_PATH
+                  description: Sort direction
+        example: [DOMAIN, URL_PATH]
+      orderDirection:
+        type: string
+        default: ASC
+        enum:
+          - ASC
+          - DESC
+        description: Sort direction
+        example: ASC
+
+  WebPageDetailListRequest:
+    type: object
+    properties:
+      webPageUids:
+        type: array
+          items:
+            type: string
+        minimum: 1
+        maximum: 200
+        description: list of url identifiers
+        example: ["4423d44", "123jd44"]
 
   IssueRequest:
     type: object
@@ -9759,6 +9982,90 @@ definitions:
               modified:
                 type: string
                 description: Watcher modification date
+  WebPageListResponse:
+    allOf:
+      - $ref: '#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    webPageUid:
+                      type: string
+                      description: url identifier
+                    domain:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: url domain name
+                          example: my.domain.com
+                      description: domain
+                    urlPath:
+                      type: string
+                      description: Watcher name
+                    created:
+                      type: string
+                      description: url capture date
+  WebPageDetailListResponse:
+    allOf:
+      - $ref: '#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    webPageUid:
+                      type: string
+                      description: url identifier
+                    domain:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: url domain name
+                          example: my.domain.com
+                      description: domain
+                    urlPath:
+                      type: string
+                      description: Watcher name
+                    details:
+                      type: object
+                      properties:
+                        stringCount: Long?,
+                          type: integer
+                          description: string count
+                          example: 10
+                        wordCount: Long?,
+                          type: integer
+                          description: word count
+                          example: 25
+                        created: Timestamp,
+                          type: string
+                          description: capture url date
+                          example: "2015-11-21T01:51:17Z"
+                        contextUids: Collection<String>) : ResponseData
+                          type: array
+                          items:
+                            type: string
+                          description: context identifiers
+                          example: ["122ssasa323", "334asds3434"]
   IssueWatcherAssignResponse:
     allOf:
       - $ref: '#/definitions/SuccessResponse'
