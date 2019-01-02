@@ -5454,6 +5454,17 @@ paths:
                     message: 'File not found: <fileUri>'
                     details: null
         401: *Error401ResponseDefinition
+        423:
+          description: The requested file is currently being processed by another operation. The file will be unlocked after the operation completes.
+          schema:
+            $ref: '#/definitions/Error423Response'
+          examples:
+            application/json:
+              response:
+                code: "RESOURCE_LOCKED"
+                errors:
+                  key: "resource.locked"
+                  message: "The file is currently being processed and will be available in a few minutes."
         429: *Error429ResponseDefinition
         500: *Error500ResponseDefinition
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/file/remove:
