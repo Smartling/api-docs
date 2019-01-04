@@ -188,6 +188,10 @@ tags:
     description: |-
       The Vendors API is for Language Service Providers to view work that's available in Smartling.
 
+  - name: Reports
+    description: >
+      The Reports API allows to request various reports available on Smartling platform and specify additional filtering criteria to narrow down data returned by the reports.
+
 paths:
   '/auth-api/v2/authenticate':
     post:
@@ -6586,6 +6590,232 @@ paths:
           source: |
             curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/vendors-api/v2/agencies/{agencyUid}/jobs
 
+#
+# Reports API
+#
+  '/reports-api/v3/word-count':
+    get:
+      description: >
+        Word Count report data for the specified parameters.
+      summary: Get Word Count Report
+      tags:
+      - Reports
+      parameters:
+      - name: startDate
+        in: query
+        type: string
+        required: true
+        format: YYYY-MM-DD
+        description: A parameter to limit words processed on or after the ```startDate```, in America/New_York timezone.
+      - name: endDate
+        in: query
+        type: string
+        required: true
+        format: YYYY-MM-DD
+        description: A parameter to limit words processed on or before the ```endDate```, in America/New_York timezone.
+      - name: accountUid
+        in: query
+        type: string
+        required: true
+        description: Unique identifier of corresponding account.
+      - name: projectIds
+        in: query
+        type: array
+        items:
+          type: string
+        required: false
+        description: Optional parameter to filter to the specified list of projects.
+      - name: jobUids
+        in: query
+        type: array
+        items:
+          type: string
+        required: false
+        description: Optional parameter to filter to the specified list of translation jobs.
+      - name: userUids
+        in: query
+        type: array
+        items:
+          type: string
+        required: false
+        description: Optional parameter to filter to the specified list of translation resources.
+      - name: targetLocaleIds
+        in: query
+        type: array
+        items:
+          type: string
+        required: false
+        description: Optional parameter to filter to the specified list of translation locale IDs.
+      - name: includeTranslationResource
+        in: query
+        type: boolean
+        required: false
+        default: true
+        description: >
+          Optional parameter to specify whether the report should group word count by translation resource name.
+      - name: includeJob
+        in: query
+        type: boolean
+        required: false
+        default: true
+        description: >
+          Optional parameter to specify whether the report should group word count by translation job name.
+      - name: includeFuzzyMatchProfile
+        in: query
+        type: boolean
+        required: false
+        default: true
+        description: >
+          Optional parameter to specify whether the report should group word count by fuzzy match profile and tier.
+      - name: limit
+        in: query
+        type: integer
+        required: false
+        minimum: 0
+        maximum: 5000
+        default: 5000
+        description: Maximum number of records to return in the report.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/WordCountResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  resultsTruncated: false
+                  items:
+                  - accountUid: 35a84f71
+                    accountName: Test Account
+                    projectId: ba952f4c
+                    projectName: Test Project 1
+                    jobUid: f12ad8e9
+                    jobName: Translation Job 1
+                    targetLocaleId: es-ES
+                    targetLocaleName: Spanish (Spain)
+                    agencyUid: 0ed85b93
+                    agencyName: Test Agency 1
+                    translationResourceUid: da57302e
+                    translationResourceName: Agency Translator 5
+                    workflowStepType: Translation
+                    fuzzyProfileName: Default
+                    fuzzyTier: 85 - 94.9%
+                    weightedWordCount: 4
+                    wordCount: 20
+                  - accountUid: 35a84f71
+                    accountName: Test Account
+                    projectId: ba952f4c
+                    projectName: Test Project 1
+                    jobUid: f12ad8e9
+                    jobName: Translation Job 1
+                    targetLocaleId: es-ES
+                    targetLocaleName: Spanish (Spain)
+                    agencyUid: 4d6230e1
+                    agencyName: Test Agency 2
+                    translationResourceUid: 5eb90a14
+                    translationResourceName: Agency Editor 12
+                    workflowStepType: Edit
+                    fuzzyProfileName: null
+                    fuzzyTier: null
+                    weightedWordCount: 20
+                    wordCount: 20
+
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+
+  '/reports-api/v3/word-count/csv':
+    get:
+      description: >
+        Export Word Count report in CSV format.
+      summary: Export Word Count in CSV format
+      tags:
+      - Reports
+      parameters:
+      - name: startDate
+        in: query
+        type: string
+        required: true
+        format: YYYY-MM-DD
+        description: A parameter to limit words processed on or after the ```startDate```, in America/New_York timezone.
+      - name: endDate
+        in: query
+        type: string
+        required: true
+        format: YYYY-MM-DD
+        description: A parameter to limit words processed on or before the ```endDate```, in America/New_York timezone.
+      - name: accountUid
+        in: query
+        type: string
+        required: true
+        description: Unique identifier of corresponding account.
+      - name: projectIds
+        in: query
+        type: array
+        items:
+          type: string
+        required: false
+        description: Optional parameter to filter to the specified list of projects.
+      - name: jobUids
+        in: query
+        type: array
+        items:
+          type: string
+        required: false
+        description: Optional parameter to filter to the specified list of translation jobs.
+      - name: userUids
+        in: query
+        type: array
+        items:
+          type: string
+        required: false
+        description: Optional parameter to filter to the specified list of translation resources.
+      - name: targetLocaleIds
+        in: query
+        type: array
+        items:
+          type: string
+        required: false
+        description: Optional parameter to filter to the specified list of translation locale IDs.
+      - name: includeTranslationResource
+        in: query
+        type: boolean
+        required: false
+        default: true
+        description: >
+          Optional parameter to specify whether the report should group word count by translation resource name.
+      - name: includeJob
+        in: query
+        type: boolean
+        required: false
+        default: true
+        description: >
+          Optional parameter to specify whether the report should group word count by translation job name.
+      - name: includeFuzzyMatchProfile
+        in: query
+        type: boolean
+        required: false
+        default: true
+        description: >
+          Optional parameter to specify whether the report should group word count by fuzzy match profile and tier.
+      produces:
+      - text/csv
+      responses:
+        200:
+          description: OK
+          examples:
+            text/csv: >-
+              Account,Project,Job,Translation Resource,Agency,Target Language,Workflow Step,Fuzzy Profile,Fuzzy Breakdown,Word Count,Weighted Words
+              Test Account,Test Project,Translation Job,Translator 1,Test Agency 1,Spanish (Spain),Translation,Default,85 - 94.9%,20,4
+
+        400: *Error400ResponseDefinition
+        401: *Error401ResponseDefinition
+        429: *Error429ResponseDefinition
+        500: *Error500ResponseDefinition
+
 definitions:
 
   SuccessResponse:
@@ -10203,3 +10433,71 @@ definitions:
               - ON_TRACK
               - LATE
 
+  WordCountResponse:
+    description: A list of report records
+    allOf:
+    - $ref: '#/definitions/SuccessResponse'
+    - type: object
+      properties:
+        data:
+          type: object
+          properties:
+            resultsTruncated:
+              type: boolean
+              description: The flag showing whether all qualified records returned by the response.
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  accountUid:
+                    type: string
+                    description: The unique identifier of the account
+                  accountName:
+                    type: string
+                    description: Name of the account
+                  projectId:
+                    type: string
+                    description: The unique identifier of the project
+                  projectName:
+                    type: string
+                    description: Name of the project
+                  jobUid:
+                    type: string
+                    description: The unique identifier of the translation job
+                  jobName:
+                    type: string
+                    description: Name of the translation job
+                  targetLocaleId:
+                    type: string
+                    description: Locale ID of the translations
+                  targetLocaleName:
+                    type: string
+                    description: Name of the locale of the translations
+                  agencyUid:
+                    type: string
+                    description: The unique identifier of the agency that was credited for the words
+                  agencyName:
+                    type: string
+                    description: Name of the agency that was credited for the words
+                  translationResourceUid:
+                    type: string
+                    description: The unique identifier of the translation resource who was credited for the words
+                  translationResourceName:
+                    type: string
+                    description: Name of the translation resource who was credited for the words
+                  workflowStepType:
+                    type: string
+                    description: Type of the workflow step (Translation, Edit, Review) the words transitioned through
+                  fuzzyProfileName:
+                    type: string
+                    description: Name of the fuzzy match profile used
+                  fuzzyTier:
+                    type: string
+                    description: Fuzzy match tier that matches fuzzy score of the processed words
+                  weightedWordCount:
+                    type: integer
+                    description: The number of weighted words processed by a translation resource
+                  wordCount:
+                    type: integer
+                    description: The number of words processed by a translation resource
