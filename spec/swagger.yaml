@@ -6214,7 +6214,12 @@ paths:
                       domain:
                         name: "my.domain.com"
                       urlPath: "/home/page.htm"
-                      created: "2015-11-21T11:51:17Z"
+                      details:
+                          stringCount: 10
+                          wordCount: 25
+                          created: "2015-11-21T01:51:17Z"
+                          contextUids: ["122ssasa323", "334asds3434"]
+
       x-code-samples:
         - lang: curl
           source: |
@@ -6253,17 +6258,136 @@ paths:
               response:
                 code: SUCCESS
                 data:
-                  totalCount: 1
-                  items:
-                    - webPageUid: "23dsd23md"
-                      domain:
-                        name: "my.domain.com"
-                      urlPath: "/home/page.htm"
-                      created: "2015-11-21T11:51:17Z"
+                  webPageUid: "23dsd23md"
+                  domain:
+                    name: "my.domain.com"
+                  urlPath: "/home/page.htm"
+                  details:
+                      stringCount: 10
+                      wordCount: 25
+                      created: "2015-11-21T01:51:17Z"
+                      contextUids: ["122ssasa323", "334asds3434"]
       x-code-samples:
         - lang: curl
           source: |
-            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/details
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/$webPageUid
+
+  /gdn-url-management-api/v2/projects/{projectId}/web-pages/strings/exclude:
+    post:
+      description: >-
+        Exclude strings for urls.
+      summary: Exclude strings for urls
+      tags:
+        - GDN url management
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of the project account.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/WebPageStringExcludeRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/EmptyResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/strings/exclude
+
+  /gdn-url-management-api/v2/projects/{projectId}/web-pages/strings/delete:
+    post:
+      description: >-
+        Delete strings for urls.
+      summary: Delete strings for urls
+      tags:
+        - GDN url management
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of the project account.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/WebPageStringDeleteRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/EmptyResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/strings/delete
+
+  /gdn-url-management-api/v2/projects/{projectId}/domains:
+    get:
+      description: >-
+        Get domains for project.
+      summary: Get domains for project
+      tags:
+        - GDN url management
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of the project account.
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/WebPageDomainsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 1
+                  items:
+                    - name: "my.domain.com"
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/domains
 
   #
   # Job batches
@@ -7975,6 +8099,35 @@ definitions:
           items:
             type: string
         minimum: 1
+        maximum: 200
+        description: list of url identifiers
+        example: ["4423d44", "123jd44"]
+
+  WebPageStringExcludeRequest:
+    type: object
+    properties:
+      webPageUids:
+        type: array
+          items:
+            type: string
+        minimum: 1
+        maximum: 200
+        description: list of url identifiers
+        example: ["4423d44", "123jd44"]
+      localeIds:
+        type: array
+          items:
+            type: string
+        description: An identifying code for a language in Smartling.
+        example: ["en-US", "it-IT"]
+
+  WebPageStringDeleteRequest:
+    type: object
+    properties:
+      webPageUids:
+        type: array
+          items:
+            type: string
         maximum: 200
         description: list of url identifiers
         example: ["4423d44", "123jd44"]
@@ -10044,28 +10197,93 @@ definitions:
                       description: domain
                     urlPath:
                       type: string
-                      description: Watcher name
+                      description: Url path
                     details:
                       type: object
                       properties:
-                        stringCount: Long?,
+                        stringCount:
                           type: integer
                           description: string count
                           example: 10
-                        wordCount: Long?,
+                        wordCount:
                           type: integer
                           description: word count
                           example: 25
-                        created: Timestamp,
+                        created:
                           type: string
                           description: capture url date
                           example: "2015-11-21T01:51:17Z"
-                        contextUids: Collection<String>) : ResponseData
+                        contextUids:
                           type: array
                           items:
                             type: string
                           description: context identifiers
                           example: ["122ssasa323", "334asds3434"]
+  WebPageDetailsResponse:
+    allOf:
+      - $ref: '#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              webPageUid:
+                type: string
+                description: url identifier
+              domain:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: url domain name
+                    example: my.domain.com
+                description: domain
+              urlPath:
+                type: string
+                description: Url path
+              details:
+                type: object
+                properties:
+                  stringCount:
+                    type: integer
+                    description: string count
+                    example: 10
+                  wordCount:
+                    type: integer
+                    description: word count
+                    example: 25
+                  created:
+                    type: string
+                    description: capture url date
+                    example: "2015-11-21T01:51:17Z"
+                  contextUids:
+                    type: array
+                    items:
+                      type: string
+                    description: context identifiers
+                    example: ["122ssasa323", "334asds3434"]
+
+  WebPageDomainsResponse:
+    allOf:
+      - $ref: '#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: url domain name
+                      example: my.domain.com
+
   IssueWatcherAssignResponse:
     allOf:
       - $ref: '#/definitions/SuccessResponse'
