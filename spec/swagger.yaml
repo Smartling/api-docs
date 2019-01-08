@@ -6272,86 +6272,6 @@ paths:
           source: |
             curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/$webPageUid
 
-  /gdn-url-management-api/v2/projects/{projectId}/web-pages/strings/exclude:
-    post:
-      description: >-
-        Exclude strings for urls.
-      summary: Exclude strings for urls
-      tags:
-        - GDN url management
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: projectId
-          in: path
-          required: true
-          type: string
-          description: Unique identifier of the project account.
-        - name: request
-          description: ''
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/WebPageStringExcludeRequest'
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/EmptyResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/strings/exclude
-
-  /gdn-url-management-api/v2/projects/{projectId}/web-pages/strings/delete:
-    post:
-      description: >-
-        Delete strings for urls.
-      summary: Delete strings for urls
-      tags:
-        - GDN url management
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: projectId
-          in: path
-          required: true
-          type: string
-          description: Unique identifier of the project account.
-        - name: request
-          description: ''
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/WebPageStringDeleteRequest'
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/EmptyResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/strings/delete
-
   /gdn-url-management-api/v2/projects/{projectId}/domains:
     get:
       description: >-
@@ -8099,35 +8019,6 @@ definitions:
         items:
           type: string
         minimum: 1
-        maximum: 200
-        description: list of url identifiers
-        example: ["4423d44", "123jd44"]
-
-  WebPageStringExcludeRequest:
-    type: object
-    properties:
-      webPageUids:
-        type: array
-        items:
-          type: string
-        minimum: 1
-        maximum: 200
-        description: list of url identifiers
-        example: ["4423d44", "123jd44"]
-      localeIds:
-        type: array
-        items:
-          type: string
-        description: An identifying code for a language in Smartling.
-        example: ["en-US", "it-IT"]
-
-  WebPageStringDeleteRequest:
-    type: object
-    properties:
-      webPageUids:
-        type: array
-        items:
-          type: string
         maximum: 200
         description: list of url identifiers
         example: ["4423d44", "123jd44"]
