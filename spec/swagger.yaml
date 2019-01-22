@@ -6843,6 +6843,81 @@ paths:
           source: |
             curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode}/severity-level
 
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/sub-types/{checkSubTypeCode}/severity-level:
+    put:
+      description: >-
+        Define severity level for check subtype.
+      summary: Define severity level for check subtype
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: checkTypeCode
+          in: path
+          required: true
+          type: string
+          enum:
+            - EMOJI_ADDED
+            - EMOJI_DELETED
+            - EMOJI_PRESENT
+            - INSERTABLE_ADDED
+            - INSERTABLE_DELETED
+            - PLACEABLE_ADDED
+            - PLACEABLE_DELETED
+            - SPACES_AROUND_PLACEABLE
+            - PLACEABLE_FORMAT
+            - NUMBER_ADDED
+            - NUMBER_DELETED
+            - NUMBER_INCORRECT_CONVERSION
+            - TARGET_IS_EMPTY
+            - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+            - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+            - TAG_ADDED
+            - TAG_DELETED
+            - SPACES_AROUND_TAGS
+            - TAG_ORDER_IS_CHANGED
+            - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+            - INVALID_TAG_NESTING
+            - TAG_IS_CHANGED
+            - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+            - SAME_TRANSLATION_DIFFERENT_SOURCES
+        - name: checkSubTypeCode
+          in: path
+          required: true
+          type: string
+          description: Check subtype code
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeSeverityLevelPutRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeSeverityLevelResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  severityLevelCode: "MEDIUM"
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode}/sub-types/{checkSubTypeCode}/severity-level
+
   /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/severity-level/reset:
     put:
       description: >-
