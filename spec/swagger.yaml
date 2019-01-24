@@ -7454,7 +7454,111 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/severity-level:
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/severity-level:
+
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups/{groupUid}/sub-types/{checkSubTypeCode}/severity-level:
+    put:
+      description: >-
+        Update severity level for group.
+      summary: Update severity level for group
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: checkTypeCode
+          in: path
+          required: true
+          type: string
+          enum:
+            - LEADING_TRAILING_SPACES
+            - ORIGINAL_EQUALS_TARGET
+            - WHITESPACES
+            - SPELLCHECK
+            - UNCATEGORIZED
+            - TAG_CONSISTENCY
+            - TARGET_LENGTH_LIMIT
+            - NUMBER_CONSISTENCY
+            - REPEATED_WORD
+            - TARGET_IN_WRONG_LANGUAGE
+            - SOURCE_IN_WRONG_LANGUAGE
+            - SEGMENT_COMPLETENESS
+            - NON_TRANSLATABLE_TEXT
+            - EMOJI_CONSISTENCY
+            - TAG_VALIDITY
+            - INSERTABLE_CONSISTENCY
+            - TARGET_SOURCE_CONSISTENCY
+            - BLACKLISTED_TERMS
+            - GLOSSARY_COMPLIANCE
+            - TRADEMARK_CONSISTENCY
+            - GRAMMAR_CHECK
+            - GLOBAL_CAPITALISATION_CONSISTENCY
+          description: check type code
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of the group.
+        - name: checkSubTypeCode
+          in: path
+          required: true
+          type: string
+          enum:
+            - EMOJI_ADDED
+            - EMOJI_DELETED
+            - EMOJI_PRESENT
+            - INSERTABLE_ADDED
+            - INSERTABLE_DELETED
+            - PLACEABLE_ADDED
+            - PLACEABLE_DELETED
+            - SPACES_AROUND_PLACEABLE
+            - PLACEABLE_FORMAT
+            - NUMBER_ADDED
+            - NUMBER_DELETED
+            - NUMBER_INCORRECT_CONVERSION
+            - TARGET_IS_EMPTY
+            - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+            - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+            - TAG_ADDED
+            - TAG_DELETED
+            - SPACES_AROUND_TAGS
+            - TAG_ORDER_IS_CHANGED
+            - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+            - INVALID_TAG_NESTING
+            - TAG_IS_CHANGED
+            - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+            - SAME_TRANSLATION_DIFFERENT_SOURCES
+          description: check subtype code
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeGroupUpdateSeverityLevelRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeGroupUpdateSeverityLevelResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  severityLevelCode: "MEDIUM"
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/sub-types/$smartlingCheckSubTypeCode/severity-level:
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types:
     get:
