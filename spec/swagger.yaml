@@ -7867,6 +7867,132 @@ paths:
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_IN_WRONG_LANGUAGE/settings:
 
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/NUMBER_CONSISTENCY/settings:
+    put:
+      description: >-
+        Apply number consistency settings.
+      summary: Apply number consistency settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyNumberConsystencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyNumberConsystencySettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  ignoreSign: true
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/NUMBER_CONSISTENCY/settings:
+
+
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/TARGET_SOURCE_CONSISTENCY/settings:
+    put:
+      description: >-
+        Apply target source consystency settings.
+      summary: Apply target source consystency settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyTargetSourceConsystencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyTargetSourceConsystencySettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  ignoreSign: true
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_SOURCE_CONSISTENCY/settings:
+
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/GLOSSARY_COMPLIANCE/settings:
+    put:
+      description: >-
+        Apply glossary compliance settings.
+      summary: Apply glossary compliance settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyGlossaryComplianceSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyGlossaryComplianceSettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  matchMethod: "MATCH_BY_PERCENTAGE"
+                  matchThreshold: 10
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/GLOSSARY_COMPLIANCE/settings:
+
+
   #
   # Job batches
   #
@@ -9890,6 +10016,9 @@ definitions:
 
   TqcAccountCheckTypeApplyOriginalEqualsTargetSettingsRequest:
     type: object
+    required:
+      - mustHaveIdenticalTags
+      - mustHaveIdenticalCapitalization
     properties:
       targetLocaleId:
         type: string
@@ -9906,6 +10035,8 @@ definitions:
 
   TqcAccountCheckTypeApplyEmojiConsistencySettingsRequest:
     type: object
+    required:
+      - noEmojisAllowedInTarget
     properties:
       targetLocaleId:
         type: string
@@ -9918,6 +10049,12 @@ definitions:
 
   TqcAccountCheckTypeApplySpellcheckSettingsRequest:
     type: object
+    required:
+      - skipIfWordInUserDictionary
+      - skipIfWordStartsWithCapitalLetter
+      - skipIfWordAppearsInSourceString
+      - skipIfWordValidInSourceLocale
+      - runSpellcheckForSubWords
     properties:
       targetLocaleId:
         type: string
@@ -9946,6 +10083,8 @@ definitions:
 
   TqcAccountCheckTypeApplySourceInWrongLanguageSettingsRequest:
     type: object
+    required:
+      - minTextLengthLimit
     properties:
       targetLocaleId:
         type: string
@@ -9953,11 +10092,14 @@ definitions:
         example: "it-IT"
       minTextLengthLimit:
         type: integer
+        minimum: 0
         description: Minimal text length limit.
         example: 10
 
   TqcAccountCheckTypeApplyTargetInWrongLanguageSettingsRequest:
     type: object
+    required:
+      - minTextLengthLimit
     properties:
       targetLocaleId:
         type: string
@@ -9965,7 +10107,65 @@ definitions:
         example: "it-IT"
       minTextLengthLimit:
         type: integer
+        minimum: 0
         description: Minimal text length limit.
+        example: 10
+
+  TqcAccountCheckTypeApplyNumberConsystencySettingsRequest:
+    type: object
+    required:
+      - ignoreSign
+    properties:
+      targetLocaleId:
+        type: string
+        description: Smartling ID for the language you want to translate to.
+        example: "it-IT"
+      ignoreSign:
+        type: boolean
+        description: Ignore sign.
+        example: true
+
+  TqcAccountCheckTypeApplyTargetSourceConsystencySettingsRequest:
+    type: object
+    required:
+      - ignoreTagsAndPlaceholders
+      - ignoreCase
+    properties:
+      targetLocaleId:
+        type: string
+        description: Smartling ID for the language you want to translate to.
+        example: "it-IT"
+      ignoreTagsAndPlaceholders:
+        type: boolean
+        description: Ignore tags and placeholders.
+        example: true
+      ignoreCase:
+        type: boolean
+        description: Ignore case.
+        example: false
+
+  TqcAccountCheckTypeApplyGlossaryComplianceSettingsRequest:
+    type: object
+    required:
+      - matchMethod
+      - matchThreshold
+    properties:
+      targetLocaleId:
+        type: string
+        description: Smartling ID for the language you want to translate to.
+        example: "it-IT"
+      matchMethod:
+        type: string
+        enum:
+          - MATCH_BY_PERCENTAGE
+          - EXACT_MATCH
+        description: Match method.
+        example: "MATCH_BY_PERCENTAGE"
+      matchThreshold:
+        type: integer
+        description: Match threshold.
+        minimum: 0
+        maximum: 100
         example: 10
 
   IssueRequest:
@@ -12899,7 +13099,6 @@ definitions:
             properties:
               minTextLengthLimit:
                 type: integer
-                minimum: 0
                 description: Minimal text length limit.
                 example: 10
 
@@ -12913,8 +13112,57 @@ definitions:
             properties:
               minTextLengthLimit:
                 type: integer
-                minimum: 0
                 description: Minimal text length limit.
+                example: 10
+
+  TqcAccountCheckTypeApplyNumberConsystencySettingsResponse:
+    allOf:
+      - $ref: '#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              ignoreSign:
+                type: boolean
+                description: Ignore sign.
+                example: true
+
+  TqcAccountCheckTypeApplyTargetSourceConsystencySettingsResponse:
+    allOf:
+      - $ref: '#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              ignoreTagsAndPlaceholders:
+                type: boolean
+                description: Ignore tags and placeholders.
+                example: true
+              ignoreCase:
+                type: boolean
+                description: Ignore case.
+                example: false
+
+  TqcAccountCheckTypeApplyGlossaryComplianceSettingsResponse:
+    allOf:
+      - $ref: '#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              matchMethod:
+                type: string
+                enum:
+                  - MATCH_BY_PERCENTAGE
+                  - EXACT_MATCH
+                description: Match method.
+                example: "MATCH_BY_PERCENTAGE"
+              matchThreshold:
+                type: integer
+                description: Match threshold.
                 example: 10
 
   IssueWatcherAssignResponse:
