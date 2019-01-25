@@ -6497,6 +6497,30 @@ paths:
           in: path
           required: true
           type: string
+          enum:
+            - LEADING_TRAILING_SPACES
+            - ORIGINAL_EQUALS_TARGET
+            - WHITESPACES
+            - SPELLCHECK
+            - UNCATEGORIZED
+            - TAG_CONSISTENCY
+            - TARGET_LENGTH_LIMIT
+            - NUMBER_CONSISTENCY
+            - REPEATED_WORD
+            - TARGET_IN_WRONG_LANGUAGE
+            - SOURCE_IN_WRONG_LANGUAGE
+            - SEGMENT_COMPLETENESS
+            - NON_TRANSLATABLE_TEXT
+            - EMOJI_CONSISTENCY
+            - TAG_VALIDITY
+            - INSERTABLE_CONSISTENCY
+            - TARGET_SOURCE_CONSISTENCY
+            - BLACKLISTED_TERMS
+            - GLOSSARY_COMPLIANCE
+            - TRADEMARK_CONSISTENCY
+            - GRAMMAR_CHECK
+            - GLOBAL_CAPITALISATION_CONSISTENCY
+
           description: Check type code
 
       responses:
@@ -6795,30 +6819,28 @@ paths:
           required: true
           type: string
           enum:
-            - EMOJI_ADDED
-            - EMOJI_DELETED
-            - EMOJI_PRESENT
-            - INSERTABLE_ADDED
-            - INSERTABLE_DELETED
-            - PLACEABLE_ADDED
-            - PLACEABLE_DELETED
-            - SPACES_AROUND_PLACEABLE
-            - PLACEABLE_FORMAT
-            - NUMBER_ADDED
-            - NUMBER_DELETED
-            - NUMBER_INCORRECT_CONVERSION
-            - TARGET_IS_EMPTY
-            - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
-            - TARGET_IS_MUCH_LONGER_THAN_SOURCE
-            - TAG_ADDED
-            - TAG_DELETED
-            - SPACES_AROUND_TAGS
-            - TAG_ORDER_IS_CHANGED
-            - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
-            - INVALID_TAG_NESTING
-            - TAG_IS_CHANGED
-            - SAME_SOURCE_DIFFERENT_TRANSLATIONS
-            - SAME_TRANSLATION_DIFFERENT_SOURCES
+            - LEADING_TRAILING_SPACES
+            - ORIGINAL_EQUALS_TARGET
+            - WHITESPACES
+            - SPELLCHECK
+            - UNCATEGORIZED
+            - TAG_CONSISTENCY
+            - TARGET_LENGTH_LIMIT
+            - NUMBER_CONSISTENCY
+            - REPEATED_WORD
+            - TARGET_IN_WRONG_LANGUAGE
+            - SOURCE_IN_WRONG_LANGUAGE
+            - SEGMENT_COMPLETENESS
+            - NON_TRANSLATABLE_TEXT
+            - EMOJI_CONSISTENCY
+            - TAG_VALIDITY
+            - INSERTABLE_CONSISTENCY
+            - TARGET_SOURCE_CONSISTENCY
+            - BLACKLISTED_TERMS
+            - GLOSSARY_COMPLIANCE
+            - TRADEMARK_CONSISTENCY
+            - GRAMMAR_CHECK
+            - GLOBAL_CAPITALISATION_CONSISTENCY
         - name: request
           description: ''
           in: body
@@ -6865,6 +6887,19 @@ paths:
           required: true
           type: string
           enum:
+            - TAG_CONSISTENCY
+            - NUMBER_CONSISTENCY
+            - SEGMENT_COMPLETENESS
+            - NON_TRANSLATABLE_TEXT
+            - EMOJI_CONSISTENCY
+            - TAG_VALIDITY
+            - INSERTABLE_CONSISTENCY
+            - TARGET_SOURCE_CONSISTENCY
+        - name: checkSubTypeCode
+          in: path
+          required: true
+          type: string
+          enum:
             - EMOJI_ADDED
             - EMOJI_DELETED
             - EMOJI_PRESENT
@@ -6889,10 +6924,6 @@ paths:
             - TAG_IS_CHANGED
             - SAME_SOURCE_DIFFERENT_TRANSLATIONS
             - SAME_TRANSLATION_DIFFERENT_SOURCES
-        - name: checkSubTypeCode
-          in: path
-          required: true
-          type: string
           description: Check subtype code
         - name: request
           description: ''
@@ -6939,6 +6970,30 @@ paths:
           in: path
           required: true
           type: string
+          enum:
+            - LEADING_TRAILING_SPACES
+            - ORIGINAL_EQUALS_TARGET
+            - WHITESPACES
+            - SPELLCHECK
+            - UNCATEGORIZED
+            - TAG_CONSISTENCY
+            - TARGET_LENGTH_LIMIT
+            - NUMBER_CONSISTENCY
+            - REPEATED_WORD
+            - TARGET_IN_WRONG_LANGUAGE
+            - SOURCE_IN_WRONG_LANGUAGE
+            - SEGMENT_COMPLETENESS
+            - NON_TRANSLATABLE_TEXT
+            - EMOJI_CONSISTENCY
+            - TAG_VALIDITY
+            - INSERTABLE_CONSISTENCY
+            - TARGET_SOURCE_CONSISTENCY
+            - BLACKLISTED_TERMS
+            - GLOSSARY_COMPLIANCE
+            - TRADEMARK_CONSISTENCY
+            - GRAMMAR_CHECK
+            - GLOBAL_CAPITALISATION_CONSISTENCY
+
           description: check type code
         - name: request
           description: ''
@@ -6963,6 +7018,95 @@ paths:
         - lang: curl
           source: |
             curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode}/severity-level/reset
+
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups/{groupUid}/sub-types/{checkSubTypeCode}/severity-level:
+    put:
+      description: >-
+        Define severity level for check subtype and group.
+      summary: Define severity level for check subtype and group
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: checkTypeCode
+          in: path
+          required: true
+          type: string
+          enum:
+            - TAG_CONSISTENCY
+            - NUMBER_CONSISTENCY
+            - SEGMENT_COMPLETENESS
+            - NON_TRANSLATABLE_TEXT
+            - EMOJI_CONSISTENCY
+            - TAG_VALIDITY
+            - INSERTABLE_CONSISTENCY
+            - TARGET_SOURCE_CONSISTENCY
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of the group.
+        - name: checkSubTypeCode
+          in: path
+          required: true
+          type: string
+          enum:
+            - EMOJI_ADDED
+            - EMOJI_DELETED
+            - EMOJI_PRESENT
+            - INSERTABLE_ADDED
+            - INSERTABLE_DELETED
+            - PLACEABLE_ADDED
+            - PLACEABLE_DELETED
+            - SPACES_AROUND_PLACEABLE
+            - PLACEABLE_FORMAT
+            - NUMBER_ADDED
+            - NUMBER_DELETED
+            - NUMBER_INCORRECT_CONVERSION
+            - TARGET_IS_EMPTY
+            - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+            - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+            - TAG_ADDED
+            - TAG_DELETED
+            - SPACES_AROUND_TAGS
+            - TAG_ORDER_IS_CHANGED
+            - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+            - INVALID_TAG_NESTING
+            - TAG_IS_CHANGED
+            - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+            - SAME_TRANSLATION_DIFFERENT_SOURCES
+          description: Check subtype code
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeSeverityLevelPutRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeSeverityLevelResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  severityLevelCode: "MEDIUM"
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode}/groups/{groupUid}/sub-types/{checkSubTypeCode}/severity-level
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups:
     post:
@@ -7353,6 +7497,30 @@ paths:
           in: path
           required: true
           type: string
+          enum:
+            - LEADING_TRAILING_SPACES
+            - ORIGINAL_EQUALS_TARGET
+            - WHITESPACES
+            - SPELLCHECK
+            - UNCATEGORIZED
+            - TAG_CONSISTENCY
+            - TARGET_LENGTH_LIMIT
+            - NUMBER_CONSISTENCY
+            - REPEATED_WORD
+            - TARGET_IN_WRONG_LANGUAGE
+            - SOURCE_IN_WRONG_LANGUAGE
+            - SEGMENT_COMPLETENESS
+            - NON_TRANSLATABLE_TEXT
+            - EMOJI_CONSISTENCY
+            - TAG_VALIDITY
+            - INSERTABLE_CONSISTENCY
+            - TARGET_SOURCE_CONSISTENCY
+            - BLACKLISTED_TERMS
+            - GLOSSARY_COMPLIANCE
+            - TRADEMARK_CONSISTENCY
+            - GRAMMAR_CHECK
+            - GLOBAL_CAPITALISATION_CONSISTENCY
+
           description: check type code
         - name: groupUid
           in: path
@@ -7456,110 +7624,6 @@ paths:
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/severity-level:
 
-  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups/{groupUid}/sub-types/{checkSubTypeCode}/severity-level:
-    put:
-      description: >-
-        Update severity level for group.
-      summary: Update severity level for group
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: accountUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding account.
-        - name: checkTypeCode
-          in: path
-          required: true
-          type: string
-          enum:
-            - LEADING_TRAILING_SPACES
-            - ORIGINAL_EQUALS_TARGET
-            - WHITESPACES
-            - SPELLCHECK
-            - UNCATEGORIZED
-            - TAG_CONSISTENCY
-            - TARGET_LENGTH_LIMIT
-            - NUMBER_CONSISTENCY
-            - REPEATED_WORD
-            - TARGET_IN_WRONG_LANGUAGE
-            - SOURCE_IN_WRONG_LANGUAGE
-            - SEGMENT_COMPLETENESS
-            - NON_TRANSLATABLE_TEXT
-            - EMOJI_CONSISTENCY
-            - TAG_VALIDITY
-            - INSERTABLE_CONSISTENCY
-            - TARGET_SOURCE_CONSISTENCY
-            - BLACKLISTED_TERMS
-            - GLOSSARY_COMPLIANCE
-            - TRADEMARK_CONSISTENCY
-            - GRAMMAR_CHECK
-            - GLOBAL_CAPITALISATION_CONSISTENCY
-          description: check type code
-        - name: groupUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of the group.
-        - name: checkSubTypeCode
-          in: path
-          required: true
-          type: string
-          enum:
-            - EMOJI_ADDED
-            - EMOJI_DELETED
-            - EMOJI_PRESENT
-            - INSERTABLE_ADDED
-            - INSERTABLE_DELETED
-            - PLACEABLE_ADDED
-            - PLACEABLE_DELETED
-            - SPACES_AROUND_PLACEABLE
-            - PLACEABLE_FORMAT
-            - NUMBER_ADDED
-            - NUMBER_DELETED
-            - NUMBER_INCORRECT_CONVERSION
-            - TARGET_IS_EMPTY
-            - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
-            - TARGET_IS_MUCH_LONGER_THAN_SOURCE
-            - TAG_ADDED
-            - TAG_DELETED
-            - SPACES_AROUND_TAGS
-            - TAG_ORDER_IS_CHANGED
-            - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
-            - INVALID_TAG_NESTING
-            - TAG_IS_CHANGED
-            - SAME_SOURCE_DIFFERENT_TRANSLATIONS
-            - SAME_TRANSLATION_DIFFERENT_SOURCES
-          description: check subtype code
-        - name: request
-          description: ''
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeGroupUpdateSeverityLevelRequest'
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeGroupUpdateSeverityLevelResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  severityLevelCode: "MEDIUM"
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/sub-types/$smartlingCheckSubTypeCode/severity-level:
-
   /translation-quality-api/v2/accounts/{accountUid}/check-types:
     get:
       description: >-
@@ -7657,6 +7721,54 @@ paths:
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SEGMENT_COMPLETENESS/settings:
 
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/SEGMENT_COMPLETENESS/groups/{groupUid}/settings:
+    put:
+      description: >-
+        Apply segment completeness settings.
+      summary: Apply segment completeness settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplySegmentCompletenessSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplySegmentCompletenessSettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  lowerLengthThreshold: 10
+                  upperLengthThreshold: 20
+                  minLengthThreshold: 15
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SEGMENT_COMPLETENESS/groups/{groupUid}/settings:
+
   /translation-quality-api/v2/accounts/{accountUid}/check-types/ORIGINAL_EQUALS_TARGET/settings:
     put:
       description: >-
@@ -7699,11 +7811,58 @@ paths:
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/ORIGINAL_EQUALS_TARGET/settings:
 
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/ORIGINAL_EQUALS_TARGET/groups/{groupUid}/settings:
+    put:
+      description: >-
+        Apply original equals target settings.
+      summary: Apply original equals target settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyOriginalEqualsTargetSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyOriginalEqualsTargetSettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  mustHaveIdenticalTags: false
+                  mustHaveIdenticalCapitalization: true
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/ORIGINAL_EQUALS_TARGET/groups/{groupUid}/settings:
+
   /translation-quality-api/v2/accounts/{accountUid}/check-types/EMOJI_CONSISTENCY/settings:
     put:
       description: >-
-        Apply emoji consystency settings.
-      summary: Apply emoji consystency settings
+        Apply emoji consistency settings.
+      summary: Apply emoji consistency settings
       tags:
         - Translation quality check
       consumes:
@@ -7727,7 +7886,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplyEmojiConsystencySettingsResponse'
+            $ref: '#/definitions/TqcAccountCheckTypeApplyEmojiConsistencySettingsResponse'
           examples:
             application/json:
               response:
@@ -7740,7 +7899,53 @@ paths:
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/EMOJI_CONSISTENCY/settings:
 
-  /translation-quality-api/v2/accounts/{accountUid}/check-types/SPELLCHECK/settings:
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/EMOJI_CONSISTENCY/groups/{groupUid}/settings:
+    put:
+      description: >-
+        Apply emoji consistency group settings.
+      summary: Apply emoji consistency group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyEmojiConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyEmojiConsistencySettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  noEmojisAllowedInTarget: false
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/EMOJI_CONSISTENCY/groups/{groupUid}/settings:
+
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/SPELLCHECK/groups/{groupUid}/settings:
     put:
       description: >-
         Apply spellcheck settings.
@@ -7757,6 +7962,11 @@ paths:
           type: string
           required: true
           description: Unique identifier of corresponding account.
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
         - name: request
           description: ''
           in: body
@@ -7783,13 +7993,13 @@ paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SPELLCHECK/settings:
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SPELLCHECK/groups/{groupUid}/settings:
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/SOURCE_IN_WRONG_LANGUAGE/settings:
     put:
       description: >-
-        Apply spellcheck settings.
-      summary: Apply spellcheck settings
+        Apply source in wrong language settings.
+      summary: Apply source in wrong language settings
       tags:
         - Translation quality check
       consumes:
@@ -7826,11 +8036,57 @@ paths:
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SOURCE_IN_WRONG_LANGUAGE/settings:
 
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/SOURCE_IN_WRONG_LANGUAGE/groups/{groupUid}/settings:
+    put:
+      description: >-
+        Apply source in wrong language group settings.
+      summary: Apply source in wrong language group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplySourceInWrongLanguageSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplySourceInWrongLanguageSettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  minTextLengthLimit: 10
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SOURCE_IN_WRONG_LANGUAGE/groups/{groupUid}/settings:
+
   /translation-quality-api/v2/accounts/{accountUid}/check-types/TARGET_IN_WRONG_LANGUAGE/settings:
     put:
       description: >-
-        Apply spellcheck settings.
-      summary: Apply spellcheck settings
+        Apply target in wrong language settings.
+      summary: Apply target in wrong language settings
       tags:
         - Translation quality check
       consumes:
@@ -7867,6 +8123,52 @@ paths:
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_IN_WRONG_LANGUAGE/settings:
 
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/TARGET_IN_WRONG_LANGUAGE/groups/{groupUid}/settings:
+    put:
+      description: >-
+        Apply target in wrong language group settings.
+      summary: Apply target in wrong language group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyTargetInWrongLanguageSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyTargetInWrongLanguageSettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  minTextLengthLimit: 10
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_IN_WRONG_LANGUAGE/groups/{groupUid}/settings:
+
   /translation-quality-api/v2/accounts/{accountUid}/check-types/NUMBER_CONSISTENCY/settings:
     put:
       description: >-
@@ -7889,13 +8191,13 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplyNumberConsystencySettingsRequest'
+            $ref: '#/definitions/TqcAccountCheckTypeApplyNumberConsistencySettingsRequest'
 
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplyNumberConsystencySettingsResponse'
+            $ref: '#/definitions/TqcAccountCheckTypeApplyNumberConsistencySettingsResponse'
           examples:
             application/json:
               response:
@@ -7909,11 +8211,58 @@ paths:
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/NUMBER_CONSISTENCY/settings:
 
 
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/NUMBER_CONSISTENCY/groups/{groupUid}/settings:
+    put:
+      description: >-
+        Apply number consistency group settings.
+      summary: Apply number consistency group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyNumberConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyNumberConsistencySettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  ignoreSign: true
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/NUMBER_CONSISTENCY/groups/{groupUid}/settings:
+
+
   /translation-quality-api/v2/accounts/{accountUid}/check-types/TARGET_SOURCE_CONSISTENCY/settings:
     put:
       description: >-
-        Apply target source consystency settings.
-      summary: Apply target source consystency settings
+        Apply target source consistency settings.
+      summary: Apply target source consistency settings
       tags:
         - Translation quality check
       consumes:
@@ -7931,13 +8280,13 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplyTargetSourceConsystencySettingsRequest'
+            $ref: '#/definitions/TqcAccountCheckTypeApplyTargetSourceConsistencySettingsRequest'
 
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplyTargetSourceConsystencySettingsResponse'
+            $ref: '#/definitions/TqcAccountCheckTypeApplyTargetSourceConsistencySettingsResponse'
           examples:
             application/json:
               response:
@@ -7949,6 +8298,52 @@ paths:
         - lang: curl
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_SOURCE_CONSISTENCY/settings:
+
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/TARGET_SOURCE_CONSISTENCY/groups/{groupUid}/settings:
+    put:
+      description: >-
+        Apply target source consistency group settings.
+      summary: Apply target source consistency group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyTargetSourceConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyTargetSourceConsistencySettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  ignoreSign: true
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_SOURCE_CONSISTENCY/groups/{groupUid}/settings:
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/GLOSSARY_COMPLIANCE/settings:
     put:
@@ -7991,6 +8386,54 @@ paths:
         - lang: curl
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/GLOSSARY_COMPLIANCE/settings:
+
+
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/GLOSSARY_COMPLIANCE/groups/{groupUid}/settings:
+    put:
+      description: >-
+        Apply glossary compliance group settings.
+      summary: Apply glossary compliance group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyGlossaryComplianceSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountCheckTypeApplyGlossaryComplianceSettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  matchMethod: "MATCH_BY_PERCENTAGE"
+                  matchThreshold: 10
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/GLOSSARY_COMPLIANCE/groups/{groupUid}/settings:
 
 
   #
@@ -10111,7 +10554,7 @@ definitions:
         description: Minimal text length limit.
         example: 10
 
-  TqcAccountCheckTypeApplyNumberConsystencySettingsRequest:
+  TqcAccountCheckTypeApplyNumberConsistencySettingsRequest:
     type: object
     required:
       - ignoreSign
@@ -10125,7 +10568,7 @@ definitions:
         description: Ignore sign.
         example: true
 
-  TqcAccountCheckTypeApplyTargetSourceConsystencySettingsRequest:
+  TqcAccountCheckTypeApplyTargetSourceConsistencySettingsRequest:
     type: object
     required:
       - ignoreTagsAndPlaceholders
@@ -13047,7 +13490,7 @@ definitions:
                 description: Must have identical capitalization
                 example: true
 
-  TqcAccountCheckTypeApplyEmojiConsystencySettingsResponse:
+  TqcAccountCheckTypeApplyEmojiConsistencySettingsResponse:
     allOf:
       - $ref: '#/definitions/SuccessResponse'
       - type: object
@@ -13115,7 +13558,7 @@ definitions:
                 description: Minimal text length limit.
                 example: 10
 
-  TqcAccountCheckTypeApplyNumberConsystencySettingsResponse:
+  TqcAccountCheckTypeApplyNumberConsistencySettingsResponse:
     allOf:
       - $ref: '#/definitions/SuccessResponse'
       - type: object
@@ -13128,7 +13571,7 @@ definitions:
                 description: Ignore sign.
                 example: true
 
-  TqcAccountCheckTypeApplyTargetSourceConsystencySettingsResponse:
+  TqcAccountCheckTypeApplyTargetSourceConsistencySettingsResponse:
     allOf:
       - $ref: '#/definitions/SuccessResponse'
       - type: object
