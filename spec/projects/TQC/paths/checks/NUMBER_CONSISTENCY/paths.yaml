@@ -1,0 +1,66 @@
+definitions:
+  path_check_types_NUMBER_CONSISTENCY_settings:
+    put:
+      description: >-
+        Apply number consistency settings.
+      summary: Apply number consistency settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/requests/TqcAccountCheckTypeApplyNumberConsistencySettingsRequest'
+#            $ref: './spec/projects/TQC/paths/checks/NUMBER_CONSISTENCY/requests.yaml#/definitions/requests/TqcAccountCheckTypeApplyNumberConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/responses/TqcAccountCheckTypeApplyNumberConsistencySettingsResponse'
+#            $ref: './spec/projects/TQC/paths/checks/NUMBER_CONSISTENCY/responses.yaml#/definitions/responses/TqcAccountCheckTypeApplyNumberConsistencySettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/NUMBER_CONSISTENCY/settings:
+
+  requests:
+    TqcAccountCheckTypeApplyNumberConsistencySettingsRequest:
+      type: object
+      required:
+        - ignoreSign
+      properties:
+        targetLocaleId:
+          type: string
+          description: Smartling ID for the language you want to translate to.
+          example: "it-IT"
+        ignoreSign:
+          type: boolean
+          description: Ignore sign.
+          example: true
+
+  responses:
+    TqcAccountCheckTypeApplyNumberConsistencySettingsResponse:
+      allOf:
+        - $ref: '/spec/projects/common/responses/common.yaml#/definitions/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                ignoreSign:
+                  type: boolean
+                  description: Ignore sign1.
+                  example: true
