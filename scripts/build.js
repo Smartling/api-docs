@@ -9,6 +9,9 @@ mkdir('-p', 'web_deploy')
 
 cp('-R', 'web/*', 'web_deploy/');
 
+mkdir('-p', 'web_deploy/projects');
+cp('-R', 'spec/projects/*', 'web_deploy/projects');
+
 exec('npm run swagger bundle --        -o web_deploy/swagger.json');
 exec('npm run swagger bundle -- --yaml -o web_deploy/swagger.yaml');
 
