@@ -67,18 +67,16 @@ definitions:
 
   requests:
     TqcAccountCheckTypeApplyNumberConsistencySettingsRequest:
-      type: object
-      required:
-        - ignoreSign
-      properties:
-        targetLocaleId:
-          type: string
-          description: Smartling ID for the language you want to translate to.
-          example: "it-IT"
-        ignoreSign:
-          type: boolean
-          description: Ignore sign.
-          example: true
+      allOf:
+        - type: object
+          required:
+            - ignoreSign
+          properties:
+            targetLocaleId:
+              type: string
+              description: Smartling ID for the language you want to translate to.
+              example: "it-IT"
+        - $ref: '#/definitions/responseFields/ignoreSign'
 
   responses:
     TqcAccountCheckTypeApplyNumberConsistencySettingsResponse:
@@ -87,12 +85,7 @@ definitions:
         - type: object
           properties:
             data:
-              type: object
-              properties:
-                ignoreSign:
-                  type: boolean
-                  description: Ignore sign1.
-                  example: true
+              $ref: '#/definitions/responseFields/ignoreSign'
 
   pathParameters:
     accountUid:
@@ -108,3 +101,12 @@ definitions:
       type: string
       required: true
       description: Unique identifier of corresponding group.
+
+  responseFields:
+    ignoreSign:
+      type: object
+      properties:
+        ignoreSign:
+          type: boolean
+          description: Ignore sign.
+          example: true
