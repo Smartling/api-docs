@@ -11,11 +11,8 @@ definitions:
       produces:
         - application/json
       parameters:
-        - name: accountUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding account.
+#        - $ref: '/spec/projects/common/parameters/common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '#/definitions/pathParameters/accountUid'
         - name: request
           description: ''
           in: body
@@ -48,16 +45,8 @@ definitions:
       produces:
         - application/json
       parameters:
-        - name: accountUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding account.
-        - name: groupUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding group.
+        - $ref: '#/definitions/pathParameters/accountUid'
+        - $ref: '#/definitions/pathParameters/groupUid'
         - name: request
           description: ''
           in: body
@@ -70,12 +59,6 @@ definitions:
           description: OK
           schema:
             $ref: '#/definitions/responses/TqcAccountCheckTypeApplyNumberConsistencySettingsResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  ignoreSign: true
 
       x-code-samples:
         - lang: curl
@@ -110,3 +93,18 @@ definitions:
                   type: boolean
                   description: Ignore sign1.
                   example: true
+
+  pathParameters:
+    accountUid:
+      name: accountUid
+      in: path
+      type: string
+      required: true
+      description: Unique identifier of corresponding account.
+
+    groupUid:
+      name: groupUid
+      in: path
+      type: string
+      required: true
+      description: Unique identifier of corresponding group.
