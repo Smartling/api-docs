@@ -1,4 +1,5 @@
 definitions:
+
   pathParameters:
     groupUid:
       name: groupUid
@@ -7,7 +8,99 @@ definitions:
       required: true
       description: Unique identifier of corresponding group.
 
+    checkTypeCode:
+      name: checkTypeCode
+      in: path
+      required: true
+      type: string
+      enum:
+        - LEADING_TRAILING_SPACES
+        - ORIGINAL_EQUALS_TARGET
+        - WHITESPACES
+        - SPELLCHECK
+        - UNCATEGORIZED
+        - TAG_CONSISTENCY
+        - TARGET_LENGTH_LIMIT
+        - NUMBER_CONSISTENCY
+        - REPEATED_WORD
+        - TARGET_IN_WRONG_LANGUAGE
+        - SOURCE_IN_WRONG_LANGUAGE
+        - SEGMENT_COMPLETENESS
+        - NON_TRANSLATABLE_TEXT
+        - EMOJI_CONSISTENCY
+        - TAG_VALIDITY
+        - INSERTABLE_CONSISTENCY
+        - TARGET_SOURCE_CONSISTENCY
+        - BLACKLISTED_TERMS
+        - GLOSSARY_COMPLIANCE
+        - TRADEMARK_CONSISTENCY
+        - GRAMMAR_CHECK
+        - GLOBAL_CAPITALISATION_CONSISTENCY
+      description: check type code
+
+    checkTypeCodeOnlyWithSubtypes:
+      name: checkTypeCode
+      in: path
+      required: true
+      type: string
+      enum:
+        - TAG_CONSISTENCY
+        - NUMBER_CONSISTENCY
+        - SEGMENT_COMPLETENESS
+        - NON_TRANSLATABLE_TEXT
+        - EMOJI_CONSISTENCY
+        - TAG_VALIDITY
+        - INSERTABLE_CONSISTENCY
+        - TARGET_SOURCE_CONSISTENCY
+      description: check type code
+
+    checkSubTypeCode:
+      name: checkSubTypeCode
+      in: path
+      required: true
+      type: string
+      enum:
+        - EMOJI_ADDED
+        - EMOJI_DELETED
+        - EMOJI_PRESENT
+        - INSERTABLE_ADDED
+        - INSERTABLE_DELETED
+        - PLACEABLE_ADDED
+        - PLACEABLE_DELETED
+        - SPACES_AROUND_PLACEABLE
+        - PLACEABLE_FORMAT
+        - NUMBER_ADDED
+        - NUMBER_DELETED
+        - NUMBER_INCORRECT_CONVERSION
+        - TARGET_IS_EMPTY
+        - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+        - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+        - TAG_ADDED
+        - TAG_DELETED
+        - SPACES_AROUND_TAGS
+        - TAG_ORDER_IS_CHANGED
+        - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+        - INVALID_TAG_NESTING
+        - TAG_IS_CHANGED
+        - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+        - SAME_TRANSLATION_DIFFERENT_SOURCES
+      description: Check subtype code
+
   requestBodyParameter:
+
+    severityLevelCode:
+      type: object
+      properties:
+        severityLevelCode:
+          type: string
+          enum:
+            - DISABLED
+            - LOW
+            - MEDIUM
+            - HIGH
+          description: severity level code
+          example: "MEDIUM"
+
     targetLocaleId:
       type: object
       properties:
@@ -15,4 +108,5 @@ definitions:
           type: string
           description: Smartling ID for the language you want to translate to.
           example: "it-IT"
+
 
