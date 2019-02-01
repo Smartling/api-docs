@@ -1,0 +1,88 @@
+definitions:
+  path_check_types_NUMBER_CONSISTENCY_settings:
+    put:
+      description: >-
+        Apply number consistency settings.
+      summary: Apply number consistency settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../../refs/common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/SettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/NUMBER_CONSISTENCY/settings:
+
+  path_check_types_NUMBER_CONSISTENCY_groups_settings:
+    put:
+      description: >-
+        Apply number consistency group settings.
+      summary: Apply number consistency group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../../refs/common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: './common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/SettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/NUMBER_CONSISTENCY/groups/{groupUid}/settings:
+
+  SettingsRequest:
+    allOf:
+      - type: object
+        required:
+          - ignoreSign
+      - $ref: './common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - $ref: '#/definitions/responseFields/ignoreSign'
+
+  SettingsResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            $ref: '#/definitions/responseFields/ignoreSign'
+
+  responseFields:
+    ignoreSign:
+      type: object
+      properties:
+        ignoreSign:
+          type: boolean
+          description: Ignore sign.
+          example: true

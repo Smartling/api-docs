@@ -11,19 +11,19 @@ definitions:
       produces:
         - application/json
       parameters:
-        - $ref: '#/definitions/pathParameters/accountUid'
+        - $ref: '../../../refs/common.yaml#/definitions/pathParameters/accountUid'
         - name: request
           description: ''
           in: body
           required: true
           schema:
-            $ref: '#/definitions/requests/TqcAccountCheckTypeApplyTargetInWrongLanguageSettingsRequest'
+            $ref: '#/definitions/SettingsRequest'
 
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/responses/TqcAccountCheckTypeApplyTargetInWrongLanguageSettingsResponse'
+            $ref: '#/definitions/SettingsResponse'
           examples:
             application/json:
               response:
@@ -48,20 +48,20 @@ definitions:
       produces:
         - application/json
       parameters:
-        - $ref: '#/definitions/pathParameters/accountUid'
-        - $ref: '#/definitions/pathParameters/groupUid'
+        - $ref: '../../../refs/common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: './common.yaml#/definitions/pathParameters/groupUid'
         - name: request
           description: ''
           in: body
           required: true
           schema:
-            $ref: '#/definitions/requests/TqcAccountCheckTypeApplyTargetInWrongLanguageSettingsRequest'
+            $ref: '#/definitions/SettingsRequest'
 
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/responses/TqcAccountCheckTypeApplyTargetInWrongLanguageSettingsResponse'
+            $ref: '#/definitions/SettingsResponse'
 
       x-code-samples:
         - lang: curl
@@ -69,42 +69,21 @@ definitions:
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_IN_WRONG_LANGUAGE/groups/{groupUid}/settings:
 
 
-  requests:
-    TqcAccountCheckTypeApplyTargetInWrongLanguageSettingsRequest:
-      allOf:
-        - type: object
-          required:
-            - minTextLengthLimit
-          properties:
-            targetLocaleId:
-              type: string
-              description: Smartling ID for the language you want to translate to.
-              example: "it-IT"
-        - $ref: '#/definitions/responseFields/minTextLengthLimit'
+  SettingsRequest:
+    allOf:
+      - type: object
+        required:
+          - minTextLengthLimit
+      - $ref: './common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - $ref: '#/definitions/responseFields/minTextLengthLimit'
 
-  responses:
-    TqcAccountCheckTypeApplyTargetInWrongLanguageSettingsResponse:
-      allOf:
-        - $ref: '/spec/projects/common/responses/common.yaml#/definitions/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              $ref: '#/definitions/responseFields/minTextLengthLimit'
-
-  pathParameters:
-    accountUid:
-      name: accountUid
-      in: path
-      type: string
-      required: true
-      description: Unique identifier of corresponding account.
-
-    groupUid:
-      name: groupUid
-      in: path
-      type: string
-      required: true
-      description: Unique identifier of corresponding group.
+  SettingsResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            $ref: '#/definitions/responseFields/minTextLengthLimit'
 
   responseFields:
     minTextLengthLimit:
