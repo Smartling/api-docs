@@ -47,6 +47,29 @@ definitions:
           source: |
             curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/$checkTypeCode/sub-types
 
+  dictionary_checkType_GLOSSARY_COMPLIANCE_match_methods:
+    get:
+      description: >-
+        Get Glossary complience match methods.
+      summary: Get Glossary complience match methods
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/DictionaryCheckTypeMatchMethodsGlossaryComplianceResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/GLOSSARY_COMPLIANCE/match-methods
+
   DictionaryCheckTypesResponse:
     allOf:
       - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
@@ -96,3 +119,25 @@ definitions:
                   allOf:
                     - $ref: './common.yaml#/definitions/responseObjects/checkSubTypeCodeResponse'
 
+  DictionaryCheckTypeMatchMethodsGlossaryComplianceResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  allOf:
+                    - $ref: './common.yaml#/definitions/responseObjects/matchMethodCodeResponse'
+                    - type: object
+                      properties:
+                        matchMethodName:
+                          type: string
+                          description: severity level name
+                          example: "Match by percentage"

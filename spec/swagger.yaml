@@ -6483,38 +6483,7 @@ paths:
             curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/severity-levels
 
   /translation-quality-api/v2/dictionary/check-types/GLOSSARY_COMPLIANCE/match-methods:
-    get:
-      description: >-
-        Get severity levels.
-      summary: Get severity levels
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcDictionaryCheckTypeMatchMethodsGlossaryComplianceResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  totalCount: 2
-                  items:
-                    - matchMethodCode: "MATCH_BY_PERCENTAGE"
-                      matchMethodName: "Match by percentage"
-                    - matchMethodCode: "EXACT_MATCH"
-                      matchMethodName: "Exact match"
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/GLOSSARY_COMPLIANCE/match-methods
+    $ref: './spec/refs/translation_quality/dictionaries.yaml#/definitions/dictionary_checkType_GLOSSARY_COMPLIANCE_match_methods'
 
   /translation-quality-api/v2/dictionary/check-types/TRADEMARK_CONSISTENCY/trademark-types:
     get:
@@ -13445,34 +13414,6 @@ definitions:
                       type: string
                       description: severity level name
                       example: "Medium Severity"
-
-  TqcDictionaryCheckTypeMatchMethodsGlossaryComplianceResponse:
-    allOf:
-      - $ref: '#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              totalCount:
-                type: integer
-                description: Total element count
-              items:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    matchMethodCode:
-                      type: string
-                      enum:
-                        - MATCH_BY_PERCENTAGE
-                        - EXACT_MATCH
-                      description: severity level code
-                      example: "MATCH_BY_PERCENTAGE"
-                    matchMethodName:
-                      type: string
-                      description: severity level name
-                      example: "Match by percentage"
 
   TqcDictionaryCheckTypeTrademarkTypesTrademarkConsistencyResponse:
     allOf:
