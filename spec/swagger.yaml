@@ -6445,42 +6445,43 @@ paths:
     $ref: './spec/refs/translation_quality/dictionaries.yaml#/definitions/dictionary_checkType_subTypes'
 
   /translation-quality-api/v2/dictionary/severity-levels:
-    get:
-      description: >-
-        Get severity levels.
-      summary: Get severity levels
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcDictionaryCheckSeverityLevelResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  totalCount: 4
-                  items:
-                    - severityLevelCode: "DISABLED"
-                      name: "Disabled"
-                    - severityLevelCode: "LOW"
-                      name: "Low Severity"
-                    - severityLevelCode: "MEDIUM"
-                      name: "Medium Severity"
-                    - severityLevelCode: "HIGH"
-                      name: "High Severity"
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/severity-levels
+    $ref: './spec/refs/translation_quality/dictionaries.yaml#/definitions/dictionary_severity_levels'
+#    get:
+#      description: >-
+#        Get severity levels.
+#      summary: Get severity levels
+#      tags:
+#        - Translation quality check
+#      consumes:
+#        - application/json
+#      produces:
+#        - application/json
+#
+#      responses:
+#        200:
+#          description: OK
+#          schema:
+#            $ref: '#/definitions/TqcDictionaryCheckSeverityLevelResponse'
+#          examples:
+#            application/json:
+#              response:
+#                code: SUCCESS
+#                data:
+#                  totalCount: 4
+#                  items:
+#                    - severityLevelCode: "DISABLED"
+#                      name: "Disabled"
+#                    - severityLevelCode: "LOW"
+#                      name: "Low Severity"
+#                    - severityLevelCode: "MEDIUM"
+#                      name: "Medium Severity"
+#                    - severityLevelCode: "HIGH"
+#                      name: "High Severity"
+#
+#      x-code-samples:
+#        - lang: curl
+#          source: |
+#            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/severity-levels
 
   /translation-quality-api/v2/dictionary/check-types/GLOSSARY_COMPLIANCE/match-methods:
     $ref: './spec/refs/translation_quality/dictionaries.yaml#/definitions/dictionary_checkType_GLOSSARY_COMPLIANCE_match_methods'
@@ -13384,36 +13385,6 @@ definitions:
                       type: string
                       description: url domain name
                       example: my.domain.com
-
-  TqcDictionaryCheckSeverityLevelResponse:
-    allOf:
-      - $ref: '#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              totalCount:
-                type: integer
-                description: Total element count
-              items:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    severityLevelCode:
-                      type: string
-                      enum:
-                        - DISABLED
-                        - LOW
-                        - MEDIUM
-                        - HIGH
-                      description: severity level code
-                      example: "MEDIUM"
-                    name:
-                      type: string
-                      description: severity level name
-                      example: "Medium Severity"
 
   TqcDictionaryCheckTypeTrademarkTypesTrademarkConsistencyResponse:
     allOf:
