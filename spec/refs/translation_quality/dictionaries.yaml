@@ -1,0 +1,98 @@
+definitions:
+  dictionary_checkTypes:
+    get:
+      description: >-
+        Get check types.
+      summary: Get check types
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/DictionaryCheckTypesResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types
+
+  dictionary_checkType_subTypes:
+    get:
+      description: >-
+        Get check subtypes.
+      summary: Get check subtypes
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: './common.yaml#/definitions/pathParameters/checkTypeCode'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/DictionaryCheckSubTypeResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/$checkTypeCode/sub-types
+
+  DictionaryCheckTypesResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  allOf:
+                    - $ref: './common.yaml#/definitions/responseObjects/checkTypeCode'
+                    - type: object
+                      properties:
+                        name:
+                          type: string
+                          description: check type name
+                          example: "Insertable consistency"
+                        description:
+                          type: string
+                          description: check type description
+                          example: "Check that insertables in the source are correctly transferred to the translation"
+                        checkSubTypes:
+                          type: array
+                          items:
+                            allOf:
+                              - $ref: './common.yaml#/definitions/responseObjects/checkSubTypeCodeResponse'
+
+  DictionaryCheckSubTypeResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  allOf:
+                    - $ref: './common.yaml#/definitions/responseObjects/checkSubTypeCodeResponse'
+
