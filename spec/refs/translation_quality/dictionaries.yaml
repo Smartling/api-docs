@@ -116,6 +116,68 @@ definitions:
           source: |
             curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/TRADEMARK_CONSISTENCY/trademark-types
 
+  users_current_settings_dictionaries_locale:
+      get:
+        description: >-
+          Get current user settings dictionary for the locale.
+        summary: Get current user settings dictionary for the locale
+        tags:
+          - Translation quality check
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        parameters:
+          - $ref: '../common.yaml#/definitions/pathParameters/localeId'
+          - name: request
+            description: ''
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/CurrentUserSettingsDictionaryForLocaleRequest'
+
+        responses:
+          200:
+            description: OK
+            schema:
+              $ref: '#/definitions/CurrentUserSettingsDictionaryForLocaleResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
+
+      post:
+        description: >-
+          Add word into current user settings dictionary for the locale.
+        summary: Add word into current user settings dictionary for the locale
+        tags:
+          - Translation quality check
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        parameters:
+          - $ref: '../common.yaml#/definitions/pathParameters/localeId'
+          - name: request
+            description: ''
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/CurrentUserSettingsDictionaryForLocalePostRequest'
+
+        responses:
+          200:
+            description: OK
+            schema:
+              $ref: '#/definitions/CurrentUserSettingsDictionaryForLocalePostResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
+
+
   DictionaryCheckTypesResponse:
     allOf:
       - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
@@ -233,3 +295,63 @@ definitions:
                           type: string
                           description: trademark consistency type name
                           example: "Service Mark"
+
+################################
+
+  CurrentUserSettingsDictionaryForLocaleRequest:
+    type: object
+    properties:
+      wordMask:
+        type: string
+        example: "uni"
+
+  CurrentUserSettingsDictionaryForLocalePostRequest:
+    type: object
+    properties:
+      word:
+        type: string
+        minimum: 1
+        example: "universe"
+
+  CurrentUserSettingsDictionaryForLocaleDTO:
+    type: object
+    properties:
+      wordUid:
+        type: string
+        description: word unique identifier
+        example: "23jkj23sa"
+      word:
+        type: string
+        description: trademark consistency type name
+        example: "hello"
+      createdDate:
+        type: string
+        format: date-time
+        description: the UTC value of the date the word was added.
+        example: 2018-11-21T01:51:17Z
+
+  CurrentUserSettingsDictionaryForLocaleResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/definitions/CurrentUserSettingsDictionaryForLocaleDTO'
+
+  CurrentUserSettingsDictionaryForLocalePostResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/CurrentUserSettingsDictionaryForLocaleDTO'

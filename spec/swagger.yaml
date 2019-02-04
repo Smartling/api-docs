@@ -6454,94 +6454,7 @@ paths:
     $ref: './spec/refs/translation_quality/dictionaries.yaml#/definitions/dictionary_checkType_TRADEMARK_CONSISTENCY_trademark_types'
 
   /translation-quality-api/v2/users/current/settings/dictionaries/{localeId}:
-    get:
-      description: >-
-        Get current user settings dictionary for the locale.
-      summary: Get current user settings dictionary for the locale
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: localeId
-          in: path
-          required: true
-          type: string
-          description: A valid Smartling Locale ID.
-        - name: request
-          description: ''
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TqcCurrentUserSettingsDictionaryForLocaleRequest'
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcCurrentUserSettingsDictionaryForLocaleResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  totalCount: 4
-                  items:
-                    - wordUid: "dse3434dsd"
-                      word: "hello"
-                      createdDate: "2018-11-21T01:51:17Z"
-                    - wordUid: "dse3434dsd"
-                      word: "world"
-                      createdDate: "2018-11-50T01:51:20Z"
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
-
-    post:
-      description: >-
-        Add word into current user settings dictionary for the locale.
-      summary: Add word into current user settings dictionary for the locale
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: localeId
-          in: path
-          required: true
-          type: string
-          description: A valid Smartling Locale ID.
-        - name: request
-          description: ''
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TqcCurrentUserSettingsDictionaryForLocalePostRequest'
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcCurrentUserSettingsDictionaryForLocalePostResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  wordUid: "dse3434dsd"
-                  word: "hello"
-                  createdDate: "2018-11-21T01:51:17Z"
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
+    $ref: './spec/refs/translation_quality/dictionaries.yaml#/definitions/users_current_settings_dictionaries_locale'
 
   /translation-quality-api/v2/users/current/settings/dictionaries/{localeId}/{wordUid}:
     delete:
@@ -10995,21 +10908,6 @@ definitions:
         description: list of url identifiers
         example: ["4423d44", "123jd44"]
 
-  TqcCurrentUserSettingsDictionaryForLocaleRequest:
-    type: object
-    properties:
-      wordMask:
-        type: string
-        example: "uni"
-
-  TqcCurrentUserSettingsDictionaryForLocalePostRequest:
-    type: object
-    properties:
-      word:
-        type: string
-        minimum: 1
-        example: "universe"
-
   TqcAccountCheckTypeGroupAddLocaleRequest:
     type: object
     properties:
@@ -13315,36 +13213,36 @@ definitions:
                       description: url domain name
                       example: my.domain.com
 
-  TqcCurrentUserSettingsDictionaryForLocaleResponse:
-    allOf:
-      - $ref: '#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              totalCount:
-                type: integer
-                description: Total element count
-              items:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    wordUid:
-                      type: string
-                      description: word unique identifier
-                      example: "23jkj23sa"
-                    word:
-                      type: string
-                      description: trademark consistency type name
-                      example: "hello"
-                    createdDate:
-                      type: string
-                      format: date-time
-                      description: the UTC value of the date the word was added.
-                      example: 2018-11-21T01:51:17Z
-
+#  TqcCurrentUserSettingsDictionaryForLocaleResponse:
+#    allOf:
+#      - $ref: '#/definitions/SuccessResponse'
+#      - type: object
+#        properties:
+#          data:
+#            type: object
+#            properties:
+#              totalCount:
+#                type: integer
+#                description: Total element count
+#              items:
+#                type: array
+#                items:
+#                  type: object
+#                  properties:
+#                    wordUid:
+#                      type: string
+#                      description: word unique identifier
+#                      example: "23jkj23sa"
+#                    word:
+#                      type: string
+#                      description: trademark consistency type name
+#                      example: "hello"
+#                    createdDate:
+#                      type: string
+#                      format: date-time
+#                      description: the UTC value of the date the word was added.
+#                      example: 2018-11-21T01:51:17Z
+#
   TqcCurrentUserSettingsDictionaryForLocalePostResponse:
     allOf:
       - $ref: '#/definitions/SuccessResponse'
