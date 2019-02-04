@@ -6457,46 +6457,7 @@ paths:
     $ref: './spec/refs/translation_quality/dictionaries.yaml#/definitions/users_current_settings_dictionaries_locale'
 
   /translation-quality-api/v2/users/current/settings/dictionaries/{localeId}/{wordUid}:
-    delete:
-      description: >-
-        Remove word from current user settings dictionary for the locale.
-      summary: Remove word from current user settings dictionary for the locale
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: localeId
-          in: path
-          required: true
-          type: string
-          description: A valid Smartling Locale ID.
-        - name: wordUid
-          in: path
-          required: true
-          type: string
-          description: Word unique identifier.
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcCurrentUserSettingsDictionaryForLocalePostResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  wordUid: "dse3434dsd"
-                  word: "hello"
-                  createdDate: "2018-11-21T01:51:17Z"
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
+    $ref: './spec/refs/translation_quality/dictionaries.yaml#/definitions/users_current_settings_dictionaries_locale_word'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/severity-level:
     $ref: './spec/refs/translation_quality/severity_levels/check_type_severity_level.yaml#/definitions/check_type_severity_level'
@@ -13212,58 +13173,6 @@ definitions:
                       type: string
                       description: url domain name
                       example: my.domain.com
-
-#  TqcCurrentUserSettingsDictionaryForLocaleResponse:
-#    allOf:
-#      - $ref: '#/definitions/SuccessResponse'
-#      - type: object
-#        properties:
-#          data:
-#            type: object
-#            properties:
-#              totalCount:
-#                type: integer
-#                description: Total element count
-#              items:
-#                type: array
-#                items:
-#                  type: object
-#                  properties:
-#                    wordUid:
-#                      type: string
-#                      description: word unique identifier
-#                      example: "23jkj23sa"
-#                    word:
-#                      type: string
-#                      description: trademark consistency type name
-#                      example: "hello"
-#                    createdDate:
-#                      type: string
-#                      format: date-time
-#                      description: the UTC value of the date the word was added.
-#                      example: 2018-11-21T01:51:17Z
-#
-  TqcCurrentUserSettingsDictionaryForLocalePostResponse:
-    allOf:
-      - $ref: '#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              wordUid:
-                type: string
-                description: word unique identifier
-                example: "23jkj23sa"
-              word:
-                type: string
-                description: trademark consistency type name
-                example: "hello"
-              createdDate:
-                type: string
-                format: date-time
-                description: the UTC value of the date the word was added.
-                example: 2018-11-21T01:51:17Z
 
   TqcAccountCheckTypeCreateGroupResponse:
     allOf:

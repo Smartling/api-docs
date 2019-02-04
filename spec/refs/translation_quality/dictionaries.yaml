@@ -177,6 +177,32 @@ definitions:
             source: |
               curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
 
+  users_current_settings_dictionaries_locale_word:
+    delete:
+      description: >-
+        Remove word from current user settings dictionary for the locale.
+      summary: Remove word from current user settings dictionary for the locale
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../common.yaml#/definitions/pathParameters/localeId'
+        - $ref: './common.yaml#/definitions/pathParameters/wordUid'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CurrentUserSettingsDictionaryForLocalePostResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
+
 
   DictionaryCheckTypesResponse:
     allOf:
