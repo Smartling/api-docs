@@ -93,6 +93,29 @@ definitions:
           source: |
             curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/severity-levels
 
+  dictionary_checkType_TRADEMARK_CONSISTENCY_trademark_types:
+    get:
+      description: >-
+        Get trademark consistency types.
+      summary: Get trademark consistency types
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/DictionaryCheckTypeTrademarkTypesTrademarkConsistencyResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/TRADEMARK_CONSISTENCY/trademark-types
+
   DictionaryCheckTypesResponse:
     allOf:
       - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
@@ -187,3 +210,26 @@ definitions:
                           type: string
                           description: severity level name
                           example: "Medium Severity"
+
+  DictionaryCheckTypeTrademarkTypesTrademarkConsistencyResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  allOf:
+                    - $ref: './common.yaml#/definitions/responseObjects/trademarkTypeCodeResponse'
+                    - type: object
+                      properties:
+                        name:
+                          type: string
+                          description: trademark consistency type name
+                          example: "Service Mark"
