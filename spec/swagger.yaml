@@ -6541,95 +6541,10 @@ paths:
             curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types:
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/SEGMENT_COMPLETENESS/settings:
-    put:
-      description: >-
-        Apply segment completeness settings.
-      summary: Apply segment completeness settings
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: accountUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding account.
-        - name: request
-          description: ''
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplySegmentCompletenessSettingsRequest'
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplySegmentCompletenessSettingsResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  lowerLengthThreshold: 10
-                  upperLengthThreshold: 20
-                  minLengthThreshold: 15
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SEGMENT_COMPLETENESS/settings:
+    $ref: './spec/refs/translation_quality/checks/segment_completeness.yaml#/definitions/check_types_SEGMENT_COMPLETENESS_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/SEGMENT_COMPLETENESS/groups/{groupUid}/settings:
-    put:
-      description: >-
-        Apply segment completeness settings.
-      summary: Apply segment completeness settings
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: accountUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding account.
-        - name: groupUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding group.
-        - name: request
-          description: ''
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplySegmentCompletenessSettingsRequest'
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplySegmentCompletenessSettingsResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  lowerLengthThreshold: 10
-                  upperLengthThreshold: 20
-                  minLengthThreshold: 15
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SEGMENT_COMPLETENESS/groups/{groupUid}/settings:
+    $ref: './spec/refs/translation_quality/checks/segment_completeness.yaml#/definitions/check_types_SEGMENT_COMPLETENESS_group_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/ORIGINAL_EQUALS_TARGET/settings:
     put:
@@ -10440,26 +10355,6 @@ definitions:
         description: list of url identifiers
         example: ["4423d44", "123jd44"]
 
-  TqcAccountCheckTypeApplySegmentCompletenessSettingsRequest:
-    type: object
-    properties:
-      targetLocaleId:
-        type: string
-        description: Smartling ID for the language you want to translate to.
-        example: "it-IT"
-      lowerLengthThreshold:
-        type: integer
-        description: Lower length threshould
-        example: 10
-      upperLengthThreshold:
-        type: integer
-        description: Upper length threshould
-        example: 20
-      minLengthThreshold:
-        type: integer
-        description: Minimal lenght threshould
-        example: 15
-
   TqcAccountCheckTypeApplyOriginalEqualsTargetSettingsRequest:
     type: object
     required:
@@ -12862,27 +12757,6 @@ definitions:
                               - HIGH
                             description: severity level code
                             example: "MEDIUM"
-
-  TqcAccountCheckTypeApplySegmentCompletenessSettingsResponse:
-    allOf:
-      - $ref: '#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              lowerLengthThreshold:
-                type: integer
-                description: Lower length threshould
-                example: 10
-              upperLengthThreshold:
-                type: integer
-                description: Upper length threshould
-                example: 20
-              minLengthThreshold:
-                type: integer
-                description: Minimal lenght threshould
-                example: 15
 
   TqcAccountCheckTypeApplyOriginalEqualsTargetSettingsResponse:
     allOf:
