@@ -1,0 +1,88 @@
+definitions:
+  check_types_EMOJI_CONSISTENCY_settings:
+    put:
+      description: >-
+        Apply emoji consistency settings.
+      summary: Apply emoji consistency settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyEmojiConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyEmojiConsistencySettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/EMOJI_CONSISTENCY/settings:
+
+  check_types_EMOJI_CONSISTENCY_group_settings:
+    put:
+      description: >-
+        Apply emoji consistency group settings.
+      summary: Apply emoji consistency group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyEmojiConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyEmojiConsistencySettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/EMOJI_CONSISTENCY/groups/{groupUid}/settings:
+
+  EmojiConsistencySettingsDTO:
+    type: object
+    properties:
+      noEmojisAllowedInTarget:
+        type: boolean
+        description: No emoji is allowed in target
+        example: false
+
+  AccountCheckTypeApplyEmojiConsistencySettingsRequest:
+    allOf:
+      - $ref: '#/definitions/EmojiConsistencySettingsDTO'
+      - $ref: '../common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - type: object
+        required:
+          - noEmojisAllowedInTarget
+
+  AccountCheckTypeApplyEmojiConsistencySettingsResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/EmojiConsistencySettingsDTO'

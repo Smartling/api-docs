@@ -6553,91 +6553,10 @@ paths:
     $ref: './spec/refs/translation_quality/checks/original_equals_target.yaml#/definitions/check_types_ORIGINAL_EQUALS_TARGET_group_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/EMOJI_CONSISTENCY/settings:
-    put:
-      description: >-
-        Apply emoji consistency settings.
-      summary: Apply emoji consistency settings
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: accountUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding account.
-        - name: request
-          description: ''
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplyEmojiConsistencySettingsRequest'
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplyEmojiConsistencySettingsResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  noEmojisAllowedInTarget: false
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/EMOJI_CONSISTENCY/settings:
+    $ref: './spec/refs/translation_quality/checks/emoji_consistency.yaml#/definitions/check_types_EMOJI_CONSISTENCY_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/EMOJI_CONSISTENCY/groups/{groupUid}/settings:
-    put:
-      description: >-
-        Apply emoji consistency group settings.
-      summary: Apply emoji consistency group settings
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: accountUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding account.
-        - name: groupUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding group.
-        - name: request
-          description: ''
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplyEmojiConsistencySettingsRequest'
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplyEmojiConsistencySettingsResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  noEmojisAllowedInTarget: false
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/EMOJI_CONSISTENCY/groups/{groupUid}/settings:
+    $ref: './spec/refs/translation_quality/checks/emoji_consistency.yaml#/definitions/check_types_EMOJI_CONSISTENCY_group_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/SPELLCHECK/groups/{groupUid}/settings:
     put:
@@ -10272,20 +10191,6 @@ definitions:
         description: list of url identifiers
         example: ["4423d44", "123jd44"]
 
-  TqcAccountCheckTypeApplyEmojiConsistencySettingsRequest:
-    type: object
-    required:
-      - noEmojisAllowedInTarget
-    properties:
-      targetLocaleId:
-        type: string
-        description: Smartling ID for the language you want to translate to.
-        example: "it-IT"
-      noEmojisAllowedInTarget:
-        type: boolean
-        description: No emoji is allowed in target
-        example: false
-
   TqcAccountCheckTypeApplySpellcheckSettingsRequest:
     type: object
     required:
@@ -12655,19 +12560,6 @@ definitions:
                               - HIGH
                             description: severity level code
                             example: "MEDIUM"
-
-  TqcAccountCheckTypeApplyEmojiConsistencySettingsResponse:
-    allOf:
-      - $ref: '#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              noEmojisAllowedInTarget:
-                type: boolean
-                description: No emoji is allowed in target
-                example: false
 
   TqcAccountCheckTypeApplySpellcheckSettingsResponse:
     allOf:
