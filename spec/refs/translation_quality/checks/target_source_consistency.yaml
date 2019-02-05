@@ -1,0 +1,106 @@
+definitions:
+  check_types_TARGET_SOURCE_CONSISTENCY_settings:
+    put:
+      description: >-
+        Apply target source consistency settings.
+      summary: Apply target source consistency settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyTargetSourceConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyTargetSourceConsistencySettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  ignoreSign: true
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_SOURCE_CONSISTENCY/settings:
+
+  check_types_TARGET_SOURCE_CONSISTENCY_group_settings:
+    put:
+      description: >-
+        Apply target source consistency group settings.
+      summary: Apply target source consistency group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyTargetSourceConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyTargetSourceConsistencySettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  ignoreSign: true
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_SOURCE_CONSISTENCY/groups/{groupUid}/settings:
+
+  SourceConsistencySettingsDTO:
+    type: object
+    properties:
+      ignoreTagsAndPlaceholders:
+        type: boolean
+        description: Ignore tags and placeholders.
+        example: true
+      ignoreCase:
+        type: boolean
+        description: Ignore case.
+        example: false
+
+  AccountCheckTypeApplyTargetSourceConsistencySettingsRequest:
+    allOf:
+      - $ref: '#/definitions/SourceConsistencySettingsDTO'
+      - $ref: '../common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - type: object
+        required:
+          - ignoreTagsAndPlaceholders
+          - ignoreCase
+
+  AccountCheckTypeApplyTargetSourceConsistencySettingsResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/SourceConsistencySettingsDTO'
+
