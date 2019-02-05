@@ -6481,77 +6481,7 @@ paths:
     $ref: './spec/refs/translation_quality/account_settings.yaml#/definitions/check_type_groups_group_locales'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups/{groupUid}/locales/{targetLocaleId}:
-    delete:
-      description: >-
-        Delete locale from group.
-      summary: Delete locale from group
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: accountUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding account.
-        - name: checkTypeCode
-          in: path
-          required: true
-          type: string
-          enum:
-            - LEADING_TRAILING_SPACES
-            - ORIGINAL_EQUALS_TARGET
-            - WHITESPACES
-            - SPELLCHECK
-            - UNCATEGORIZED
-            - TAG_CONSISTENCY
-            - TARGET_LENGTH_LIMIT
-            - NUMBER_CONSISTENCY
-            - REPEATED_WORD
-            - TARGET_IN_WRONG_LANGUAGE
-            - SOURCE_IN_WRONG_LANGUAGE
-            - SEGMENT_COMPLETENESS
-            - NON_TRANSLATABLE_TEXT
-            - EMOJI_CONSISTENCY
-            - TAG_VALIDITY
-            - INSERTABLE_CONSISTENCY
-            - TARGET_SOURCE_CONSISTENCY
-            - BLACKLISTED_TERMS
-            - GLOSSARY_COMPLIANCE
-            - TRADEMARK_CONSISTENCY
-            - GRAMMAR_CHECK
-            - GLOBAL_CAPITALISATION_CONSISTENCY
-          description: check type code
-        - name: groupUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of the group.
-        - name: targetLocaleId
-          in: path
-          type: string
-          required: true
-          description: Smartling ID for the language you want to translate to.
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeGroupDeleteLocaleResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  targetLocaleId: "it-IT"
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales/$smartlingTargetLocaleId
+    $ref: './spec/refs/translation_quality/account_settings.yaml#/definitions/check_type_groups_group_locales_locale'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups/{groupUid}/severity-level:
     $ref: './spec/refs/translation_quality/severity_levels/check_type_severity_level.yaml#/definitions/check_type_group_severity_level'
@@ -12932,19 +12862,6 @@ definitions:
                               - HIGH
                             description: severity level code
                             example: "MEDIUM"
-
-  TqcAccountCheckTypeGroupDeleteLocaleResponse:
-    allOf:
-      - $ref: '#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              targetLocaleId:
-                type: string
-                description: Smartling locale identifier of the translation
-                example: "it-IT"
 
   TqcAccountCheckTypeApplySegmentCompletenessSettingsResponse:
     allOf:
