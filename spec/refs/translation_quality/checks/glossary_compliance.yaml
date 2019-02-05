@@ -1,0 +1,108 @@
+definitions:
+  check_types_GLOSSARY_COMPLIANCE_settings:
+    put:
+      description: >-
+        Apply glossary compliance settings.
+      summary: Apply glossary compliance settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyGlossaryComplianceSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyGlossaryComplianceSettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/GLOSSARY_COMPLIANCE/settings:
+
+  check_types_GLOSSARY_COMPLIANCE_group_settings:
+    put:
+      description: >-
+        Apply glossary compliance group settings.
+      summary: Apply glossary compliance group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyGlossaryComplianceSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyGlossaryComplianceSettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  matchMethod: "MATCH_BY_PERCENTAGE"
+                  matchThreshold: 10
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/GLOSSARY_COMPLIANCE/groups/{groupUid}/settings:
+
+  GlossaryComplianceSettingsDTO:
+    type: object
+    properties:
+      matchMethod:
+        type: string
+        enum:
+          - MATCH_BY_PERCENTAGE
+          - EXACT_MATCH
+        description: Match method.
+        example: "MATCH_BY_PERCENTAGE"
+      matchThreshold:
+        type: integer
+        description: Match threshold.
+        minimum: 0
+        maximum: 100
+        example: 10
+
+  AccountCheckTypeApplyGlossaryComplianceSettingsRequest:
+    allOf:
+      - $ref: '#/definitions/GlossaryComplianceSettingsDTO'
+      - $ref: '../common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - type: object
+        required:
+          - matchMethod
+          - matchThreshold
+
+  AccountCheckTypeApplyGlossaryComplianceSettingsResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/GlossaryComplianceSettingsDTO'
+
+
+
