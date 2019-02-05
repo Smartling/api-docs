@@ -1,0 +1,94 @@
+definitions:
+  check_types_ORIGINAL_EQUALS_TARGET_settings:
+    put:
+      description: >-
+        Apply original equals target settings.
+      summary: Apply original equals target settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyOriginalEqualsTargetSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyOriginalEqualsTargetSettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/ORIGINAL_EQUALS_TARGET/settings:
+
+  check_types_ORIGINAL_EQUALS_TARGET_group_settings:
+    put:
+      description: >-
+        Apply original equals target settings.
+      summary: Apply original equals target settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyOriginalEqualsTargetSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyOriginalEqualsTargetSettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/ORIGINAL_EQUALS_TARGET/groups/{groupUid}/settings:
+
+  OriginalEqualsTargetSettingsDTO:
+    type: object
+    properties:
+      mustHaveIdenticalTags:
+        type: boolean
+        description: Must have identical tags
+        example: false
+      mustHaveIdenticalCapitalization:
+        type: boolean
+        description: Must have identical capitalization
+        example: true
+
+  AccountCheckTypeApplyOriginalEqualsTargetSettingsRequest:
+    allOf:
+      - $ref: '#/definitions/OriginalEqualsTargetSettingsDTO'
+      - $ref: '../common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - type: object
+        required:
+          - mustHaveIdenticalTags
+          - mustHaveIdenticalCapitalization
+
+  AccountCheckTypeApplyOriginalEqualsTargetSettingsResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/OriginalEqualsTargetSettingsDTO'
+
