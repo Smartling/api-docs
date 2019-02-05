@@ -6558,55 +6558,11 @@ paths:
   /translation-quality-api/v2/accounts/{accountUid}/check-types/EMOJI_CONSISTENCY/groups/{groupUid}/settings:
     $ref: './spec/refs/translation_quality/checks/emoji_consistency.yaml#/definitions/check_types_EMOJI_CONSISTENCY_group_settings'
 
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/SPELLCHECK/settings:
+    $ref: './spec/refs/translation_quality/checks/spellcheck.yaml#/definitions/check_types_SPELLCHECK_settings'
+
   /translation-quality-api/v2/accounts/{accountUid}/check-types/SPELLCHECK/groups/{groupUid}/settings:
-    put:
-      description: >-
-        Apply spellcheck settings.
-      summary: Apply spellcheck settings
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: accountUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding account.
-        - name: groupUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding group.
-        - name: request
-          description: ''
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplySpellcheckSettingsRequest'
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeApplySpellcheckSettingsResponse'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  skipIfWordInUserDictionary: true
-                  skipIfWordStartsWithCapitalLetter: false
-                  skipIfWordAppearsInSourceString: false
-                  skipIfWordValidInSourceLocale: falase
-                  runSpellcheckForSubWords: true
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SPELLCHECK/groups/{groupUid}/settings:
+    $ref: './spec/refs/translation_quality/checks/spellcheck.yaml#/definitions/check_types_SPELLCHECK_group_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/SOURCE_IN_WRONG_LANGUAGE/settings:
     put:
@@ -10191,40 +10147,6 @@ definitions:
         description: list of url identifiers
         example: ["4423d44", "123jd44"]
 
-  TqcAccountCheckTypeApplySpellcheckSettingsRequest:
-    type: object
-    required:
-      - skipIfWordInUserDictionary
-      - skipIfWordStartsWithCapitalLetter
-      - skipIfWordAppearsInSourceString
-      - skipIfWordValidInSourceLocale
-      - runSpellcheckForSubWords
-    properties:
-      targetLocaleId:
-        type: string
-        description: Smartling ID for the language you want to translate to.
-        example: "it-IT"
-      skipIfWordInUserDictionary:
-        type: boolean
-        description: Skip if word is in user dictionary.
-        example: false
-      skipIfWordStartsWithCapitalLetter:
-        type: boolean
-        description: Skip if word starts with capital letter.
-        example: false
-      skipIfWordAppearsInSourceString:
-        type: boolean
-        description: Skip if word appears in source string.
-        example: false
-      skipIfWordValidInSourceLocale:
-        type: boolean
-        description: Skip if word is valid in source locale.
-        example: false
-      runSpellcheckForSubWords:
-        type: boolean
-        description: Run spellchek for sub words.
-        example: true
-
   TqcAccountCheckTypeApplySourceInWrongLanguageSettingsRequest:
     type: object
     required:
@@ -12560,35 +12482,6 @@ definitions:
                               - HIGH
                             description: severity level code
                             example: "MEDIUM"
-
-  TqcAccountCheckTypeApplySpellcheckSettingsResponse:
-    allOf:
-      - $ref: '#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              skipIfWordInUserDictionary:
-                type: boolean
-                description: Skip if word is in user dictionary.
-                example: false
-              skipIfWordStartsWithCapitalLetter:
-                type: boolean
-                description: Skip if word starts with capital letter.
-                example: false
-              skipIfWordAppearsInSourceString:
-                type: boolean
-                description: Skip if word appears in source string.
-                example: false
-              skipIfWordValidInSourceLocale:
-                type: boolean
-                description: Skip if word is valid in source locale.
-                example: false
-              runSpellcheckForSubWords:
-                type: boolean
-                description: Run spellchek for sub words.
-                example: true
 
   TqcAccountCheckTypeApplySourceInWrongLanguageSettingsResponse:
     allOf:

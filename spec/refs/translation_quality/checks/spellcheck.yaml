@@ -1,0 +1,108 @@
+definitions:
+  check_types_SPELLCHECK_settings:
+    put:
+      description: >-
+        Apply spellcheck group settings.
+      summary: Apply spellcheck group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySpellcheckSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySpellcheckSettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SPELLCHECK/settings:
+
+  check_types_SPELLCHECK_group_settings:
+    put:
+      description: >-
+        Apply spellcheck group settings.
+      summary: Apply spellcheck group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySpellcheckSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySpellcheckSettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SPELLCHECK/groups/{groupUid}/settings:
+
+  SpellcheckSettingsDTO:
+    type: object
+    properties:
+      skipIfWordInUserDictionary:
+        type: boolean
+        description: Skip if word is in user dictionary.
+        example: false
+      skipIfWordStartsWithCapitalLetter:
+        type: boolean
+        description: Skip if word starts with capital letter.
+        example: false
+      skipIfWordAppearsInSourceString:
+        type: boolean
+        description: Skip if word appears in source string.
+        example: false
+      skipIfWordValidInSourceLocale:
+        type: boolean
+        description: Skip if word is valid in source locale.
+        example: false
+      runSpellcheckForSubWords:
+        type: boolean
+        description: Run spellchek for sub words.
+        example: true
+
+  AccountCheckTypeApplySpellcheckSettingsRequest:
+    allOf:
+      - $ref: '#/definitions/SpellcheckSettingsDTO'
+      - $ref: '../common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - type: object
+        required:
+          - skipIfWordInUserDictionary
+          - skipIfWordStartsWithCapitalLetter
+          - skipIfWordAppearsInSourceString
+          - skipIfWordValidInSourceLocale
+          - runSpellcheckForSubWords
+
+  AccountCheckTypeApplySpellcheckSettingsResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/SpellcheckSettingsDTO'
