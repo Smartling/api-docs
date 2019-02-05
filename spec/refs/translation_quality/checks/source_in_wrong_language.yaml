@@ -1,0 +1,103 @@
+definitions:
+  check_types_SOURCE_IN_WRONG_LANGUAGE_settings:
+    put:
+      description: >-
+        Apply source in wrong language settings.
+      summary: Apply source in wrong language settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySourceInWrongLanguageSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySourceInWrongLanguageSettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  minTextLengthLimit: 10
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SOURCE_IN_WRONG_LANGUAGE/settings:
+
+  check_types_SOURCE_IN_WRONG_LANGUAGE_group_settings:
+    put:
+      description: >-
+        Apply source in wrong language group settings.
+      summary: Apply source in wrong language group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySourceInWrongLanguageSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySourceInWrongLanguageSettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  minTextLengthLimit: 10
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SOURCE_IN_WRONG_LANGUAGE/groups/{groupUid}/settings:
+
+  SourceInWrongLanguageSettingsDTO:
+    type: object
+    properties:
+      minTextLengthLimit:
+        type: integer
+        minimum: 0
+        description: Minimal text length limit.
+        example: 10
+
+  AccountCheckTypeApplySourceInWrongLanguageSettingsRequest:
+    allOf:
+      - $ref: '#/definitions/SourceInWrongLanguageSettingsDTO'
+      - $ref: '../common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - type: object
+        required:
+          - minTextLengthLimit
+
+  AccountCheckTypeApplySourceInWrongLanguageSettingsResponse:
+    allOf:
+      - $ref: '/spec/refs/common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/SourceInWrongLanguageSettingsDTO'
+
+
