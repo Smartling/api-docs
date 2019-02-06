@@ -68,6 +68,39 @@ definitions:
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_IN_WRONG_LANGUAGE/groups/{groupUid}/settings:
 
+  account_check_types_TARGET_IN_WRONG_LANGUAGE_settings_effective:
+    get:
+      description: >-
+        Get checktype TARGET_IN_WRONG_LANGUAGE settings for certain account.
+      summary: Get checktype TARGET_IN_WRONG_LANGUAGE settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: targetLocaleId
+          in: query
+          required: false
+          type: string
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/TARGET_IN_WRONG_LANGUAGE:
+
   SettingsRequest:
     allOf:
       - type: object
@@ -93,3 +126,21 @@ definitions:
           minimum: 0
           description: 1Minimal text length limit.
           example: 10
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+              - $ref: '#/definitions/responseFields/minTextLengthLimit'
+              - type: object
+                properties:
+                  checkTypeCode:
+                    type: string
+                    enum:
+                      - TARGET_IN_WRONG_LANGUAGE
+                    description: check type code
+                    example: "TARGET_IN_WRONG_LANGUAGE"
