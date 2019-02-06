@@ -6598,55 +6598,7 @@ paths:
     $ref: './spec/refs/translation_quality/checks/leading_trailing_spaces.yaml#/definitions/account_check_types_LEADING_TRAILING_SPACES_settings_effective'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/ORIGINAL_EQUALS_TARGET:
-    get:
-      description: >-
-        Get checktype ORIGINAL_EQUALS_TARGET settings for certain account.
-      summary: Get checktype ORIGINAL_EQUALS_TARGET settings for certain account
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: accountUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding account.
-        - name: targetLocaleId
-          in: query
-          required: false
-          type: string
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeResponse_ORIGINAL_EQUALS_TARGET'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  severityLevelCode: "LOW"
-                  checkTypeCode: "ORIGINAL_EQUALS_TARGET"
-                  subTypes: []
-                  localeSeverityLevels:
-                    - targetLocaleId: "it-IT"
-                      severityLevelCode: "MEDIUM"
-                    - targetLocaleId: "en-US"
-                      severityLevelCode: "LOW"
-                  groups:
-                    - groupUid: "12dsd344ds"
-                  mustHaveIdenticalTags: true
-                  mustHaveIdenticalCapitalization: true
-
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/ORIGINAL_EQUALS_TARGET:
+    $ref: './spec/refs/translation_quality/checks/original_equals_target.yaml#/definitions/account_check_types_ORIGINAL_EQUALS_TARGET_settings_effective'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/WHITESPACES:
     get:
@@ -12133,74 +12085,6 @@ definitions:
                               - HIGH
                             description: severity level code
                             example: "MEDIUM"
-
-  TqcAccountCheckTypeResponse_ORIGINAL_EQUALS_TARGET:
-    allOf:
-      - $ref: '#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              severityLevelCode:
-                type: string
-                enum:
-                  - DISABLED
-                  - LOW
-                  - MEDIUM
-                  - HIGH
-                description: severity level code
-                example: "MEDIUM"
-              checkTypeCode:
-                type: string
-                enum:
-                  - ORIGINAL_EQUALS_TARGET
-                description: check type code
-                example: "ORIGINAL_EQUALS_TARGET"
-              subTypes:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    checkSubTypeCode:
-                      type: string
-                      description: check subtype code
-                      example: ""
-              localeSeverityLevels:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    targetLocaleId:
-                      type: string
-                      description: Smartling locale identifier of the translation
-                      example: "it-IT"
-                    severityLevelCode:
-                      type: string
-                      enum:
-                        - DISABLED
-                        - LOW
-                        - MEDIUM
-                        - HIGH
-                      description: severity level code
-                      example: "MEDIUM"
-              groups:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    groupUid:
-                      type: string
-                      description: unique identifier of group
-                      example: "12dsd344ds"
-              mustHaveIdenticalTags:
-                type: boolean
-                description: Must have identical tags
-                example: false
-              mustHaveIdenticalCapitalization:
-                type: boolean
-                description: Must have identical capitalization
-                example: true
 
   TqcAccountCheckTypeResponse_WHITESPACES:
     allOf:
