@@ -12,5 +12,10 @@ if (branch && branch !== 'gh-pages') {
   mkdir('-p', branchPath);
   exec('npm run swagger bundle -- -o ' + branchPath + 'swagger.json');
   cp('web/index.html', branchPath);
+
+  var refs = path.join(branchPath, 'spec', 'refs');
+  mkdir('-p', refs);
+  cp('-R', 'spec/refs/*', refs);
+
   exec('deploy-to-gh-pages --update .tmp');
 }
