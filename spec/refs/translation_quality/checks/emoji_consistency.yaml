@@ -62,6 +62,33 @@ definitions:
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/EMOJI_CONSISTENCY/groups/{groupUid}/settings:
 
+  account_check_types_EMOJI_CONSISTENCY_settings_effective:
+    get:
+      description: >-
+        Get checktype EMOJI_CONSISTENCY settings for certain account.
+      summary: Get checktype EMOJI_CONSISTENCY settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/EMOJI_CONSISTENCY:
+
+
   EmojiConsistencySettingsDTO:
     type: object
     properties:
@@ -86,3 +113,34 @@ definitions:
           data:
             allOf:
               - $ref: '#/definitions/EmojiConsistencySettingsDTO'
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
+              - $ref: '#/definitions/EmojiConsistencySettingsDTO'
+              - type: object
+                properties:
+                  checkTypeCode:
+                    type: string
+                    enum:
+                      - EMOJI_CONSISTENCY
+                    description: check type code
+                    example: "EMOJI_CONSISTENCY"
+                  subTypes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        checkSubTypeCode:
+                          type: string
+                          enum:
+                            - EMOJI_ADDED
+                            - EMOJI_DELETED
+                            - EMOJI_PRESENT
+                          description: check subtype code
+                          example: "EMOJI_ADDED"
