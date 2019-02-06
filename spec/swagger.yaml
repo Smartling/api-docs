@@ -6595,52 +6595,7 @@ paths:
     $ref: './spec/refs/translation_quality/checks/glossary_compliance.yaml#/definitions/check_types_GLOSSARY_COMPLIANCE_group_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/LEADING_TRAILING_SPACES:
-    get:
-      description: >-
-        Get checktype LEADING_TRAILING_SPACES settings for certain account.
-      summary: Get checktype LEADING_TRAILING_SPACES settings for certain account
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: accountUid
-          in: path
-          type: string
-          required: true
-          description: Unique identifier of corresponding account.
-        - name: targetLocaleId
-          in: query
-          required: false
-          type: string
-
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/TqcAccountCheckTypeResponse_LEADING_TRAILING_SPACES'
-          examples:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  severityLevelCode: "LOW"
-                  checkTypeCode: "LEADING_TRAILING_SPACES"
-                  subTypes: []
-                  localeSeverityLevels:
-                    - targetLocaleId: "it-IT"
-                      severityLevelCode: "MEDIUM"
-                    - targetLocaleId: "en-US"
-                      severityLevelCode: "LOW"
-                  groups:
-                    - groupUid: "12dsd344ds"
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/LEADING_TRAILING_SPACES:
+    $ref: './spec/refs/translation_quality/checks/leading_trailing_spaces.yaml#/definitions/account_check_types_LEADING_TRAILING_SPACES_settings_effective'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/ORIGINAL_EQUALS_TARGET:
     get:
@@ -12178,66 +12133,6 @@ definitions:
                               - HIGH
                             description: severity level code
                             example: "MEDIUM"
-
-  TqcAccountCheckTypeResponse_LEADING_TRAILING_SPACES:
-    allOf:
-      - $ref: '#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              severityLevelCode:
-                type: string
-                enum:
-                  - DISABLED
-                  - LOW
-                  - MEDIUM
-                  - HIGH
-                description: severity level code
-                example: "MEDIUM"
-              checkTypeCode:
-                type: string
-                enum:
-                  - LEADING_TRAILING_SPACES
-                description: check type code
-                example: "LEADING_TRAILING_SPACES"
-              subTypes:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    checkSubTypeCode:
-                      type: string
-                      description: check subtype code
-                      example: ""
-              localeSeverityLevels:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    targetLocaleId:
-                      type: string
-                      description: Smartling locale identifier of the translation
-                      example: "it-IT"
-                    severityLevelCode:
-                      type: string
-                      enum:
-                        - DISABLED
-                        - LOW
-                        - MEDIUM
-                        - HIGH
-                      description: severity level code
-                      example: "MEDIUM"
-              groups:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    groupUid:
-                      type: string
-                      description: unique identifier of group
-                      example: "12dsd344ds"
 
   TqcAccountCheckTypeResponse_ORIGINAL_EQUALS_TARGET:
     allOf:
