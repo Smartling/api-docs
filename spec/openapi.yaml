@@ -1113,6 +1113,74 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  '/files-api/v2/projects/{projectId}/locales/{localeId}/file/status':
+    get:
+      summary: Status of file for a single locale
+      description: |
+        Returns detailed status information on a specific file.
+
+        **Example:**
+        ```bash
+        curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/status?fileUri=file.properties'
+        ```
+      tags:
+      - Files
+
+      parameters:
+      - description: A unique identifier for a project.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - description: Identifier for a locale.
+        in: path
+        name: localeId
+        required: true
+        schema:
+          type: string
+      - description: Smartling value that uniquely identifies a file in Smartling
+        in: query
+        name: fileUri
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilesAPIStatusSingleLocaleSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        authorizedStringCount: 4
+                        authorizedWordCount: 5
+                        completedStringCount: 0
+                        completedWordCount: 0
+                        created: '2017-05-27T12:45:36Z'
+                        excludedStringCount: 0
+                        excludedWordCount: 0
+                        fileType: javaProperties
+                        fileUri: /files/4.properties
+                        hasInstructions: false
+                        lastUploaded: '2017-05-27T12:45:36Z'
+                        parserVersion: 4
+                        totalStringCount: 5
+                        totalWordCount: 9
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
   /files-api/v2/projects/{projectId}/locales/{localeId}/file:
     get:
       summary: Download translated file (single locale)
@@ -1579,6 +1647,12 @@ paths:
 
   '/files-api/v2/projects/{projectId}/file-types':
     get:
+      summary: List all file types
+      description: >
+        This returns a list of all file types currently represented in the project.
+      tags:
+      - Files
+
       parameters:
       - description: A unique identifier for a project.
         in: path
@@ -1610,20 +1684,22 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-      - Files
-      description: >
-        This returns a list of all file types currently represented in the
-        project.
-      summary: List all file types
       x-code-samples:
       - lang: curl
         source: >
           curl -H "Authorization: Bearer $smartlingToken"
           "https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file-types"
 
-  '/files-api/v2/projects/{projectId}/file/delete':
+  '/files-api/v2/projects/{projectId}/file/rename':
     post:
+      summary: Rename file
+      description: >
+        This renames an uploaded file by changing the `fileUri`. After renaming
+        the file, it will only be identified by the new `fileUri` that you
+        provide.
+      tags:
+      - Files
+
       parameters:
       - description: A unique identifier for a project.
         in: path
@@ -1631,18 +1707,38 @@ paths:
         required: true
         schema:
           type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                fileUri:
+                  description: Current value that uniquely identifies the file
+                  type: string
+                newFileUri:
+                  description: >
+                    The new value for fileUri. We recommend that you use file
+                    path and file name, similar to how version control systems
+                    identify the file. Example: /myproject/i18n/ui.properties.
+                    This must be a fileUri that does not exist in the current
+                    Smartling project.
+                  type: string
+              required:
+              - fileUri
+              - newFileUri
+              type: object
       responses:
         '200':
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
               examples:
                 response:
                   value:
                     response:
                       code: SUCCESS
-              schema:
-                $ref: '#/components/schemas/EmptyResponse'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -1651,8 +1747,17 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-      - Files
+
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken"
+          -F "fileUri=filename.properties" -F "newFileUri=filename2.properties"
+          'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file/rename'
+
+  '/files-api/v2/projects/{projectId}/file/delete':
+    post:
+      summary: Delete file
       description: >
         This removes the file from Smartling. The file will no longer be
         available for download. Any complete translations for the file remain
@@ -1662,6 +1767,16 @@ paths:
         Smartling deletes files asynchronously and it typically takes a few
         minutes to complete. While deleting a file, you can not upload a file
         with the same `fileUri`.
+      tags:
+      - Files
+
+      parameters:
+      - description: A unique identifier for a project.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           multipart/form-data:
@@ -1673,7 +1788,26 @@ paths:
               required:
               - fileUri
               type: object
-      summary: Delete file
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
       x-code-samples:
       - lang: curl
         source: >
@@ -1681,8 +1815,82 @@ paths:
           "fileUri=filename.properties"
           'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file/delete'
 
+  '/files-api/v2/projects/{projectId}/locales/{localeId}/file/last-modified':
+    get:
+      summary: Last modified date (single locale)
+      description: >
+        This returns the date that a file was last modified in a specified locale.
+      tags:
+      - Files
+
+      parameters:
+      - description: A unique identifier for a project.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - description: Identifier for a locale.
+        in: path
+        name: localeId
+        required: true
+        schema:
+          type: string
+      - description: A unique identifier for a file in Smartling.
+        in: query
+        name: fileUri
+        required: true
+        schema:
+          type: string
+      - description: >-
+          Limits the return to only those file and locale combinations that
+          have a ```lastModified``` date after the
+          ```lastModifiedAfter```parameter . The items array will be empty if
+          the file has not been modified in any of the locales since the
+          `lastModifiedAfter` date specified.
+        in: query
+        name: lastModifiedAfter
+        required: false
+        schema:
+          format: 'YYYY-MM-DDThh:mm:ssZ'
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilesAPILastModifiedSingleLocaleSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        lastModified: '2017-09-06T20:25:18Z'
+                        localeId: ru-RU
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X GET -H "Authorization: Bearer $smartlingToken"
+          'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/last-modified?fileUri=filename.properties'
+
   '/files-api/v2/projects/{projectId}/file/last-modified':
     get:
+      summary: Last modified date (all locales)
+      description: |
+        This returns the date that a file was last modified in each locale.
+      tags:
+      - Files
+
       parameters:
       - description: A unique identifier for a project.
         in: path
@@ -1733,81 +1941,19 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-      - Files
-      description: |
-        This returns the date that a file was last modified in each locale.
-      summary: Last modified date (all locales)
       x-code-samples:
       - lang: curl
         source: >
           curl -X GET -H "Authorization: Bearer $smartlingToken"
           'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file/last-modified?fileUri=filename.properties'
 
-  '/files-api/v2/projects/{projectId}/file/rename':
+  '/files-api/v2/projects/{projectId}/locales/{localeId}/file/import':
     post:
-      parameters:
-      - description: A unique identifier for a project.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmptyResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
+      summary: Import translations
+      description: ''
       tags:
       - Files
-      description: >
-        This renames an uploaded file by changing the `fileUri`. After renaming
-        the file, it will only be identified by the new `fileUri` that you
-        provide.
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              properties:
-                fileUri:
-                  description: Current value that uniquely identifies the file
-                  type: string
-                newFileUri:
-                  description: >
-                    The new value for fileUri. We recommend that you use file
-                    path and file name, similar to how version control systems
-                    identify the file. Example: /myproject/i18n/ui.properties.
-                    This must be a fileUri that does not exist in the current
-                    Smartling project.
-                  type: string
-              required:
-              - fileUri
-              type: object
-      summary: Rename file
-      x-code-samples:
-      - lang: curl
-        source: >
-          curl -X POST -H "Authorization: Bearer $smartlingToken" -F
-          "fileUri=filename.properties" -F "newFileUri=filename2.properties"
-          'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/file/rename'
 
-  '/files-api/v2/projects/{projectId}/locales/{localeId}/file/get-translations':
-    post:
       parameters:
       - description: A unique identifier for a project.
         in: path
@@ -1821,126 +1967,62 @@ paths:
         required: true
         schema:
           type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: file
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-      - Files
-      description: >
-        Temporarily uploads a file, then returns a translated version for
-        requested locales.
-
-
-        This call can be used instead of a standard upload/download if you keep
-        different versions of a file in multiple branches or are triggering
-        rebuilds, and don’t want your files in Smartling to be overwritten by
-        out-of-date versions of a file.
-
-
-        To use the call, you upload a file and identify the Smartling URI where
-        the main version of that file is saved. Smartling will match strings
-        shared between the uploaded file and the main file and return any
-        available translations.
       requestBody:
         content:
           multipart/form-data:
             schema:
               properties:
+                file:
+                  type: file
+                  description: The file contents to upload.
                 fileUri:
                   description: >-
                     The Smartling URI for a file that contains the original
-                    language strings that are already uploaded to Smartling
+                    language strings that are already uploaded to Smartling.
                   type: string
-                includeOriginalStrings:
-                  description: >
-                    Specifies whether Smartling will return the original string
-                    or an empty string where no translation is available. This
-                    parameter is only supported for Android XML, gettext, Java
-                    properties, custom XML, and JSON files.
-
+                fileType:
+                  description: >-
+                    Unique identifier for the file type. To allow translation
+                    imports, XML and JSON files must be uploaded with
+                    `source_key_paths` defined.
+                  enum:
+                  - android
+                  - ios
+                  - gettext
+                  - java_properties
+                  - yaml
+                  - xml
+                  - json
+                  - qt
+                  - resx
+                  - csv
+                  - pres
+                  - stringsdict
+                  - srt
+                  type: string
+                translationState:
+                  description: |
+                    Value indicating the workflow state to import the translations into.
+                    Content will be imported into the language's default workflow.
 
                     | Value | Description |
-
                     |-------|-------------|
-
-                    | true | If there is no translation, Smartling returns the
-                    original string. |
-
-                    | false | If there is no translation, Smartling returns an
-                    empty string. |
-                  type: boolean
-                retrievalType:
-                  description: >
-                    Determines the desired format for the download. Applies to
-                    translated files only.
-
-
-                    | retrievalType | Description |
-
-                    |---------------|-------------|
-
-                    | pending | Smartling returns any translations (including
-                    non-published translations).|
-
-                    | published | Smartling returns only published/pre-published
-                    translations.|
-
-                    | pseudo | Smartling returns a modified version of the
-                    original text with certain characters transformed and the
-                    text expanded. For example, the uploaded string "This is a
-                    sample string", will return as "T~hís ~ís á s~ámpl~é
-                    str~íñg". Pseudo translations enable you to test how a
-                    longer string integrates into your application.|
-
-                    | contextMatchingInstrumented | Smartling returns a modified
-                    version of the original file with strings wrapped in a
-                    specific set of Unicode symbols that can later be recognized
-                    and matched by the Chrome Context Capture Extension.|
+                    | PUBLISHED | The translated content is published. |
+                    | POST_TRANSLATION | The translated content is imported into the first step after translation - if there is none, it will be published. |
                   enum:
-                  - pending
-                  - published
-                  - pseudo
-                  - contextMatchingInstrumented
+                  - PUBLISHED
+                  - POST_TRANSLATION
                   type: string
+                overwrite:
+                  description: Whether or not to overwrite existing translations.
+                  type: boolean
               required:
+              - file
               - fileUri
+              - fileType
+              - translationState
               type: object
         required: true
-      summary: Export translations
-      x-code-samples:
-      - lang: curl
-        source: >
-          curl -H "Authorization: Bearer $smartlingToken" -F
-          "file=@filename.properties" -F 'fileUri=filename.properties'
-          'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/get-translations'
-
-  '/files-api/v2/projects/{projectId}/locales/{localeId}/file/import':
-    post:
-      parameters:
-      - description: A unique identifier for a project.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-      - description: Identifier for a locale.
-        in: path
-        name: localeId
-        required: true
-        schema:
-          type: string
       responses:
         '200':
           description: OK
@@ -1965,61 +2047,6 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-      - Files
-      description: ''
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              properties:
-                fileType:
-                  description: >-
-                    Unique identifier for the file type. To allow translation
-                    imports, XML and JSON files must be uploaded with
-                    `source_key_paths` defined.
-                  enum:
-                  - android
-                  - ios
-                  - gettext
-                  - java_properties
-                  - yaml
-                  - xml
-                  - json
-                  - qt
-                  - resx
-                  - csv
-                  - pres
-                  - stringsdict
-                  - srt
-                  type: string
-                fileUri:
-                  description: >-
-                    The Smartling URI for a file that contains the original
-                    language strings that are already uploaded to Smartling.
-                  type: string
-                overwrite:
-                  description: Whether or not to overwrite existing translations.
-                  type: boolean
-                translationState:
-                  description: |
-                    Value indicating the workflow state to import the
-                    translations into. Content will be imported into the
-                    language's default workflow.
-
-                    | Value | Description |
-                    |-------|-------------|
-                    | PUBLISHED | The translated content is published. |
-                    | POST_TRANSLATION | The translated content is imported into the first step after translation - if there is none, it will be published. |
-                  enum:
-                  - PUBLISHED
-                  - POST_TRANSLATION
-                  type: string
-              required:
-              - fileUri
-              type: object
-        required: true
-      summary: Import translations
       x-code-samples:
       - lang: curl
         source: >
@@ -2027,92 +2054,28 @@ paths:
           "file=@filename.properties" -F "fileUri=filename.properties" -F
           "fileType=javaProperties" -F "translationState=PUBLISHED"
           'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/import'
-  '/files-api/v2/projects/{projectId}/locales/{localeId}/file/last-modified':
-    get:
-      parameters:
-      - description: A unique identifier for a project.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-      - description: Identifier for a locale.
-        in: path
-        name: localeId
-        required: true
-        schema:
-          type: string
-      - description: A unique identifier for a file in Smartling.
-        in: query
-        name: fileUri
-        required: true
-        schema:
-          type: string
-      - description: >-
-          Limits the return to only those file and locale combinations that
-          have a ```lastModified``` date after the
-          ```lastModifiedAfter```parameter . The items array will be empty if
-          the file has not been modified in any of the locales since the
-          `lastModifiedAfter` date specified.
-        in: query
-        name: lastModifiedAfter
-        required: false
-        schema:
-          format: 'YYYY-MM-DDThh:mm:ssZ'
-          type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FilesAPILastModifiedSingleLocaleSuccessResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        lastModified: '2017-09-06T20:25:18Z'
-                        localeId: ru-RU
-        '400':
-          description: Provided request parameters are invalid.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        details: unknown.parameter
-                        key: unknown.field
-                        message: >-
-                          The field unknown.parameter was not expected. Please
-                          consult the documentation to verify the fields you are
-                          submitting.
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  '/files-api/v2/projects/{projectId}/locales/{localeId}/file/get-translations':
+    post:
+      summary: Export translations
+      description: >
+        Temporarily uploads a file, then returns a translated version for
+        requested locales.
+
+
+        This call can be used instead of a standard upload/download if you keep
+        different versions of a file in multiple branches or are triggering
+        rebuilds, and don’t want your files in Smartling to be overwritten by
+        out-of-date versions of a file.
+
+
+        To use the call, you upload a file and identify the Smartling URI where
+        the main version of that file is saved. Smartling will match strings
+        shared between the uploaded file and the main file and return any
+        available translations.
       tags:
       - Files
-      description: >
-        This returns the date that a file was last modified in a specified
-        locale.
-      summary: Last modified date (single locale)
-      x-code-samples:
-      - lang: curl
-        source: >
-          curl -X GET -H "Authorization: Bearer $smartlingToken"
-          'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/last-modified?fileUri=filename.properties'
 
-  '/files-api/v2/projects/{projectId}/locales/{localeId}/file/status':
-    get:
       parameters:
       - description: A unique identifier for a project.
         in: path
@@ -2126,39 +2089,56 @@ paths:
         required: true
         schema:
           type: string
-      - description: Smartling value that uniquely identifies a file in Smartling
-        in: query
-        name: fileUri
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                fileUri:
+                  description: >-
+                    The Smartling URI for a file that contains the original
+                    language strings that are already uploaded to Smartling
+                  type: string
+                retrievalType:
+                  description: |
+                    Determines the desired format for the download. Applies to
+                    translated files only.
+
+                    | retrievalType | Description |
+                    |---------------|-------------|
+                    | pending | Smartling returns any translations (including non-published translations).|
+                    | published | Smartling returns only published/pre-published translations.|
+                    | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application.|
+                    | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension.|
+                  enum:
+                  - pending
+                  - published
+                  - pseudo
+                  - contextMatchingInstrumented
+                  type: string
+                includeOriginalStrings:
+                  description: |
+                    Specifies whether Smartling will return the original string
+                    or an empty string where no translation is available. This
+                    parameter is only supported for Android XML, gettext, Java
+                    properties, custom XML, and JSON files.
+
+                    | Value | Description |
+                    |-------|-------------|
+                    | true | If there is no translation, Smartling returns the original string. |
+                    | false | If there is no translation, Smartling returns an empty string. |
+                  type: boolean
+              required:
+              - fileUri
+              type: object
         required: true
-        schema:
-          type: string
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            '*/*':
               schema:
-                $ref: '#/components/schemas/FilesAPIStatusSingleLocaleSuccessResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        authorizedStringCount: 4
-                        authorizedWordCount: 5
-                        completedStringCount: 0
-                        completedWordCount: 0
-                        created: '2017-05-27T12:45:36Z'
-                        excludedStringCount: 0
-                        excludedWordCount: 0
-                        fileType: javaProperties
-                        fileUri: /files/4.properties
-                        hasInstructions: false
-                        lastUploaded: '2017-05-27T12:45:36Z'
-                        parserVersion: 4
-                        totalStringCount: 5
-                        totalWordCount: 9
+                type: file
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -2167,17 +2147,12 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-      - Files
-      description: |
-        Returns detailed status information on a specific file.
-
-        **Example:**
-        ```bash
-          curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/locales/{localeId}/file/status?fileUri=file.properties'
-        ```
-      summary: Status of file for a single locale
-
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -H "Authorization: Bearer $smartlingToken" -F
+          "file=@filename.properties" -F 'fileUri=filename.properties'
+          'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/get-translations'
 
   '/context-api/v2/projects/{projectId}/bindings':
     post:
