@@ -118,6 +118,32 @@ definitions:
             allOf:
               - $ref: '#/definitions/SegmentCompletenessSettingsDTO'
 
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
+      - $ref: '#/definitions/SegmentCompletenessSettingsDTO'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - SEGMENT_COMPLETENESS
+            description: check type code
+            example: "SEGMENT_COMPLETENESS"
+          subTypes:
+            type: array
+            items:
+              type: object
+              properties:
+                checkSubTypeCode:
+                  type: string
+                  enum:
+                    - TARGET_IS_EMPTY
+                    - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                    - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                  description: check subtype code
+                  example: "TARGET_IS_EMPTY"
+
   AccountCheckTypeEffectiveResponse:
     allOf:
       - $ref: '../../common.yaml#/definitions/SuccessResponse'
@@ -125,26 +151,4 @@ definitions:
         properties:
           data:
             allOf:
-              - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
-              - $ref: '#/definitions/SegmentCompletenessSettingsDTO'
-              - type: object
-                properties:
-                  checkTypeCode:
-                    type: string
-                    enum:
-                      - SEGMENT_COMPLETENESS
-                    description: check type code
-                    example: "SEGMENT_COMPLETENESS"
-                  subTypes:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        checkSubTypeCode:
-                          type: string
-                          enum:
-                            - TARGET_IS_EMPTY
-                            - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
-                            - TARGET_IS_MUCH_LONGER_THAN_SOURCE
-                          description: check subtype code
-                          example: "TARGET_IS_EMPTY"
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'

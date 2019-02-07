@@ -127,6 +127,19 @@ definitions:
           description: 1Minimal text length limit.
           example: 10
 
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - $ref: '#/definitions/responseFields/minTextLengthLimit'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - TARGET_IN_WRONG_LANGUAGE
+            description: check type code
+            example: "TARGET_IN_WRONG_LANGUAGE"
+
   AccountCheckTypeEffectiveResponse:
     allOf:
       - $ref: '../../common.yaml#/definitions/SuccessResponse'
@@ -134,13 +147,4 @@ definitions:
         properties:
           data:
             allOf:
-              - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
-              - $ref: '#/definitions/responseFields/minTextLengthLimit'
-              - type: object
-                properties:
-                  checkTypeCode:
-                    type: string
-                    enum:
-                      - TARGET_IN_WRONG_LANGUAGE
-                    description: check type code
-                    example: "TARGET_IN_WRONG_LANGUAGE"
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'

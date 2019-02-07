@@ -25,6 +25,18 @@ definitions:
           source: |
             curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/LEADING_TRAILING_SPACES:
 
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - LEADING_TRAILING_SPACES
+            description: check type code
+            example: "LEADING_TRAILING_SPACES"
+
   AccountCheckTypeEffectiveResponse:
     allOf:
       - $ref: '../../common.yaml#/definitions/SuccessResponse'
@@ -32,13 +44,5 @@ definitions:
         properties:
           data:
             allOf:
-              - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
-              - type: object
-                properties:
-                  checkTypeCode:
-                    type: string
-                    enum:
-                      - LEADING_TRAILING_SPACES
-                    description: check type code
-                    example: "LEADING_TRAILING_SPACES"
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
 

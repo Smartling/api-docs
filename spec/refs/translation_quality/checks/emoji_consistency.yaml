@@ -114,6 +114,33 @@ definitions:
             allOf:
               - $ref: '#/definitions/EmojiConsistencySettingsDTO'
 
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
+      - $ref: '#/definitions/EmojiConsistencySettingsDTO'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - EMOJI_CONSISTENCY
+            description: check type code
+            example: "EMOJI_CONSISTENCY"
+          subTypes:
+            type: array
+            items:
+              type: object
+              properties:
+                checkSubTypeCode:
+                  type: string
+                  enum:
+                    - EMOJI_ADDED
+                    - EMOJI_DELETED
+                    - EMOJI_PRESENT
+                  description: check subtype code
+                  example: "EMOJI_ADDED"
+
+
   AccountCheckTypeEffectiveResponse:
     allOf:
       - $ref: '../../common.yaml#/definitions/SuccessResponse'
@@ -121,26 +148,4 @@ definitions:
         properties:
           data:
             allOf:
-              - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
-              - $ref: '#/definitions/EmojiConsistencySettingsDTO'
-              - type: object
-                properties:
-                  checkTypeCode:
-                    type: string
-                    enum:
-                      - EMOJI_CONSISTENCY
-                    description: check type code
-                    example: "EMOJI_CONSISTENCY"
-                  subTypes:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        checkSubTypeCode:
-                          type: string
-                          enum:
-                            - EMOJI_ADDED
-                            - EMOJI_DELETED
-                            - EMOJI_PRESENT
-                          description: check subtype code
-                          example: "EMOJI_ADDED"
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'

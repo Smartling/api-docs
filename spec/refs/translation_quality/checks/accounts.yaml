@@ -1,0 +1,109 @@
+definitions:
+  check_types_settings:
+    get:
+      description: >-
+        Get account check types settings.
+      summary: Get account check types settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TqcAccountGetCheckTypesResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types:
+
+  TqcAccountGetCheckTypesResponse:
+    allOf:
+      - $ref: '../../common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    0:
+                      allOf:
+                        - $ref: 'blacklisted_terms.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    1:
+                      allOf:
+                        - $ref: 'emoji_consistency.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    2:
+                      allOf:
+                        - $ref: 'global_capitalisation_consistency.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    3:
+                      allOf:
+                        - $ref: 'glossary_compliance.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    4:
+                      allOf:
+                        - $ref: 'grammar_check.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    5:
+                      allOf:
+                        - $ref: 'insertable_consistency.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    6:
+                      allOf:
+                        - $ref: 'leading_trailing_spaces.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    7:
+                      allOf:
+                        - $ref: 'non_translatable_text.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    8:
+                      allOf:
+                        - $ref: 'number_consistency.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    9:
+                      allOf:
+                        - $ref: 'original_equals_target.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    10:
+                      allOf:
+                        - $ref: 'repeated_word.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    11:
+                      allOf:
+                        - $ref: 'segment_completeness.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    12:
+                      allOf:
+                       - $ref: 'source_in_wrong_language.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    13:
+                      allOf:
+                       - $ref: 'spellcheck.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    14:
+                      allOf:
+                      - $ref: 'tag_consistency.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    15:
+                      allOf:
+                      - $ref: 'tag_validity.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    16:
+                      allOf:
+                      - $ref: 'target_in_wrong_language.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    17:
+                      allOf:
+                      - $ref: 'target_length_limit.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    18:
+                      allOf:
+                      - $ref: 'target_source_consistency.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    19:
+                      allOf:
+                      - $ref: 'trademark_consistency.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    20:
+                      allOf:
+                      - $ref: 'uncategorized.yaml#/definitions/AccountCheckTypeEffectiveDTO'
+                    21:
+                      allOf:
+                      - $ref: 'whitespaces.yaml#/definitions/AccountCheckTypeEffectiveDTO'

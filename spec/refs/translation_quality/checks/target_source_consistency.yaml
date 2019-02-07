@@ -131,6 +131,31 @@ definitions:
             allOf:
               - $ref: '#/definitions/SourceConsistencySettingsDTO'
 
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
+      - $ref: '#/definitions/SourceConsistencySettingsDTO'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - TARGET_SOURCE_CONSISTENCY
+            description: check type code
+            example: "TARGET_SOURCE_CONSISTENCY"
+          subTypes:
+            type: array
+            items:
+              type: object
+              properties:
+                checkSubTypeCode:
+                  type: string
+                  enum:
+                    - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                    - SAME_TRANSLATION_DIFFERENT_SOURCES
+                  description: check subtype code
+                  example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+
   AccountCheckTypeEffectiveResponse:
     allOf:
       - $ref: '../../common.yaml#/definitions/SuccessResponse'
@@ -138,25 +163,4 @@ definitions:
         properties:
           data:
             allOf:
-              - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
-              - $ref: '#/definitions/SourceConsistencySettingsDTO'
-              - type: object
-                properties:
-                  checkTypeCode:
-                    type: string
-                    enum:
-                      - TARGET_SOURCE_CONSISTENCY
-                    description: check type code
-                    example: "TARGET_SOURCE_CONSISTENCY"
-                  subTypes:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        checkSubTypeCode:
-                          type: string
-                          enum:
-                            - SAME_SOURCE_DIFFERENT_TRANSLATIONS
-                            - SAME_TRANSLATION_DIFFERENT_SOURCES
-                          description: check subtype code
-                          example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'

@@ -25,6 +25,18 @@ definitions:
           source: |
             curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/GRAMMAR_CHECK:
 
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - GRAMMAR_CHECK
+            description: check type code
+            example: "GRAMMAR_CHECK"
+
   AccountCheckTypeEffectiveResponse:
     allOf:
       - $ref: '../../common.yaml#/definitions/SuccessResponse'
@@ -32,12 +44,4 @@ definitions:
         properties:
           data:
             allOf:
-              - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
-              - type: object
-                properties:
-                  checkTypeCode:
-                    type: string
-                    enum:
-                      - GRAMMAR_CHECK
-                    description: check type code
-                    example: "GRAMMAR_CHECK"
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'

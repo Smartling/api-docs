@@ -113,6 +113,32 @@ definitions:
           description: Ignore sign.
           example: true
 
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
+      - $ref: '#/definitions/responseFields/ignoreSign'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - NUMBER_CONSISTENCY
+            description: check type code
+            example: "NUMBER_CONSISTENCY"
+          subTypes:
+            type: array
+            items:
+              type: object
+              properties:
+                checkSubTypeCode:
+                  type: string
+                  enum:
+                    - NUMBER_ADDED
+                    - NUMBER_DELETED
+                    - NUMBER_INCORRECT_CONVERSION
+                  description: check subtype code
+                  example: "NUMBER_ADDED"
+
   AccountCheckTypeEffectiveResponse:
     allOf:
       - $ref: '../../common.yaml#/definitions/SuccessResponse'
@@ -120,26 +146,4 @@ definitions:
         properties:
           data:
             allOf:
-              - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
-              - $ref: '#/definitions/responseFields/ignoreSign'
-              - type: object
-                properties:
-                  checkTypeCode:
-                    type: string
-                    enum:
-                      - NUMBER_CONSISTENCY
-                    description: check type code
-                    example: "NUMBER_CONSISTENCY"
-                  subTypes:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        checkSubTypeCode:
-                          type: string
-                          enum:
-                            - NUMBER_ADDED
-                            - NUMBER_DELETED
-                            - NUMBER_INCORRECT_CONVERSION
-                          description: check subtype code
-                          example: "NUMBER_ADDED"
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
