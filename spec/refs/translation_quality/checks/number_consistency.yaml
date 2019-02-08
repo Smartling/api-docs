@@ -148,6 +148,40 @@ definitions:
             allOf:
               - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
 
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - NUMBER_CONSISTENCY
+            description: check type code
+            example: "NUMBER_CONSISTENCY"
+          details:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - NUMBER_ADDED
+                  - NUMBER_DELETED
+                  - NUMBER_INCORRECT_CONVERSION
+                example: "NUMBER_DELETED"
+              number:
+                type: string
+                description: number
+                example: "1000"
+          positionTypeCode:
+            type: string
+            enum:
+              - SOURCE
+              - TARGET
+            description: position type code
+            example: "SOURCE"
+
 #NUMBER_CONSISTENCY
 #{
 #    "sourceLocaleId": "en-US",
