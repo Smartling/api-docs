@@ -4247,7 +4247,421 @@ paths:
 #
 # Strings API
 #
+  '/strings-api/v2/projects/{projectId}':
+    post:
+      summary: Add strings
+      description: >-
+        Uploads an array of strings to a Smartling project. A maximum of 100
+        strings can be created per request. A request with more than 100 items
+        will return an error. Each string has a character limit of 10,000.
 
+
+        **Note**: You cannot authorize a string via API. Once you have created
+        the strings, they will need to be authorized by a content owner in the
+        Smartling Dashboard.
+
+
+        Smartling creates a unique hashcode for each string based on the parsed
+        string text and any variant or namespace metadata provided. If you
+        upload a string with the same text, variant and namespace, and therefore
+        the same hashcode, the existng string will be overwritten. This will not
+        change the text of the string, but may update other metadata, such as
+        placeholder and callback values. If the string is currently inactive,
+        overwriting it will cause it to be reactivated. Overwritten strings
+        return `"overWritten": "true"` in the response object.
+
+
+        Most uploads will return a `200` response indicating success. If
+        processing the request takes longer than 60 seconds, a `202` request
+        will be returned, including a `processUid` value that can be used to
+        check on the progress of the request.
+
+
+        If you set up a POST callback for the string, you can automatically
+        receive the translation for a string as soon as it is complete. See
+        [Callbacks](https://help.smartling.com/hc/en-us/articles/360007829194)
+        for more details.
+      tags:
+      - Strings
+
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          format: uuid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                strings (Required):
+                  items:
+                    properties:
+                      stringText:
+                        description: >-
+                          The text of the string you want to create. This is the
+                          only required value for a string object.
+                        type: string
+                      variant:
+                        description: Creates variant metadata for a new string.
+                        type: string
+                      callbackUrl:
+                        description: >-
+                          If provided a callback request will be sent to this
+                          URL when translation for the string is complete. See
+                          our callbacks documentation for more details.
+                        type: string
+                      callbackMethod:
+                        description: >-
+                          With a given callbackUrl, this defines the http method
+                          to use. See our callbacks documentation for more
+                          details.
+                        type: string
+                      instruction:
+                        description: >-
+                          Creates an instruction that is displayed to
+                          translators in the Smartling Translation Interface.
+                        type: string
+                      maxLength:
+                        description: >-
+                          Set the maximum character length recommended for this
+                          string and its translations.  Not specifying or
+                          setting to 'null' implies no maxLength and on update
+                          will remove any existing maxLegnth.
+                        type: number
+                      format:
+                        description: >-
+                          Sets whether or not the string should be parsed as
+                          HTML. Accepted values are 'html', 'plain_text' and
+                          'auto'. If set to auto, Smartling will attempt to
+                          detect the presence of HTML tags in the string.
+
+
+                          "When strings are parsed as HTML, Smartling will
+                          automatically ampersand-escape special characters such
+                          as angle brackets (<) and quotes (&quot;). For
+                          example, if you upload the string _Dave says
+                          &quot;hello&quot;_. and set format to HTML, Smartling
+                          will return the string with ampersand-escaping: _Dave
+                          says &amp;quot;hello&amp;quot;_."
+                        type: string
+                    required:
+                    - stringText
+                    type: object
+                  minItems: 1
+                  type: array
+                placeholderFormat:
+                  description: >-
+                    Specifies a standard placeholder format. Accepted values are
+                    none, c, ios, python, java, yaml, qt, resx. See
+                    [Placeholders in Resource
+                    Files](https://help.smartling.com/hc/en-us/articles/360008143433)
+                    for more detail.
+                  type: string
+                placeholderFormatCustom:
+                  description: >-
+                    Specifies a custom placeholder with a Java Regular
+                    Expression. For example \\[.+?\\] would capture all values
+                    surrounded by square brackets as placeholders. See
+                    [Placeholders in Resource
+                    Files](https://help.smartling.com/hc/en-us/articles/360008143433)
+                    for more detail.
+                  type: string
+                namespace:
+                  description: >-
+                    Used to generate the unique hashcode for all strings in the
+                    request. If you want to have two versions of a string with
+                    the same text and variant metadata, you can keep them unique
+                    by assigning a different namespace to each string. If not
+                    provided, default value is
+                    _smartling.strings-api.default.namespace_. A _NULL_ value is
+                    permitted.
+                  type: string
+              type: object
+              required:
+                - strings
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                        - hashcode: bd603147d945h3ec74d6874422ebe4e0
+                          overWritten: 'true'
+                          parsedStringText: 'Search results for {0}:'
+                          stringText: 'Search results for [city]:'
+                          variant: variant value
+                        processUid: d6414f8c-4gdf-4415-9a69-f8e7902ca9ec
+                        stringCount: 1
+                        wordCount: 4
+              schema:
+                $ref: '#/components/schemas/CreateStringResponse'
+          description: OK
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateStringResponse'
+          description: ACCEPTED
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json" -d "$smartlingStringJSON"
+          https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId
+
+  '/strings-api/v2/projects/{projectId}/processes/{processUid}':
+    get:
+      summary: Check string status
+      description: >-
+        If an **Add strings** request takes longer than 60 seconds to process, a
+        `202` response will be returned, indicating that the process of creating
+        strings is continuing but not yet complete. This response will include a
+        `proccessUid` value which can be used to check the progress of the
+        request.
+
+
+        This request can return:
+          * `"processState": "OPEN"` which indicates that the request is still continuing.
+          * `"processState": "CLOSED"` indicates the request has successfully completed.
+          * `"processState": "FAILED"` means the request could not be completed.
+
+        Processes have a limited lifespan after they are complete. This request
+        will fail if you specify an expired `processUid`.
+      tags:
+      - Strings
+
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          format: uuid
+          type: string
+      - in: path
+        name: processUid
+        required: true
+        schema:
+          format: uuid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateStringStatusResponse'
+          description: OK
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -H "Authorization: Bearer $smartlingToken" -G
+          https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/processes/$processUid
+
+  '/strings-api/v2/projects/{projectId}/source-strings':
+    get:
+      summary: List all source strings
+      description: >-
+        Returns source strings from Smartling. You can get strings by specifying
+        a file you want strings for, or you can specify individual strings by
+        hashcode.
+
+
+        _If you do not specify at least one of these parameters (`hashcodes` or
+        `fileUri`) no results will be returned._
+
+
+        **Note**: If you use this call to get strings that are not added via the
+        Strings API, you may see differences in the response.
+
+
+        You may see a value for `parsedStringText` but a `null` value for
+        `stringText`. The `stringText` records the raw input received by the
+        Strings API, and therefore will only appear for strings uploaded via the
+        Strings API.
+
+        If you are getting a GDN string, the original placeholder values you
+        used will not be returned as these are not saved by Smartling. GDN
+        strings will have placeholders in the format `{0}`, `{1}`, etc.
+      tags:
+      - Strings
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          format: uuid
+          type: string
+      - description: Hashcodes for each string you want to get source strings for.
+        in: query
+        name: hashcodes
+        schema:
+          items:
+            type: string
+          type: array
+      - description: URI of a file you want to get strings for.
+        in: query
+        name: fileUri
+        schema:
+          type: string
+      - description: >-
+          By default, responses will be limited to 500 per request. This is
+          also the maximum allowed value.
+        in: query
+        name: limit
+        schema:
+          type: number
+      - description: Pagination setting. Default is 0.
+        in: query
+        name: offset
+        schema:
+          type: number
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringResponse'
+          description: OK
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -H "Authorization: Bearer $smartlingToken" -G -d
+          "fileUri=$smartlingFileUri"
+          https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/source-strings
+
+  '/strings-api/v2/projects/{projectId}/translations':
+    get:
+      summary: List all translations
+      description: >-
+        Returns translated strings from Smartling. You can get translations by
+        specifying a file you want strings for, or you can specify individual
+        strings by hashcode.
+
+
+        _If you do not specify at least one of these parameters (`hashcodes` or
+        `fileUri`) no results will be returned._
+
+
+        **Note**: If you use this call to get strings that were not created via
+        the Strings API, you may see differences in the response.
+
+
+        Only authorized and active strings will be returned. Excluded,
+        unauthorized, and inactive strings will not be returned.
+
+
+        You may see a value for `parsedStringText` but a `null` value for
+        `stringText`. The `stringText` records the raw input received by the
+        Strings API, and therefore will only appear for strings uploaded via the
+        Strings API.
+
+        If you are getting a GDN string, the original placeholder values you
+        used will not be returned as these are not saved by Smartling. GDN
+        strings will have placeholders in the format `{0}`, `{1}`, etc.
+      tags:
+      - Strings
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          format: uuid
+          type: string
+      - description: Hashcodes for each string you want to get translations for.
+        in: query
+        name: hashcodes
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Smartling ID for the language you want to get translations for.
+        in: query
+        name: targetLocaleId
+        schema:
+          type: string
+      - description: >-
+          Sets the types of translations you want returned. `published` will
+          only return translations that have completed their workflows and
+          been published. `pending` will return any saved translations.
+        in: query
+        name: retrievalType
+        schema:
+          enum:
+          - pending
+          - published
+          type: string
+      - description: URI of a file you want to get translations for.
+        in: query
+        name: fileUri
+        schema:
+          type: string
+      - description: >-
+          Pagination setting. By default, responses will be limited to 500 per
+          request. This is also the maximum allowed value.
+        in: query
+        name: limit
+        schema:
+          type: number
+      - description: Pagination setting. Default is 0.
+        in: query
+        name: offset
+        schema:
+          type: number
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationResponse'
+          description: OK
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -H "Authorization: Bearer $smartlingToken" -G
+          https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/translations
+
+#
+# Glossary API endpoints
+#
   '/gdn-url-management-api/v2/projects/{projectId}/domains':
     get:
       parameters:
@@ -7987,410 +8401,7 @@ paths:
       description: |
         Export Word Count report in CSV format.
       summary: Export Word Count in CSV format
-  '/strings-api/v2/projects/{projectId}':
-    post:
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            format: uuid
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                          - hashcode: bd603147d945h3ec74d6874422ebe4e0
-                            overWritten: 'true'
-                            parsedStringText: 'Search results for {0}:'
-                            stringText: 'Search results for [city]:'
-                            variant: variant value
-                        processUid: d6414f8c-4gdf-4415-9a69-f8e7902ca9ec
-                        stringCount: 1
-                        wordCount: 4
-              schema:
-                $ref: '#/components/schemas/CreateStringResponse'
-          description: OK
-        '202':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateStringResponse'
-          description: ACCEPTED
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Strings
-      description: >-
-        Uploads an array of strings to a Smartling project. A maximum of 100
-        strings can be created per request. A request with more than 100 items
-        will return an error. Each string has a character limit of 10,000.
 
-
-        **Note**: You cannot authorize a string via API. Once you have created
-        the strings, they will need to be authorized by a content owner in the
-        Smartling Dashboard.
-
-
-        Smartling creates a unique hashcode for each string based on the parsed
-        string text and any variant or namespace metadata provided. If you
-        upload a string with the same text, variant and namespace, and therefore
-        the same hashcode, the existng string will be overwritten. This will not
-        change the text of the string, but may update other metadata, such as
-        placeholder and callback values. If the string is currently inactive,
-        overwriting it will cause it to be reactivated. Overwritten strings
-        return `"overWritten": "true"` in the response object.
-
-
-        Most uploads will return a `200` response indicating success. If
-        processing the request takes longer than 60 seconds, a `202` request
-        will be returned, including a `processUid` value that can be used to
-        check on the progress of the request.
-
-
-        If you set up a POST callback for the string, you can automatically
-        receive the translation for a string as soon as it is complete. See
-        [Callbacks](https://help.smartling.com/hc/en-us/articles/360007829194)
-        for more details.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                namespace:
-                  description: >-
-                    Used to generate the unique hashcode for all strings in the
-                    request. If you want to have two versions of a string with
-                    the same text and variant metadata, you can keep them unique
-                    by assigning a different namespace to each string. If not
-                    provided, default value is
-                    _smartling.strings-api.default.namespace_. A _NULL_ value is
-                    permitted.
-                  type: string
-                placeholderFormat:
-                  description: >-
-                    Specifies a standard placeholder format. Accepted values are
-                    none, c, ios, python, java, yaml, qt, resx. See
-                    [Placeholders in Resource
-                    Files](https://help.smartling.com/hc/en-us/articles/360008143433)
-                    for more detail.
-                  type: string
-                placeholderFormatCustom:
-                  description: >-
-                    Specifies a custom placeholder with a Java Regular
-                    Expression. For example \\[.+?\\] would capture all values
-                    surrounded by square brackets as placeholders. See
-                    [Placeholders in Resource
-                    Files](https://help.smartling.com/hc/en-us/articles/360008143433)
-                    for more detail.
-                  type: string
-                strings (Required):
-                  items:
-                    properties:
-                      callbackMethod:
-                        description: >-
-                          With a given callbackUrl, this defines the http method
-                          to use. See our callbacks documentation for more
-                          details.
-                        type: string
-                      callbackUrl:
-                        description: >-
-                          If provided a callback request will be sent to this
-                          URL when translation for the string is complete. See
-                          our callbacks documentation for more details.
-                        type: string
-                      format:
-                        description: >-
-                          Sets whether or not the string should be parsed as
-                          HTML. Accepted values are 'html', 'plain_text' and
-                          'auto'. If set to auto, Smartling will attempt to
-                          detect the presence of HTML tags in the string.
-
-
-                          "When strings are parsed as HTML, Smartling will
-                          automatically ampersand-escape special characters such
-                          as angle brackets (<) and quotes (&quot;). For
-                          example, if you upload the string _Dave says
-                          &quot;hello&quot;_. and set format to HTML, Smartling
-                          will return the string with ampersand-escaping: _Dave
-                          says &amp;quot;hello&amp;quot;_."
-                        type: string
-                      instruction:
-                        description: >-
-                          Creates an instruction that is displayed to
-                          translators in the Smartling Translation Interface.
-                        type: string
-                      maxLength:
-                        description: >-
-                          Set the maximum character length recommended for this
-                          string and its translations.  Not specifying or
-                          setting to 'null' implies no maxLength and on update
-                          will remove any existing maxLegnth.
-                        type: number
-                      stringText:
-                        description: >-
-                          The text of the string you want to create. This is the
-                          only required value for a string object.
-                        type: string
-                      variant:
-                        description: Creates variant metadata for a new string.
-                        type: string
-                    required:
-                      - stringText
-                    type: object
-                  minItems: 1
-                  type: array
-              type: object
-      summary: Add strings
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
-            "Content-Type: application/json" -d "$smartlingStringJSON"
-            https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId
-  '/strings-api/v2/projects/{projectId}/processes/{processUid}':
-    get:
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            format: uuid
-            type: string
-        - in: path
-          name: processUid
-          required: true
-          schema:
-            format: uuid
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateStringStatusResponse'
-          description: OK
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Strings
-      description: >-
-        If an **Add strings** request takes longer than 60 seconds to process, a
-        `202` response will be returned, indicating that the process of creating
-        strings is continuing but not yet complete. This response will include a
-        `proccessUid` value which can be used to check the progress of the
-        request. 
-
-
-        This request can return:
-          * `"processState": "OPEN"` which indicates that the request is still continuing. 
-          * `"processState": "CLOSED"` indicates the request has successfully completed.
-          * `"processState": "FAILED"` means the request could not be completed.
-
-        Processes have a limited lifespan after they are complete. This request
-        will fail if you specify an expired `processUid`.
-      summary: Check string status
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -H "Authorization: Bearer $smartlingToken" -G
-            https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/processes/$processUid
-  '/strings-api/v2/projects/{projectId}/source-strings':
-    get:
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            format: uuid
-            type: string
-        - description: Hashcodes for each string you want to get source strings for.
-          in: query
-          name: hashcodes
-          schema:
-            items:
-              type: string
-            type: array
-        - description: URI of a file you want to get strings for.
-          in: query
-          name: fileUri
-          schema:
-            type: string
-        - description: >-
-            By default, responses will be limited to 500 per request. This is
-            also the maximum allowed value.
-          in: query
-          name: limit
-          schema:
-            type: number
-        - description: Pagination setting. Default is 0.
-          in: query
-          name: offset
-          schema:
-            type: number
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StringResponse'
-          description: OK
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Strings
-      description: >-
-        Returns source strings from Smartling. You can get strings by specifying
-        a file you want strings for, or you can specify individual strings by
-        hashcode.
-
-
-        _If you do not specify at least one of these parameters (`hashcodes` or
-        `fileUri`) no results will be returned._
-
-
-        **Note**: If you use this call to get strings that are not added via the
-        Strings API, you may see differences in the response.
-
-
-        You may see a value for `parsedStringText` but a `null` value for
-        `stringText`. The `stringText` records the raw input received by the
-        Strings API, and therefore will only appear for strings uploaded via the
-        Strings API.
-
-        If you are getting a GDN string, the original placeholder values you
-        used will not be returned as these are not saved by Smartling. GDN
-        strings will have placeholders in the format `{0}`, `{1}`, etc.
-      summary: List all source strings
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -H "Authorization: Bearer $smartlingToken" -G -d
-            "fileUri=$smartlingFileUri"
-            https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/source-strings
-  '/strings-api/v2/projects/{projectId}/translations':
-    get:
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            format: uuid
-            type: string
-        - description: Hashcodes for each string you want to get translations for.
-          in: query
-          name: hashcodes
-          schema:
-            items:
-              type: string
-            type: array
-        - description: Smartling ID for the language you want to get translations for.
-          in: query
-          name: targetLocaleId
-          schema:
-            type: string
-        - description: >-
-            Sets the types of translations you want returned. `published` will
-            only return translations that have completed their workflows and
-            been published. `pending` will return any saved translations.
-          in: query
-          name: retrievalType
-          schema:
-            enum:
-              - pending
-              - published
-            type: string
-        - description: URI of a file you want to get translations for.
-          in: query
-          name: fileUri
-          schema:
-            type: string
-        - description: >-
-            Pagination setting. By default, responses will be limited to 500 per
-            request. This is also the maximum allowed value.
-          in: query
-          name: limit
-          schema:
-            type: number
-        - description: Pagination setting. Default is 0.
-          in: query
-          name: offset
-          schema:
-            type: number
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TranslationResponse'
-          description: OK
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Strings
-      description: >-
-        Returns translated strings from Smartling. You can get translations by
-        specifying a file you want strings for, or you can specify individual
-        strings by hashcode.
-
-
-        _If you do not specify at least one of these parameters (`hashcodes` or
-        `fileUri`) no results will be returned._
-
-
-        **Note**: If you use this call to get strings that were not created via
-        the Strings API, you may see differences in the response.
-
-
-        Only authorized and active strings will be returned. Excluded,
-        unauthorized, and inactive strings will not be returned.
-
-
-        You may see a value for `parsedStringText` but a `null` value for
-        `stringText`. The `stringText` records the raw input received by the
-        Strings API, and therefore will only appear for strings uploaded via the
-        Strings API.
-
-        If you are getting a GDN string, the original placeholder values you
-        used will not be returned as these are not saved by Smartling. GDN
-        strings will have placeholders in the format `{0}`, `{1}`, etc.
-      summary: List all translations
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -H "Authorization: Bearer $smartlingToken" -G
-            https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/translations
   '/tags-api/v2/projects/{projectId}/strings/tags/add':
     post:
       parameters:
