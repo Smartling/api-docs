@@ -151,6 +151,41 @@ definitions:
               - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
 
 
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - EMOJI_CONSISTENCY
+            description: check type code
+            example: "EMOJI_CONSISTENCY"
+          details:
+            type: object
+            properties:
+              emoji:
+                type: string
+                description: emoji symbol
+                example: "😀"
+              type:
+                type: string
+                enum:
+                  - EMOJI_ADDED
+                  - EMOJI_DELETED
+                  - EMOJI_PRESENT
+                description: emoji defect type
+                example: "EMOJI_DELETED"
+          positionTypeCode:
+            type: string
+            enum:
+              - SOURCE
+              - TARGET
+            description: position type code
+            example: "SOURCE"
+
 #{
 #    "sourceLocaleId": "en-US",
 #    "targetLocaleId": "hu-HU",
@@ -166,6 +201,10 @@ definitions:
 #    ]
 #}
 #
+#    EMOJI_ADDED("Emoji added", QualityCheckErrorPositionType.TARGET),
+#    EMOJI_DELETED("Emoji deleted", QualityCheckErrorPositionType.SOURCE),
+#    EMOJI_PRESENT("Emoji present", QualityCheckErrorPositionType.TARGET);
+
 #{
 #    "response": {
 #        "code": "SUCCESS",
