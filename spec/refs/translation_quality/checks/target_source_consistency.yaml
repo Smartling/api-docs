@@ -1,0 +1,254 @@
+definitions:
+  check_types_TARGET_SOURCE_CONSISTENCY_settings:
+    put:
+      description: >-
+        Apply target source consistency settings.
+      summary: Apply target source consistency settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyTargetSourceConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyTargetSourceConsistencySettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  ignoreSign: true
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_SOURCE_CONSISTENCY/settings:
+
+  check_types_TARGET_SOURCE_CONSISTENCY_group_settings:
+    put:
+      description: >-
+        Apply target source consistency group settings.
+      summary: Apply target source consistency group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyTargetSourceConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyTargetSourceConsistencySettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  ignoreSign: true
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_SOURCE_CONSISTENCY/groups/{groupUid}/settings:
+
+  account_check_types_TARGET_SOURCE_CONSISTENCY_settings_effective:
+    get:
+      description: >-
+        Get checktype TARGET_SOURCE_CONSISTENCY settings for certain account.
+      summary: Get checktype TARGET_SOURCE_CONSISTENCY settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/TARGET_SOURCE_CONSISTENCY:
+
+
+  SourceConsistencySettingsDTO:
+    type: object
+    properties:
+      ignoreTagsAndPlaceholders:
+        type: boolean
+        description: Ignore tags and placeholders.
+        example: true
+      ignoreCase:
+        type: boolean
+        description: Ignore case.
+        example: false
+
+  AccountCheckTypeApplyTargetSourceConsistencySettingsRequest:
+    allOf:
+      - $ref: '#/definitions/SourceConsistencySettingsDTO'
+      - $ref: '../common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - type: object
+        required:
+          - ignoreTagsAndPlaceholders
+          - ignoreCase
+
+  AccountCheckTypeApplyTargetSourceConsistencySettingsResponse:
+    allOf:
+      - $ref: '../../common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/SourceConsistencySettingsDTO'
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
+      - $ref: '#/definitions/SourceConsistencySettingsDTO'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - TARGET_SOURCE_CONSISTENCY
+            description: check type code
+            example: "TARGET_SOURCE_CONSISTENCY"
+          subTypes:
+            type: array
+            items:
+              type: object
+              properties:
+                checkSubTypeCode:
+                  type: string
+                  enum:
+                    - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                    - SAME_TRANSLATION_DIFFERENT_SOURCES
+                  description: check subtype code
+                  example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - TARGET_SOURCE_CONSISTENCY
+            description: check type code
+            example: "TARGET_SOURCE_CONSISTENCY"
+          details:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                  - SAME_TRANSLATION_DIFFERENT_SOURCES
+                description: type
+                example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+              originalString:
+                type: string
+                description: original string
+                example: "I like to go to the mountains very much."
+              translation:
+                type: string
+                description: translation
+                example: "Ich möchte an den Strand gehen."
+          positionTypeCode:
+            type: string
+            enum:
+              - TARGET
+            description: position type code
+            example: "TARGET"
+
+#TARGET_SOURCE_CONSISTENCY
+#{
+#    "sourceLocaleId": "en-US",
+#    "targetLocaleId": "de-DE",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "7191152182c69d9b72069ac1290fe24b",
+#            "originalString": "I like to go to the mountains very much.",
+#            "translation": "Ich möchte an Strand gehen."
+#        }],
+#    "checkTypeCodes": [
+#        "TARGET_SOURCE_CONSISTENCY"
+#    ]
+#}
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "I like to go to the mountains very much.",
+#                        "translation": "Ich möchte an Strand gehen.",
+#                        "hashcode": "7191152182c69d9b72069ac1290fe24b",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "TARGET_SOURCE_CONSISTENCY",
+#                            "severityLevelCode": "LOW",
+#                            "positions": [
+#                                {
+#                                    "from": 0,
+#                                    "to": 27
+#                                }
+#                            ],
+#                            "details": {
+#                                "type": "SAME_SOURCE_DIFFERENT_TRANSLATIONS",
+#                                "originalString": "I like to go to the mountains very much.",
+#                                "translation": "Ich möchte an den Strand gehen."
+#                            },
+#                            "positionTypeCode": "TARGET"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}
