@@ -18,13 +18,61 @@ definitions:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TqcCheckRequest'
+            allOf:
+              - $ref: '#/definitions/TqcCheckRequest'
+              - type: object
+                example:
+                  "targetLocaleId": "it-IT"
+                  "sourceLocaleId": "en-US"
+                  "skipSuggestions": false
+                  "excludePlaceholderWithinTag": true
+                  "strings":
+                    - "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                      "stringUid": ""
+                      "originalString": "blacklist_term 😀"
+                      "translation": "blacklist_term"
+                  "useDefaultSettings": false
+                  "checkTypeCodes":
+                    - "checkTypeCode": "BLACKLISTED_TERMS"
+                    - "checkTypeCode": "EMOJI_CONSISTENCY"
 
       responses:
         200:
           description: OK
           schema:
             $ref: '#/definitions/TqcCheckResponse'
+          examples:
+            application/json:
+              "response":
+                "code": "SUCCESS"
+                "data":
+                  "results":
+                    - "string":
+                        "originalString": "blacklist_term 😀"
+                        "translation": "blacklist_term"
+                        "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                        "stringUid": null
+                      "mistakes":
+                        - "checkTypeCode": "BLACKLISTED_TERMS"
+                          "severityLevelCode": "MEDIUM"
+                          "positions":
+                            - "from": 0
+                              "to": 14
+                          "details":
+                            - "blacklistedTermUid": "uidgj1"
+                              "termText": "blacklist_term"
+                              "alternatives": []
+                              "notes": ""
+                          "positionTypeCode": "TARGET"
+                        - "checkTypeCode": "EMOJI_CONSISTENCY"
+                          "severityLevelCode": "LOW"
+                          "positions":
+                            - "from": 14
+                              "to": 16
+                          "details":
+                            - "emoji": "😀"
+                              "type": "EMOJI_DELETED"
+                          "positionTypeCode": "SOURCE"
 
       x-code-samples:
         - lang: curl
