@@ -4662,210 +4662,42 @@ paths:
 #
 # Glossary API endpoints
 #
-  '/gdn-url-management-api/v2/projects/{projectId}/domains':
-    get:
-      parameters:
-        - description: Unique identifier of the project within an account.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                          - name: my.domain.com
-                        totalCount: 1
-              schema:
-                $ref: '#/components/schemas/WebPageDomainsResponse'
-          description: OK
-      tags:
-        - GDN url management
-      description: Get domains for project.
-      summary: Get domains for project
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -H "Authorization: Bearer $smartlingToken"
-            https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/domains
-  '/gdn-url-management-api/v2/projects/{projectId}/web-pages/details':
-    post:
-      parameters:
-        - description: Unique identifier of the project within an account.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                          - details:
-                              contextUids:
-                                - 122ssasa323
-                                - 334asds3434
-                              created: '2015-11-21T01:51:17Z'
-                              stringCount: 10
-                              wordCount: 25
-                            domain:
-                              name: my.domain.com
-                            urlPath: /home/page.htm
-                            webPageUid: 23dsd23md
-                        totalCount: 1
-              schema:
-                $ref: '#/components/schemas/WebPageDetailListResponse'
-          description: OK
-      tags:
-        - GDN url management
-      description: Retrieve details of the URLs.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WebPageDetailListRequest'
-        required: true
-      summary: Get details for URLs
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
-            "Content-Type: application/json" -d "$smartlingStringTagJSON"
-            https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/details
-  '/gdn-url-management-api/v2/projects/{projectId}/web-pages/list':
-    post:
-      parameters:
-        - description: Unique identifier of the project within an account.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                          - created: '2015-11-21T11:51:17Z'
-                            domain:
-                              name: my.domain.com
-                            urlPath: /home/page.htm
-                            webPageUid: 23dsd23md
-                        totalCount: 1
-              schema:
-                $ref: '#/components/schemas/WebPageListResponse'
-          description: OK
-      tags:
-        - GDN url management
-      description: Get list of URLs.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WebPageListRequest'
-        required: true
-      summary: Get list of URLs
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
-            "Content-Type: application/json" -d "$smartlingStringTagJSON"
-            https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/list
-  '/gdn-url-management-api/v2/projects/{projectId}/web-pages/{webPageUid}':
-    get:
-      parameters:
-        - description: Unique identifier of the project within an account.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of the URL
-          in: path
-          name: webPageUid
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        details:
-                          contextUids:
-                            - 122ssasa323
-                            - 334asds3434
-                          created: '2015-11-21T01:51:17Z'
-                          stringCount: 10
-                          wordCount: 25
-                        domain:
-                          name: my.domain.com
-                        urlPath: /home/page.htm
-                        webPageUid: 23dsd23md
-              schema:
-                $ref: '#/components/schemas/WebPageDetailsResponse'
-          description: OK
-      tags:
-        - GDN url management
-      description: Retrieve detail for the URL.
-      summary: Get details for URL
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -H "Authorization: Bearer $smartlingToken"
-            https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/$webPageUid
   '/glossary-api/v2/accounts/{accountUid}/glossaries':
     get:
+      summary: List glossaries for account
+      description: >-
+        Returns a list of all glossaries in an account. Optional filters for
+        glossary name and UID can be added.
+      tags:
+      - Glossaries
+
       parameters:
-        - in: path
-          name: accountUid
-          required: true
-          schema:
+      - in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: Filter for glossary name in LIKE manner (case-insensitive).
+        in: query
+        name: name
+        schema:
+          type: string
+      - description: >-
+          Filter for glossary UID in IN manner (may contain up to 100 UIDs
+          separated by comma e.g., glossaryUids=1234,4567)
+        in: query
+        name: glossaryUids
+        schema:
+          items:
             type: string
-        - description: Filter for glossary name in LIKE manner (case-insensitive).
-          in: query
-          name: name
-          schema:
-            type: string
-        - description: >-
-            Filter for glossary UID in IN manner (may contain up to 100 UIDs
-            separated by comma e.g., glossaryUids=1234,4567)
-          in: query
-          name: glossaryUids
-          schema:
-            items:
-              type: string
-            type: array
+          type: array
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/GlossaryListResponse'
               examples:
                 response:
                   value:
@@ -4873,22 +4705,19 @@ paths:
                       code: SUCCESS
                       data:
                         items:
-                          - createdByUserUid: ah27fhq8
-                            createdDate: '2015-11-21T01:51:17Z'
-                            description: some desc
-                            glossaryUid: 50d9dab5-6b8b-11e5-ba24-127b00b163a3
-                            name: Another document tester-Glossary
-                            sourceLocaleId: en-US
-                          - createdByUserUid: ah27fhq8
-                            createdDate: '2015-11-21T01:51:17Z'
-                            description: some desc
-                            glossaryUid: 50e5c8d3-6b8b-11e5-ba24-127b00b163a3
-                            name: BizDocs test Max's project-Glossary
-                            sourceLocaleId: en-US
+                        - createdByUserUid: ah27fhq8
+                          createdDate: '2015-11-21T01:51:17Z'
+                          description: some desc
+                          glossaryUid: 50d9dab5-6b8b-11e5-ba24-127b00b163a3
+                          name: Another document tester-Glossary
+                          sourceLocaleId: en-US
+                        - createdByUserUid: ah27fhq8
+                          createdDate: '2015-11-21T01:51:17Z'
+                          description: some desc
+                          glossaryUid: 50e5c8d3-6b8b-11e5-ba24-127b00b163a3
+                          name: BizDocs test Max's project-Glossary
+                          sourceLocaleId: en-US
                         totalCount: 2
-              schema:
-                $ref: '#/components/schemas/GlossaryListResponse'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -4897,24 +4726,33 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
-      description: >-
-        Returns a list of all glossaries in an account. Optional filters for
-        glossary name and UID can be added.
-      summary: List glossaries for account
+
     post:
+      summary: Create glossary
+      description: Creates a new glossary in an account.
+      tags:
+      - Glossaries
+
       parameters:
-        - description: Unique identifier of corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
+      - description: Unique identifier of corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGlossary'
+        required: true
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/GlossaryResponse'
               examples:
                 response:
                   value:
@@ -4927,9 +4765,6 @@ paths:
                         glossaryUid: 50d9dab5-6b8b-11e5-ba24-127b00b163a3
                         name: Another document tester-Glossary
                         sourceLocaleId: en-US
-              schema:
-                $ref: '#/components/schemas/GlossaryResponse'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -4938,319 +4773,75 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
-      description: Creates a new glossary in an account.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateGlossary'
-        required: true
-      summary: Create glossary
-  '/glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}':
-    delete:
-      parameters:
-        - description: Unique identifier for the corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of the glossary.
-          in: path
-          name: glossaryUid
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        antonyms: ''
-                        caseSensitive: false
-                        definition: ''
-                        doNotTranslate: false
-                        exactMatch: false
-                        notes: ''
-                        partOfSpeechCode: VERB
-                        seo: false
-                        synonyms: ''
-                        termText: cold call
-                        translation:
-                          localeId: fr-CA
-                          lockTranslation: false
-                          notes: some notes from user
-                          submittedForTranslation: true
-                          translatedTerm: cold call french ca
-                          translatorUserUid: 58870b8e965
-                        variations: ''
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-          description: OK
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
-      description: >-
-        Deletes a glossary. **Note:** If a glossary has been assigned to a
-        Linguistic Package, you will not be able to delete it. Linguistic
-        Packages are managed in the Smartling Dashboard.
-      summary: Delete glossary
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}:
     get:
-      parameters:
-        - description: Unique identifier for the corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of a glossary.
-          in: path
-          name: glossaryUid
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GlossaryResponse'
-          description: OK
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
+      summary: Get glossary details
       description: >-
         Gets the name, description, locale, and creation information for a
         glossary.
-      summary: Get glossary details
-    put:
+      tags:
+      - Glossaries
+
       parameters:
-        - description: Unique identifier for the corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of the glossary.
-          in: path
-          name: glossaryUid
-          required: true
-          schema:
-            type: string
+      - description: Unique identifier for the corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of a glossary.
+        in: path
+        name: glossaryUid
+        required: true
+        schema:
+          type: string
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GlossaryResponse'
-          description: OK
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
+
+    put:
+      summary: Edit glossary
       description: >-
         Edits the name, description or source locale of a glossary. This will
         completely replace the name, description, and source locale of the
         target glossary. If you do not provide a field, or leave it blank, any
         existing information will be deleted.
+      tags:
+      - Glossaries
+
+      parameters:
+      - description: Unique identifier for the corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of the glossary.
+        in: path
+        name: glossaryUid
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateGlossary'
         required: true
-      summary: Edit glossary
-  '/glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/download':
-    get:
-      parameters:
-        - description: Unique identifier of corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of glossary.
-          in: path
-          name: glossaryUid
-          required: true
-          schema:
-            type: string
-        - description: Format that is used for glossary export.
-          in: query
-          name: format
-          required: true
-          schema:
-            enum:
-              - csv
-              - tbx
-              - xlsx
-            type: string
-        - description: Comma-separated list of locales for which to return translations.
-          in: query
-          name: localeIds
-          schema:
-            type: string
       responses:
-        '200':
-          content:
-            application/json: {}
+        200:
           description: OK
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
-      description: 'Downloads a glossary as a CSV, TBX, or XLSX (Open Excel) file.'
-      summary: Download glossary
-  '/glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/locales/{localeId}/terms':
-    get:
-      parameters:
-        - description: Unique identifier of corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of glossary.
-          in: path
-          name: glossaryUid
-          required: true
-          schema:
-            type: string
-        - description: A valid Smartling Locale ID.
-          in: path
-          name: localeId
-          required: true
-          schema:
-            type: string
-        - description: >-
-            UIDs of specific terms to be retrieved (validation allows no more
-            than 100 in a single request).
-          in: query
-          name: termUids
-          schema:
-            items:
-              type: string
-            type: array
-        - description: Filter for the term text in LIKE manner (case-insensitive).
-          in: query
-          name: termText
-          schema:
-            type: string
-        - description: >-
-            Flag to filter out terms by criteria of presence of translation. Ff
-            not specified, it is not taken into account.
-          in: query
-          name: translated
-          schema:
-            type: boolean
-        - description: Pagination portion size.
-          in: query
-          name: limit
-          schema:
-            type: integer
-        - description: Pagination offset value.
-          in: query
-          name: offset
-          schema:
-            type: integer
-        - description: >-
-            Sorting instructions. This represents the field to sort by, and the
-            direction is separated by a comma (i.e. sort=termText,desc). We
-            support sorting by all fields.
-          in: query
-          name: sort
-          schema:
-            type: string
-      responses:
-        '200':
           content:
             application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                          - antonyms: ''
-                            caseSensitive: false
-                            createdDate: '2015-12-30T12:43:12Z'
-                            definition: ''
-                            deprecated: false
-                            doNotTranslate: false
-                            exactMatch: false
-                            modifiedDate: '2015-12-30T12:43:12Z'
-                            notes: ''
-                            partOfSpeechCode: UNSPECIFIED
-                            seo: false
-                            synonyms: ''
-                            termText: cold calls
-                            termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b537
-                            translation:
-                              createdDate: '2015-12-30T12:43:12Z'
-                              localeId: fr-CA
-                              lockTranslation: false
-                              modifiedDate: '2015-12-30T12:43:12Z'
-                              notes: ''
-                              submittedForTranslation: true
-                              translatedTerm: cold calls in french ca
-                              translatorUserUid: 58870b8ee964
-                            variations: ''
-                          - antonyms: ''
-                            caseSensitive: false
-                            createdDate: '2015-12-30T12:43:12Z'
-                            definition: ''
-                            deprecated: false
-                            doNotTranslate: false
-                            exactMatch: false
-                            modifiedDate: '2015-12-30T12:43:12Z'
-                            notes: ''
-                            partOfSpeechCode: ADJECTIVE
-                            seo: false
-                            synonyms: ''
-                            termText: cold call
-                            termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b538
-                            translation:
-                              createdDate: '2015-12-30T12:43:12Z'
-                              localeId: fr-CA
-                              lockTranslation: false
-                              modifiedDate: '2015-12-30T12:43:12Z'
-                              notes: ''
-                              submittedForTranslation: false
-                              translatedTerm: cold call french ca
-                              translatorUserUid: 58870b8ee966
-                            variations: ''
-                        totalCount: 2
               schema:
-                $ref: '#/components/schemas/TranslatedTermResponse'
-          description: OK
+                $ref: '#/components/schemas/GlossaryResponse'
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -5259,128 +4850,36 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
+
+    delete:
+      summary: Delete glossary
       description: >-
-        Searches translations of glossary terms across all glossaries in the
-        account. The response contains a list of original glossary terms and
-        translations.
-      summary: Find translations of terms
-  '/glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms':
-    get:
+        Deletes a glossary. **Note:** If a glossary has been assigned to a
+        Linguistic Package, you will not be able to delete it. Linguistic
+        Packages are managed in the Smartling Dashboard.
+      tags:
+      - Glossaries
+
       parameters:
-        - description: Unique identifier of corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of glossary.
-          in: path
-          name: glossaryUid
-          required: true
-          schema:
-            type: string
-        - description: Filter for term text in LIKE manner (case-insensitive).
-          in: query
-          name: termText
-          schema:
-            type: string
-        - description: Pagination portion size.
-          in: query
-          name: limit
-          schema:
-            type: integer
-        - description: Pagination offset value.
-          in: query
-          name: offset
-          schema:
-            type: integer
-        - description: >-
-            Sorting instructions. This represents a field to sort by, with
-            direction separated by a comma (i.e. sort=termText,desc). We support
-            sorting by all fields.
-          in: query
-          name: sort
-          schema:
-            type: string
+      - description: Unique identifier for the corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of the glossary.
+        in: path
+        name: glossaryUid
+        required: true
+        schema:
+          type: string
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                          - antonyms: ''
-                            caseSensitive: false
-                            createdDate: '2015-12-30T12:43:12Z'
-                            definition: ''
-                            deprecated: false
-                            doNotTranslate: false
-                            exactMatch: false
-                            modifiedDate: '2015-12-30T12:43:12Z'
-                            notes: ''
-                            partOfSpeechCode: UNSPECIFIED
-                            seo: false
-                            synonyms: ''
-                            termText: cold calls
-                            termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b537
-                            variations: ''
-                          - antonyms: ''
-                            caseSensitive: true
-                            createdDate: '2015-12-30T12:43:12Z'
-                            definition: My definition
-                            deprecated: false
-                            doNotTranslate: false
-                            exactMatch: false
-                            modifiedDate: '2015-12-30T12:43:12Z'
-                            notes: My notes
-                            partOfSpeechCode: VERB
-                            seo: false
-                            synonyms: ''
-                            termText: cold call
-                            termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b538
-                            variations: ''
-                        totalCount: 2
               schema:
-                $ref: '#/components/schemas/SourceTermListResponse'
-          description: OK
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
-      description: >-
-        Returns terms from a glossary. Only the source term is included in this
-        response.
-      summary: Find terms in glossary
-    post:
-      parameters:
-        - description: Unique identifier for the corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of the glossary.
-          in: path
-          name: glossaryUid
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
+                $ref: '#/components/schemas/SuccessResponse'
               examples:
                 response:
                   value:
@@ -5405,9 +4904,6 @@ paths:
                           translatedTerm: cold call french ca
                           translatorUserUid: 58870b8e965
                         variations: ''
-              schema:
-                $ref: '#/components/schemas/TranslatedTermResponse'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -5416,39 +4912,59 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms:
+    get:
+      summary: Find terms in glossary
       description: >-
-        Creates a new glossary term. The only required parameter is `termText`.
-        See our Glossary documentation for details on each term parameter. You
-        can only add one translation object in this request. To add additional
-        translations, use Edit Glossary term.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTerm'
-        required: true
-      summary: Create glossary term
-  '/glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/batch':
-    post:
+        Returns terms from a glossary. Only the source term is included in this
+        response.
+      tags:
+      - Glossaries
+
       parameters:
-        - description: Unique identifier for the corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of the glossary.
-          in: path
-          name: glossaryUid
-          required: true
-          schema:
-            type: string
+      - description: Unique identifier of corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of glossary.
+        in: path
+        name: glossaryUid
+        required: true
+        schema:
+          type: string
+      - description: Filter for term text in LIKE manner (case-insensitive).
+        in: query
+        name: termText
+        schema:
+          type: string
+      - description: Pagination portion size.
+        in: query
+        name: limit
+        schema:
+          type: integer
+      - description: Pagination offset value.
+        in: query
+        name: offset
+        schema:
+          type: integer
+      - description: >-
+          Sorting instructions. This represents a field to sort by, with
+          direction separated by a comma (i.e. sort=termText,desc). We support
+          sorting by all fields.
+        in: query
+        name: sort
+        schema:
+          type: string
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/SourceTermListResponse'
               examples:
                 response:
                   value:
@@ -5456,39 +4972,37 @@ paths:
                       code: SUCCESS
                       data:
                         items:
-                          - antonyms: ''
-                            caseSensitive: false
-                            definition: ''
-                            doNotTranslate: false
-                            exactMatch: false
-                            notes: ''
-                            partOfSpeechCode: UNSPECIFIED
-                            seo: false
-                            synonyms: ''
-                            termText: term 22
-                            variations: ''
-                          - antonyms: ''
-                            caseSensitive: false
-                            definition: ''
-                            doNotTranslate: false
-                            exactMatch: false
-                            notes: ''
-                            partOfSpeechCode: UNSPECIFIED
-                            seo: false
-                            synonyms: ''
-                            termText: term 33
-                            translation:
-                              localeId: fr-CA
-                              lockTranslation: false
-                              notes: some notes from user
-                              submittedForTranslation: false
-                              translatedTerm: term 33 french ca
-                              translatorUserUid: 58870b8ee965
-                            variations: ''
+                        - antonyms: ''
+                          caseSensitive: false
+                          createdDate: '2015-12-30T12:43:12Z'
+                          definition: ''
+                          deprecated: false
+                          doNotTranslate: false
+                          exactMatch: false
+                          modifiedDate: '2015-12-30T12:43:12Z'
+                          notes: ''
+                          partOfSpeechCode: UNSPECIFIED
+                          seo: false
+                          synonyms: ''
+                          termText: cold calls
+                          termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b537
+                          variations: ''
+                        - antonyms: ''
+                          caseSensitive: true
+                          createdDate: '2015-12-30T12:43:12Z'
+                          definition: My definition
+                          deprecated: false
+                          doNotTranslate: false
+                          exactMatch: false
+                          modifiedDate: '2015-12-30T12:43:12Z'
+                          notes: My notes
+                          partOfSpeechCode: VERB
+                          seo: false
+                          synonyms: ''
+                          termText: cold call
+                          termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b538
+                          variations: ''
                         totalCount: 2
-              schema:
-                $ref: '#/components/schemas/TranslatedTermResponse'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -5497,12 +5011,99 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
+
+    post:
+      summary: Create glossary term
+      description: >-
+        Creates a new glossary term. The only required parameter is `termText`.
+        See our Glossary documentation for details on each term parameter. You
+        can only add one translation object in this request. To add additional
+        translations, use Edit Glossary term.
       tags:
-        - Glossaries
+      - Glossaries
+
+      parameters:
+      - description: Unique identifier for the corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of the glossary.
+        in: path
+        name: glossaryUid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTerm'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslatedTermResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        antonyms: ''
+                        caseSensitive: false
+                        definition: ''
+                        doNotTranslate: false
+                        exactMatch: false
+                        notes: ''
+                        partOfSpeechCode: VERB
+                        seo: false
+                        synonyms: ''
+                        termText: cold call
+                        translation:
+                          localeId: fr-CA
+                          lockTranslation: false
+                          notes: some notes from user
+                          submittedForTranslation: true
+                          translatedTerm: cold call french ca
+                          translatorUserUid: 58870b8e965
+                        variations: ''
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/batch:
+    post:
+      summary: Add glossary terms in bulk
       description: >-
         Creates new glossary terms. Validation for the endpoint works in atomic
         fashion - all terms either pass validation (and will be created), or
         none of them will be. Translation section is optional.
+      tags:
+      - Glossaries
+
+      parameters:
+      - description: Unique identifier for the corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of the glossary.
+        in: path
+        name: glossaryUid
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -5511,35 +5112,50 @@ paths:
                 $ref: '#/components/schemas/CreateTerm'
               type: array
         required: true
-      summary: Add glossary terms in bulk
-  '/glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/{termUid}':
-    delete:
-      parameters:
-        - description: Unique identifier of a corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of a glossary.
-          in: path
-          name: glossaryUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of a specific glossary term.
-          in: path
-          name: termUid
-          required: true
-          schema:
-            type: string
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
-          description: OK
+                $ref: '#/components/schemas/TranslatedTermResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                        - antonyms: ''
+                          caseSensitive: false
+                          definition: ''
+                          doNotTranslate: false
+                          exactMatch: false
+                          notes: ''
+                          partOfSpeechCode: UNSPECIFIED
+                          seo: false
+                          synonyms: ''
+                          termText: term 22
+                          variations: ''
+                        - antonyms: ''
+                          caseSensitive: false
+                          definition: ''
+                          doNotTranslate: false
+                          exactMatch: false
+                          notes: ''
+                          partOfSpeechCode: UNSPECIFIED
+                          seo: false
+                          synonyms: ''
+                          termText: term 33
+                          translation:
+                            localeId: fr-CA
+                            lockTranslation: false
+                            notes: some notes from user
+                            submittedForTranslation: false
+                            translatedTerm: term 33 french ca
+                            translatorUserUid: 58870b8ee965
+                          variations: ''
+                        totalCount: 2
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -5548,41 +5164,290 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/locales/{localeId}/terms:
+    get:
+      summary: Find translations of terms
+      description: >-
+        Searches translations of glossary terms across all glossaries in the
+        account. The response contains a list of original glossary terms and
+        translations.
       tags:
-        - Glossaries
-      description: Delete a glossary term. This will remove the term and all translations.
-      summary: Delete glossary term
-    put:
+      - Glossaries
+
       parameters:
-        - description: Unique identifier for the corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
+      - description: Unique identifier of corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of glossary.
+        in: path
+        name: glossaryUid
+        required: true
+        schema:
+          type: string
+      - description: A valid Smartling Locale ID.
+        in: path
+        name: localeId
+        required: true
+        schema:
+          type: string
+      - description: >-
+          UIDs of specific terms to be retrieved (validation allows no more
+          than 100 in a single request).
+        in: query
+        name: termUids
+        schema:
+          items:
             type: string
-        - description: Unique identifier of the glossary.
-          in: path
-          name: glossaryUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of a specific glossary term.
-          in: path
-          name: termUid
-          required: true
-          schema:
-            type: string
+          type: array
+      - description: Filter for the term text in LIKE manner (case-insensitive).
+        in: query
+        name: termText
+        schema:
+          type: string
+      - description: >-
+          Flag to filter out terms by criteria of presence of translation. Ff
+          not specified, it is not taken into account.
+        in: query
+        name: translated
+        schema:
+          type: boolean
+      - description: Pagination portion size.
+        in: query
+        name: limit
+        schema:
+          type: integer
+      - description: Pagination offset value.
+        in: query
+        name: offset
+        schema:
+          type: integer
+      - description: >-
+          Sorting instructions. This represents the field to sort by, and the
+          direction is separated by a comma (i.e. sort=termText,desc). We
+          support sorting by all fields.
+        in: query
+        name: sort
+        schema:
+          type: string
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TranslatedTermResponse'
-          description: OK
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                        - antonyms: ''
+                          caseSensitive: false
+                          createdDate: '2015-12-30T12:43:12Z'
+                          definition: ''
+                          deprecated: false
+                          doNotTranslate: false
+                          exactMatch: false
+                          modifiedDate: '2015-12-30T12:43:12Z'
+                          notes: ''
+                          partOfSpeechCode: UNSPECIFIED
+                          seo: false
+                          synonyms: ''
+                          termText: cold calls
+                          termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b537
+                          translation:
+                            createdDate: '2015-12-30T12:43:12Z'
+                            localeId: fr-CA
+                            lockTranslation: false
+                            modifiedDate: '2015-12-30T12:43:12Z'
+                            notes: ''
+                            submittedForTranslation: true
+                            translatedTerm: cold calls in french ca
+                            translatorUserUid: 58870b8ee964
+                          variations: ''
+                        - antonyms: ''
+                          caseSensitive: false
+                          createdDate: '2015-12-30T12:43:12Z'
+                          definition: ''
+                          deprecated: false
+                          doNotTranslate: false
+                          exactMatch: false
+                          modifiedDate: '2015-12-30T12:43:12Z'
+                          notes: ''
+                          partOfSpeechCode: ADJECTIVE
+                          seo: false
+                          synonyms: ''
+                          termText: cold call
+                          termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b538
+                          translation:
+                            createdDate: '2015-12-30T12:43:12Z'
+                            localeId: fr-CA
+                            lockTranslation: false
+                            modifiedDate: '2015-12-30T12:43:12Z'
+                            notes: ''
+                            submittedForTranslation: false
+                            translatedTerm: cold call french ca
+                            translatorUserUid: 58870b8ee966
+                          variations: ''
+                        totalCount: 2
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /glossary-api/v2/accounts/{accountUid}/locales/{localeId}/terms:
+    get:
+      summary: Find translations of terms across all glossaries
+      description: >-
+        Searches translations of glossary terms across all glossaries in the
+        account.
+
+
+        The response contains a list of original glossary terms and
+        translations. There is a glossary UID for each term, in order to show to
+        which glossary it belongs.
       tags:
-        - Glossaries
+      - Glossaries
+
+      parameters:
+      - description: Unique identifier for the corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: A valid Smartling Locale ID.
+        in: path
+        name: localeId
+        required: true
+        schema:
+          type: string
+      - description: >-
+          UIDs of specific terms to be retrieved (validation allows no more
+          than 100 in single request).
+        in: query
+        name: termUids
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Filter for the term text in LIKE manner (case-insensitive).
+        in: query
+        name: termText
+        schema:
+          type: string
+      - description: >-
+          Flag to filter out terms by criteria of presence of translation. Ff
+          not specified, it is not taken into account.
+        in: query
+        name: translated
+        schema:
+          type: boolean
+      - description: Pagination portion size.
+        in: query
+        name: limit
+        schema:
+          type: integer
+      - description: Pagination offset value.
+        in: query
+        name: offset
+        schema:
+          type: integer
+      - description: >-
+          Sorting instructions. Represents field to sort by and direction
+          separated by comma (i.e. sort=termText,desc). We support sorting by
+          all fields.
+        in: query
+        name: sort
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TermWithGlossaryUidListResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                        - antonyms: ''
+                          caseSensitive: true
+                          createdByUserUid: kjakjf82v
+                          createdDate: '2015-10-19T15:48:34Z'
+                          definition: ''
+                          deprecated: false
+                          doNotTranslate: false
+                          exactMatch: false
+                          glossaryUid: bdf416ee-98ff-11e5-b159-0ad0c2f6b537
+                          modifiedDate: '2015-11-09T15:33:19Z'
+                          notes: ''
+                          partOfSpeechCode: VERB
+                          seo: true
+                          synonyms: ''
+                          termText: arabian architecture
+                          termUid: 6b3e1e8c-eb40-4c32-a9f7-024e407b0b30
+                          translation:
+                            createdDate: '2015-10-21T11:08:01Z'
+                            localeId: fr-FR
+                            lockTranslation: false
+                            modifiedDate: '2015-10-27T13:09:56Z'
+                            notes: ''
+                            submittedForTranslation: false
+                            translatedTerm: arabian architecture in french
+                          variations: ''
+                        - antonyms: ''
+                          caseSensitive: false
+                          createdByUserUid: kjakjf82v
+                          createdDate: '2015-12-02T14:19:15Z'
+                          definition: ''
+                          deprecated: false
+                          doNotTranslate: false
+                          exactMatch: false
+                          glossaryUid: bbf416ee-98ff-11e5-b159-0ad0c2f6b537
+                          modifiedDate: '2015-12-02T14:19:15Z'
+                          notes: ''
+                          partOfSpeechCode: ADJECTIVE
+                          seo: false
+                          synonyms: ''
+                          termText: summer time
+                          termUid: aaf416ee-98ff-11e5-b159-0ad0c2f6b537
+                          translation:
+                            createdDate: '2015-12-02T14:28:00Z'
+                            localeId: fr-FR
+                            lockTranslation: false
+                            modifiedDate: '2015-12-02T14:28:00Z'
+                            notes: ''
+                            submittedForTranslation: false
+                            translatedTerm: summer time french 22
+                          variations: ''
+                        totalCount: 2
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/{termUid}:
+    put:
+      summary: Edit glossary term
       description: >-
         Edits the details of a glossary term. With the exception of the
         translation object, you must provide all desired
@@ -5595,53 +5460,76 @@ paths:
 
         Keep all fields except for the translation object identical in each
         request.
+      tags:
+      - Glossaries
+
+      parameters:
+      - description: Unique identifier for the corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of the glossary.
+        in: path
+        name: glossaryUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of a specific glossary term.
+        in: path
+        name: termUid
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateTerm'
         required: true
-      summary: Edit glossary term
-  '/glossary-api/v2/accounts/{accountUid}/import-jobs':
-    post:
-      parameters:
-        - description: Unique identifier of corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        accountUid: b76d6285
-                        createdByUserUid: 58870b8ee965
-                        createdDate: '2016-03-21T15:00:48Z'
-                        fileName: ExampleImportGlossary2.xlsx
-                        glossary:
-                          accountUid: 8a196313
-                          createdByUserUid: 58870b8ee965
-                          createdDate: '2016-05-18T12:04:38Z'
-                          description: test desc
-                          glossaryUid: 5c8d2aa8-e254-4ab3-8eb3-3b96b24f8609
-                          name: Import keysight test
-                          sourceLocaleId: en
-                        glossaryImportJobStatus: PENDING
-                        glossaryImportJobUid: 78d93dde-5e3d-4beb-8171-415f82ca2c7b
-                        localesNumber: 20
-                        modifiedDate: '2016-03-21T15:00:48Z'
-                        termsNumber: 10
-                        termsProcessed: 0
               schema:
-                $ref: '#/components/schemas/GlossaryImportJob'
+                $ref: '#/components/schemas/TranslatedTermResponse'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+    delete:
+      summary: Delete glossary term
+      description: Delete a glossary term. This will remove the term and all translations.
+      tags:
+      - Glossaries
+
+      parameters:
+      - description: Unique identifier of a corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of a glossary.
+        in: path
+        name: glossaryUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of a specific glossary term.
+        in: path
+        name: termUid
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -5650,42 +5538,151 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
-      description: >-
-        Creates a new glossary in your account from an uploaded Excel
-        spreadsheet. The format of the spreadsheet is
 
-        important. See [Import
-        Glossary](https://help.smartling.com/hc/en-us/articles/115003144633) and
-        [Glossary Spreadsheet
-        Format](https://help.smartling.com/hc/article_attachments/360002278634/Glossary%20Import%20Template.xlsx).
+  /glossary-api/v2/projects/{projectUid}/glossaries/{glossaryUid}/terms/authorization:
+    put:
+      summary: Authorize terms for translation
+      description: >-
+        Sends selected terms for translation via specified workflows to chosen
+        target locales.
+      tags:
+      - Glossaries
+
+      parameters:
+      - description: Unique identifier for the corresponding project.
+        in: path
+        name: projectUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of a glossary.
+        in: path
+        name: glossaryUid
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
-          application/octet-stream:
+          application/json:
             schema:
-              format: binary
-              type: string
+              $ref: '#/components/schemas/AuthorizeTerms'
         required: true
-      summary: Import glossary from Excel file
-  '/glossary-api/v2/accounts/{accountUid}/import-jobs/{glossaryImportJobUid}':
-    get:
-      parameters:
-        - description: Unique identifier of corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: glossaryImportJobUid
-          required: true
-          schema:
-            type: string
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/download:
+    get:
+      summary: Download glossary
+      description: 'Downloads a glossary as a CSV, TBX, or XLSX (Open Excel) file.'
+      tags:
+      - Glossaries
+
+      parameters:
+      - description: Unique identifier of corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of glossary.
+        in: path
+        name: glossaryUid
+        required: true
+        schema:
+          type: string
+      - description: Format that is used for glossary export.
+        in: query
+        name: format
+        required: true
+        schema:
+          enum:
+          - csv
+          - tbx
+          - xlsx
+          type: string
+      - description: Comma-separated list of locales for which to return translations.
+        in: query
+        name: localeIds
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: file
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  '/glossary-api/v2/accounts/{accountUid}/import-jobs':
+    post:
+      summary: Import glossary from Excel file
+      description: >-
+        Creates a new glossary in your account from an uploaded Excel
+        spreadsheet. The format of the spreadsheet is important. See
+        [Import Glossary](https://help.smartling.com/hc/en-us/articles/115003144633) and
+        [Glossary Spreadsheet Format](https://help.smartling.com/hc/article_attachments/360002278634/Glossary%20Import%20Template.xlsx).
+      tags:
+      - Glossaries
+
+      parameters:
+      - description: Unique identifier of corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: A name for the glossary. This name must be unique. Attempting to use a name already in use in the account will return an error.
+                sourceLocaleId:
+                  type: string
+                  description: Source locale for the glossary.
+                description:
+                  type: string
+                  description: Description for the glossary.
+                importFile:
+                  type: file
+                  description: 'File containing the glossary you wish to import. See [Glossary Spreadsheet Format](https://help.smartling.com/hc/article_attachments/360002278634/Glossary%20Import%20Template.xlsx) for details.'
+              required:
+                - name
+                - sourceLocaleId
+                - description
+                - importFile
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GlossaryImportJob'
               examples:
                 response:
                   value:
@@ -5710,9 +5707,6 @@ paths:
                         modifiedDate: '2016-03-21T15:00:48Z'
                         termsNumber: 10
                         termsProcessed: 0
-              schema:
-                $ref: '#/components/schemas/GlossaryImportJob'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -5721,68 +5715,194 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
-      description: Checks the status of a glossary import.
-      summary: Status of glossary import
-  '/glossary-api/v2/accounts/{accountUid}/locales/{localeId}/terms':
+
+  /glossary-api/v2/accounts/{accountUid}/import-jobs/{glossaryImportJobUid}:
     get:
+      summary: Status of glossary import
+      description: Checks the status of a glossary import.
+      tags:
+      - Glossaries
+
       parameters:
-        - description: Unique identifier for the corresponding account.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
-        - description: A valid Smartling Locale ID.
-          in: path
-          name: localeId
-          required: true
-          schema:
-            type: string
-        - description: >-
-            UIDs of specific terms to be retrieved (validation allows no more
-            than 100 in single request).
-          in: query
-          name: termUids
-          schema:
-            items:
-              type: string
-            type: array
-        - description: Filter for the term text in LIKE manner (case-insensitive).
-          in: query
-          name: termText
-          schema:
-            type: string
-        - description: >-
-            Flag to filter out terms by criteria of presence of translation. Ff
-            not specified, it is not taken into account.
-          in: query
-          name: translated
-          schema:
-            type: boolean
-        - description: Pagination portion size.
-          in: query
-          name: limit
-          schema:
-            type: integer
-        - description: Pagination offset value.
-          in: query
-          name: offset
-          schema:
-            type: integer
-        - description: >-
-            Sorting instructions. Represents field to sort by and direction
-            separated by comma (i.e. sort=termText,desc). We support sorting by
-            all fields.
-          in: query
-          name: sort
-          schema:
-            type: string
+      - description: Unique identifier of corresponding account.
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: glossaryImportJobUid
+        required: true
+        schema:
+          type: string
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/GlossaryImportJob'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        accountUid: b76d6285
+                        createdByUserUid: 58870b8ee965
+                        createdDate: '2016-03-21T15:00:48Z'
+                        fileName: ExampleImportGlossary2.xlsx
+                        glossary:
+                          accountUid: 8a196313
+                          createdByUserUid: 58870b8ee965
+                          createdDate: '2016-05-18T12:04:38Z'
+                          description: test desc
+                          glossaryUid: 5c8d2aa8-e254-4ab3-8eb3-3b96b24f8609
+                          name: Import keysight test
+                          sourceLocaleId: en
+                        glossaryImportJobStatus: PENDING
+                        glossaryImportJobUid: 78d93dde-5e3d-4beb-8171-415f82ca2c7b
+                        localesNumber: 20
+                        modifiedDate: '2016-03-21T15:00:48Z'
+                        termsNumber: 10
+                        termsProcessed: 0
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /glossary-api/v2/dictionary/parts-of-speech:
+    get:
+      summary: List parts of speech
+      description: Order is fixed and consistent throughout the calls.
+      tags:
+      - Glossaries
+
+      responses:
+        200:
+          description: OK
+          content:
+            schema:
+              $ref: '#/components/schemas/PartsOfSpeechList'
+            application/json:
+              examples:
+                response:
+                  value:
+                    code: SUCCESS
+                    data:
+                      items:
+                      - description: Noun
+                        partOfSpeechCode: NOUN
+                      - description: Verb
+                        partOfSpeechCode: VERB
+                      - description: Adjective
+                        partOfSpeechCode: ADJECTIVE
+                      - description: Adverb
+                        partOfSpeechCode: ADVERB
+                      - description: Pronoun
+                        partOfSpeechCode: PRONOUN
+                      - description: Preposition
+                        partOfSpeechCode: PREPOSITION
+                      - description: Interjection
+                        partOfSpeechCode: INTERJECTION
+                      - description: Conjunction
+                        partOfSpeechCode: CONJUNCTION
+                      - description: Unspecified
+                        partOfSpeechCode: UNSPECIFIED
+                      totalCount: 9
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+#
+# Jobs API endpoints
+#
+  '/jobs-api/v3/projects/{projectId}/jobs':
+    get:
+      summary: List jobs within a project
+      description: List / search the jobs within a project.
+      tags:
+      - Jobs
+
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - description: >-
+          Used for searching jobs by `jobName`. Any entry is treated as a LIKE
+          query on the name of the job.
+        in: query
+        name: jobName
+        required: false
+        schema:
+          type: string
+      - description: >-
+          Used for searching jobs by `translationJobUid`. Supports up to 500
+          `translationJobUid`s.
+        in: query
+        name: translationJobUids
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Used for searching jobs by `jobStatus`.
+        in: query
+        name: translationJobStatus
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+      - description: The limit on the number of jobs returned.
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+      - description: The offset to use when searching for jobs.
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+      - description: The field to sort by.
+        in: query
+        name: sortBy
+        required: false
+        schema:
+          enum:
+          - createdDate
+          - dueDate
+          - jobName
+          type: string
+      - description: The direction to sort.
+        in: query
+        name: sortDirection
+        required: false
+        schema:
+          enum:
+          - ASC
+          - DESC
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListJobsResponse'
               examples:
                 response:
                   value:
@@ -5790,60 +5910,27 @@ paths:
                       code: SUCCESS
                       data:
                         items:
-                          - antonyms: ''
-                            caseSensitive: true
-                            createdByUserUid: kjakjf82v
-                            createdDate: '2015-10-19T15:48:34Z'
-                            definition: ''
-                            deprecated: false
-                            doNotTranslate: false
-                            exactMatch: false
-                            glossaryUid: bdf416ee-98ff-11e5-b159-0ad0c2f6b537
-                            modifiedDate: '2015-11-09T15:33:19Z'
-                            notes: ''
-                            partOfSpeechCode: VERB
-                            seo: true
-                            synonyms: ''
-                            termText: arabian architecture
-                            termUid: 6b3e1e8c-eb40-4c32-a9f7-024e407b0b30
-                            translation:
-                              createdDate: '2015-10-21T11:08:01Z'
-                              localeId: fr-FR
-                              lockTranslation: false
-                              modifiedDate: '2015-10-27T13:09:56Z'
-                              notes: ''
-                              submittedForTranslation: false
-                              translatedTerm: arabian architecture in french
-                            variations: ''
-                          - antonyms: ''
-                            caseSensitive: false
-                            createdByUserUid: kjakjf82v
-                            createdDate: '2015-12-02T14:19:15Z'
-                            definition: ''
-                            deprecated: false
-                            doNotTranslate: false
-                            exactMatch: false
-                            glossaryUid: bbf416ee-98ff-11e5-b159-0ad0c2f6b537
-                            modifiedDate: '2015-12-02T14:19:15Z'
-                            notes: ''
-                            partOfSpeechCode: ADJECTIVE
-                            seo: false
-                            synonyms: ''
-                            termText: summer time
-                            termUid: aaf416ee-98ff-11e5-b159-0ad0c2f6b537
-                            translation:
-                              createdDate: '2015-12-02T14:28:00Z'
-                              localeId: fr-FR
-                              lockTranslation: false
-                              modifiedDate: '2015-12-02T14:28:00Z'
-                              notes: ''
-                              submittedForTranslation: false
-                              translatedTerm: summer time french 22
-                            variations: ''
+                        - createdDate: '2015-11-21T11:51:17Z'
+                          description: my job description
+                          dueDate: '2015-11-21T11:51:17Z'
+                          jobName: myJobName
+                          jobStatus: IN_PROGRESS
+                          referenceNumber: myReferenceNumber1
+                          targetLocaleIds:
+                          - fr-FR
+                          - es
+                          translationJobUid: abc123abc
+                        - createdDate: '2015-11-21T11:51:17Z'
+                          description: my job description
+                          dueDate: '2015-11-21T11:51:17Z'
+                          jobName: myJobName
+                          jobStatus: IN_PROGRESS
+                          referenceNumber: myReferenceNumber1
+                          targetLocaleIds:
+                          - fr-FR
+                          - de
+                          translationJobUid: abc321xyz
                         totalCount: 2
-              schema:
-                $ref: '#/components/schemas/TermWithGlossaryUidListResponse'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -5852,106 +5939,635 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
-      description: >-
-        Searches translations of glossary terms across all glossaries in the
-        account.
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -H "Authorization: Bearer $smartlingToken"
+          https://api.smartling.com/jobs-api/v3/projects/$smartlingProjectId/jobs
 
-
-        The response contains a list of original glossary terms and
-        translations. There is a glossary UID for each term, in order to show to
-        which glossary it belongs.
-      summary: Find translations of terms across all glossaries
-  /glossary-api/v2/dictionary/parts-of-speech:
-    get:
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PartsOfSpeechList'
-            response:
-              examples:
-                response:
-                  value:
-                    code: SUCCESS
-                    data:
-                      items:
-                        - description: Noun
-                          partOfSpeechCode: NOUN
-                        - description: Verb
-                          partOfSpeechCode: VERB
-                        - description: Adjective
-                          partOfSpeechCode: ADJECTIVE
-                        - description: Adverb
-                          partOfSpeechCode: ADVERB
-                        - description: Pronoun
-                          partOfSpeechCode: PRONOUN
-                        - description: Preposition
-                          partOfSpeechCode: PREPOSITION
-                        - description: Interjection
-                          partOfSpeechCode: INTERJECTION
-                        - description: Conjunction
-                          partOfSpeechCode: CONJUNCTION
-                        - description: Unspecified
-                          partOfSpeechCode: UNSPECIFIED
-                      totalCount: 9
-          description: OK
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
+    post:
+      summary: Create job
+      description: Creates a job within Smartling.
       tags:
-        - Glossaries
-      description: Order is fixed and consistent throughout the calls.
-      summary: List parts of speech
-  '/glossary-api/v2/projects/{projectUid}/glossaries/{glossaryUid}/terms/authorization':
-    put:
+      - Jobs
+
       parameters:
-        - description: Unique identifier for the corresponding project.
-          in: path
-          name: projectUid
-          required: true
-          schema:
-            type: string
-        - description: Unique identifier of a glossary.
-          in: path
-          name: glossaryUid
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-          description: OK
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Glossaries
-      description: >-
-        Sends selected terms for translation via specified workflows to chosen
-        target locales.
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          format: uuid
+          type: string
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthorizeTerms'
+              $ref: '#/components/schemas/CreateJobRequest'
         required: true
-      summary: Authorize terms for translation
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShallowJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        callbackMethod: GET|POST
+                        callbackUrl: 'https://www.callback.com/smartling/job'
+                        createdByUserUid: userUid123abc
+                        createdDate: '2015-11-21T11:51:17Z'
+                        description: my job description
+                        dueDate: '2015-11-21T11:51:17Z'
+                        firstCompletedDate: '2015-11-21T11:51:17Z'
+                        jobName: myJobName
+                        jobStatus: IN_PROGRESS
+                        lastCompletedDate: '2015-11-21T11:51:17Z'
+                        modifiedByUserUid: userUid321abc
+                        modifiedDate: '2015-11-21T11:51:17Z'
+                        referenceNumber: myReferenceNumber1
+                        targetLocaleIds:
+                        - fr-FR
+                        translationJobUid: abc123abc
+        400:
+          description: Validation error during job creation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                      - details:
+                          field: jobName
+                        key: null
+                        message: >-
+                          There is already a job with that name. Please provide a
+                          unique name.
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json" -d "$smartlingJobJSON"
+          https://api.smartling.com/jobs-api/v3/projects/$smartlingProjectId/jobs
+
+
+  /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/strings/add:
+    post:
+      summary: Add strings to job
+      description: >
+        Adding strings to a job is useful if you don't manage strings / content
+        through files, but instead need to add strings by some other means other
+        than files.
+
+
+        When strings are successfully added to a job, a `200` status is
+        returned. When the system can't quickly add strings to the job, a `202`
+        response status is returned. The response contains a link and
+        `processUid` to check the progress of the request. When a `202` is
+        received, the process of adding the content to the job will not be
+        complete until the returned process has completed.
+      tags:
+      - Jobs
+
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: translationJobUid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddStringsJobRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessFailCountJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        failCount: 0
+                        successCount: 100
+        202:
+          description: ACCEPTED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncProcessJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: ACCEPTED
+                      data:
+                        message: >-
+                          This process will continue asynchronously and may take
+                          up to a few minutes.
+                        url: >-
+                          https://api.smartling.com/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}
+        400:
+          description: Validation error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                      - key: null
+                        message: 'Invalid locales [ad]'
+                        details:
+                          field: targetLocaleIds
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/strings/remove:
+    post:
+      summary: Remove strings from job
+      description: >
+        Remove strings from a job. Any strings removed from the job will also be
+        unauthorized within Smartling.
+
+
+        If strings are successfully removed from a job, a `200` status will be
+        returned. When the system can't quickly add the strings to the job, a
+        `202` response is returned. The response contains a link to check the
+        progress of the request. When a `202` is received, the process of
+        removing the content from the job will not be complete until the
+        returned process has completed.
+      tags:
+      - Jobs
+
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: translationJobUid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveStringsJobRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessFailCountJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        failCount: 0
+                        successCount: 100
+        202:
+          description: ACCEPTED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncProcessJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: ACCEPTED
+                      data:
+                        message: >-
+                          This process will continue asynchronously and may take
+                          up to a few minutes.
+                        url: >-
+                          https://api.smartling.com/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/close:
+    post:
+      summary: Close job
+      description: >-
+        This closes a completed job. In order for a job to be closed, it must be
+        in a completed state. All content from the job will be removed when it
+        is closed. Closing a job guarantees that no additional work will be done
+        against the job.
+      tags:
+      - Jobs
+
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: translationJobUid
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NullDataJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+        400:
+          description: Validation error when closing a job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                      - message: Only a job that is COMPLETE can be closed.
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  '/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/cancel':
+    post:
+      summary: Cancel job
+      description: >
+        This cancels a job. All content within the job will be removed from the
+        job and the content will be unauthorized.
+
+
+        If a job is successfully cancelled, a `200` response status will be
+        returned. When the system can't quickly cancel the job, a `202` response
+        is returned. The response contains a link to check the progress of the
+        request. When a `202` is received, the process of canceling and removing
+        the content from the job will not be complete until the returned process
+        has completed.
+      tags:
+      - Jobs
+
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: translationJobUid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelJobRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NullDataJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+        202:
+          description: ACCEPTED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncProcessJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: ACCEPTED
+                      data:
+                        message: >-
+                          This process will continue asynchronously and may take
+                          up to a few minutes.
+                        url: >-
+                          https://api.smartling.com/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}
+        400:
+          description: Validation error when cancelling a job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                      - message: >-
+                          Job can be cancelled only in DRAFT,
+                          AWAITING_AUTHORIZATION, or IN_PROGRESS statuses
+        401:
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: AUTHENTICATION_ERROR
+                      errors:
+                      - details: {}
+                        key: invalid_token
+                        message: Invalid token
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  '/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/authorize':
+    post:
+      summary: Authorize job
+      description: >-
+        This authorizes all content within a job. A job can only be authorized
+        when it has content and is in an AWAITING_AUTHORIZATION state.
+      tags:
+      - Jobs
+
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: translationJobUid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizeJobRequest'
+        description: >-
+          The payload to use when authorizing a job. If no target locales and
+          workflows are provided, the empty body `{}` should be provided.
+          Smartling will authorize the job for the default workflows for the
+          given project.
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NullDataJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+        400:
+          description: Validation error when authorizing a job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    code: VALIDATION_ERROR
+                    errors:
+                    - key: null
+                      message: >-
+                        Job can be authorized only in AWAITING_AUTHORIZATION
+                        status(es).
+                      details: null
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}:
+    get:
+      summary: Get details of job
+      description: >-
+        This gets the details of a job such as job name, description, due date,
+        and reference number.
+      tags:
+      - Jobs
+
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: translationJobUid
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        createdByUserUid: '518252370016'
+                        createdDate: '2017-11-03T14:18:37Z'
+                        jobName: 'test job (Cancelled 2017/11/04 12:01:28)'
+                        jobStatus: CANCELLED
+                        modifiedByUserUid: 598d89cce43a
+                        modifiedDate: '2017-11-04T12:01:28Z'
+                        sourceFiles:
+                        - name: admin.properties
+                          uri: admin.properties
+                        targetLocaleIds:
+                        - uk-UA
+                        - ru-RU
+                        translationJobUid: jhcgalvnb6za
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        404:
+          description: Job not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: NOT_FOUND_ERROR
+                      errors:
+                      - key: null
+                        message: null
+                        details: null
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+    put:
+      summary: Update job
+      description: >-
+        This updates the attributes of the job, such as job name, description,
+        due date, and reference number.
+      tags:
+      - Jobs
+
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: translationJobUid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        createdByUserUid: '518252370016'
+                        createdDate: '2017-11-03T14:18:37Z'
+                        description: Description of the job
+                        dueDate: '2020-11-03T14:18:37Z'
+                        jobName: Test Job
+                        jobStatus: AWAITING_AUTHORIZATION
+                        modifiedByUserUid: 598d89cce43a
+                        modifiedDate: '2017-11-04T12:01:28Z'
+                        sourceFiles:
+                        - name: admin.properties
+                          uri: admin.properties
+                        targetLocaleIds:
+                        - uk-UA
+                        - ru-RU
+                        translationJobUid: jhcgalvnb6za
+        400:
+          description: Validation error on updating a job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    code: VALIDATION_ERROR
+                    errors:
+                    - key: null
+                      message: >-
+                        Job can be edited only in DRAFT,
+                        AWAITING_AUTHORIZATION, IN_PROGRESS or COMPLETED
+                        statuses.
+                      details: null
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: NOT_FOUND_ERROR
+                      errors:
+                      - key: null
+                        message: null
+                        details: null
+          description: Job not found error
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
 
   '/jobs-api/v3/projects/{projectId}/job/{translationJobUid}/files':
     get:
@@ -6007,200 +6623,7 @@ paths:
         - Jobs
       description: This lists all files within a job.
       summary: List files within job
-  '/jobs-api/v3/projects/{projectId}/jobs':
-    get:
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-        - description: >-
-            Used for searching jobs by `jobName`. Any entry is treated as a LIKE
-            query on the name of the job.
-          in: query
-          name: jobName
-          required: false
-          schema:
-            type: string
-        - description: >-
-            Used for searching jobs by `translationJobUid`. Supports up to 500
-            `translationJobUid`s.
-          in: query
-          name: translationJobUids
-          required: false
-          schema:
-            items:
-              type: string
-            type: array
-        - description: Used for searching jobs by `jobStatus`.
-          in: query
-          name: translationJobStatus
-          required: false
-          schema:
-            items:
-              type: string
-            type: array
-        - description: The limit on the number of jobs returned.
-          in: query
-          name: limit
-          required: false
-          schema:
-            type: integer
-        - description: The offset to use when searching for jobs.
-          in: query
-          name: offset
-          required: false
-          schema:
-            type: integer
-        - description: The field to sort by.
-          in: query
-          name: sortBy
-          required: false
-          schema:
-            enum:
-              - createdDate
-              - dueDate
-              - jobName
-            type: string
-        - description: The direction to sort.
-          in: query
-          name: sortDirection
-          required: false
-          schema:
-            enum:
-              - ASC
-              - DESC
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                          - createdDate: '2015-11-21T11:51:17Z'
-                            description: my job description
-                            dueDate: '2015-11-21T11:51:17Z'
-                            jobName: myJobName
-                            jobStatus: IN_PROGRESS
-                            referenceNumber: myReferenceNumber1
-                            targetLocaleIds:
-                              - fr-FR
-                              - es
-                            translationJobUid: abc123abc
-                          - createdDate: '2015-11-21T11:51:17Z'
-                            description: my job description
-                            dueDate: '2015-11-21T11:51:17Z'
-                            jobName: myJobName
-                            jobStatus: IN_PROGRESS
-                            referenceNumber: myReferenceNumber1
-                            targetLocaleIds:
-                              - fr-FR
-                              - de
-                            translationJobUid: abc321xyz
-                        totalCount: 2
-              schema:
-                $ref: '#/components/schemas/ListJobsResponse'
-          description: OK
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Jobs
-      description: List / search the jobs within a project.
-      summary: List jobs within a project
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -H "Authorization: Bearer $smartlingToken"
-            https://api.smartling.com/jobs-api/v3/projects/$smartlingProjectId/jobs
-    post:
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            format: uuid
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        callbackMethod: GET|POST
-                        callbackUrl: 'https://www.callback.com/smartling/job'
-                        createdByUserUid: userUid123abc
-                        createdDate: '2015-11-21T11:51:17Z'
-                        description: my job description
-                        dueDate: '2015-11-21T11:51:17Z'
-                        firstCompletedDate: '2015-11-21T11:51:17Z'
-                        jobName: myJobName
-                        jobStatus: IN_PROGRESS
-                        lastCompletedDate: '2015-11-21T11:51:17Z'
-                        modifiedByUserUid: userUid321abc
-                        modifiedDate: '2015-11-21T11:51:17Z'
-                        referenceNumber: myReferenceNumber1
-                        targetLocaleIds:
-                          - fr-FR
-                        translationJobUid: abc123abc
-              schema:
-                $ref: '#/components/schemas/ShallowJobResponse'
-          description: OK
-        '400':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      details:
-                        field: jobName
-                      errors:
-                        - {}
-                      message: >-
-                        There is already a job with that name. Please provide a
-                        unique name.
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-          description: Validation error during job creation.
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Jobs
-      description: Creates a job within Smartling.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateJobRequest'
-        required: true
-      summary: Create job
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
-            "Content-Type: application/json" -d "$smartlingJobJSON"
-            https://api.smartling.com/jobs-api/v3/projects/$smartlingProjectId/jobs
+
   '/jobs-api/v3/projects/{projectId}/jobs/search':
     post:
       parameters:
@@ -6265,369 +6688,7 @@ paths:
         description: The filters to use when searching for jobs within the project.
         required: true
       summary: Search for job
-  '/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}':
-    get:
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: translationJobUid
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        createdByUserUid: '518252370016'
-                        createdDate: '2017-11-03T14:18:37Z'
-                        jobName: 'test job (Cancelled 2017/11/04 12:01:28)'
-                        jobStatus: CANCELLED
-                        modifiedByUserUid: 598d89cce43a
-                        modifiedDate: '2017-11-04T12:01:28Z'
-                        sourceFiles:
-                          - name: admin.properties
-                            uri: admin.properties
-                        targetLocaleIds:
-                          - uk-UA
-                          - ru-RU
-                        translationJobUid: jhcgalvnb6za
-              schema:
-                $ref: '#/components/schemas/DetailedJobResponse'
-          description: OK
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        '404':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: NOT_FOUND_ERROR
-                      errors:
-                        - {}
-              schema:
-                $ref: '#/components/schemas/Error404Response'
-          description: Job not found error
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Jobs
-      description: >-
-        This gets the details of a job such as job name, description, due date,
-        and reference number.
-      summary: Get details of job
-    put:
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: translationJobUid
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        createdByUserUid: '518252370016'
-                        createdDate: '2017-11-03T14:18:37Z'
-                        description: Description of the job
-                        dueDate: '2020-11-03T14:18:37Z'
-                        jobName: Test Job
-                        jobStatus: AWAITING_AUTHORIZATION
-                        modifiedByUserUid: 598d89cce43a
-                        modifiedDate: '2017-11-04T12:01:28Z'
-                        sourceFiles:
-                          - name: admin.properties
-                            uri: admin.properties
-                        targetLocaleIds:
-                          - uk-UA
-                          - ru-RU
-                        translationJobUid: jhcgalvnb6za
-              schema:
-                $ref: '#/components/schemas/DetailedJobResponse'
-          description: OK
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-            response:
-              examples:
-                response:
-                  value:
-                    code: VALIDATION_ERROR
-                    errors:
-                      - message: >-
-                          Job can be edited only in DRAFT,
-                          AWAITING_AUTHORIZATION, IN_PROGRESS or COMPLETED
-                          statuses.
-          description: Validation error on updating a job
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        '404':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: NOT_FOUND_ERROR
-                      errors:
-                        - {}
-              schema:
-                $ref: '#/components/schemas/Error404Response'
-          description: Job not found error
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Jobs
-      description: >-
-        This updates the attributes of the job, such as job name, description,
-        due date, and reference number.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateJobRequest'
-        required: true
-      summary: Update job
-  '/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/authorize':
-    post:
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: translationJobUid
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-              schema:
-                $ref: '#/components/schemas/NullDataJobResponse'
-          description: OK
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-            response:
-              examples:
-                response:
-                  value:
-                    code: VALIDATION_ERROR
-                    errors:
-                      - message: >-
-                          Job can be authorized only in AWAITING_AUTHORIZATION
-                          status(es).
-          description: Validation error when authorizing a job
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Jobs
-      description: >-
-        This authorizes all content within a job. A job can only be authorized
-        when it has content and is in an AWAITING_AUTHORIZATION state.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthorizeJobRequest'
-        description: >-
-          The payload to use when authorizing a job. If no target locales and
-          workflows are provided, the empty body `{}` should be provided.
-          Smartling will authorize the job for the default workflows for the
-          given project.
-        required: true
-      summary: Authorize job
-  '/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/cancel':
-    post:
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: translationJobUid
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-              schema:
-                $ref: '#/components/schemas/NullDataJobResponse'
-          description: OK
-        '202':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: ACCEPTED
-                      data:
-                        message: >-
-                          This process will continue asynchronously and may take
-                          up to a few minutes.
-                        url: >-
-                          https://api.smartling.com/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}
-              schema:
-                $ref: '#/components/schemas/AsyncProcessJobResponse'
-          description: ACCEPTED
-        '400':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        - message: >-
-                            Job can be cancelled only in DRAFT,
-                            AWAITING_AUTHORIZATION, or IN_PROGRESS statuses
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-          description: Validation error when cancelling a job
-        '401':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: AUTHENTICATION_ERROR
-                      errors:
-                        - details: {}
-                          key: invalid_token
-                          message: Invalid token
-              schema:
-                $ref: '#/components/schemas/Error401Response'
-          description: Authentication error
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Jobs
-      description: >
-        This cancels a job. All content within the job will be removed from the
-        job and the content will be unauthorized.
 
-
-        If a job is successfully cancelled, a `200` response status will be
-        returned. When the system can't quickly cancel the job, a `202` response
-        is returned. The response contains a link to check the progress of the
-        request. When a `202` is received, the process of canceling and removing
-        the content from the job will not be complete until the returned process
-        has completed.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CancelJobRequest'
-      summary: Cancel job
-  '/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/close':
-    post:
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: translationJobUid
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-              schema:
-                $ref: '#/components/schemas/NullDataJobResponse'
-          description: OK
-        '400':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        - message: Only a job that is COMPLETE can be closed.
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-          description: Validation error when closing a job
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Jobs
-      description: >-
-        This closes a completed job. In order for a job to be closed, it must be
-        in a completed state. All content from the job will be removed when it
-        is closed. Closing a job guarantees that no additional work will be done
-        against the job.
-      summary: Close job
   '/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/file/add':
     post:
       parameters:
@@ -7309,19 +7370,16 @@ paths:
         - Jobs
       description: This gets the progress of a job.
       summary: Get progress of job
-  '/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/strings/add':
-    post:
+
+  '/gdn-url-management-api/v2/projects/{projectId}/domains':
+    get:
       parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: translationJobUid
-          required: true
-          schema:
-            type: string
+      - description: Unique identifier of the project within an account.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -7332,84 +7390,30 @@ paths:
                     response:
                       code: SUCCESS
                       data:
-                        failCount: 0
-                        successCount: 100
+                        items:
+                        - name: my.domain.com
+                        totalCount: 1
               schema:
-                $ref: '#/components/schemas/SuccessFailCountJobResponse'
+                $ref: '#/components/schemas/WebPageDomainsResponse'
           description: OK
-        '202':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: ACCEPTED
-                      data:
-                        message: >-
-                          This process will continue asynchronously and may take
-                          up to a few minutes.
-                        url: >-
-                          https://api.smartling.com/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}
-              schema:
-                $ref: '#/components/schemas/AsyncProcessJobResponse'
-          description: ACCEPTED
-        '400':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      details:
-                        field: targetLocaleIds
-                      errors:
-                        - {}
-                      message: 'Invalid locales [ad]'
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-          description: Validation error response
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
       tags:
-        - Jobs
-      description: >
-        Adding strings to a job is useful if you don't manage strings / content
-        through files, but instead need to add strings by some other means other
-        than files.
-
-
-        When strings are successfully added to a job, a `200` status is
-        returned. When the system can't quickly add strings to the job, a `202`
-        response status is returned. The response contains a link and
-        `processUid` to check the progress of the request. When a `202` is
-        received, the process of adding the content to the job will not be
-        complete until the returned process has completed.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddStringsJobRequest'
-        required: true
-      summary: Add strings to job
-  '/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/strings/remove':
+      - GDN url management
+      description: Get domains for project.
+      summary: Get domains for project
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -H "Authorization: Bearer $smartlingToken"
+          https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/domains
+  '/gdn-url-management-api/v2/projects/{projectId}/web-pages/details':
     post:
       parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: translationJobUid
-          required: true
-          schema:
-            type: string
+      - description: Unique identifier of the project within an account.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -7420,56 +7424,132 @@ paths:
                     response:
                       code: SUCCESS
                       data:
-                        failCount: 0
-                        successCount: 100
+                        items:
+                        - details:
+                            contextUids:
+                            - 122ssasa323
+                            - 334asds3434
+                            created: '2015-11-21T01:51:17Z'
+                            stringCount: 10
+                            wordCount: 25
+                          domain:
+                            name: my.domain.com
+                          urlPath: /home/page.htm
+                          webPageUid: 23dsd23md
+                        totalCount: 1
               schema:
-                $ref: '#/components/schemas/SuccessFailCountJobResponse'
+                $ref: '#/components/schemas/WebPageDetailListResponse'
           description: OK
-        '202':
+      tags:
+      - GDN url management
+      description: Retrieve details of the URLs.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebPageDetailListRequest'
+        required: true
+      summary: Get details for URLs
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json" -d "$smartlingStringTagJSON"
+          https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/details
+  '/gdn-url-management-api/v2/projects/{projectId}/web-pages/list':
+    post:
+      parameters:
+      - description: Unique identifier of the project within an account.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
           content:
             application/json:
               examples:
                 response:
                   value:
                     response:
-                      code: ACCEPTED
+                      code: SUCCESS
                       data:
-                        message: >-
-                          This process will continue asynchronously and may take
-                          up to a few minutes.
-                        url: >-
-                          https://api.smartling.com/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}
+                        items:
+                        - created: '2015-11-21T11:51:17Z'
+                          domain:
+                            name: my.domain.com
+                          urlPath: /home/page.htm
+                          webPageUid: 23dsd23md
+                        totalCount: 1
               schema:
-                $ref: '#/components/schemas/AsyncProcessJobResponse'
-          description: ACCEPTED
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
+                $ref: '#/components/schemas/WebPageListResponse'
+          description: OK
       tags:
-        - Jobs
-      description: >
-        Remove strings from a job. Any strings removed from the job will also be
-        unauthorized within Smartling.
-
-
-        If strings are successfully removed from a job, a `200` status will be
-        returned. When the system can't quickly add the strings to the job, a
-        `202` response is returned. The response contains a link to check the
-        progress of the request. When a `202` is received, the process of
-        removing the content from the job will not be complete until the
-        returned process has completed.
+      - GDN url management
+      description: Get list of URLs.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RemoveStringsJobRequest'
+              $ref: '#/components/schemas/WebPageListRequest'
         required: true
-      summary: Remove strings from job
+      summary: Get list of URLs
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json" -d "$smartlingStringTagJSON"
+          https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/list
+  '/gdn-url-management-api/v2/projects/{projectId}/web-pages/{webPageUid}':
+    get:
+      parameters:
+      - description: Unique identifier of the project within an account.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of the URL
+        in: path
+        name: webPageUid
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        details:
+                          contextUids:
+                          - 122ssasa323
+                          - 334asds3434
+                          created: '2015-11-21T01:51:17Z'
+                          stringCount: 10
+                          wordCount: 25
+                        domain:
+                          name: my.domain.com
+                        urlPath: /home/page.htm
+                        webPageUid: 23dsd23md
+              schema:
+                $ref: '#/components/schemas/WebPageDetailsResponse'
+          description: OK
+      tags:
+      - GDN url management
+      description: Retrieve detail for the URL.
+      summary: Get details for URL
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -H "Authorization: Bearer $smartlingToken"
+          https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/$webPageUid
+
   '/jobs-batch-api/v1/projects/{projectId}/batches':
     get:
       parameters:
@@ -11684,6 +11764,7 @@ components:
       required:
         - partOfSpeechCode
       type: object
+
     PartsOfSpeechList:
       properties:
         response:
