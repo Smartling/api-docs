@@ -10,8 +10,8 @@ mkdir('-p', 'web_deploy');
 cp('-R', 'web/*', 'web_deploy/');
 
 mkdir('-p', 'web_deploy/spec');
-mkdir('-p', 'web_deploy/spec/refs');
-cp('-R', 'spec/refs/*', 'web_deploy/spec/refs');
+cp('-R', 'spec/*', 'web_deploy/spec');
+rm('-rf', 'web_deploy/spec/swagger.yaml');
 
 exec('npm run swagger bundle --        -o web_deploy/swagger.json');
 exec('npm run swagger bundle -- --yaml -o web_deploy/swagger.yaml');

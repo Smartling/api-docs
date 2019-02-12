@@ -1,9 +1,9 @@
 definitions:
-  account_check_types_REPEATED_WORD_settings_effective:
+  account_check_types_TRADEMARK_CONSISTENCY_settings_effective:
     get:
       description: >-
-        Get checktype REPEATED_WORD settings for certain account.
-      summary: Get checktype REPEATED_WORD settings for certain account
+        Get checktype TRADEMARK_CONSISTENCY settings for certain account.
+      summary: Get checktype TRADEMARK_CONSISTENCY settings for certain account
       tags:
         - Translation quality check
       consumes:
@@ -11,8 +11,8 @@ definitions:
       produces:
         - application/json
       parameters:
-        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
-        - $ref: '../common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
 
       responses:
         200:
@@ -23,23 +23,23 @@ definitions:
       x-code-samples:
         - lang: curl
           source: |
-            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/REPEATED_WORD:
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/TRADEMARK_CONSISTENCY:
 
   AccountCheckTypeEffectiveDTO:
     allOf:
-      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
       - type: object
         properties:
           checkTypeCode:
             type: string
             enum:
-              - REPEATED_WORD
+              - TRADEMARK_CONSISTENCY
             description: check type code
-            example: "REPEATED_WORD"
+            example: "TRADEMARK_CONSISTENCY"
 
   AccountCheckTypeEffectiveResponse:
     allOf:
-      - $ref: '../../common.yaml#/definitions/SuccessResponse'
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
       - type: object
         properties:
           data:
@@ -48,31 +48,36 @@ definitions:
 
   TqcCheckMistakeDTO:
     allOf:
-      - $ref: '../common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
-      - $ref: '../common.yaml#/definitions/TqcCheckDTO/positions'
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
       - type: object
         properties:
           checkTypeCode:
             type: string
             enum:
-              - REPEATED_WORD
+              - TRADEMARK_CONSISTENCY
             description: check type code
-            example: "REPEATED_WORD"
+            example: "TRADEMARK_CONSISTENCY"
           details:
             type: object
             properties:
-              word:
+              trademarkTypeCode:
                 type: string
-                description: word
-                example: "szia"
+                enum:
+                  - SERVICE_MARK
+                  - COPYRIGHT
+                  - REGISTERED
+                  - TRADEMARK
+                description: trademark type code
+                example: "COPYRIGHT"
           positionTypeCode:
             type: string
             enum:
-              - TARGET
+              - SOURCE
             description: position type code
-            example: "TARGET"
+            example: "SOURCE"
 
-#REPEATED_WORD
+#TRADEMARK_CONSISTENCY
 #{
 #    "sourceLocaleId": "en-US",
 #    "targetLocaleId": "hu-HU",
@@ -80,11 +85,11 @@ definitions:
 #    "excludePlaceholderWithinTag": true,
 #        "strings": [{
 #            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
-#            "originalString": "hello",
-#            "translation": "Szia Szia"
+#            "originalString": "hello ©",
+#            "translation": "Szia"
 #        }],
 #    "checkTypeCodes": [
-#        "REPEATED_WORD"
+#        "TRADEMARK_CONSISTENCY"
 #    ]
 #}
 #
@@ -95,25 +100,25 @@ definitions:
 #            "results": [
 #                {
 #                    "string": {
-#                        "originalString": "hello",
-#                        "translation": "Szia Szia",
+#                        "originalString": "hello ©",
+#                        "translation": "Szia",
 #                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
 #                        "stringUid": null
 #                    },
 #                    "mistakes": [
 #                        {
-#                            "checkTypeCode": "REPEATED_WORD",
+#                            "checkTypeCode": "TRADEMARK_CONSISTENCY",
 #                            "severityLevelCode": "LOW",
 #                            "positions": [
 #                                {
-#                                    "from": 5,
-#                                    "to": 9
+#                                    "from": 6,
+#                                    "to": 7
 #                                }
 #                            ],
 #                            "details": {
-#                                "word": "szia"
+#                                "trademarkTypeCode": "COPYRIGHT"
 #                            },
-#                            "positionTypeCode": "TARGET"
+#                            "positionTypeCode": "SOURCE"
 #                        }
 #                    ]
 #                }

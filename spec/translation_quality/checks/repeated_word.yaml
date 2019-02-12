@@ -1,9 +1,9 @@
 definitions:
-  account_check_types_GLOBAL_CAPITALISATION_CONSISTENCY_settings_effective:
+  account_check_types_REPEATED_WORD_settings_effective:
     get:
       description: >-
-        Get checktype GLOBAL_CAPITALISATION_CONSISTENCY settings for certain account.
-      summary: Get checktype GLOBAL_CAPITALISATION_CONSISTENCY settings for certain account
+        Get checktype REPEATED_WORD settings for certain account.
+      summary: Get checktype REPEATED_WORD settings for certain account
       tags:
         - Translation quality check
       consumes:
@@ -11,8 +11,8 @@ definitions:
       produces:
         - application/json
       parameters:
-        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
-        - $ref: '../common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
 
       responses:
         200:
@@ -23,23 +23,23 @@ definitions:
       x-code-samples:
         - lang: curl
           source: |
-            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/GLOBAL_CAPITALISATION_CONSISTENCY:
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/REPEATED_WORD:
 
   AccountCheckTypeEffectiveDTO:
     allOf:
-      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
       - type: object
         properties:
           checkTypeCode:
             type: string
             enum:
-              - GLOBAL_CAPITALISATION_CONSISTENCY
+              - REPEATED_WORD
             description: check type code
-            example: "GLOBAL_CAPITALISATION_CONSISTENCY"
+            example: "REPEATED_WORD"
 
   AccountCheckTypeEffectiveResponse:
     allOf:
-      - $ref: '../../common.yaml#/definitions/SuccessResponse'
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
       - type: object
         properties:
           data:
@@ -48,18 +48,23 @@ definitions:
 
   TqcCheckMistakeDTO:
     allOf:
-      - $ref: '../common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
-      - $ref: '../common.yaml#/definitions/TqcCheckDTO/positions'
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
       - type: object
         properties:
           checkTypeCode:
             type: string
             enum:
-              - GLOBAL_CAPITALISATION_CONSISTENCY
+              - REPEATED_WORD
             description: check type code
-            example: "GLOBAL_CAPITALISATION_CONSISTENCY"
+            example: "REPEATED_WORD"
           details:
             type: object
+            properties:
+              word:
+                type: string
+                description: word
+                example: "szia"
           positionTypeCode:
             type: string
             enum:
@@ -67,8 +72,7 @@ definitions:
             description: position type code
             example: "TARGET"
 
-
-#GLOBAL_CAPITALISATION_CONSISTENCY
+#REPEATED_WORD
 #{
 #    "sourceLocaleId": "en-US",
 #    "targetLocaleId": "hu-HU",
@@ -76,11 +80,11 @@ definitions:
 #    "excludePlaceholderWithinTag": true,
 #        "strings": [{
 #            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
-#            "originalString": "We Are Going to gym now",
-#            "translation": "Most megyünk sds edzőtrembe"
+#            "originalString": "hello",
+#            "translation": "Szia Szia"
 #        }],
 #    "checkTypeCodes": [
-#        "GLOBAL_CAPITALISATION_CONSISTENCY"
+#        "REPEATED_WORD"
 #    ]
 #}
 #
@@ -91,22 +95,24 @@ definitions:
 #            "results": [
 #                {
 #                    "string": {
-#                        "originalString": "WARNING",
-#                        "translation": "FIGYELEm",
+#                        "originalString": "hello",
+#                        "translation": "Szia Szia",
 #                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
 #                        "stringUid": null
 #                    },
 #                    "mistakes": [
 #                        {
-#                            "checkTypeCode": "GLOBAL_CAPITALISATION_CONSISTENCY",
+#                            "checkTypeCode": "REPEATED_WORD",
 #                            "severityLevelCode": "LOW",
 #                            "positions": [
 #                                {
-#                                    "from": 0,
-#                                    "to": 8
+#                                    "from": 5,
+#                                    "to": 9
 #                                }
 #                            ],
-#                            "details": null,
+#                            "details": {
+#                                "word": "szia"
+#                            },
 #                            "positionTypeCode": "TARGET"
 #                        }
 #                    ]

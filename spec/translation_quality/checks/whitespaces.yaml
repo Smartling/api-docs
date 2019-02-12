@@ -1,9 +1,9 @@
 definitions:
-  account_check_types_TRADEMARK_CONSISTENCY_settings_effective:
+  account_check_types_WHITESPACES_settings_effective:
     get:
       description: >-
-        Get checktype TRADEMARK_CONSISTENCY settings for certain account.
-      summary: Get checktype TRADEMARK_CONSISTENCY settings for certain account
+        Get checktype WHITESPACES settings for certain account.
+      summary: Get checktype WHITESPACES settings for certain account
       tags:
         - Translation quality check
       consumes:
@@ -11,8 +11,8 @@ definitions:
       produces:
         - application/json
       parameters:
-        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
-        - $ref: '../common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
 
       responses:
         200:
@@ -23,23 +23,23 @@ definitions:
       x-code-samples:
         - lang: curl
           source: |
-            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/TRADEMARK_CONSISTENCY:
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/WHITESPACES:
 
   AccountCheckTypeEffectiveDTO:
     allOf:
-      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
       - type: object
         properties:
           checkTypeCode:
             type: string
             enum:
-              - TRADEMARK_CONSISTENCY
+              - WHITESPACES
             description: check type code
-            example: "TRADEMARK_CONSISTENCY"
+            example: "WHITESPACES"
 
   AccountCheckTypeEffectiveResponse:
     allOf:
-      - $ref: '../../common.yaml#/definitions/SuccessResponse'
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
       - type: object
         properties:
           data:
@@ -48,36 +48,26 @@ definitions:
 
   TqcCheckMistakeDTO:
     allOf:
-      - $ref: '../common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
-      - $ref: '../common.yaml#/definitions/TqcCheckDTO/positions'
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
       - type: object
         properties:
           checkTypeCode:
             type: string
             enum:
-              - TRADEMARK_CONSISTENCY
+              - WHITESPACES
             description: check type code
-            example: "TRADEMARK_CONSISTENCY"
+            example: "WHITESPACES"
           details:
             type: object
-            properties:
-              trademarkTypeCode:
-                type: string
-                enum:
-                  - SERVICE_MARK
-                  - COPYRIGHT
-                  - REGISTERED
-                  - TRADEMARK
-                description: trademark type code
-                example: "COPYRIGHT"
           positionTypeCode:
             type: string
             enum:
-              - SOURCE
+              - TARGET
             description: position type code
-            example: "SOURCE"
+            example: "TARGET"
 
-#TRADEMARK_CONSISTENCY
+#WHITESPACES
 #{
 #    "sourceLocaleId": "en-US",
 #    "targetLocaleId": "hu-HU",
@@ -85,11 +75,11 @@ definitions:
 #    "excludePlaceholderWithinTag": true,
 #        "strings": [{
 #            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
-#            "originalString": "hello ©",
-#            "translation": "Szia"
+#            "originalString": "hello 100",
+#            "translation": "Szia  100"
 #        }],
 #    "checkTypeCodes": [
-#        "TRADEMARK_CONSISTENCY"
+#        "WHITESPACES"
 #    ]
 #}
 #
@@ -100,25 +90,23 @@ definitions:
 #            "results": [
 #                {
 #                    "string": {
-#                        "originalString": "hello ©",
-#                        "translation": "Szia",
+#                        "originalString": "hello 100",
+#                        "translation": "Szia  100",
 #                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
 #                        "stringUid": null
 #                    },
 #                    "mistakes": [
 #                        {
-#                            "checkTypeCode": "TRADEMARK_CONSISTENCY",
+#                            "checkTypeCode": "WHITESPACES",
 #                            "severityLevelCode": "LOW",
 #                            "positions": [
 #                                {
-#                                    "from": 6,
-#                                    "to": 7
+#                                    "from": 4,
+#                                    "to": 6
 #                                }
 #                            ],
-#                            "details": {
-#                                "trademarkTypeCode": "COPYRIGHT"
-#                            },
-#                            "positionTypeCode": "SOURCE"
+#                            "details": null,
+#                            "positionTypeCode": "TARGET"
 #                        }
 #                    ]
 #                }
