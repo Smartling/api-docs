@@ -7401,189 +7401,13 @@ paths:
 #
 # Tags API
 #
-  '/tags-api/v2/projects/{projectId}/strings/tags/add':
-    post:
-      parameters:
-      - description: Project Id.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-          description: OK
-      tags:
-      - Tags
-      description: Add a list of tags to a list of strings.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                tags:
-                  description: List of tags
-                  items:
-                    type: string
-                  maxItems: 100
-                  minItems: 1
-                  type: array
-                stringHashcodes:
-                  description: List of string hashcodes
-                  items:
-                    type: string
-                  maxItems: 1000
-                  type: array
-              required:
-              - tags
-              - stringHashcodes
-              type: object
-        required: true
-      summary: Add tags to strings
-      x-code-samples:
-      - lang: curl
-        source: >
-          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
-          "Content-Type: application/json" -d "$smartlingStringTagJSON"
-          https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/strings/tags/add
-  '/tags-api/v2/projects/{projectId}/strings/tags/remove':
-    post:
-      parameters:
-      - description: Project Id.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-          description: OK
-      tags:
-      - Tags
-      description: Remove a list of tags from a list of strings.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                tags:
-                  description: List of tags
-                  items:
-                    type: string
-                  maxItems: 100
-                  minItems: 1
-                  type: array
-                stringHashcodes:
-                  description: List of string hashcodes
-                  items:
-                    type: string
-                  maxItems: 1000
-                  type: array
-              required:
-              - tags
-              - stringHashcodes
-              type: object
-        required: true
-      summary: Remove tags from strings
-      x-code-samples:
-      - lang: curl
-        source: >
-          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
-          "Content-Type: application/json" -d "$smartlingStringTagJSON"
-          https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/strings/tags/remove
-  '/tags-api/v2/projects/{projectId}/strings/tags/remove/all':
-    post:
-      parameters:
-      - description: Project Id.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-          description: OK
-      tags:
-      - Tags
-      description: Remove all tags from a list of strings.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                stringHashcodes:
-                  description: List of string hashcodes
-                  items:
-                    type: string
-                  maxItems: 1000
-                  type: array
-              required:
-              - stringHashcodes
-              type: object
-        required: true
-      summary: Remove all tags from strings
-      x-code-samples:
-      - lang: curl
-        source: >
-          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
-          "Content-Type: application/json" -d "$smartlingStringTagJSON"
-          https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/strings/tags/remove/all
-  '/tags-api/v2/projects/{projectId}/strings/tags/search':
-    post:
-      parameters:
-      - description: Project Id for search.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetStringsTagsResponse'
-          description: OK
-      tags:
-      - Tags
-      description: Retrieve all tags linked to strings.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                stringHashcodes:
-                  items:
-                    description: String hashcode
-                    type: string
-                  maxItems: 1000
-                  type: array
-              required:
-              - stringHashcodes
-              type: object
-        description: List of string hashcodes
-        required: true
-      summary: Get all tags for strings
-      x-code-samples:
-      - lang: curl
-        source: >
-          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
-          "Content-Type: application/json" -d "$smartlingStringTagJSON"
-          https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/strings/tags/search
-  '/tags-api/v2/projects/{projectId}/tags':
+  /tags-api/v2/projects/{projectId}/tags:
     get:
+      summary: List tags within a project
+      description: List / search tags within a project.
+      tags:
+      - Tags
+
       parameters:
       - description: Project Id for search.
         in: path
@@ -7616,9 +7440,12 @@ paths:
           minimum: 0
           type: number
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/GetProjectTagsResponse'
               examples:
                 response:
                   value:
@@ -7629,21 +7456,211 @@ paths:
                         - tag: StringTag
                         - tag: AnotherTag
                         totalCount: 2
-              schema:
-                $ref: '#/components/schemas/GetProjectTagsResponse'
-          description: OK
-      tags:
-      - Tags
-      description: List / search tags within a project.
-      summary: List tags within a project
       x-code-samples:
       - lang: curl
         source: >
           curl -H "Authorization: Bearer $smartlingToken"
           https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/tags
 
-  '/gdn-url-management-api/v2/projects/{projectId}/domains':
-    get:
+  /tags-api/v2/projects/{projectId}/strings/tags/search:
+    post:
+      summary: Get all tags for strings
+      description: Retrieve all tags linked to strings.
+      tags:
+      - Tags
+
+      parameters:
+      - description: Project Id for search.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                stringHashcodes:
+                  items:
+                    description: String hashcode
+                    type: string
+                  maxItems: 1000
+                  type: array
+              required:
+              - stringHashcodes
+              type: object
+        description: List of string hashcodes
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetStringsTagsResponse'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json" -d "$smartlingStringTagJSON"
+          https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/strings/tags/search
+
+  /tags-api/v2/projects/{projectId}/strings/tags/add:
+    post:
+      summary: Add tags to strings
+      description: Add a list of tags to a list of strings.
+      tags:
+      - Tags
+
+      parameters:
+      - description: Project Id.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                tags:
+                  description: List of tags
+                  items:
+                    type: string
+                  maxItems: 100
+                  minItems: 1
+                  type: array
+                stringHashcodes:
+                  description: List of string hashcodes
+                  items:
+                    type: string
+                  maxItems: 1000
+                  type: array
+              required:
+              - tags
+              - stringHashcodes
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json" -d "$smartlingStringTagJSON"
+          https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/strings/tags/add
+
+  /tags-api/v2/projects/{projectId}/strings/tags/remove:
+    post:
+      summary: Remove tags from strings
+      description: Remove a list of tags from a list of strings.
+      tags:
+      - Tags
+
+      parameters:
+      - description: Project Id.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                tags:
+                  description: List of tags
+                  items:
+                    type: string
+                  maxItems: 100
+                  minItems: 1
+                  type: array
+                stringHashcodes:
+                  description: List of string hashcodes
+                  items:
+                    type: string
+                  maxItems: 1000
+                  type: array
+              required:
+              - tags
+              - stringHashcodes
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json" -d "$smartlingStringTagJSON"
+          https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/strings/tags/remove
+
+  /tags-api/v2/projects/{projectId}/strings/tags/remove/all:
+    post:
+      summary: Remove all tags from strings
+      description: Remove all tags from a list of strings.
+      tags:
+      - Tags
+
+      parameters:
+      - description: Project Id.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                stringHashcodes:
+                  description: List of string hashcodes
+                  items:
+                    type: string
+                  maxItems: 1000
+                  type: array
+              required:
+              - stringHashcodes
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json" -d "$smartlingStringTagJSON"
+          https://api.smartling.com/tags-api/v2/projects/$smartlingProjectId/strings/tags/remove/all
+
+  #
+  # GDN url management
+  #
+  /gdn-url-management-api/v2/projects/{projectId}/web-pages/list:
+    post:
+      summary: Get list of URLs
+      description: Get list of URLs.
+      tags:
+      - GDN url management
+
       parameters:
       - description: Unique identifier of the project within an account.
         in: path
@@ -7651,10 +7668,19 @@ paths:
         required: true
         schema:
           type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebPageListRequest'
+        required: true
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/WebPageListResponse'
               examples:
                 response:
                   value:
@@ -7662,22 +7688,27 @@ paths:
                       code: SUCCESS
                       data:
                         items:
-                        - name: my.domain.com
+                        - created: '2015-11-21T11:51:17Z'
+                          domain:
+                            name: my.domain.com
+                          urlPath: /home/page.htm
+                          webPageUid: 23dsd23md
                         totalCount: 1
-              schema:
-                $ref: '#/components/schemas/WebPageDomainsResponse'
-          description: OK
-      tags:
-      - GDN url management
-      description: Get domains for project.
-      summary: Get domains for project
+
       x-code-samples:
       - lang: curl
         source: >
-          curl -H "Authorization: Bearer $smartlingToken"
-          https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/domains
-  '/gdn-url-management-api/v2/projects/{projectId}/web-pages/details':
+          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json" -d "$smartlingStringTagJSON"
+          https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/list
+
+  /gdn-url-management-api/v2/projects/{projectId}/web-pages/details:
     post:
+      summary: Get details for URLs
+      description: Retrieve details of the URLs.
+      tags:
+      - GDN url management
+
       parameters:
       - description: Unique identifier of the project within an account.
         in: path
@@ -7685,10 +7716,19 @@ paths:
         required: true
         schema:
           type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebPageDetailListRequest'
+        required: true
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/WebPageDetailListResponse'
               examples:
                 response:
                   value:
@@ -7708,72 +7748,20 @@ paths:
                           urlPath: /home/page.htm
                           webPageUid: 23dsd23md
                         totalCount: 1
-              schema:
-                $ref: '#/components/schemas/WebPageDetailListResponse'
-          description: OK
-      tags:
-      - GDN url management
-      description: Retrieve details of the URLs.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WebPageDetailListRequest'
-        required: true
-      summary: Get details for URLs
       x-code-samples:
       - lang: curl
         source: >
           curl -X POST -H "Authorization: Bearer $smartlingToken" -H
           "Content-Type: application/json" -d "$smartlingStringTagJSON"
           https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/details
-  '/gdn-url-management-api/v2/projects/{projectId}/web-pages/list':
-    post:
-      parameters:
-      - description: Unique identifier of the project within an account.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                        - created: '2015-11-21T11:51:17Z'
-                          domain:
-                            name: my.domain.com
-                          urlPath: /home/page.htm
-                          webPageUid: 23dsd23md
-                        totalCount: 1
-              schema:
-                $ref: '#/components/schemas/WebPageListResponse'
-          description: OK
+
+  /gdn-url-management-api/v2/projects/{projectId}/web-pages/{webPageUid}:
+    get:
+      summary: Get details for URL
+      description: Retrieve detail for the URL.
       tags:
       - GDN url management
-      description: Get list of URLs.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WebPageListRequest'
-        required: true
-      summary: Get list of URLs
-      x-code-samples:
-      - lang: curl
-        source: >
-          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
-          "Content-Type: application/json" -d "$smartlingStringTagJSON"
-          https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/list
-  '/gdn-url-management-api/v2/projects/{projectId}/web-pages/{webPageUid}':
-    get:
+
       parameters:
       - description: Unique identifier of the project within an account.
         in: path
@@ -7788,9 +7776,12 @@ paths:
         schema:
           type: string
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/WebPageDetailsResponse'
               examples:
                 response:
                   value:
@@ -7808,18 +7799,51 @@ paths:
                           name: my.domain.com
                         urlPath: /home/page.htm
                         webPageUid: 23dsd23md
-              schema:
-                $ref: '#/components/schemas/WebPageDetailsResponse'
-          description: OK
-      tags:
-      - GDN url management
-      description: Retrieve detail for the URL.
-      summary: Get details for URL
       x-code-samples:
       - lang: curl
         source: >
           curl -H "Authorization: Bearer $smartlingToken"
           https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/web-pages/$webPageUid
+
+  /gdn-url-management-api/v2/projects/{projectId}/domains:
+    get:
+      summary: Get domains for project
+      description: Get domains for project.
+      tags:
+      - GDN url management
+
+      parameters:
+      - description: Unique identifier of the project within an account.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebPageDomainsResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 1
+                        items:
+                        - name: my.domain.com
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -H "Authorization: Bearer $smartlingToken"
+          https://api.smartling.com/gdn-url-management-api/v2/projects/$smartlingProjectId/domains
+
+  #
+  # Job batches
+  #
 
   '/jobs-batch-api/v1/projects/{projectId}/batches':
     get:
