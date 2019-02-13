@@ -3559,7 +3559,7 @@ paths:
           "Content-Type: application/json" -d "$smartlingSeverityLevelJSON"
           https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/severity-level
 
-  '/issues-api/v2/projects/{projectId}/issues/{issueUid}/comments':
+  /issues-api/v2/projects/{projectId}/issues/{issueUid}/comments:
     post:
       summary: Create comment
       description: >-
@@ -7521,28 +7521,7 @@ paths:
         schema:
           type: string
       requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                tags:
-                  description: List of tags
-                  items:
-                    type: string
-                  maxItems: 100
-                  minItems: 1
-                  type: array
-                stringHashcodes:
-                  description: List of string hashcodes
-                  items:
-                    type: string
-                  maxItems: 1000
-                  type: array
-              required:
-              - tags
-              - stringHashcodes
-              type: object
-        required: true
+        $ref: '#/components/requestBodies/TagsWithStrings'
       responses:
         200:
           description: OK
@@ -7572,28 +7551,7 @@ paths:
         schema:
           type: string
       requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                tags:
-                  description: List of tags
-                  items:
-                    type: string
-                  maxItems: 100
-                  minItems: 1
-                  type: array
-                stringHashcodes:
-                  description: List of string hashcodes
-                  items:
-                    type: string
-                  maxItems: 1000
-                  type: array
-              required:
-              - tags
-              - stringHashcodes
-              type: object
-        required: true
+        $ref: '#/components/requestBodies/TagsWithStrings'
       responses:
         200:
           description: OK
@@ -7847,6 +7805,11 @@ paths:
 
   '/jobs-batch-api/v1/projects/{projectId}/batches':
     get:
+      summary: List batches
+      description: 'List existing batches for the project, filtered by the given criteria.'
+      tags:
+      - Job batches
+
       parameters:
         - description: An unique identifier for a project.
           in: path
@@ -7865,12 +7828,7 @@ paths:
           in: query
           name: status
           schema:
-            enum:
-              - DRAFT
-              - ADDING_FILES
-              - EXECUTING
-              - COMPLETED
-            type: string
+            $ref: '#/components/schemas/BatchStatus'
         - description: The field to sort by
           in: query
           name: sortBy
@@ -7906,9 +7864,12 @@ paths:
             default: 20
             type: integer
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/ListBatchesResponse'
               examples:
                 response:
                   value:
@@ -7916,46 +7877,44 @@ paths:
                       code: SUCCESS
                       data:
                         items:
-                          - authorized: 'true'
-                            batchUid: 559ce40f2789
-                            createdDate: '2015-11-21T11:51:17Z'
-                            hasError: 'false'
-                            modifiedDate: '2015-11-21T11:51:17Z'
-                            projectId: asf53fds34
-                            status: DRAFT
-                            translationJobUid: 635gf40f9846
-                          - authorized: 'true'
-                            batchUid: 456dv32d0934
-                            createdDate: '2015-11-21T11:51:17Z'
-                            hasError: 'false'
-                            modifiedDate: '2015-11-22T10:24:14Z'
-                            projectId: asf53fds34
-                            status: EXECUTING
-                            translationJobUid: 635gf40f9846
+                        - authorized: 'true'
+                          batchUid: 559ce40f2789
+                          createdDate: '2015-11-21T11:51:17Z'
+                          hasError: 'false'
+                          modifiedDate: '2015-11-21T11:51:17Z'
+                          projectId: asf53fds34
+                          status: DRAFT
+                          translationJobUid: 635gf40f9846
+                        - authorized: 'true'
+                          batchUid: 456dv32d0934
+                          createdDate: '2015-11-21T11:51:17Z'
+                          hasError: 'false'
+                          modifiedDate: '2015-11-22T10:24:14Z'
+                          projectId: asf53fds34
+                          status: EXECUTING
+                          translationJobUid: 635gf40f9846
                         totalCount: 2
-              schema:
-                $ref: '#/components/schemas/ListBatchesResponse'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Job batches
-      description: 'List existing batches for the project, filtered by the given criteria.'
-      summary: List batches
       x-code-samples:
         - lang: curl
-          source: >
+          source: |
             curl -X GET \
-
-            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches?translationJobUid={translationJobUid}&status={status}&sortBy=createdDate&orderBy=desc&offset=0&limit=20'
-            \
-
+            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches?translationJobUid={translationJobUid}&status={status}&sortBy=createdDate&orderBy=desc&offset=0&limit=20' \
             -H "Authorization: Bearer $smartlingToken"
     post:
+      summary: Create batch
+      description: >-
+        Creates a new batch for the given Job. If `authorize` is set to `true`,
+        then Job authorize will be triggered on the batch execute step. When the
+        batch is created, it has the status: `NEW`.
+      tags:
+      - Job batches
+
       parameters:
         - description: A unique identifier for a project.
           in: path
@@ -7964,10 +7923,19 @@ paths:
           schema:
             format: uid
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBatchRequest'
+        description: Create Batch Request
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBatchResponse'
               examples:
                 response:
                   value:
@@ -7975,16 +7943,16 @@ paths:
                       code: SUCCESS
                       data:
                         batchUid: qwe0rty98poi
-              schema:
-                $ref: '#/components/schemas/CreateBatchResponse'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
-        '404':
+        404:
+          description: provided translationJobUid is not found in the TMS
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -7993,26 +7961,9 @@ paths:
                       errors:
                         key: job.not.found
                         message: >-
-                          Job {translationJobUid} not found for project
-                          {projectId}.
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-          description: provided translationJobUid is not found in the TMS
+                          Job {translationJobUid} not found for project {projectId}.
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Job batches
-      description: >-
-        Creates a new batch for the given Job. If `authorize` is set to `true`,
-        then Job authorize will be triggered on the batch execute step. When the
-        batch is created, it has the status: `NEW`.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateBatchRequest'
-        description: Create Batch Request
-      summary: Create batch
       x-code-samples:
         - lang: curl
           source: >
@@ -8021,8 +7972,16 @@ paths:
             -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
             application/json" -d '{"translationJobUid":
             "$translationJobUid","authorize": true}'
+
   '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}':
     get:
+      summary: Get batch status
+      description: >-
+        Returns batch status with detailed statuses of all batch items and their
+        locales.
+      tags:
+      - Job batches
+
       parameters:
         - description: A unique identifier for a project.
           in: path
@@ -8039,9 +7998,12 @@ paths:
             format: uid
             type: string
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/BatchStatusResponse'
               examples:
                 response:
                   value:
@@ -8050,43 +8012,43 @@ paths:
                       data:
                         authorized: 'true'
                         files:
-                          - errors: ''
-                            fileUri: files/example1.json
-                            status: ATTACHING
-                            targetLocales:
-                              - localeId: de-DE
-                                stringsAdded: 0
-                                stringsSkipped: 0
-                              - localeId: fr-FR
-                                stringsAdded: 0
-                                stringsSkipped: 0
-                            updatedDate: '2015-11-21T11:53:17Z'
-                          - errors: ''
-                            fileUri: files/example2.xml
-                            status: UPLOADING
-                            targetLocales:
-                              - localeId: de-DE
-                                stringsAdded: 0
-                                stringsSkipped: 0
-                              - localeId: fr-FR
-                                stringsAdded: 0
-                                stringsSkipped: 0
-                            updatedDate: '2015-11-21T11:54:19Z'
+                        - errors: ''
+                          fileUri: files/example1.json
+                          status: ATTACHING
+                          targetLocales:
+                          - localeId: de-DE
+                            stringsAdded: 0
+                            stringsSkipped: 0
+                          - localeId: fr-FR
+                            stringsAdded: 0
+                            stringsSkipped: 0
+                          updatedDate: '2015-11-21T11:53:17Z'
+                        - errors: ''
+                          fileUri: files/example2.xml
+                          status: UPLOADING
+                          targetLocales:
+                          - localeId: de-DE
+                            stringsAdded: 0
+                            stringsSkipped: 0
+                          - localeId: fr-FR
+                            stringsAdded: 0
+                            stringsSkipped: 0
+                          updatedDate: '2015-11-21T11:54:19Z'
                         generalErrors: ''
                         projectId: dg63gkb4v
                         status: ADDING_FILES
                         translationJobUid: sjhs782hdb4djf
                         updatedDate: '2015-11-21T11:51:17Z'
-              schema:
-                $ref: '#/components/schemas/BatchStatusResponse'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
-        '404':
+        404:
+          description: provided translationJobUid is not found in the TMS
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -8095,67 +8057,10 @@ paths:
                       errors:
                         key: Batch.not.found
                         message: 'Bob {batchUid} not found for project {projectId}.'
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-          description: provided translationJobUid is not found in the TMS
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Job batches
-      description: >-
-        Returns batch status with detailed statuses of all batch items and their
-        locales.
-      summary: Get batch status
     post:
-      parameters:
-        - description: A unique identifier for a project.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            format: uid
-            type: string
-        - description: A unique identifier for a batch.
-          in: path
-          name: batchUid
-          required: true
-          schema:
-            format: uid
-            type: string
-      responses:
-        '202':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-              schema:
-                $ref: '#/components/schemas/EmptyResponse'
-          description: ACCEPTED
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        '404':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        key: Batch.not.found
-                        message: 'Bob {batchUid} not found for project {projectId}.'
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-          description: provided translationJobUid is not found in the TMS
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Job batches
+      summary: Execute batch
       description: >-
         Triggers asynchronous execution of a batch.
 
@@ -8168,29 +8073,9 @@ paths:
 
         Batch execution is allowed only if the batch is in `ADDING_FILES`
         status.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BatchActionRequest'
-      summary: Execute batch
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -X POST \
+      tags:
+      - Job batches
 
-            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches/$batchUid'
-            \
-
-            -H "Authorization: Bearer $smartlingToken" \
-
-            -H "Content-Type: application/json" \
-
-            -d '{
-                "action": "execute"
-             }'
-  '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}/file':
-    post:
       parameters:
         - description: A unique identifier for a project.
           in: path
@@ -8206,66 +8091,55 @@ paths:
           schema:
             format: uid
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchActionRequest'
       responses:
-        '202':
+        202:
+          description: ACCEPTED
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
               examples:
                 response:
                   value:
                     response:
                       code: SUCCESS
-                      data:
-                        message: >-
-                          Your file was successfully uploaded. Word and string
-                          counts are not available right now.
-              schema:
-                $ref: '#/components/schemas/FilesAPIUploadAcceptedResponse'
-          description: ACCEPTED
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
-        '404':
+        404:
+          description: provided translationJobUid is not found in the TMS
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
                     response:
                       code: VALIDATION_ERROR
                       errors:
-                        key: batch.not.found
-                        message: >-
-                          Batch with uid={batchUid} and projectId={projectId}
-                          not found.
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-          description: Batch provided in path is not found
-        '423':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: RESOURCE_LOCKED
-                      errors:
-                        key: resource.locked
-                        message: >-
-                          The file is currently being processed and will be
-                          available in a few minutes.
-              schema:
-                $ref: '#/components/schemas/Error423Response'
-          description: >-
-            The requested file is currently being processed by another
-            operation. The file will be unlocked after the operation completes.
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
+                        key: Batch.not.found
+                        message: 'Bob {batchUid} not found for project {projectId}.'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Job batches
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST \
+            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches/$batchUid' \
+            -H "Authorization: Bearer $smartlingToken" \
+            -H "Content-Type: application/json" \
+            -d '{ "action": "execute" }'
+
+  /jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}/file:
+    post:
+      summary: Add file to a batch
       description: >
         This endpoint is actually a proxy for Upload File in the Files API, and
         it works with these two differences:
@@ -8284,11 +8158,44 @@ paths:
         service controls whether the file upload finished. Content is parsed,
         all strings are ingested, and the file is then attached to the Job which
         is linked to the batch for locales, described in `localeIdsToAuthorize`.
+      tags:
+      - Job batches
+
+      parameters:
+        - description: A unique identifier for a project.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uid
+            type: string
+        - description: A unique identifier for a batch.
+          in: path
+          name: batchUid
+          required: true
+          schema:
+            format: uid
+            type: string
       requestBody:
         content:
           multipart/form-data:
             schema:
               properties:
+                file:
+                  type: file
+                  description: The file contents to upload.
+                fileUri:
+                  description: >
+                    A value that uniquely identifies the uploaded file. This ID
+                    can be used to request the file back. We recommend that you
+                    use file path and file name, similar to how version control
+                    systems identify the file.
+
+
+                    Example: `/myproject/i18n/ui.properties`
+                  type: string
+                fileType:
+                  $ref: '#/components/schemas/FileType'
                 authorize:
                   default: false
                   description: >
@@ -8297,6 +8204,58 @@ paths:
                     Endpoint accepts this field to be consistent with `File
                     Upload` but it doesn't relay it to File Api
                   type: boolean
+                'localeIdsToAuthorize[]':
+                  description: >
+                    This value declares locales list which should be used when
+                    file is attached to a job.
+
+
+                    **Note**: File will not be authorized for these locales once
+                    it is uploaded. Authorization is happened only when job is
+                    authorized.
+                  items:
+                    type: string
+                  type: array
+                smartling.namespace:
+                  description: >
+                    This is only for accounts created after July 31st, 2015.
+                    Define a custom
+                    [namespace](https://developer.smartling.com/v2.0/docs/string-sharing-namespaces)
+                    for the file.
+
+
+                    **Note**: While this parameter shares the format of other
+                    file directives, it will not work as an inline directive and
+                    must be specified in the API call.
+                  type: string
+                smartling.file_charset:
+                  description: >
+                    Specifies a custom charset for text-format files. The value
+                    should be the name of the character set. See a full list of
+                    supported character sets here.
+
+
+                    If this directive is not used, Smartling will use the
+                    ```Content-Type``` request header to determine if the
+                    content is encoded with UTF-16, UTF-16B or UTF-16LE. If
+                    there is no ```Content-Type``` header, Smartling will
+                    examine the file for UTF-16 characters. If none are
+                    detected, UTF-8 encoding will be used.
+
+
+                    **Note**: Once this property has been set for a file, it
+                    cannot be changed. If you reupload the file, it will use the
+                    original charset, even if you change the directive. An error
+                    will be returned if this directive is used when uploading
+                    binary-format file types, such as Office or IDML files.
+                  type: string
+                'smartling.[command]':
+                  description: >
+                    Provides custom parser configuration for supported file
+                    types. See [Supported File
+                    Types](https://developer.smartling.com/docs/supported-file-types)
+                    for more details.
+                  type: string
                 callbackUrl:
                   description: >
                     A GET request that creates a callback to a URL when a file
@@ -8322,124 +8281,132 @@ paths:
                     complete, it responds with status `202`.
                   format: url
                   type: string
-                fileType:
-                  description: A unique identifier for the file type.
-                  enum:
-                    - android
-                    - ios
-                    - gettext
-                    - html
-                    - java_properties
-                    - xliff
-                    - xml
-                    - json
-                    - docx
-                    - pptx
-                    - xlsx
-                    - idml
-                    - qt
-                    - resx
-                    - plain_text
-                    - csv
-                    - srt
-                    - stringsdict
-                    - xls
-                    - doc
-                    - ppt
-                    - pres
-                    - madcap
-                    - yaml
-                    - markdown
-                  type: string
-                fileUri:
-                  description: >
-                    A value that uniquely identifies the uploaded file. This ID
-                    can be used to request the file back. We recommend that you
-                    use file path and file name, similar to how version control
-                    systems identify the file.
-
-
-                    Example: `/myproject/i18n/ui.properties`
-                  type: string
-                'localeIdsToAuthorize[]':
-                  description: >
-                    This value declares locales list which should be used when
-                    file is attached to a job.
-
-
-                    **Note**: File will not be authorized for these locales once
-                    it is uploaded. Authorization is happened only when job is
-                    authorized.
-                  items:
-                    type: string
-                  type: array
-                'smartling.[command]':
-                  description: >
-                    Provides custom parser configuration for supported file
-                    types. See [Supported File
-                    Types](https://developer.smartling.com/docs/supported-file-types)
-                    for more details.
-                  type: string
-                smartling.file_charset:
-                  description: >
-                    Specifies a custom charset for text-format files. The value
-                    should be the name of the character set. See a full list of
-                    supported character sets here.
-
-
-                    If this directive is not used, Smartling will use the
-                    ```Content-Type``` request header to determine if the
-                    content is encoded with UTF-16, UTF-16B or UTF-16LE. If
-                    there is no ```Content-Type``` header, Smartling will
-                    examine the file for UTF-16 characters. If none are
-                    detected, UTF-8 encoding will be used.
-
-
-                    **Note**: Once this property has been set for a file, it
-                    cannot be changed. If you reupload the file, it will use the
-                    original charset, even if you change the directive. An error
-                    will be returned if this directive is used when uploading
-                    binary-format file types, such as Office or IDML files.
-                  type: string
-                smartling.namespace:
-                  description: >
-                    This is only for accounts created after July 31st, 2015.
-                    Define a custom
-                    [namespace](https://developer.smartling.com/v2.0/docs/string-sharing-namespaces)
-                    for the file.
-
-
-                    **Note**: While this parameter shares the format of other
-                    file directives, it will not work as an inline directive and
-                    must be specified in the API call.
-                  type: string
               required:
-                - fileUri
+              - file
+              - fileUri
+              - fileType
+              - localeIdsToAuthorize[]
               type: object
         required: true
-      summary: Add file to a batch
+      responses:
+        202:
+          description: ACCEPTED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilesAPIUploadAcceptedResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        message: >-
+                          Your file was successfully uploaded. Word and string
+                          counts are not available right now.
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        404:
+          description: Batch provided in path is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        key: batch.not.found
+                        message: >-
+                          Batch with uid={batchUid} and projectId={projectId}
+                          not found.
+        423:
+          description: >-
+            The requested file is currently being processed by another
+            operation. The file will be unlocked after the operation completes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error423Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: RESOURCE_LOCKED
+                      errors:
+                        key: resource.locked
+                        message: >-
+                          The file is currently being processed and will be
+                          available in a few minutes.
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
-          source: >
+          source: |
             curl -X POST \
-
-            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches/{batchUid}/file'
-            \
-
+            'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches/{batchUid}/file' \
             -H "Authorization: Bearer $smartlingToken" \
-
             -F "file=@file.properties;type=text/plain" \
-
             -F "fileUri=file.properties" \
-
             -F "fileType=javaProperties" \
-
             -F "localeIdsToAuthorize[]=fr-FR" \
-
             -F "localeIdsToAuthorize[]=ru-RU"
+
+#
+# Vendors API
+#
+
+  /vendors-api/v2/agencies/{agencyUid}/jobs:
+    get:
+      summary: List available jobs
+      description: Returns the list of jobs available for the agency.
+      tags:
+      - Vendors
+
+      parameters:
+      - in: path
+        name: agencyUid
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorsAPIJobsListSuccessResponse'
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+      - lang: curl
+        source: |
+          curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" \
+          https://api.smartling.com/vendors-api/v2/agencies/{agencyUid}/jobs
+
+#
+# Reports API
+#
 
   /reports-api/v3/word-count:
     get:
+      summary: Get Word Count Report
+      description: Word Count report data for the specified parameters.
+      tags:
+      - Reports
+
       parameters:
         - description: >-
             A parameter to limit words processed on or after the
@@ -8540,9 +8507,12 @@ paths:
             minimum: 0
             type: integer
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/WordCountResponse'
               examples:
                 response:
                   value:
@@ -8550,42 +8520,39 @@ paths:
                       code: SUCCESS
                       data:
                         items:
-                          - accountName: Test Account
-                            accountUid: 35a84f71
-                            agencyName: Test Agency 1
-                            agencyUid: 0ed85b93
-                            fuzzyProfileName: Default
-                            fuzzyTier: 85 - 94.9%
-                            jobName: Translation Job 1
-                            jobUid: f12ad8e9
-                            projectId: ba952f4c
-                            projectName: Test Project 1
-                            targetLocaleId: es-ES
-                            targetLocaleName: Spanish (Spain)
-                            translationResourceName: Agency Translator 5
-                            translationResourceUid: da57302e
-                            weightedWordCount: 4
-                            wordCount: 20
-                            workflowStepType: Translation
-                          - accountName: Test Account
-                            accountUid: 35a84f71
-                            agencyName: Test Agency 2
-                            agencyUid: 4d6230e1
-                            jobName: Translation Job 1
-                            jobUid: f12ad8e9
-                            projectId: ba952f4c
-                            projectName: Test Project 1
-                            targetLocaleId: es-ES
-                            targetLocaleName: Spanish (Spain)
-                            translationResourceName: Agency Editor 12
-                            translationResourceUid: 5eb90a14
-                            weightedWordCount: 20
-                            wordCount: 20
-                            workflowStepType: Edit
+                        - accountName: Test Account
+                          accountUid: 35a84f71
+                          agencyName: Test Agency 1
+                          agencyUid: 0ed85b93
+                          fuzzyProfileName: Default
+                          fuzzyTier: 85 - 94.9%
+                          jobName: Translation Job 1
+                          jobUid: f12ad8e9
+                          projectId: ba952f4c
+                          projectName: Test Project 1
+                          targetLocaleId: es-ES
+                          targetLocaleName: Spanish (Spain)
+                          translationResourceName: Agency Translator 5
+                          translationResourceUid: da57302e
+                          weightedWordCount: 4
+                          wordCount: 20
+                          workflowStepType: Translation
+                        - accountName: Test Account
+                          accountUid: 35a84f71
+                          agencyName: Test Agency 2
+                          agencyUid: 4d6230e1
+                          jobName: Translation Job 1
+                          jobUid: f12ad8e9
+                          projectId: ba952f4c
+                          projectName: Test Project 1
+                          targetLocaleId: es-ES
+                          targetLocaleName: Spanish (Spain)
+                          translationResourceName: Agency Editor 12
+                          translationResourceUid: 5eb90a14
+                          weightedWordCount: 20
+                          wordCount: 20
+                          workflowStepType: Edit
                         resultsTruncated: false
-              schema:
-                $ref: '#/components/schemas/WordCountResponse'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -8594,13 +8561,14 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Reports
-      description: |
-        Word Count report data for the specified parameters.
-      summary: Get Word Count Report
+
   /reports-api/v3/word-count/csv:
     get:
+      summary: Export Word Count in CSV format
+      description: Export Word Count report in CSV format.
+      tags:
+      - Reports
+
       parameters:
         - description: >-
             A parameter to limit words processed on or after the
@@ -8692,7 +8660,8 @@ paths:
             default: true
             type: boolean
       responses:
-        '200':
+        200:
+          description: OK
           content:
             text/csv:
               examples:
@@ -8703,95 +8672,6 @@ paths:
                     Count,Weighted Words Test Account,Test Project,Translation
                     Job,Translator 1,Test Agency 1,Spanish
                     (Spain),Translation,Default,85 - 94.9%,20,4
-          description: OK
-        '400':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        details: unknown.parameter
-                        key: unknown.field
-                        message: >-
-                          The field unknown.parameter was not expected. Please
-                          consult the documentation to verify the fields you are
-                          submitting.
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-            text/csv:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-          description: Provided request parameters are invalid.
-        '401':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: AUTHENTICATION_ERROR
-                      errors:
-                        details: {}
-                        key: invalid_token
-                        message: Invalid token
-              schema:
-                $ref: '#/components/schemas/Error401Response'
-            text/csv:
-              schema:
-                $ref: '#/components/schemas/Error401Response'
-          description: Provided credentials are not valid.
-        '429':
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    response:
-                      code: MAX_OPERATIONS_LIMIT_EXCEEDED
-                      errors:
-                        key: too.many.requests
-                        message: >-
-                          The limit of 10 concurrent Smartling file API
-                          operations for this project has been exceeded.
-              schema:
-                $ref: '#/components/schemas/Error429Response'
-            text/csv:
-              schema:
-                $ref: '#/components/schemas/Error429Response'
-          description: Too many simultaneous API requests.
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500Response'
-            text/csv:
-              schema:
-                $ref: '#/components/schemas/Error500Response'
-          description: Unexpected error
-      tags:
-        - Reports
-      description: |
-        Export Word Count report in CSV format.
-      summary: Export Word Count in CSV format
-
-  '/vendors-api/v2/agencies/{agencyUid}/jobs':
-    get:
-      parameters:
-        - in: path
-          name: agencyUid
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VendorsAPIJobsListSuccessResponse'
-          description: OK
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -8800,28 +8680,11 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
-      tags:
-        - Vendors
-      description: |
-        Returns the list of jobs available for the agency.
-      summary: List available jobs
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
-            application/json"
-            https://api.smartling.com/vendors-api/v2/agencies/{agencyUid}/jobs
 
 components:
 
   requestBodies:
-    CommentRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/CommentRequest'
-      required: true
-    Tagswithstrings:
+    TagsWithStrings:
       content:
         application/json:
           schema:
@@ -8844,14 +8707,16 @@ components:
               - stringHashcodes
             type: object
       required: true
-    WatcherRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/WatcherRequest'
-      required: true
 
   schemas:
+    BatchStatus:
+      enum:
+      - DRAFT
+      - ADDING_FILES
+      - EXECUTING
+      - COMPLETED
+      type: string
+
     AccountAPIListProjectItem:
       example:
         accountUid: ab5f1939
