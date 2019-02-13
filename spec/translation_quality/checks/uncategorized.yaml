@@ -1,47 +1,49 @@
-definitions:
-  account_check_types_UNCATEGORIZED_settings_effective:
-    get:
-      description: >-
-        Get checktype UNCATEGORIZED settings for certain account.
-      summary: Get checktype UNCATEGORIZED settings for certain account
-      tags:
-        - Translation quality check
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
-        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+components:
+  schemas:
 
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+    account_check_types_UNCATEGORIZED_settings_effective:
+      get:
+        description: >-
+          Get checktype UNCATEGORIZED settings for certain account.
+        summary: Get checktype UNCATEGORIZED settings for certain account
+        tags:
+          - Translation quality check
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        parameters:
+          - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+          - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
 
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/UNCATEGORIZED:
+        responses:
+          200:
+            description: OK
+            schema:
+              $ref: '#/components/schemas/AccountCheckTypeEffectiveResponse'
 
-  AccountCheckTypeEffectiveDTO:
-    allOf:
-      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
-      - type: object
-        properties:
-          checkTypeCode:
-            type: string
-            enum:
-              - UNCATEGORIZED
-            description: check type code
-            example: "UNCATEGORIZED"
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/UNCATEGORIZED:
 
-  AccountCheckTypeEffectiveResponse:
-    allOf:
-      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
-      - type: object
-        properties:
-          data:
-            allOf:
-              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - UNCATEGORIZED
+              description: check type code
+              example: "UNCATEGORIZED"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
