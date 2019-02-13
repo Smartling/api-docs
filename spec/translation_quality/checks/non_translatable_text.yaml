@@ -1,0 +1,147 @@
+definitions:
+  account_check_types_NON_TRANSLATABLE_TEXT_settings_effective:
+    get:
+      description: >-
+        Get checktype NON_TRANSLATABLE_TEXT settings for certain account.
+      summary: Get checktype NON_TRANSLATABLE_TEXT settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/NON_TRANSLATABLE_TEXT:
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - NON_TRANSLATABLE_TEXT
+            description: check type code
+            example: "NON_TRANSLATABLE_TEXT"
+          subTypes:
+            type: array
+            items:
+              type: object
+              properties:
+                checkSubTypeCode:
+                  type: string
+                  enum:
+                    - PLACEABLE_ADDED
+                    - PLACEABLE_DELETED
+                    - SPACES_AROUND_PLACEABLE
+                    - PLACEABLE_FORMAT
+                  description: check subtype code
+                  example: "PLACEABLE_ADDED"
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - NON_TRANSLATABLE_TEXT
+            description: check type code
+            example: "NON_TRANSLATABLE_TEXT"
+          details:
+            type: object
+            properties:
+              placeable:
+                type: string
+                description: placeable
+                example: "{0}"
+              type:
+                type: string
+                enum:
+                  - PLACEABLE_ADDED
+                  - PLACEABLE_DELETED
+                  - SPACES_AROUND_PLACEABLE
+                  - PLACEABLE_FORMAT
+                description: type
+                example: "PLACEABLE_DELETED"
+          positionTypeCode:
+            type: string
+            enum:
+              - SOURCE
+            description: position type code
+            example: "SOURCE"
+
+#NON_TRANSLATABLE_TEXT
+#{
+#    "sourceLocaleId": "en-US",
+#    "targetLocaleId": "hu-HU",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#            "originalString": "hello {0}",
+#            "translation": "Szia"
+#        }],
+#    "checkTypeCodes": [
+#        "NON_TRANSLATABLE_TEXT"
+#    ]
+#}
+#
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "hello {0}",
+#                        "translation": "Szia",
+#                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "NON_TRANSLATABLE_TEXT",
+#                            "severityLevelCode": "MEDIUM",
+#                            "positions": [
+#                                {
+#                                    "from": 6,
+#                                    "to": 9
+#                                }
+#                            ],
+#                            "details": {
+#                                "placeable": "{0}",
+#                                "type": "PLACEABLE_DELETED"
+#                            },
+#                            "positionTypeCode": "SOURCE"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}

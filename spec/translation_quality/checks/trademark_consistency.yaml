@@ -1,0 +1,128 @@
+definitions:
+  account_check_types_TRADEMARK_CONSISTENCY_settings_effective:
+    get:
+      description: >-
+        Get checktype TRADEMARK_CONSISTENCY settings for certain account.
+      summary: Get checktype TRADEMARK_CONSISTENCY settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/TRADEMARK_CONSISTENCY:
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - TRADEMARK_CONSISTENCY
+            description: check type code
+            example: "TRADEMARK_CONSISTENCY"
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - TRADEMARK_CONSISTENCY
+            description: check type code
+            example: "TRADEMARK_CONSISTENCY"
+          details:
+            type: object
+            properties:
+              trademarkTypeCode:
+                type: string
+                enum:
+                  - SERVICE_MARK
+                  - COPYRIGHT
+                  - REGISTERED
+                  - TRADEMARK
+                description: trademark type code
+                example: "COPYRIGHT"
+          positionTypeCode:
+            type: string
+            enum:
+              - SOURCE
+            description: position type code
+            example: "SOURCE"
+
+#TRADEMARK_CONSISTENCY
+#{
+#    "sourceLocaleId": "en-US",
+#    "targetLocaleId": "hu-HU",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#            "originalString": "hello ©",
+#            "translation": "Szia"
+#        }],
+#    "checkTypeCodes": [
+#        "TRADEMARK_CONSISTENCY"
+#    ]
+#}
+#
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "hello ©",
+#                        "translation": "Szia",
+#                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "TRADEMARK_CONSISTENCY",
+#                            "severityLevelCode": "LOW",
+#                            "positions": [
+#                                {
+#                                    "from": 6,
+#                                    "to": 7
+#                                }
+#                            ],
+#                            "details": {
+#                                "trademarkTypeCode": "COPYRIGHT"
+#                            },
+#                            "positionTypeCode": "SOURCE"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}

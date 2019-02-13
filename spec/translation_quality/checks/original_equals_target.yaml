@@ -1,0 +1,225 @@
+definitions:
+  check_types_ORIGINAL_EQUALS_TARGET_settings:
+    put:
+      description: >-
+        Apply original equals target settings.
+      summary: Apply original equals target settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyOriginalEqualsTargetSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyOriginalEqualsTargetSettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/ORIGINAL_EQUALS_TARGET/settings:
+
+  check_types_ORIGINAL_EQUALS_TARGET_group_settings:
+    put:
+      description: >-
+        Apply original equals target settings.
+      summary: Apply original equals target settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyOriginalEqualsTargetSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyOriginalEqualsTargetSettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/ORIGINAL_EQUALS_TARGET/groups/{groupUid}/settings:
+
+  account_check_types_ORIGINAL_EQUALS_TARGET_settings_effective:
+    get:
+      description: >-
+        Get checktype ORIGINAL_EQUALS_TARGET settings for certain account.
+      summary: Get checktype ORIGINAL_EQUALS_TARGET settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/ORIGINAL_EQUALS_TARGET:
+
+
+  OriginalEqualsTargetSettingsDTO:
+    type: object
+    properties:
+      mustHaveIdenticalTags:
+        type: boolean
+        description: Must have identical tags
+        example: false
+      mustHaveIdenticalCapitalization:
+        type: boolean
+        description: Must have identical capitalization
+        example: true
+
+  AccountCheckTypeApplyOriginalEqualsTargetSettingsRequest:
+    allOf:
+      - $ref: '#/definitions/OriginalEqualsTargetSettingsDTO'
+      - $ref: '../tqc_common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - type: object
+        required:
+          - mustHaveIdenticalTags
+          - mustHaveIdenticalCapitalization
+
+  AccountCheckTypeApplyOriginalEqualsTargetSettingsResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/OriginalEqualsTargetSettingsDTO'
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - $ref: '#/definitions/OriginalEqualsTargetSettingsDTO'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - ORIGINAL_EQUALS_TARGET
+            description: check type code
+            example: "ORIGINAL_EQUALS_TARGET"
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - ORIGINAL_EQUALS_TARGET
+            description: check type code
+            example: "ORIGINAL_EQUALS_TARGET"
+          details:
+            type: object
+            properties:
+              types:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - IDENTICAL_CAPITALIZATION
+                    - IDENTICAL_TAGS
+                  example: '["IDENTICAL_CAPITALIZATION", "IDENTICAL_TAGS"]'
+          positionTypeCode:
+            type: string
+            enum:
+              - TARGET
+            description: position type code
+            example: "TARGET"
+
+#ORIGINAL_EQUALS_TARGET
+#{
+#    "sourceLocaleId": "en-US",
+#    "targetLocaleId": "hu-HU",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#            "originalString": "hello",
+#            "translation": "hello"
+#        }],
+#    "checkTypeCodes": [
+#        "ORIGINAL_EQUALS_TARGET"
+#    ]
+#}
+#
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "hello",
+#                        "translation": "hello",
+#                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "ORIGINAL_EQUALS_TARGET",
+#                            "severityLevelCode": "LOW",
+#                            "positions": [
+#                                {
+#                                    "from": 0,
+#                                    "to": 5
+#                                }
+#                            ],
+#                            "details": {
+#                                "types": [
+#                                    "IDENTICAL_CAPITALIZATION",
+#                                    "IDENTICAL_TAGS"
+#                                ]
+#                            },
+#                            "positionTypeCode": "TARGET"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}

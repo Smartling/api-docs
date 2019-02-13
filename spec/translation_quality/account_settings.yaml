@@ -1,0 +1,261 @@
+definitions:
+  check_type_groups:
+    post:
+      description: >-
+        Create check type group.
+      summary: Create check type group
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/checkTypeCode'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeCreateGroupResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode}/groups
+
+    get:
+      description: >-
+        Get check type group.
+      summary: Get check type group
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/checkTypeCode'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeCreateGroupResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode}/groups
+
+  check_type_groups_group:
+    get:
+      description: >-
+        Get check type group by the group identifier.
+      summary: Get check type group by the group identifier
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/checkTypeCode'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/groupUid'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeGroupGetByUidResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode}/groups/$smartlingGroupUid
+
+    delete:
+      description: >-
+        Delete check type group by the group identifier.
+      summary: Delete check type group by the group identifier
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/checkTypeCode'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/groupUid'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeGroupDeleteByUidResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode}/groups/$smartlingGroupUid
+
+  check_type_groups_group_locales:
+    post:
+      description: >-
+        Add locale to group.
+      summary: Add locale to group
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/checkTypeCode'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeGroupAddLocaleRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeGroupAddLocaleResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  targetLocaleId: "it-IT"
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales
+
+
+  check_type_groups_group_locales_locale:
+    delete:
+      description: >-
+        Delete locale from group.
+      summary: Delete locale from group
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/checkTypeCode'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/groupUid'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeGroupDeleteLocaleResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales/$smartlingTargetLocaleId
+
+
+  AccountCheckTypeCreateGroupResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: './tqc_common.yaml#/definitions/responseObjects/groupUid'
+              - type: object
+                properties:
+                  baseSettings:
+                    allOf:
+                      - $ref: './tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+                      - $ref: './tqc_common.yaml#/definitions/responseObjects/checkTypeCode'
+                      - type: object
+                        properties:
+                          subTypes:
+                            type: array
+                            items:
+                              allOf:
+                                - $ref: './tqc_common.yaml#/definitions/responseObjects/checkSubTypeCodeResponse'
+                                - $ref: './tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+                  locales:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: './tqc_common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+
+  AccountCheckTypeGroupGetByUidResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: './tqc_common.yaml#/definitions/responseObjects/groupUid'
+              - type: object
+                properties:
+                  baseSettings:
+                    allOf:
+                      - $ref: './tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+                      - $ref: './tqc_common.yaml#/definitions/responseObjects/checkTypeCode'
+                      - type: object
+                        properties:
+                          subTypes:
+                            type: array
+                            items:
+                              allOf:
+                                - $ref: './tqc_common.yaml#/definitions/responseObjects/checkSubTypeCodeResponse'
+                                - $ref: './tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+                  locales:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: './tqc_common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+
+  AccountCheckTypeGroupDeleteByUidResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: './tqc_common.yaml#/definitions/responseObjects/groupUid'
+
+  AccountCheckTypeGroupAddLocaleRequest:
+    allOf:
+      - $ref: './tqc_common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+
+  AccountCheckTypeGroupAddLocaleResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: './tqc_common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+
+  AccountCheckTypeGroupDeleteLocaleResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: './tqc_common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+

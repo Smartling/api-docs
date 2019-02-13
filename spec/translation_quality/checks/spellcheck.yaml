@@ -1,0 +1,246 @@
+definitions:
+  check_types_SPELLCHECK_settings:
+    put:
+      description: >-
+        Apply spellcheck group settings.
+      summary: Apply spellcheck group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySpellcheckSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySpellcheckSettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SPELLCHECK/settings:
+
+  check_types_SPELLCHECK_group_settings:
+    put:
+      description: >-
+        Apply spellcheck group settings.
+      summary: Apply spellcheck group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySpellcheckSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySpellcheckSettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SPELLCHECK/groups/{groupUid}/settings:
+
+  account_check_types_SPELLCHECK_settings_effective:
+    get:
+      description: >-
+        Get checktype SPELLCHECK settings for certain account.
+      summary: Get checktype SPELLCHECK settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/SPELLCHECK:
+
+
+  SpellcheckSettingsDTO:
+    type: object
+    properties:
+      skipIfWordInUserDictionary:
+        type: boolean
+        description: Skip if word is in user dictionary.
+        example: false
+      skipIfWordStartsWithCapitalLetter:
+        type: boolean
+        description: Skip if word starts with capital letter.
+        example: false
+      skipIfWordAppearsInSourceString:
+        type: boolean
+        description: Skip if word appears in source string.
+        example: false
+      skipIfWordValidInSourceLocale:
+        type: boolean
+        description: Skip if word is valid in source locale.
+        example: false
+      runSpellcheckForSubWords:
+        type: boolean
+        description: Run spellchek for sub words.
+        example: true
+
+  AccountCheckTypeApplySpellcheckSettingsRequest:
+    allOf:
+      - $ref: '#/definitions/SpellcheckSettingsDTO'
+      - $ref: '../tqc_common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - type: object
+        required:
+          - skipIfWordInUserDictionary
+          - skipIfWordStartsWithCapitalLetter
+          - skipIfWordAppearsInSourceString
+          - skipIfWordValidInSourceLocale
+          - runSpellcheckForSubWords
+
+  AccountCheckTypeApplySpellcheckSettingsResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/SpellcheckSettingsDTO'
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - $ref: '#/definitions/SpellcheckSettingsDTO'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - SPELLCHECK
+            description: check type code
+            example: "SPELLCHECK"
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - SOURCE_IN_WRONG_LANGUAGE
+            description: check type code
+            example: "SOURCE_IN_WRONG_LANGUAGE"
+          details:
+            type: object
+            properties:
+              word:
+                type: string
+                description: word
+                example: "Sziaa"
+              suggestions:
+                type: array
+                items:
+                  type: string
+                description: suggestions
+                example: '["Szia", "Szita", "Szila", "Szia a", "Szilvia"]'
+          positionTypeCode:
+            type: string
+            enum:
+              - TARGET
+            description: position type code
+            example: "TARGET"
+
+#SPELLCHECK
+#{
+#    "sourceLocaleId": "en-US",
+#    "targetLocaleId": "hu-HU",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#            "originalString": "hello",
+#            "translation": "Sziaa"
+#        }],
+#    "checkTypeCodes": [
+#        "SPELLCHECK"
+#    ]
+#}
+#
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "hello",
+#                        "translation": "Sziaa",
+#                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "SPELLCHECK",
+#                            "severityLevelCode": "MEDIUM",
+#                            "positions": [
+#                                {
+#                                    "from": 0,
+#                                    "to": 5
+#                                }
+#                            ],
+#                            "details": {
+#                                "word": "Sziaa",
+#                                "suggestions": [
+#                                    "Szia",
+#                                    "Szita",
+#                                    "Szila",
+#                                    "Szia a",
+#                                    "Szilvia"
+#                                ]
+#                            },
+#                            "positionTypeCode": "TARGET"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}
