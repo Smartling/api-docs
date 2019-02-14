@@ -32,6 +32,8 @@ components:
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
         - type: object
+          required:
+            - checkTypeCode
           properties:
             checkTypeCode:
               type: string
@@ -39,6 +41,11 @@ components:
                 - LEADING_TRAILING_SPACES
               description: check type code
               example: "LEADING_TRAILING_SPACES"
+          discriminator:
+            propertyName: checkTypeCode
+            mapping:
+              LEADING_TRAILING_SPACES: '#/components/schemas/response/LEADING_TRAILING_SPACES'
+              ORIGINAL_EQUALS_TARGET: '#/components/schemas/response/ORIGINAL_EQUALS_TARGET'
 
     AccountCheckTypeEffectiveResponse:
       allOf:
@@ -47,7 +54,19 @@ components:
           properties:
             data:
               allOf:
+                - $ref: './accounts.yaml#/components/schemas/CheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    AccountCheckTypeEffectiveResponseNew:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: './accounts.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
 
     TqcCheckMistakeDTO:
       allOf:

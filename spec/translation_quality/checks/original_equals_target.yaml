@@ -132,6 +132,8 @@ components:
         - $ref: '../tqc_common.yaml#/components/schemas/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
         - $ref: '#/components/schemas/OriginalEqualsTargetSettingsDTO'
         - type: object
+          required:
+            - checkTypeCode
           properties:
             checkTypeCode:
               type: string
@@ -139,6 +141,11 @@ components:
                 - ORIGINAL_EQUALS_TARGET
               description: check type code
               example: "ORIGINAL_EQUALS_TARGET"
+          discriminator:
+            propertyName: checkTypeCode
+            mapping:
+              LEADING_TRAILING_SPACES: '#/components/schemas/response/LEADING_TRAILING_SPACES'
+              ORIGINAL_EQUALS_TARGET: '#/components/schemas/response/ORIGINAL_EQUALS_TARGET'
 
     AccountCheckTypeEffectiveResponse:
       allOf:
@@ -147,6 +154,17 @@ components:
           properties:
             data:
               allOf:
+                - $ref: './accounts.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    AccountCheckTypeEffectiveResponseNew:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: './accounts.yaml#/components/schemas/CheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:
