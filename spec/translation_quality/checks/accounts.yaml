@@ -217,8 +217,8 @@ components:
     account_check_types_settings_effective:
       get:
         description: >-
-          test Get checktype settings for certain account.
-        summary: test Get checktype settings for certain account
+          Get checktype settings for certain account.
+        summary: Get checktype settings for certain account
         tags:
           - Translation quality check
         consumes:
@@ -227,37 +227,7 @@ components:
           - application/json
         parameters:
           - $ref: '../../api_common.yaml#/components/schemas/pathParameters/accountUid'
-#          - $ref: '../tqc_common.yaml#/components/schemas/pathParameters/checkTypeCode'
-          - name: checkTypeCode
-            in: path
-            schema:
-              type: string
-              enum:
-                - LEADING_TRAILING_SPACES
-                - ORIGINAL_EQUALS_TARGET
-                - WHITESPACES
-                - SPELLCHECK
-                - UNCATEGORIZED
-                - TAG_CONSISTENCY
-                - TARGET_LENGTH_LIMIT
-                - NUMBER_CONSISTENCY
-                - REPEATED_WORD
-                - TARGET_IN_WRONG_LANGUAGE
-                - SOURCE_IN_WRONG_LANGUAGE
-                - SEGMENT_COMPLETENESS
-                - NON_TRANSLATABLE_TEXT
-                - EMOJI_CONSISTENCY
-                - TAG_VALIDITY
-                - INSERTABLE_CONSISTENCY
-                - TARGET_SOURCE_CONSISTENCY
-                - BLACKLISTED_TERMS
-                - GLOSSARY_COMPLIANCE
-                - TRADEMARK_CONSISTENCY
-                - GRAMMAR_CHECK
-                - GLOBAL_CAPITALISATION_CONSISTENCY
-            required: true
-            description: pet type.
-
+          - $ref: '../tqc_common.yaml#/components/schemas/pathParameters/checkTypeCode'
           - $ref: '../tqc_common.yaml#/components/schemas/requestQueryParameter/targetLocaleId'
 
         responses:
@@ -266,70 +236,101 @@ components:
             content:
               application/json:
                 schema:
-                  oneOf:
-                    - $ref: '#/components/schemas/Cat'
-                    - $ref: '#/components/schemas/Dog'
-                  discriminator:
-                    propertyName: checkTypeCode
-                    mapping:
-                      dog: '#/components/schemas/Dog'
-                      cat: '#/components/schemas/Cat'
+                  allOf:
+                    - $ref: '#/components/schemas/AccountCheckTypeEffectiveResponse'
+                examples:
+                  LEADING_TRAILING_SPACES:
+                    value:
+                      "test1": "test value LEADING_TRAILING_SPACES"
 
-#                  oneOf:
-#                    - $ref: 'leading_trailing_spaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'original_equals_target.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'spellcheck.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'uncategorized.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'tag_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'target_length_limit.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'number_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'repeated_word.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'segment_completeness.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'non_translatable_text.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'emoji_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'tag_validity.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'insertable_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'target_source_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'blacklisted_terms.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'glossary_compliance.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'trademark_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                    - $ref: 'global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                  discriminator:
-#                    propertyName: checkTypeCode
-#                    mapping:
-#                      LEADING_TRAILING_SPACES: 'leading_trailing_spaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      ORIGINAL_EQUALS_TARGET: 'original_equals_target.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      WHITESPACES: 'whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      SPELLCHECK: 'spellcheck.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      UNCATEGORIZED: 'uncategorized.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      TAG_CONSISTENCY: 'tag_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      TARGET_LENGTH_LIMIT: 'target_length_limit.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      NUMBER_CONSISTENCY: 'number_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      REPEATED_WORD: 'repeated_word.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      TARGET_IN_WRONG_LANGUAGE: 'target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      SOURCE_IN_WRONG_LANGUAGE: 'source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      SEGMENT_COMPLETENESS: 'segment_completeness.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      NON_TRANSLATABLE_TEXT: 'non_translatable_text.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      EMOJI_CONSISTENCY: 'emoji_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      TAG_VALIDITY: 'tag_validity.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      INSERTABLE_CONSISTENCY: 'insertable_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      TARGET_SOURCE_CONSISTENCY: 'target_source_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      BLACKLISTED_TERMS: 'blacklisted_terms.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      GLOSSARY_COMPLIANCE: 'glossary_compliance.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      TRADEMARK_CONSISTENCY: 'trademark_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      GRAMMAR_CHECK: 'grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#                      GLOBAL_CAPITALISATION_CONSISTENCY: 'global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+                  ORIGINAL_EQUALS_TARGET:
+                    value:
+                      "test1": "test value ORIGINAL_EQUALS_TARGET"
 
+                  WHITESPACES:
+                    value:
+                      "test1": "test value WHITESPACES"
 
+                  SPELLCHECK:
+                    value:
+                      "test1": "test value"
+
+                  UNCATEGORIZED:
+                    value:
+                      "test1": "test value"
+
+                  TAG_CONSISTENCY:
+                    value:
+                      "test1": "test value"
+
+                  TARGET_LENGTH_LIMIT:
+                    value:
+                      "test1": "test value"
+
+                  NUMBER_CONSISTENCY:
+                    value:
+                      "test1": "test value"
+
+                  REPEATED_WORD:
+                    value:
+                      "test1": "test value"
+
+                  TARGET_IN_WRONG_LANGUAGE:
+                    value:
+                      "test1": "test value"
+
+                  SOURCE_IN_WRONG_LANGUAGE:
+                    value:
+                      "test1": "test value"
+
+                  SEGMENT_COMPLETENESS:
+                    value:
+                      "test1": "test value"
+
+                  NON_TRANSLATABLE_TEXT:
+                    value:
+                      "test1": "test value"
+
+                  EMOJI_CONSISTENCY:
+                    value:
+                      "test1": "test value"
+
+                  TAG_VALIDITY:
+                    value:
+                      "test1": "test value"
+
+                  INSERTABLE_CONSISTENCY:
+                    value:
+                      "test1": "test value"
+
+                  TARGET_SOURCE_CONSISTENCY:
+                    value:
+                      "test1": "test value"
+
+                  BLACKLISTED_TERMS:
+                    value:
+                      "test1": "test value"
+
+                  GLOSSARY_COMPLIANCE:
+                    value:
+                      "test1": "test value"
+
+                  TRADEMARK_CONSISTENCY:
+                    value:
+                      "test1": "test value"
+
+                  GRAMMAR_CHECK:
+                    value:
+                      "test1": "test value"
+
+                  GLOBAL_CAPITALISATION_CONSISTENCY:
+                    value:
+                      "test1": "test value"
 
         x-code-samples:
           - lang: curl
             source: |
-              curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/SPELLCHECK:
+              curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/{checkTypeCode}:
 
     TqcAccountGetCheckTypesResponse:
       allOf:
@@ -378,78 +379,44 @@ components:
         mapping:
           LEADING_TRAILING_SPACES: '#/components/schemas/response/LEADING_TRAILING_SPACES'
           ORIGINAL_EQUALS_TARGET: '#/components/schemas/response/ORIGINAL_EQUALS_TARGET'
+          WHITESPACES: '#/components/schemas/response/WHITESPACES'
+          SPELLCHECK: '#/components/schemas/response/SPELLCHECK'
+          UNCATEGORIZED: '#/components/schemas/response/UNCATEGORIZED'
+          TAG_CONSISTENCY: '#/components/schemas/response/TAG_CONSISTENCY'
+          TARGET_LENGTH_LIMIT: '#/components/schemas/response/TARGET_LENGTH_LIMIT'
+          NUMBER_CONSISTENCY: '#/components/schemas/response/NUMBER_CONSISTENCY'
+          REPEATED_WORD: '#/components/schemas/response/REPEATED_WORD'
+          TARGET_IN_WRONG_LANGUAGE: '#/components/schemas/response/TARGET_IN_WRONG_LANGUAGE'
+          SOURCE_IN_WRONG_LANGUAGE: '#/components/schemas/response/SOURCE_IN_WRONG_LANGUAGE'
+          SEGMENT_COMPLETENESS: '#/components/schemas/response/SEGMENT_COMPLETENESS'
+          NON_TRANSLATABLE_TEXT: '#/components/schemas/response/NON_TRANSLATABLE_TEXT'
+          EMOJI_CONSISTENCY: '#/components/schemas/response/EMOJI_CONSISTENCY'
+          TAG_VALIDITY: '#/components/schemas/response/TAG_VALIDITY'
+          INSERTABLE_CONSISTENCY: '#/components/schemas/response/INSERTABLE_CONSISTENCY'
+          TARGET_SOURCE_CONSISTENCY: '#/components/schemas/response/TARGET_SOURCE_CONSISTENCY'
+          BLACKLISTED_TERMS: '#/components/schemas/response/BLACKLISTED_TERMS'
+          GLOSSARY_COMPLIANCE: '#/components/schemas/response/GLOSSARY_COMPLIANCE'
+          TRADEMARK_CONSISTENCY: '#/components/schemas/response/TRADEMARK_CONSISTENCY'
+          GRAMMAR_CHECK: '#/components/schemas/response/GRAMMAR_CHECK'
+          GLOBAL_CAPITALISATION_CONSISTENCY: '#/components/schemas/response/GLOBAL_CAPITALISATION_CONSISTENCY'
 
-#          LEADING_TRAILING_SPACES: 'leading_trailing_spaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          ORIGINAL_EQUALS_TARGET: 'original_equals_target.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          WHITESPACES: 'whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          SPELLCHECK: 'spellcheck.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          UNCATEGORIZED: 'uncategorized.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          TAG_CONSISTENCY: 'tag_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          TARGET_LENGTH_LIMIT: 'target_length_limit.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          NUMBER_CONSISTENCY: 'number_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          REPEATED_WORD: 'repeated_word.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          TARGET_IN_WRONG_LANGUAGE: 'target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          SOURCE_IN_WRONG_LANGUAGE: 'source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          SEGMENT_COMPLETENESS: 'segment_completeness.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          NON_TRANSLATABLE_TEXT: 'non_translatable_text.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          EMOJI_CONSISTENCY: 'emoji_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          TAG_VALIDITY: 'tag_validity.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          INSERTABLE_CONSISTENCY: 'insertable_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          TARGET_SOURCE_CONSISTENCY: 'target_source_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          BLACKLISTED_TERMS: 'blacklisted_terms.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          GLOSSARY_COMPLIANCE: 'glossary_compliance.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          TRADEMARK_CONSISTENCY: 'trademark_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          GRAMMAR_CHECK: 'grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-#          GLOBAL_CAPITALISATION_CONSISTENCY: 'global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-
-    Pet:
-      type: object
-      discriminator:
-        propertyName: checkTypeCode
-        mapping:
-#          dog: '/spec/translation_quality/checks/accounts.yaml#/components/schemas/Dog'
-#          cat: '/spec/translation_quality/checks/accounts.yaml#/components/schemas/Cat'
-          dog: '#/components/schemas/Dog'
-          cat: '#/components/schemas/Cat'
-      properties:
-        name:
-          type: string
-        checkTypeCode:
-          type: string
-      required:
-        - name
-        - checkTypeCode
-
-    Cat:
-      description: A representation of a cat
+    AccountCheckTypeEffectiveAbstractDTO:
       allOf:
-        - $ref: '#/components/schemas/Pet'
         - type: object
           properties:
-            catName:
+            checkTypeCode:
               type: string
-              description: The cat name
-          required:
-            - catName
+              enum:
+                - NONE
+              description: check type code
+              example: "NONE"
 
-    Dog:
-      description: A representation of a Dog
+    AccountCheckTypeEffectiveResponse:
       allOf:
-        - $ref: '#/components/schemas/Pet'
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
         - type: object
           properties:
-            dogName:
-              type: string
-              description: The dog name
-          required:
-            - dogName
-
-    testSchema:
-      oneOf:
-        - $ref: '#/components/schemas/Dog'
-        - $ref: '#/components/schemas/Cat'
-      discriminator:
-        propertyName: checkTypeCode
-        mapping:
-          dog: '#/components/schemas/Dog'
-          cat: '#/components/schemas/Cat'
+            data:
+              allOf:
+                - $ref: '#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveAbstractDTO'
