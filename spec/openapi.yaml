@@ -1744,6 +1744,7 @@ paths:
                   value:
                     response:
                       code: SUCCESS
+                      data:
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -2439,6 +2440,7 @@ paths:
                   value:
                     response:
                       code: SUCCESS
+                      data:
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -2843,6 +2845,7 @@ paths:
                   value:
                     response:
                       code: SUCCESS
+                      data:
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -3028,7 +3031,8 @@ paths:
                }
             }
           ]
-        }```
+        }
+        ```
 
         For `HTML` context, each binding may have the `selector` element with `anchors` array, specifying the enclosing the string HTML elements with the corresponding value of the `data-sl-anchor` attribute.
         If not specified, binding will still be created with the empty `anchors` array, effectively making it not anchored to a particular element and thus invisible in CAT Tool:
@@ -3043,7 +3047,8 @@ paths:
                }
             }
           ]
-        }```
+        }
+        ```
 
         For `VIDEO` context, each binding mave the `timecode` data, specifying the start and end time of the string appearance in the video:
         ```JSON
@@ -3058,7 +3063,8 @@ paths:
                 }
             }
           ]
-        }```
+        }
+        ```
       tags:
       - Context
 
@@ -3275,16 +3281,19 @@ paths:
         schema:
           type: string
       requestBody:
+        description: New issue for a string
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/IssueRequest'
-        description: New issue for a string
         required: true
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/CreateIssueResponse'
               examples:
                 response:
                   value:
@@ -3303,9 +3312,6 @@ paths:
                         reportedByUserUid: 661801f19693
                         string:
                           hashcode: c32c16cddafd63dfa0dc12449372a093
-              schema:
-                $ref: '#/components/schemas/CreateIssueResponse'
-          description: OK
       x-code-samples:
       - lang: curl
         source: >
@@ -3816,9 +3822,12 @@ paths:
               $ref: '#/components/schemas/FindRequest'
         required: true
       responses:
-        '200':
+        200:
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/IssuesFindResponse'
               examples:
                 response:
                   value:
@@ -3840,9 +3849,6 @@ paths:
                             hashcode: c32c16cddafd63dfa0dc12449372a093
                             localeId: ru-RU
                         totalCount: 1
-              schema:
-                $ref: '#/components/schemas/IssuesFindResponse'
-          description: OK
       x-code-samples:
       - lang: curl
         source: >
@@ -5989,6 +5995,10 @@ paths:
                     response:
                       code: SUCCESS
                       data:
+                        translationJobUid: abc123abc
+                        jobName: myJobName
+                        targetLocaleIds:
+                        - fr-FR
                         callbackMethod: GET|POST
                         callbackUrl: 'https://www.callback.com/smartling/job'
                         createdByUserUid: userUid123abc
@@ -5996,15 +6006,11 @@ paths:
                         description: my job description
                         dueDate: '2015-11-21T11:51:17Z'
                         firstCompletedDate: '2015-11-21T11:51:17Z'
-                        jobName: myJobName
                         jobStatus: IN_PROGRESS
                         lastCompletedDate: '2015-11-21T11:51:17Z'
                         modifiedByUserUid: userUid321abc
                         modifiedDate: '2015-11-21T11:51:17Z'
                         referenceNumber: myReferenceNumber1
-                        targetLocaleIds:
-                        - fr-FR
-                        translationJobUid: abc123abc
         400:
           description: Validation error during job creation.
           content:
@@ -7816,6 +7822,73 @@ paths:
   #
 
   '/jobs-batch-api/v1/projects/{projectId}/batches':
+    post:
+      summary: Create batch
+      description: >-
+        Creates a new batch for the given Job. If `authorize` is set to `true`,
+        then Job authorize will be triggered on the batch execute step. When the
+        batch is created, it has the status: `NEW`.
+      tags:
+      - Job batches
+
+      parameters:
+      - description: A unique identifier for a project.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          format: uid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBatchRequest'
+        description: Create Batch Request
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBatchResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        batchUid: qwe0rty98poi
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        404:
+          description: provided translationJobUid is not found in the TMS
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        key: job.not.found
+                        message: >-
+                          Job {translationJobUid} not found for project {projectId}.
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST
+          "https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches"
+          -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
+          application/json" -d '{"translationJobUid":
+          "$translationJobUid","authorize": true}'
+
     get:
       summary: List batches
       description: 'List existing batches for the project, filtered by the given criteria.'
@@ -7918,72 +7991,6 @@ paths:
             curl -X GET \
             'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches?translationJobUid={translationJobUid}&status={status}&sortBy=createdDate&orderBy=desc&offset=0&limit=20' \
             -H "Authorization: Bearer $smartlingToken"
-    post:
-      summary: Create batch
-      description: >-
-        Creates a new batch for the given Job. If `authorize` is set to `true`,
-        then Job authorize will be triggered on the batch execute step. When the
-        batch is created, it has the status: `NEW`.
-      tags:
-      - Job batches
-
-      parameters:
-        - description: A unique identifier for a project.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            format: uid
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateBatchRequest'
-        description: Create Batch Request
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateBatchResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        batchUid: qwe0rty98poi
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        404:
-          description: provided translationJobUid is not found in the TMS
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        key: job.not.found
-                        message: >-
-                          Job {translationJobUid} not found for project {projectId}.
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-      x-code-samples:
-        - lang: curl
-          source: >
-            curl -X POST
-            "https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches"
-            -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
-            application/json" -d '{"translationJobUid":
-            "$translationJobUid","authorize": true}'
 
   '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}':
     get:
@@ -9231,6 +9238,10 @@ components:
                 description: Unique identifier for the context.
                 format: uuid
                 type: string
+              stringHashcode:
+                description: Unique identifier for the translatable.
+                format: hash
+                type: string
               coordinates:
                 $ref: '#/components/schemas/Coordinates'
               selector:
@@ -9241,10 +9252,6 @@ components:
                       type: string
                     type: array
                 type: object
-              stringHashcode:
-                description: Unique identifier for the translatable.
-                format: hash
-                type: string
               timecode:
                 $ref: '#/components/schemas/Timecode'
             required:
@@ -9408,17 +9415,25 @@ components:
       type: object
     CountRequest:
       properties:
-        answered:
-          description: Issue flag "answered"
-          example: true
-          type: boolean
+        createdDateBefore:
+          description: Filter issues which created before this date
+          type: string
         createdDateAfter:
           description: Filter issues which created after this date
           example: '2015-11-10T15:14:09Z'
           type: string
-        createdDateBefore:
-          description: Filter issues which created before this date
+        resolvedDateBefore:
+          description: Filter issues which resolved before this date
+          example: '2015-12-23T18:14:09Z'
           type: string
+        resolvedDateAfter:
+          description: Filter issues which resolved after this date
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        answered:
+          description: Issue flag "answered"
+          example: true
+          type: boolean
         issueSeverityLevelCodes:
           items:
             description: Issue Severity Level identifier
@@ -9461,14 +9476,6 @@ components:
         reportedByUserUid:
           description: User identifier who created issue
           example: 661801f19693
-          type: string
-        resolvedDateAfter:
-          description: Filter issues which resolved after this date
-          example: '2015-11-10T15:14:09Z'
-          type: string
-        resolvedDateBefore:
-          description: Filter issues which resolved before this date
-          example: '2015-12-23T18:14:09Z'
           type: string
         stringFilter:
           properties:
@@ -9652,14 +9659,22 @@ components:
     CreateJobRequest:
       description: The payload to use when creating a job.
       properties:
-        callbackMethod:
-          description: The HTTP method to call (GET|POST) when invoking the `callbackUrl`.
-          example: GET
+        jobName:
+          description: >-
+            The name of the job to create. It must be unique within the
+            Smartling project. `jobName` is **required**.
+          example: This is my job name.
+          maxLength: 170
           type: string
-        callbackUrl:
-          description: The URL for Smartling to invoke when the job is completed.
-          example: 'https://myDomain.com'
-          type: string
+        targetLocaleIds:
+          description: >-
+            The array of `localeId`s to be used when creating the job. The
+            locales specified must be valid within the Smartling project.
+          example:
+          - ru-RU
+          items:
+            type: string
+          type: array
         description:
           description: >-
             The description of the job. The description is limited to 2,000
@@ -9671,26 +9686,18 @@ components:
           example: '2020-11-21T01:51:17Z'
           format: date-time
           type: string
-        jobName:
-          description: >-
-            The name of the job to create. It must be unique within the
-            Smartling project. `jobName` is **required**.
-          example: This is my job name.
-          maxLength: 170
-          type: string
         referenceNumber:
           description: Customer specific number/identifier for the job.
           example: referenceNumb1
           type: string
-        targetLocaleIds:
-          description: >-
-            The array of `localeId`s to be used when creating the job. The
-            locales specified must be valid within the Smartling project.
-          example:
-            - ru-RU
-          items:
-            type: string
-          type: array
+        callbackUrl:
+          description: The URL for Smartling to invoke when the job is completed.
+          example: 'https://myDomain.com'
+          type: string
+        callbackMethod:
+          description: The HTTP method to call (GET|POST) when invoking the `callbackUrl`.
+          example: GET
+          type: string
       type: object
     CreateStringResponse:
       allOf:
@@ -10504,18 +10511,26 @@ components:
       type: object
     FindRequest:
       properties:
-        answered:
-          description: Issue flag "answered".
-          example: false
-          type: boolean
-        createdDateAfter:
-          description: Filter issues which were created after this date.
-          example: '2015-11-10T15:14:09Z'
-          type: string
         createdDateBefore:
           description: Filter issues which were created before this date.
           example: '2015-12-23T18:14:09Z'
           type: string
+        createdDateAfter:
+          description: Filter issues which were created after this date.
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        resolvedDateBefore:
+          description: Filter issues which were resolved before this date.
+          example: '2015-12-23T18:14:09Z'
+          type: string
+        resolvedDateAfter:
+          description: Filter issues which were resolved after this date.
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        answered:
+          description: Issue flag "answered".
+          example: false
+          type: boolean
         issueSeverityLevelCodes:
           items:
             description: Issue Severity Level identifier
@@ -10555,64 +10570,10 @@ components:
               - TRANSLATION
             type: string
           type: array
-        limit:
-          default: 30
-          description: limit
-          example: 30
-          minimum: 0
-          type: integer
-        offset:
-          default: 0
-          description: offset
-          example: 0
-          minimum: 0
-          type: integer
         reportedByUserUid:
           description: User identifier who created the issue.
           example: 661801f19693
           type: string
-        resolvedDateAfter:
-          description: Filter issues which were resolved after this date.
-          example: '2015-11-10T15:14:09Z'
-          type: string
-        resolvedDateBefore:
-          description: Filter issues which were resolved before this date.
-          example: '2015-12-23T18:14:09Z'
-          type: string
-        sortBy:
-          description: Sort result by fields
-          example:
-            - direction: ASC
-              fieldName: createdDate
-            - direction: DESC
-              fieldName: resolvedDate
-          properties:
-            items:
-              items:
-                properties:
-                  direction:
-                    description: Sort direction
-                    enum:
-                      - ASC
-                      - DESC
-                    type: string
-                  fieldName:
-                    description: Sort by certain field
-                    enum:
-                      - issueTypeCode
-                      - issueSubTypeCode
-                      - issueStateCode
-                      - createdDate
-                      - resolvedDate
-                      - hashcode
-                      - issueText
-                      - issueTextModifiedDate
-                      - resolvedByUserUid
-                      - reportedByUserUid
-                    type: string
-                type: object
-              type: array
-          type: object
         stringFilter:
           properties:
             hashcodes:
@@ -10633,6 +10594,52 @@ components:
               items:
                 description: An identifying code for a language in Smartling.
                 type: string
+              type: array
+          type: object
+        limit:
+          default: 30
+          description: limit
+          example: 30
+          minimum: 0
+          type: integer
+        offset:
+          default: 0
+          description: offset
+          example: 0
+          minimum: 0
+          type: integer
+        sortBy:
+          description: Sort result by fields
+          example:
+          - direction: ASC
+            fieldName: createdDate
+          - direction: DESC
+            fieldName: resolvedDate
+          properties:
+            items:
+              items:
+                properties:
+                  direction:
+                    description: Sort direction
+                    enum:
+                    - ASC
+                    - DESC
+                    type: string
+                  fieldName:
+                    description: Sort by certain field
+                    enum:
+                    - issueTypeCode
+                    - issueSubTypeCode
+                    - issueStateCode
+                    - createdDate
+                    - resolvedDate
+                    - hashcode
+                    - issueText
+                    - issueTextModifiedDate
+                    - resolvedByUserUid
+                    - reportedByUserUid
+                    type: string
+                type: object
               type: array
           type: object
       type: object
@@ -11034,12 +11041,17 @@ components:
           type: object
     IssueRequest:
       properties:
-        issueSeverityLevelCode:
-          description: Issue Severity Level identifier
+        issueText:
+          description: Free text field explaining an issue.
+          example: This translation is incorrect. Please fix.
+          type: string
+        issueTypeCode:
+          description: >-
+            Identifies the issue type. issueTypeCode is either `SOURCE` or
+            `TRANSLATION`. Each have their own set of ```issueSubType``` values.
           enum:
-            - LOW
-            - MEDIUM
-            - HIGH
+          - SOURCE
+          - TRANSLATION
           type: string
         issueSubTypeCode:
           description: >-
@@ -11055,18 +11067,6 @@ components:
             - GENERAL_ISSUE
             - REVIEW_TRANSLATION
             - CUSTOM
-          type: string
-        issueText:
-          description: Free text field explaining an issue.
-          example: This translation is incorrect. Please fix.
-          type: string
-        issueTypeCode:
-          description: >-
-            Identifies the issue type. issueTypeCode is either `SOURCE` or
-            `TRANSLATION`. Each have their own set of ```issueSubType``` values.
-          enum:
-            - SOURCE
-            - TRANSLATION
           type: string
         string:
           properties:
@@ -11085,6 +11085,13 @@ components:
             - hashcode
             - localeId
           type: object
+        issueSeverityLevelCode:
+          description: Issue Severity Level identifier
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+          type: string
       required:
         - issueText
         - issueTypeCode
@@ -11749,7 +11756,7 @@ components:
                   type: string
               type: object
           type: object
-    ProgressInfoReposnse:
+    ProgressInfoResponse:
       properties:
         data:
           properties:
@@ -11778,7 +11785,7 @@ components:
                         $ref: '#/components/schemas/ContentProgressReportItemResponse'
                       type: array
                     progress:
-                      $ref: '#/components/schemas/ProgressInfoReposnse'
+                      $ref: '#/components/schemas/ProgressInfoResponse'
                   type: object
               required:
                 - data
@@ -12423,13 +12430,9 @@ components:
     UpdateJobRequest:
       description: The payload to use when updating a job.
       properties:
-        callbackMethod:
-          description: The HTTP method to call (GET|POST) when invoking the `callbackUrl`.
-          example: GET
-          type: string
-        callbackUrl:
-          description: The URL for Smartling to invoke once the job is completed.
-          example: 'https://myDomain.com'
+        jobName:
+          description: The name of the job. It must be unique within the Smartling project.
+          maxLength: 170
           type: string
         description:
           description: The description of the job.
@@ -12439,13 +12442,17 @@ components:
           example: '2020-11-21T01:51:17Z'
           format: date-time
           type: string
-        jobName:
-          description: The name of the job. It must be unique within the Smartling project.
-          maxLength: 170
-          type: string
         referenceNumber:
           description: Customer specific number/identifier for the job.
           example: CustomerReferenceNum1
+          type: string
+        callbackUrl:
+          description: The URL for Smartling to invoke once the job is completed.
+          example: 'https://myDomain.com'
+          type: string
+        callbackMethod:
+          description: The HTTP method to call (GET|POST) when invoking the `callbackUrl`.
+          example: GET
           type: string
       type: object
     UpdateTerm:
@@ -13001,7 +13008,7 @@ components:
                   code: MAX_OPERATIONS_LIMIT_EXCEEDED
                   errors:
                     key: too.many.requests
-                    message: >
+                    message: >-
                       The limit of 10 concurrent Smartling file API
                       operations for this project has been exceeded.
 
