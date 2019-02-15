@@ -2429,12 +2429,17 @@ paths:
           format: uuid
           type: string
       responses:
-        '200':
+        200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: object
+                required:
+                - response
+                properties:
+                  response:
+                    $ref: '#/components/schemas/SuccessResponse'
               examples:
                 response:
                   value:
@@ -2839,7 +2844,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: object
+                required:
+                - response
+                properties:
+                  response:
+                    $ref: '#/components/schemas/SuccessResponse'
               examples:
                 response:
                   value:
@@ -4895,31 +4905,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: object
+                required:
+                - response
+                properties:
+                  response:
+                    $ref: '#/components/schemas/SuccessResponse'
               examples:
                 response:
                   value:
                     response:
                       code: SUCCESS
-                      data:
-                        antonyms: ''
-                        caseSensitive: false
-                        definition: ''
-                        doNotTranslate: false
-                        exactMatch: false
-                        notes: ''
-                        partOfSpeechCode: VERB
-                        seo: false
-                        synonyms: ''
-                        termText: cold call
-                        translation:
-                          localeId: fr-CA
-                          lockTranslation: false
-                          notes: some notes from user
-                          submittedForTranslation: true
-                          translatedTerm: cold call french ca
-                          translatorUserUid: 58870b8e965
-                        variations: ''
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -5545,7 +5541,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: object
+                required:
+                - response
+                properties:
+                  response:
+                    $ref: '#/components/schemas/SuccessResponse'
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -5589,7 +5590,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: object
+                required:
+                - response
+                properties:
+                  response:
+                    $ref: '#/components/schemas/SuccessResponse'
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -7546,7 +7552,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: object
+                required:
+                - response
+                properties:
+                  response:
+                    $ref: '#/components/schemas/SuccessResponse'
       x-code-samples:
       - lang: curl
         source: >
@@ -7576,7 +7587,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: object
+                required:
+                - response
+                properties:
+                  response:
+                    $ref: '#/components/schemas/SuccessResponse'
       x-code-samples:
       - lang: curl
         source: >
@@ -7619,7 +7635,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: object
+                required:
+                - response
+                properties:
+                  response:
+                    $ref: '#/components/schemas/SuccessResponse'
       x-code-samples:
       - lang: curl
         source: >
@@ -8788,48 +8809,58 @@ components:
         - sourceLocaleDescription
       type: object
     AccountAPIProjectListSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    $ref: '#/components/schemas/AccountAPIListProjectItem'
-                  type: array
-                totalCount:
-                  description: The number of projects that match your specified criteria
-                  type: integer
-              required:
-                - totalCount
-                - items
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/AccountAPIListProjectItem'
+                      type: array
+                    totalCount:
+                      description: The number of projects that match your specified criteria
+                      type: integer
+                  required:
+                    - totalCount
+                    - items
+                  type: object
               type: object
-          type: object
     AccountIssueTypesResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      description:
-                        description: Issue Type description
-                        type: string
-                      issueTypeCode:
-                        description: Issue Type identifier
-                        enum:
-                          - SOURCE
-                          - TRANSLATION
-                        type: string
-                    type: object
-                  type: array
-                totalCount:
-                  description: Total element count
-                  type: integer
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          description:
+                            description: Issue Type description
+                            type: string
+                          issueTypeCode:
+                            description: Issue Type identifier
+                            enum:
+                              - SOURCE
+                              - TRANSLATION
+                            type: string
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
               type: object
-          type: object
     AddFileJobRequest:
       description: The payload to use when adding a file to a job.
       properties:
@@ -9015,13 +9046,20 @@ components:
         - userIdentifier
         - userSecret
       type: object
+
     AuthenticationResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              $ref: '#/components/schemas/Authentication'
-          type: object
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+          - $ref: '#/components/schemas/SuccessResponse'
+          - properties:
+              data:
+                $ref: '#/components/schemas/Authentication'
+            type: object
+
     AuthorizeJobItemRequest:
       description: Indicates which workflow to authorize for a given locale.
       properties:
@@ -9159,48 +9197,53 @@ components:
           type: integer
       type: object
     BatchStatusResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                authorized:
-                  description: >-
-                    The flag showing if authorizing job is requested for this
-                    Batch
-                  type: boolean
-                files:
-                  items:
-                    $ref: '#/components/schemas/BatchItem'
-                  type: array
-                generalErrors:
-                  description: >-
-                    Describes a list of errors which occured while batch
-                    processing
-                  type: string
-                projectId:
-                  description: The UID of the project
-                  format: uid
-                  type: string
-                status:
-                  description: The status of the Batch
-                  enum:
-                    - DRAFT
-                    - ADDING_FILES
-                    - EXECUTING
-                    - COMPLETED
-                  type: string
-                translationJobUid:
-                  description: The UID of the translationJob
-                  format: uid
-                  type: string
-                updatedDate:
-                  description: The UTC value of the date the batch was updated.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    authorized:
+                      description: >-
+                        The flag showing if authorizing job is requested for this
+                        Batch
+                      type: boolean
+                    files:
+                      items:
+                        $ref: '#/components/schemas/BatchItem'
+                      type: array
+                    generalErrors:
+                      description: >-
+                        Describes a list of errors which occured while batch
+                        processing
+                      type: string
+                    projectId:
+                      description: The UID of the project
+                      format: uid
+                      type: string
+                    status:
+                      description: The status of the Batch
+                      enum:
+                        - DRAFT
+                        - ADDING_FILES
+                        - EXECUTING
+                        - COMPLETED
+                      type: string
+                    translationJobUid:
+                      description: The UID of the translationJob
+                      format: uid
+                      type: string
+                    updatedDate:
+                      description: The UTC value of the date the batch was updated.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                  type: object
               type: object
-          type: object
       description: 'A list of found, filtered and sorted batches'
     Binding:
       description: String to context binding
@@ -9261,21 +9304,26 @@ components:
           type: array
       type: object
     BindingsResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    $ref: '#/components/schemas/Binding'
-                  type: array
-                totalCount:
-                  type: integer
-              required:
-                - items
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/Binding'
+                      type: array
+                    totalCount:
+                      type: integer
+                  required:
+                    - items
+                  type: object
               type: object
-          type: object
     CancelJobRequest:
       description: The payload to use when cancelling a job.
       properties:
@@ -9331,24 +9379,29 @@ components:
         - name
       type: object
     ContextListResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    $ref: '#/components/schemas/Context'
-                  type: array
-                offset:
-                  description: >-
-                    Result set is partial, if not empty. To retreive everything,
-                    request should be repeated with offset value.
-                  type: string
-              required:
-                - items
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/Context'
+                      type: array
+                    offset:
+                      description: >-
+                        Result set is partial, if not empty. To retreive everything,
+                        request should be repeated with offset value.
+                      type: string
+                  required:
+                    - items
+                  type: object
               type: object
-          type: object
     ContextResponse:
       properties:
         response:
@@ -9513,54 +9566,64 @@ components:
           type: string
       type: object
     CreateBatchResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                batchUid:
-                  description: The UID of the created batch.
-                  type: string
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    batchUid:
+                      description: The UID of the created batch.
+                      type: string
+                  type: object
               type: object
-          type: object
       description: Info about created batch.
     CreateBindingsResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                created:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
                   properties:
-                    items:
-                      items:
-                        $ref: '#/components/schemas/Binding'
-                      type: array
-                    totalCount:
-                      type: integer
+                    created:
+                      properties:
+                        items:
+                          items:
+                            $ref: '#/components/schemas/Binding'
+                          type: array
+                        totalCount:
+                          type: integer
+                      required:
+                        - items
+                      type: object
+                    errors:
+                      properties:
+                        items:
+                          items:
+                            properties:
+                              message:
+                                type: string
+                            required:
+                              - message
+                            type: object
+                          type: array
+                        totalCount:
+                          type: integer
+                      required:
+                        - items
+                      type: object
                   required:
-                    - items
+                    - created
                   type: object
-                errors:
-                  properties:
-                    items:
-                      items:
-                        properties:
-                          message:
-                            type: string
-                        required:
-                          - message
-                        type: object
-                      type: array
-                    totalCount:
-                      type: integer
-                  required:
-                    - items
-                  type: object
-              required:
-                - created
               type: object
-          type: object
     CreateGlossary:
       properties:
         description:
@@ -9579,83 +9642,88 @@ components:
         - sourceLocaleId
       type: object
     CreateIssueResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                answered:
-                  description: Issue flag "aswered"
-                  type: boolean
-                createdDate:
-                  description: Issue creation date
-                  type: string
-                issueSeverityLevelCode:
-                  description: Issue Severity Level identifier
-                  enum:
-                    - LOW
-                    - MEDIUM
-                    - HIGH
-                  type: string
-                issueStateCode:
-                  description: Issue State identifier
-                  enum:
-                    - OPENED
-                    - RESOLVED
-                  type: string
-                issueSubTypeCode:
-                  description: Issue SubType identifier
-                  enum:
-                    - CLARIFICATION
-                    - MISSPELLING
-                    - POOR_TRANSLATION
-                    - DOES_NOT_FIT_SPACE
-                    - PLACEHOLDER_ISSUE
-                    - GENERAL_ISSUE
-                    - REVIEW_TRANSLATION
-                    - CUSTOM
-                  type: string
-                issueText:
-                  description: Issue text
-                  type: string
-                issueTextModifiedDate:
-                  description: Issue text modification date
-                  type: string
-                issueTypeCode:
-                  description: Issue Type identifier
-                  enum:
-                    - SOURCE
-                    - TRANSLATION
-                  type: string
-                issueUid:
-                  description: Issue identifier
-                  type: string
-                projectId:
-                  description: Project identifier
-                  type: string
-                reportedByUserUid:
-                  description: User identifier who created (reported) issue
-                  type: string
-                resolvedByUserUid:
-                  description: User uid who resolved issue
-                  type: string
-                resolvedDate:
-                  description: Issue resolve date
-                  type: string
-                string:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
                   properties:
-                    hashcode:
-                      description: >-
-                        Unique identifier for a string in Smartling. Used by the
-                        Issues API to attach an issue to a string. You can get
-                        the hashcode for a string via String API.
+                    answered:
+                      description: Issue flag "aswered"
+                      type: boolean
+                    createdDate:
+                      description: Issue creation date
                       type: string
-                    localeId:
-                      description: An identifying code for a language in Smartling.
+                    issueSeverityLevelCode:
+                      description: Issue Severity Level identifier
+                      enum:
+                        - LOW
+                        - MEDIUM
+                        - HIGH
                       type: string
+                    issueStateCode:
+                      description: Issue State identifier
+                      enum:
+                        - OPENED
+                        - RESOLVED
+                      type: string
+                    issueSubTypeCode:
+                      description: Issue SubType identifier
+                      enum:
+                        - CLARIFICATION
+                        - MISSPELLING
+                        - POOR_TRANSLATION
+                        - DOES_NOT_FIT_SPACE
+                        - PLACEHOLDER_ISSUE
+                        - GENERAL_ISSUE
+                        - REVIEW_TRANSLATION
+                        - CUSTOM
+                      type: string
+                    issueText:
+                      description: Issue text
+                      type: string
+                    issueTextModifiedDate:
+                      description: Issue text modification date
+                      type: string
+                    issueTypeCode:
+                      description: Issue Type identifier
+                      enum:
+                        - SOURCE
+                        - TRANSLATION
+                      type: string
+                    issueUid:
+                      description: Issue identifier
+                      type: string
+                    projectId:
+                      description: Project identifier
+                      type: string
+                    reportedByUserUid:
+                      description: User identifier who created (reported) issue
+                      type: string
+                    resolvedByUserUid:
+                      description: User uid who resolved issue
+                      type: string
+                    resolvedDate:
+                      description: Issue resolve date
+                      type: string
+                    string:
+                      properties:
+                        hashcode:
+                          description: >-
+                            Unique identifier for a string in Smartling. Used by the
+                            Issues API to attach an issue to a string. You can get
+                            the hashcode for a string via String API.
+                          type: string
+                        localeId:
+                          description: An identifying code for a language in Smartling.
+                          type: string
+                      type: object
                   type: object
               type: object
-          type: object
     CreateJobRequest:
       description: The payload to use when creating a job.
       properties:
@@ -9700,78 +9768,88 @@ components:
           type: string
       type: object
     CreateStringResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    $ref: '#/components/schemas/CreatedString'
-                  type: array
-                processUid:
-                  description: >-
-                    If the request takes longer than 60 seconds to process, a
-                    `202` response will be returned, indicating the request has
-                    not failed, but is not yet complete. Use the processUid
-                    value to check the status of the request using the Check
-                    Create String Status request.
-                  type: string
-                stringCount:
-                  description: Total number of strings captured as a result of the request.
-                  type: number
-                totalCount:
-                  type: number
-                wordCount:
-                  description: Total number of words captured as a result of the request.
-                  type: number
-              type: object
-          type: object
-    CreateStringStatusResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                createdDate:
-                  description: Total number of strings captured as a result of the request.
-                  type: string
-                modifiedDate:
-                  description: >-
-                    If the request takes longer than 60 seconds to process, a
-                    `202` response will be returned, indicating the request has
-                    not failed, but is not yet complete. Use the processUid
-                    value to check the status of the request using the Check
-                    Create String Status request.
-                  type: string
-                processState:
-                  description: State of the request
-                  enum:
-                    - OPEN
-                    - CLOSED
-                    - FAILED
-                  type: string
-                processStatistics:
-                  description: Information on the created or updated string
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
                   properties:
-                    errored:
-                      description: strings that had errors
+                    items:
+                      items:
+                        $ref: '#/components/schemas/CreatedString'
+                      type: array
+                    processUid:
+                      description: >-
+                        If the request takes longer than 60 seconds to process, a
+                        `202` response will be returned, indicating the request has
+                        not failed, but is not yet complete. Use the processUid
+                        value to check the status of the request using the Check
+                        Create String Status request.
                       type: string
-                    processed:
-                      description: strings processed
+                    stringCount:
+                      description: Total number of strings captured as a result of the request.
+                      type: number
+                    totalCount:
+                      type: number
+                    wordCount:
+                      description: Total number of words captured as a result of the request.
+                      type: number
+                  type: object
+              type: object
+    CreateStringStatusResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    createdDate:
+                      description: Total number of strings captured as a result of the request.
                       type: string
-                    requested:
-                      description: strings requested
+                    modifiedDate:
+                      description: >-
+                        If the request takes longer than 60 seconds to process, a
+                        `202` response will be returned, indicating the request has
+                        not failed, but is not yet complete. Use the processUid
+                        value to check the status of the request using the Check
+                        Create String Status request.
                       type: string
-                    skipped:
-                      description: strings skipped
+                    processState:
+                      description: State of the request
+                      enum:
+                        - OPEN
+                        - CLOSED
+                        - FAILED
+                      type: string
+                    processStatistics:
+                      description: Information on the created or updated string
+                      properties:
+                        errored:
+                          description: strings that had errors
+                          type: string
+                        processed:
+                          description: strings processed
+                          type: string
+                        requested:
+                          description: strings requested
+                          type: string
+                        skipped:
+                          description: strings skipped
+                          type: string
+                      type: object
+                    processUid:
+                      description: Unique identifer for a create string request.
                       type: string
                   type: object
-                processUid:
-                  description: Unique identifer for a create string request.
-                  type: string
               type: object
-          type: object
     CreateTerm:
       allOf:
         - $ref: '#/components/schemas/TermData'
@@ -9799,85 +9877,95 @@ components:
           type: string
       type: object
     DetailedJobResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                callbackMethod:
-                  description: >-
-                    The http method (GET|POST) to use when Smartling invokes the
-                    callback URL upon job completion.
-                  type: string
-                callbackUrl:
-                  description: The callback URL to invoke when a job is completed.
-                  type: string
-                createdByUserUid:
-                  description: The userUid of whom created the job.
-                  type: string
-                createdDate:
-                  description: The UTC value of the date the job was created.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                description:
-                  description: The description of the job.
-                  type: string
-                dueDate:
-                  description: The UTC value of the due date for the job.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                firstCompletedDate:
-                  description: The UTC value of when the job was first completed.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                jobName:
-                  description: The name of the job.
-                  type: string
-                jobStatus:
-                  description: The status of the job.
-                  example: >-
-                    DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED |
-                    CANCELLED | CLOSED
-                  type: string
-                lastCompletedDate:
-                  description: The UTC value of when the job was last completed.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                modifiedByUserUid:
-                  description: The userUid of whom last modified the job.
-                  type: string
-                modifiedDate:
-                  description: The UTC value of the date the job was modified.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                sourceFiles:
-                  items:
-                    $ref: '#/components/schemas/SourceFile'
-                  type: array
-                targetLocaleIds:
-                  description: The array of localeIds for the job.
-                  items:
-                    example: de-DE
-                    type: string
-                  type: array
-                translationJobUid:
-                  description: The unique identifier created for the job.
-                  type: string
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    callbackMethod:
+                      description: >-
+                        The http method (GET|POST) to use when Smartling invokes the
+                        callback URL upon job completion.
+                      type: string
+                    callbackUrl:
+                      description: The callback URL to invoke when a job is completed.
+                      type: string
+                    createdByUserUid:
+                      description: The userUid of whom created the job.
+                      type: string
+                    createdDate:
+                      description: The UTC value of the date the job was created.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    description:
+                      description: The description of the job.
+                      type: string
+                    dueDate:
+                      description: The UTC value of the due date for the job.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    firstCompletedDate:
+                      description: The UTC value of when the job was first completed.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    jobName:
+                      description: The name of the job.
+                      type: string
+                    jobStatus:
+                      description: The status of the job.
+                      example: >-
+                        DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED |
+                        CANCELLED | CLOSED
+                      type: string
+                    lastCompletedDate:
+                      description: The UTC value of when the job was last completed.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    modifiedByUserUid:
+                      description: The userUid of whom last modified the job.
+                      type: string
+                    modifiedDate:
+                      description: The UTC value of the date the job was modified.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    sourceFiles:
+                      items:
+                        $ref: '#/components/schemas/SourceFile'
+                      type: array
+                    targetLocaleIds:
+                      description: The array of localeIds for the job.
+                      items:
+                        example: de-DE
+                        type: string
+                      type: array
+                    translationJobUid:
+                      description: The unique identifier created for the job.
+                      type: string
+                  type: object
               type: object
-          type: object
     EmptyResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              description: Always null.
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  description: Always null.
+                  type: object
               type: object
-          type: object
 
     Error:
       type: object
@@ -10063,23 +10151,28 @@ components:
           type: object
       type: object
     FilesAPILastModifiedAllLocalesSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    $ref: '#/components/schemas/FilesAPILastModifiedResponseItem'
-                  type: array
-                totalCount:
-                  description: ''
-                  type: integer
-              required:
-                - totalCount
-                - items
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/FilesAPILastModifiedResponseItem'
+                      type: array
+                    totalCount:
+                      description: ''
+                      type: integer
+                  required:
+                    - totalCount
+                    - items
+                  type: object
               type: object
-          type: object
     FilesAPILastModifiedResponseItem:
       properties:
         lastModified:
@@ -10094,12 +10187,17 @@ components:
         - lastModified
       type: object
     FilesAPILastModifiedSingleLocaleSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              $ref: '#/components/schemas/FilesAPILastModifiedResponseItem'
-          type: object
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/FilesAPILastModifiedResponseItem'
+              type: object
     FilesAPIListFileItem:
       example:
         created: '2016-12-31T00:00:00Z'
@@ -10159,47 +10257,57 @@ components:
         - hasInstructions
       type: object
     FilesAPIListFileTypesSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    $ref: '#/components/schemas/FileType'
-                  type: array
-              required:
-                - items
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/FileType'
+                      type: array
+                  required:
+                    - items
+                  type: object
               type: object
-          type: object
-      example:
-        application/json:
-          response:
-            code: SUCCESS
-            data:
-              items:
-                anyOf:
-                  - android
-                  - ios
-                  - gettext
+          example:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  items:
+                    anyOf:
+                      - android
+                      - ios
+                      - gettext
     FilesAPIListFilesSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    $ref: '#/components/schemas/FilesAPIListFileItem'
-                  type: array
-                totalCount:
-                  description: The number of files that match your specified criteria
-                  type: integer
-              required:
-                - totalCount
-                - items
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/FilesAPIListFileItem'
+                      type: array
+                    totalCount:
+                      description: The number of files that match your specified criteria
+                      type: integer
+                  required:
+                    - totalCount
+                    - items
+                  type: object
               type: object
-          type: object
     FilesAPIStatusAllLocalesItem:
       properties:
         authorizedStringCount:
@@ -10236,217 +10344,232 @@ components:
         - excludedWordCount
       type: object
     FilesAPIStatusAllLocalesSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                created:
-                  description: The time and date of the first upload
-                  format: 'YYYY-MM-DDThh:mm:ssZ'
-                  type: string
-                fileType:
-                  description: The type of file
-                  enum:
-                    - android
-                    - ios
-                    - gettext
-                    - html
-                    - java_properties
-                    - xliff
-                    - xml
-                    - json
-                    - docx
-                    - pptx
-                    - xlsx
-                    - idml
-                    - qt
-                    - resx
-                    - plain_text
-                    - csv
-                    - srt
-                    - stringsdict
-                    - xls
-                    - doc
-                    - ppt
-                    - pres
-                    - madcap
-                    - yaml
-                    - markdown
-                  type: string
-                fileUri:
-                  description: A unique identifier for the uploaded file
-                  type: string
-                hasInstructions:
-                  description: >-
-                    Whether translator instructions have been captured for the
-                    file
-                  type: boolean
-                items:
-                  items:
-                    $ref: '#/components/schemas/FilesAPIStatusAllLocalesItem'
-                  type: array
-                lastUploaded:
-                  description: The time and date of the last upload
-                  format: 'YYYY-MM-DDThh:mm:ssZ'
-                  type: string
-                parserVersion:
-                  description: >-
-                    Records the version of Smartling's File Parser used to parse
-                    the file
-                  type: integer
-                totalCount:
-                  description: Total number of locales status is returned for
-                  type: integer
-                totalStringCount:
-                  description: >-
-                    The number of strings in the uploaded file, minus any
-                    excluded content
-                  type: integer
-                totalWordCount:
-                  description: >-
-                    The number of words in the uploaded file, minus any excluded
-                    content
-                  type: integer
-              required:
-                - fileUri
-                - totalStringCount
-                - totalWordCount
-                - fileType
-                - lastUploaded
-                - totalCount
-                - parserVersion
-                - hasInstructions
-                - items
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    created:
+                      description: The time and date of the first upload
+                      format: 'YYYY-MM-DDThh:mm:ssZ'
+                      type: string
+                    fileType:
+                      description: The type of file
+                      enum:
+                        - android
+                        - ios
+                        - gettext
+                        - html
+                        - java_properties
+                        - xliff
+                        - xml
+                        - json
+                        - docx
+                        - pptx
+                        - xlsx
+                        - idml
+                        - qt
+                        - resx
+                        - plain_text
+                        - csv
+                        - srt
+                        - stringsdict
+                        - xls
+                        - doc
+                        - ppt
+                        - pres
+                        - madcap
+                        - yaml
+                        - markdown
+                      type: string
+                    fileUri:
+                      description: A unique identifier for the uploaded file
+                      type: string
+                    hasInstructions:
+                      description: >-
+                        Whether translator instructions have been captured for the
+                        file
+                      type: boolean
+                    items:
+                      items:
+                        $ref: '#/components/schemas/FilesAPIStatusAllLocalesItem'
+                      type: array
+                    lastUploaded:
+                      description: The time and date of the last upload
+                      format: 'YYYY-MM-DDThh:mm:ssZ'
+                      type: string
+                    parserVersion:
+                      description: >-
+                        Records the version of Smartling's File Parser used to parse
+                        the file
+                      type: integer
+                    totalCount:
+                      description: Total number of locales status is returned for
+                      type: integer
+                    totalStringCount:
+                      description: >-
+                        The number of strings in the uploaded file, minus any
+                        excluded content
+                      type: integer
+                    totalWordCount:
+                      description: >-
+                        The number of words in the uploaded file, minus any excluded
+                        content
+                      type: integer
+                  required:
+                    - fileUri
+                    - totalStringCount
+                    - totalWordCount
+                    - fileType
+                    - lastUploaded
+                    - totalCount
+                    - parserVersion
+                    - hasInstructions
+                    - items
+                  type: object
               type: object
-          type: object
     FilesAPIStatusSingleLocaleSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                authorizedStringCount:
-                  description: >-
-                    The number of strings in the uploaded file that are
-                    authorized (available for translation)
-                  type: integer
-                authorizedWordCount:
-                  description: >-
-                    The number of words in the uploaded file that are authorized
-                    (available for translation)
-                  type: integer
-                completedStringCount:
-                  description: The number of published strings in the uploaded file
-                  type: integer
-                completedWordCount:
-                  description: The number of published words in the uploaded file
-                  type: integer
-                created:
-                  description: The time and date of the first upload
-                  format: 'YYYY-MM-DDThh:mm:ssZ'
-                  type: string
-                excludedStringCount:
-                  description: The number of excluded strings in the uploaded file
-                  type: integer
-                excludedWordCount:
-                  description: The number of excluded words in the uploaded file
-                  type: integer
-                fileType:
-                  description: The type of file
-                  enum:
-                    - android
-                    - ios
-                    - gettext
-                    - html
-                    - java_properties
-                    - xliff
-                    - xml
-                    - json
-                    - docx
-                    - pptx
-                    - xlsx
-                    - idml
-                    - qt
-                    - resx
-                    - plain_text
-                    - csv
-                    - srt
-                    - stringsdict
-                    - xls
-                    - doc
-                    - ppt
-                    - pres
-                    - madcap
-                    - yaml
-                    - markdown
-                  type: string
-                fileUri:
-                  description: A unique identifier for the uploaded file
-                  type: string
-                hasInstructions:
-                  description: >-
-                    Whether translator instructions have been captured for the
-                    file
-                  type: integer
-                lastUploaded:
-                  description: The time and date of the last upload
-                  format: 'YYYY-MM-DDThh:mm:ssZ'
-                  type: string
-                parserVersion:
-                  description: >-
-                    Records the version of Smartling's File Parser used to parse
-                    the file
-                  type: integer
-                totalStringCount:
-                  description: >-
-                    The number of strings in the uploaded file, minus any
-                    excluded content
-                  type: integer
-                totalWordCount:
-                  description: >-
-                    The number of words in the uploaded file, minus any excluded
-                    content
-                  type: integer
-              required:
-                - fileUri
-                - totalStringCount
-                - totalWordCount
-                - authorizedStringCount
-                - authorizedWordCount
-                - completedStringCount
-                - completedWordCount
-                - excludedStringCount
-                - excludedWordCount
-                - fileType
-                - lastUploaded
-                - created
-                - parserVersion
-                - hasInstructions
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    authorizedStringCount:
+                      description: >-
+                        The number of strings in the uploaded file that are
+                        authorized (available for translation)
+                      type: integer
+                    authorizedWordCount:
+                      description: >-
+                        The number of words in the uploaded file that are authorized
+                        (available for translation)
+                      type: integer
+                    completedStringCount:
+                      description: The number of published strings in the uploaded file
+                      type: integer
+                    completedWordCount:
+                      description: The number of published words in the uploaded file
+                      type: integer
+                    created:
+                      description: The time and date of the first upload
+                      format: 'YYYY-MM-DDThh:mm:ssZ'
+                      type: string
+                    excludedStringCount:
+                      description: The number of excluded strings in the uploaded file
+                      type: integer
+                    excludedWordCount:
+                      description: The number of excluded words in the uploaded file
+                      type: integer
+                    fileType:
+                      description: The type of file
+                      enum:
+                        - android
+                        - ios
+                        - gettext
+                        - html
+                        - java_properties
+                        - xliff
+                        - xml
+                        - json
+                        - docx
+                        - pptx
+                        - xlsx
+                        - idml
+                        - qt
+                        - resx
+                        - plain_text
+                        - csv
+                        - srt
+                        - stringsdict
+                        - xls
+                        - doc
+                        - ppt
+                        - pres
+                        - madcap
+                        - yaml
+                        - markdown
+                      type: string
+                    fileUri:
+                      description: A unique identifier for the uploaded file
+                      type: string
+                    hasInstructions:
+                      description: >-
+                        Whether translator instructions have been captured for the
+                        file
+                      type: integer
+                    lastUploaded:
+                      description: The time and date of the last upload
+                      format: 'YYYY-MM-DDThh:mm:ssZ'
+                      type: string
+                    parserVersion:
+                      description: >-
+                        Records the version of Smartling's File Parser used to parse
+                        the file
+                      type: integer
+                    totalStringCount:
+                      description: >-
+                        The number of strings in the uploaded file, minus any
+                        excluded content
+                      type: integer
+                    totalWordCount:
+                      description: >-
+                        The number of words in the uploaded file, minus any excluded
+                        content
+                      type: integer
+                  required:
+                    - fileUri
+                    - totalStringCount
+                    - totalWordCount
+                    - authorizedStringCount
+                    - authorizedWordCount
+                    - completedStringCount
+                    - completedWordCount
+                    - excludedStringCount
+                    - excludedWordCount
+                    - fileType
+                    - lastUploaded
+                    - created
+                    - parserVersion
+                    - hasInstructions
+                  type: object
               type: object
-          type: object
     FilesAPITranslationImportSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                stringCount:
-                  description: Strings imported
-                  type: integer
-                translationImportErrors:
-                  items:
-                    $ref: '#/components/schemas/FilesApiTranslationImportErrorItem'
-                  type: array
-                wordCount:
-                  description: Words imported.
-                  type: integer
-              required:
-                - wordCount
-                - stringCount
-                - translationImportErrors
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    stringCount:
+                      description: Strings imported
+                      type: integer
+                    translationImportErrors:
+                      items:
+                        $ref: '#/components/schemas/FilesApiTranslationImportErrorItem'
+                      type: array
+                    wordCount:
+                      description: Words imported.
+                      type: integer
+                  required:
+                    - wordCount
+                    - stringCount
+                    - translationImportErrors
+                  type: object
               type: object
-          type: object
     FilesAPIUploadAcceptedResponse:
       properties:
         code:
@@ -10465,28 +10588,33 @@ components:
         - data
       type: object
     FilesAPIUploadSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                overWritten:
-                  description: >-
-                    Indicates whether the uploaded file has overwritten an
-                    existing file.
-                  type: boolean
-                stringCount:
-                  description: The number of strings in the uploaded file
-                  type: integer
-                wordCount:
-                  description: The number of words in the uploaded file
-                  type: integer
-              required:
-                - overWritten
-                - stringCount
-                - wordCount
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    overWritten:
+                      description: >-
+                        Indicates whether the uploaded file has overwritten an
+                        existing file.
+                      type: boolean
+                    stringCount:
+                      description: The number of strings in the uploaded file
+                      type: integer
+                    wordCount:
+                      description: The number of words in the uploaded file
+                      type: integer
+                  required:
+                    - overWritten
+                    - stringCount
+                    - wordCount
+                  type: object
               type: object
-          type: object
     FilesApiTranslationImportErrorItem:
       properties:
         fileUri:
@@ -10817,228 +10945,263 @@ components:
         - answered
       type: object
     IssueAnsweredResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                answered:
-                  description: Issue flag "aswered"
-                  type: boolean
-              type: object
-          type: object
-    IssueCommentAddResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                commentText:
-                  description: Issue comment text
-                  type: string
-                commentTextModifiedDate:
-                  description: Issue comment modification date
-                  type: string
-                createdByUserUid:
-                  description: User identifier who added comment
-                  type: string
-                createdDate:
-                  description: Issue comment creation date
-                  type: string
-                issueCommentUid:
-                  description: Issue comment identifier
-                  type: string
-              type: object
-          type: object
-    IssueCommentEditResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                commentText:
-                  description: Issue comment text
-                  type: string
-                commentTextModifiedDate:
-                  description: Issue comment modification date
-                  type: string
-                createdByUserUid:
-                  description: User identifier who added comment
-                  type: string
-                createdDate:
-                  description: Issue comment creation date
-                  type: string
-                issueCommentUid:
-                  description: Issue comment identifier
-                  type: string
-              type: object
-          type: object
-    IssueCommentGetResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                commentText:
-                  description: Issue comment text
-                  type: string
-                commentTextModifiedDate:
-                  description: Issue comment modification date
-                  type: string
-                createdByUserUid:
-                  description: User identifier who added comment
-                  type: string
-                createdDate:
-                  description: Issue comment creation date
-                  type: string
-                issueCommentUid:
-                  description: Issue comment identifier
-                  type: string
-              type: object
-          type: object
-    IssueCommentsGetResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      commentText:
-                        description: Issue comment text
-                        type: string
-                      commentTextModifiedDate:
-                        description: Issue comment modification date
-                        type: string
-                      createdByUserUid:
-                        description: User identifier who added comment
-                        type: string
-                      createdDate:
-                        description: Issue comment creation date
-                        type: string
-                      issueCommentUid:
-                        description: Issue comment identifier
-                        type: string
-                    type: object
-                  type: array
-                totalCount:
-                  description: Total element count
-                  type: integer
-              type: object
-          type: object
-    IssueGetResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                answered:
-                  description: Issue flag "aswered"
-                  type: boolean
-                createdDate:
-                  description: Issue creation date
-                  type: string
-                issueSeverityLevelCode:
-                  description: Issue Severity Level identifier
-                  enum:
-                    - LOW
-                    - MEDIUM
-                    - HIGH
-                  type: string
-                issueStateCode:
-                  description: Issue State identifier
-                  enum:
-                    - OPENED
-                    - RESOLVED
-                  type: string
-                issueSubTypeCode:
-                  description: Issue SubType identifier
-                  enum:
-                    - CLARIFICATION
-                    - MISSPELLING
-                    - POOR_TRANSLATION
-                    - DOES_NOT_FIT_SPACE
-                    - PLACEHOLDER_ISSUE
-                    - GENERAL_ISSUE
-                    - REVIEW_TRANSLATION
-                    - CUSTOM
-                  type: string
-                issueText:
-                  description: Issue text
-                  type: string
-                issueTextModifiedDate:
-                  description: Issue text modification date
-                  type: string
-                issueTypeCode:
-                  description: Issue Type identifier
-                  enum:
-                    - SOURCE
-                    - TRANSLATION
-                  type: string
-                issueUid:
-                  description: Issue identifier
-                  type: string
-                projectId:
-                  description: Project identifier
-                  type: string
-                reportedByUserUid:
-                  description: User identifier who created (reported) issue
-                  type: string
-                resolvedByUserUid:
-                  description: User uid who resolved issue
-                  type: string
-                resolvedDate:
-                  description: Issue resolve date
-                  type: string
-                string:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
                   properties:
-                    hashcode:
-                      description: >-
-                        Unique identifier for a string in Smartling. Used by the
-                        Issues API to attach an issue to a string. You can get
-                        the hashcode for a string via String API.
+                    answered:
+                      description: Issue flag "aswered"
+                      type: boolean
+                  type: object
+              type: object
+    IssueCommentAddResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    commentText:
+                      description: Issue comment text
                       type: string
-                    localeId:
-                      description: An identifying code for a language in Smartling.
+                    commentTextModifiedDate:
+                      description: Issue comment modification date
+                      type: string
+                    createdByUserUid:
+                      description: User identifier who added comment
+                      type: string
+                    createdDate:
+                      description: Issue comment creation date
+                      type: string
+                    issueCommentUid:
+                      description: Issue comment identifier
                       type: string
                   type: object
               type: object
-          type: object
-    IssueGetWatchersResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      created:
-                        description: Watcher creation date
-                        type: string
-                      email:
-                        description: Watcher email
-                        type: string
-                      enabled:
-                        description: Should send email notification to this email
-                        type: boolean
-                      modified:
-                        description: Watcher modification date
-                        type: string
-                      name:
-                        description: Watcher name
-                        type: string
-                      uid:
-                        description: Watcher identifier
-                        type: string
-                    type: object
-                  type: array
-                totalCount:
-                  description: Total element count
-                  type: integer
+    IssueCommentEditResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    commentText:
+                      description: Issue comment text
+                      type: string
+                    commentTextModifiedDate:
+                      description: Issue comment modification date
+                      type: string
+                    createdByUserUid:
+                      description: User identifier who added comment
+                      type: string
+                    createdDate:
+                      description: Issue comment creation date
+                      type: string
+                    issueCommentUid:
+                      description: Issue comment identifier
+                      type: string
+                  type: object
               type: object
-          type: object
+    IssueCommentGetResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    commentText:
+                      description: Issue comment text
+                      type: string
+                    commentTextModifiedDate:
+                      description: Issue comment modification date
+                      type: string
+                    createdByUserUid:
+                      description: User identifier who added comment
+                      type: string
+                    createdDate:
+                      description: Issue comment creation date
+                      type: string
+                    issueCommentUid:
+                      description: Issue comment identifier
+                      type: string
+                  type: object
+              type: object
+    IssueCommentsGetResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          commentText:
+                            description: Issue comment text
+                            type: string
+                          commentTextModifiedDate:
+                            description: Issue comment modification date
+                            type: string
+                          createdByUserUid:
+                            description: User identifier who added comment
+                            type: string
+                          createdDate:
+                            description: Issue comment creation date
+                            type: string
+                          issueCommentUid:
+                            description: Issue comment identifier
+                            type: string
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object
+    IssueGetResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    answered:
+                      description: Issue flag "aswered"
+                      type: boolean
+                    createdDate:
+                      description: Issue creation date
+                      type: string
+                    issueSeverityLevelCode:
+                      description: Issue Severity Level identifier
+                      enum:
+                        - LOW
+                        - MEDIUM
+                        - HIGH
+                      type: string
+                    issueStateCode:
+                      description: Issue State identifier
+                      enum:
+                        - OPENED
+                        - RESOLVED
+                      type: string
+                    issueSubTypeCode:
+                      description: Issue SubType identifier
+                      enum:
+                        - CLARIFICATION
+                        - MISSPELLING
+                        - POOR_TRANSLATION
+                        - DOES_NOT_FIT_SPACE
+                        - PLACEHOLDER_ISSUE
+                        - GENERAL_ISSUE
+                        - REVIEW_TRANSLATION
+                        - CUSTOM
+                      type: string
+                    issueText:
+                      description: Issue text
+                      type: string
+                    issueTextModifiedDate:
+                      description: Issue text modification date
+                      type: string
+                    issueTypeCode:
+                      description: Issue Type identifier
+                      enum:
+                        - SOURCE
+                        - TRANSLATION
+                      type: string
+                    issueUid:
+                      description: Issue identifier
+                      type: string
+                    projectId:
+                      description: Project identifier
+                      type: string
+                    reportedByUserUid:
+                      description: User identifier who created (reported) issue
+                      type: string
+                    resolvedByUserUid:
+                      description: User uid who resolved issue
+                      type: string
+                    resolvedDate:
+                      description: Issue resolve date
+                      type: string
+                    string:
+                      properties:
+                        hashcode:
+                          description: >-
+                            Unique identifier for a string in Smartling. Used by the
+                            Issues API to attach an issue to a string. You can get
+                            the hashcode for a string via String API.
+                          type: string
+                        localeId:
+                          description: An identifying code for a language in Smartling.
+                          type: string
+                      type: object
+                  type: object
+              type: object
+    IssueGetWatchersResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          created:
+                            description: Watcher creation date
+                            type: string
+                          email:
+                            description: Watcher email
+                            type: string
+                          enabled:
+                            description: Should send email notification to this email
+                            type: boolean
+                          modified:
+                            description: Watcher modification date
+                            type: string
+                          name:
+                            description: Watcher name
+                            type: string
+                          uid:
+                            description: Watcher identifier
+                            type: string
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object
     IssueRequest:
       properties:
         issueText:
@@ -11111,46 +11274,56 @@ components:
         - issueSeverityLevelCode
       type: object
     IssueSeverityLevelResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                issueSeverityLevelCode:
-                  description: Issue Severity Level identifier
-                  enum:
-                    - LOW
-                    - MEDIUM
-                    - HIGH
-                  type: string
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    issueSeverityLevelCode:
+                      description: Issue Severity Level identifier
+                      enum:
+                        - LOW
+                        - MEDIUM
+                        - HIGH
+                      type: string
+                  type: object
               type: object
-          type: object
     IssueSeverityLevelsResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      description:
-                        description: Issue Severity Level description
-                        type: string
-                      issueSeverityLevelCode:
-                        description: Issue Severity Level identifier
-                        enum:
-                          - LOW
-                          - MEDIUM
-                          - HIGH
-                        type: string
-                    type: object
-                  type: array
-                totalCount:
-                  description: Total element count
-                  type: integer
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          description:
+                            description: Issue Severity Level description
+                            type: string
+                          issueSeverityLevelCode:
+                            description: Issue Severity Level identifier
+                            enum:
+                              - LOW
+                              - MEDIUM
+                              - HIGH
+                            type: string
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
               type: object
-          type: object
     IssueStateRequest:
       properties:
         issueStateCode:
@@ -11163,44 +11336,54 @@ components:
         - issueStateCode
       type: object
     IssueStateResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                issueStateCode:
-                  description: Issue State identifier
-                  enum:
-                    - OPENED
-                    - RESOLVED
-                  type: string
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    issueStateCode:
+                      description: Issue State identifier
+                      enum:
+                        - OPENED
+                        - RESOLVED
+                      type: string
+                  type: object
               type: object
-          type: object
     IssueStatesResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      description:
-                        description: Issue State description
-                        type: string
-                      issueStateCode:
-                        description: Issue State identifier
-                        enum:
-                          - OPENED
-                          - RESOLVED
-                        type: string
-                    type: object
-                  type: array
-                totalCount:
-                  description: Total element count
-                  type: integer
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          description:
+                            description: Issue State description
+                            type: string
+                          issueStateCode:
+                            description: Issue State identifier
+                            enum:
+                              - OPENED
+                              - RESOLVED
+                            type: string
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
               type: object
-          type: object
     IssueTextRequest:
       properties:
         issueText:
@@ -11211,44 +11394,217 @@ components:
         - issueText
       type: object
     IssueTextResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                issueText:
-                  description: Issue text
-                  type: string
-                issueTextModifiedDate:
-                  description: Issue text modification date
-                  type: string
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    issueText:
+                      description: Issue text
+                      type: string
+                    issueTextModifiedDate:
+                      description: Issue text modification date
+                      type: string
+                  type: object
               type: object
-          type: object
     IssueTypesResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      description:
-                        description: Issue type description
-                        type: string
-                      issueTypeCode:
-                        description: Issue type identifier
-                        enum:
-                          - SOURCE
-                          - TRANSLATION
-                        type: string
-                      subTypes:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
                         properties:
                           description:
-                            description: Issue subtype description
+                            description: Issue type description
+                            type: string
+                          issueTypeCode:
+                            description: Issue type identifier
+                            enum:
+                              - SOURCE
+                              - TRANSLATION
+                            type: string
+                          subTypes:
+                            properties:
+                              description:
+                                description: Issue subtype description
+                                type: string
+                              issueSubTypeCode:
+                                description: Issue subtype identifier
+                                enum:
+                                  - CLARIFICATION
+                                  - MISSPELLING
+                                  - POOR_TRANSLATION
+                                  - DOES_NOT_FIT_SPACE
+                                  - PLACEHOLDER_ISSUE
+                                  - GENERAL_ISSUE
+                                  - REVIEW_TRANSLATION
+                                  - CUSTOM
+                                type: string
+                            type: object
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object
+    IssueWatcherAssignResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  type: object
+              type: object
+    IssueWatcherDeleteResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  type: object
+              type: object
+    IssueWatcherGetListResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          created:
+                            description: Watcher creation date
+                            type: string
+                          email:
+                            description: Watcher email
+                            type: string
+                          enabled:
+                            description: Should send email notification to this email
+                            type: boolean
+                          modified:
+                            description: Watcher modification date
+                            type: string
+                          name:
+                            description: Watcher name
+                            type: string
+                          uid:
+                            description: Watcher identifier
+                            type: string
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object
+    IssueWatcherResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    created:
+                      description: Watcher creation date
+                      type: string
+                    email:
+                      description: Watcher email
+                      type: string
+                    enabled:
+                      description: Should send email notification to this email
+                      type: boolean
+                    modified:
+                      description: Watcher modification date
+                      type: string
+                    name:
+                      description: Watcher name
+                      type: string
+                    uid:
+                      description: Watcher identifier
+                      type: string
+                  type: object
+              type: object
+    IssuesCountResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    count:
+                      description: Count issues
+                      type: integer
+                  type: object
+              type: object
+    IssuesFindResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          answered:
+                            description: Issue flag "aswered"
+                            type: boolean
+                          createdDate:
+                            description: Issue creation date
+                            type: string
+                          issueSeverityLevelCode:
+                            description: Issue Severity Level identifier
+                            enum:
+                              - LOW
+                              - MEDIUM
+                              - HIGH
+                            type: string
+                          issueStateCode:
+                            description: Issue State identifier
+                            enum:
+                              - OPENED
+                              - RESOLVED
                             type: string
                           issueSubTypeCode:
-                            description: Issue subtype identifier
+                            description: Issue SubType identifier
                             enum:
                               - CLARIFICATION
                               - MISSPELLING
@@ -11259,186 +11615,53 @@ components:
                               - REVIEW_TRANSLATION
                               - CUSTOM
                             type: string
-                        type: object
-                    type: object
-                  type: array
-                totalCount:
-                  description: Total element count
-                  type: integer
-              type: object
-          type: object
-    IssueWatcherAssignResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              type: object
-          type: object
-    IssueWatcherDeleteResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              type: object
-          type: object
-    IssueWatcherGetListResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      created:
-                        description: Watcher creation date
-                        type: string
-                      email:
-                        description: Watcher email
-                        type: string
-                      enabled:
-                        description: Should send email notification to this email
-                        type: boolean
-                      modified:
-                        description: Watcher modification date
-                        type: string
-                      name:
-                        description: Watcher name
-                        type: string
-                      uid:
-                        description: Watcher identifier
-                        type: string
-                    type: object
-                  type: array
-                totalCount:
-                  description: Total element count
-                  type: integer
-              type: object
-          type: object
-    IssueWatcherResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                created:
-                  description: Watcher creation date
-                  type: string
-                email:
-                  description: Watcher email
-                  type: string
-                enabled:
-                  description: Should send email notification to this email
-                  type: boolean
-                modified:
-                  description: Watcher modification date
-                  type: string
-                name:
-                  description: Watcher name
-                  type: string
-                uid:
-                  description: Watcher identifier
-                  type: string
-              type: object
-          type: object
-    IssuesCountResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                count:
-                  description: Count issues
-                  type: integer
-              type: object
-          type: object
-    IssuesFindResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      answered:
-                        description: Issue flag "aswered"
-                        type: boolean
-                      createdDate:
-                        description: Issue creation date
-                        type: string
-                      issueSeverityLevelCode:
-                        description: Issue Severity Level identifier
-                        enum:
-                          - LOW
-                          - MEDIUM
-                          - HIGH
-                        type: string
-                      issueStateCode:
-                        description: Issue State identifier
-                        enum:
-                          - OPENED
-                          - RESOLVED
-                        type: string
-                      issueSubTypeCode:
-                        description: Issue SubType identifier
-                        enum:
-                          - CLARIFICATION
-                          - MISSPELLING
-                          - POOR_TRANSLATION
-                          - DOES_NOT_FIT_SPACE
-                          - PLACEHOLDER_ISSUE
-                          - GENERAL_ISSUE
-                          - REVIEW_TRANSLATION
-                          - CUSTOM
-                        type: string
-                      issueText:
-                        description: Issue text
-                        type: string
-                      issueTextModifiedDate:
-                        description: Issue text modification date
-                        type: string
-                      issueTypeCode:
-                        description: Issue Type identifier
-                        enum:
-                          - SOURCE
-                          - TRANSLATION
-                        type: string
-                      issueUid:
-                        description: Issue identifier
-                        type: string
-                      projectId:
-                        description: Project identifier
-                        type: string
-                      reportedByUserUid:
-                        description: User identifier who created (reported) issue
-                        type: string
-                      resolvedByUserUid:
-                        description: User uid who resolved issue
-                        type: string
-                      resolvedDate:
-                        description: Issue resolve date
-                        type: string
-                      string:
-                        properties:
-                          hashcode:
-                            description: >-
-                              Unique identifier for a string in Smartling. Used
-                              by the Issues API to attach an issue to a string.
-                              You can get the hashcode for a string via String
-                              API.
+                          issueText:
+                            description: Issue text
                             type: string
-                          localeId:
-                            description: An identifying code for a language in Smartling.
+                          issueTextModifiedDate:
+                            description: Issue text modification date
                             type: string
+                          issueTypeCode:
+                            description: Issue Type identifier
+                            enum:
+                              - SOURCE
+                              - TRANSLATION
+                            type: string
+                          issueUid:
+                            description: Issue identifier
+                            type: string
+                          projectId:
+                            description: Project identifier
+                            type: string
+                          reportedByUserUid:
+                            description: User identifier who created (reported) issue
+                            type: string
+                          resolvedByUserUid:
+                            description: User uid who resolved issue
+                            type: string
+                          resolvedDate:
+                            description: Issue resolve date
+                            type: string
+                          string:
+                            properties:
+                              hashcode:
+                                description: >-
+                                  Unique identifier for a string in Smartling. Used
+                                  by the Issues API to attach an issue to a string.
+                                  You can get the hashcode for a string via String
+                                  API.
+                                type: string
+                              localeId:
+                                description: An identifying code for a language in Smartling.
+                                type: string
+                            type: object
                         type: object
-                    type: object
-                  type: array
-                totalCount:
-                  description: Total element count
-                  type: integer
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
               type: object
-          type: object
     JobLocalesCompletionDate:
       properties:
         data:
@@ -11455,20 +11678,25 @@ components:
           type: object
       type: object
     ListBatchesResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    $ref: '#/components/schemas/Batch'
-                  type: array
-                totalCount:
-                  description: number of batches in the current rsponse
-                  type: integer
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/Batch'
+                      type: array
+                    totalCount:
+                      description: number of batches in the current rsponse
+                      type: integer
+                  type: object
               type: object
-          type: object
       description: 'A list of found, filtered and sorted batches'
     ListFilesResponse:
       properties:
@@ -11643,23 +11871,28 @@ components:
         - workflowUid
       type: object
     LocalesAPISuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    $ref: '#/components/schemas/LocaleApiItem'
-                  type: array
-                totalCount:
-                  description: The total number of locales matching the request
-                  type: integer
-              required:
-                - totalCount
-                - items
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/LocaleApiItem'
+                      type: array
+                    totalCount:
+                      description: The total number of locales matching the request
+                      type: integer
+                  required:
+                    - totalCount
+                    - items
+                  type: object
               type: object
-          type: object
     MatchRequest:
       properties:
         contentFileUri:
@@ -11684,15 +11917,20 @@ components:
           type: array
       type: object
     NullDataJobResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
                 data:
+                  properties:
+                    data:
+                      type: object
                   type: object
               type: object
-          type: object
     PartsOfSpeech:
       properties:
         description:
@@ -11731,31 +11969,36 @@ components:
       required:
         - response
     ProcessCheckJobResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                createdDate:
-                  description: The UTC value of when the process was created.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                modifiedDate:
-                  description: The UTC value of when the process was last modified.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                processState:
-                  description: >-
-                    The current state of the process. Values returned are
-                    IN_PROGRESS | COMPLETED | FAILED.
-                  type: string
-                processUid:
-                  description: The unique identifier for a process.
-                  type: string
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    createdDate:
+                      description: The UTC value of when the process was created.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    modifiedDate:
+                      description: The UTC value of when the process was last modified.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    processState:
+                      description: >-
+                        The current state of the process. Values returned are
+                        IN_PROGRESS | COMPLETED | FAILED.
+                      type: string
+                    processUid:
+                      description: The unique identifier for a process.
+                      type: string
+                  type: object
               type: object
-          type: object
     ProgressInfoResponse:
       properties:
         data:
@@ -11794,73 +12037,83 @@ components:
         - response
       type: object
     ProjectCopyProcessSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                createdDate:
-                  format: date-time
-                  type: string
-                modifiedDate:
-                  format: date-time
-                  type: string
-                newProjectUid:
-                  description: >-
-                    A unique identifier for the newly created project. This is
-                    available once the project copying has finished, which is
-                    indicated once it has a processState of CLOSED.
-                  type: string
-                processState:
-                  description: >-
-                    The status of the copy request. The new projectId will be
-                    available once the state is marked as CLOSED.
-                  enum:
-                    - OPEN
-                    - CLOSED
-                    - FAILED
-                  type: string
-                processStatistics:
-                  description: Information on the copying of the project
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
                   properties:
-                    errored:
-                      description: The number of entities that failed to copy
+                    createdDate:
+                      format: date-time
                       type: string
-                    processed:
-                      description: The number of entities processed successfully
+                    modifiedDate:
+                      format: date-time
                       type: string
-                    requested:
-                      description: The number of entities being copied
+                    newProjectUid:
+                      description: >-
+                        A unique identifier for the newly created project. This is
+                        available once the project copying has finished, which is
+                        indicated once it has a processState of CLOSED.
                       type: string
-                    skipped:
-                      description: The number of entities that were skipped
+                    processState:
+                      description: >-
+                        The status of the copy request. The new projectId will be
+                        available once the state is marked as CLOSED.
+                      enum:
+                        - OPEN
+                        - CLOSED
+                        - FAILED
                       type: string
+                    processStatistics:
+                      description: Information on the copying of the project
+                      properties:
+                        errored:
+                          description: The number of entities that failed to copy
+                          type: string
+                        processed:
+                          description: The number of entities processed successfully
+                          type: string
+                        requested:
+                          description: The number of entities being copied
+                          type: string
+                        skipped:
+                          description: The number of entities that were skipped
+                          type: string
+                      type: object
+                    processUid:
+                      description: A unique identifier for a long running process
+                      type: string
+                  required:
+                    - processUid
+                    - newProjectUid
+                    - processState
+                    - createdDate
+                    - modifiedDate
+                    - processStatistics
                   type: object
-                processUid:
-                  description: A unique identifier for a long running process
-                  type: string
-              required:
-                - processUid
-                - newProjectUid
-                - processState
-                - createdDate
-                - modifiedDate
-                - processStatistics
               type: object
-          type: object
     ProjectCopySuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                processUid:
-                  description: A unique identifier for a long running process
-                  type: string
-              required:
-                - processUid
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    processUid:
+                      description: A unique identifier for a long running process
+                      type: string
+                  required:
+                    - processUid
+                  type: object
               type: object
-          type: object
     ProjectDetailsLocaleItem:
       example:
         description: Russian (Russia)
@@ -11882,62 +12135,67 @@ components:
         - enabled
       type: object
     ProjectDetailsSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              example:
-                accountUid: ab5f1939
-                archived: false
-                projectId: fd7244365
-                projectName: fd7244365
-                projectTypeCode: APPLICATION_RESOURCES
-                sourceLocaleDescription: English
-                sourceLocaleId: en-US
-              properties:
-                accountUid:
-                  description: The unique identifier for the account
-                  type: string
-                archived:
-                  description: >-
-                    Indicator whether or not the project has been archived.
-                    Archived projects are typically hidden from a user's view,
-                    but can still be accessible
-                  type: boolean
-                projectId:
-                  description: A unique identifier for the project
-                  type: string
-                projectName:
-                  description: The name of the project.
-                  type: string
-                projectTypeCode:
-                  description: Indicator for the type of the project.
-                  type: string
-                sourceLocaleDescription:
-                  description: The full name of the sourceLocaleId
-                  type: string
-                sourceLocaleId:
-                  description: >-
-                    The locale identifier for the source locale of the project.
-                    This indicates the base locale for which content should be
-                    uploaded to the project.
-                  type: string
-                targetLocales:
-                  description: The locales configured for translation for this project.
-                  items:
-                    $ref: '#/components/schemas/ProjectDetailsLocaleItem'
-                  type: array
-              required:
-                - projectId
-                - projectName
-                - accountUid
-                - archived
-                - projectTypeCode
-                - sourceLocaleId
-                - sourceLocaleDescription
-                - targetLocales
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  example:
+                    accountUid: ab5f1939
+                    archived: false
+                    projectId: fd7244365
+                    projectName: fd7244365
+                    projectTypeCode: APPLICATION_RESOURCES
+                    sourceLocaleDescription: English
+                    sourceLocaleId: en-US
+                  properties:
+                    accountUid:
+                      description: The unique identifier for the account
+                      type: string
+                    archived:
+                      description: >-
+                        Indicator whether or not the project has been archived.
+                        Archived projects are typically hidden from a user's view,
+                        but can still be accessible
+                      type: boolean
+                    projectId:
+                      description: A unique identifier for the project
+                      type: string
+                    projectName:
+                      description: The name of the project.
+                      type: string
+                    projectTypeCode:
+                      description: Indicator for the type of the project.
+                      type: string
+                    sourceLocaleDescription:
+                      description: The full name of the sourceLocaleId
+                      type: string
+                    sourceLocaleId:
+                      description: >-
+                        The locale identifier for the source locale of the project.
+                        This indicates the base locale for which content should be
+                        uploaded to the project.
+                      type: string
+                    targetLocales:
+                      description: The locales configured for translation for this project.
+                      items:
+                        $ref: '#/components/schemas/ProjectDetailsLocaleItem'
+                      type: array
+                  required:
+                    - projectId
+                    - projectName
+                    - accountUid
+                    - archived
+                    - projectTypeCode
+                    - sourceLocaleId
+                    - sourceLocaleDescription
+                    - targetLocales
+                  type: object
               type: object
-          type: object
     RemoveFileJobRequest:
       description: The payload to use when removing a file from a job.
       properties:
@@ -11998,72 +12256,77 @@ components:
           type: array
       type: object
     ShallowJobResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                callbackMethod:
-                  description: >-
-                    The http method (GET|POST) to use when Smartling invokes the
-                    callback URL upon job completion.
-                  type: string
-                callbackUrl:
-                  description: The callback URL to invoke when a job is completed.
-                  type: string
-                createdByUserUid:
-                  description: The userUid of who created the job.
-                  type: string
-                createdDate:
-                  description: The UTC value of the date the job was created.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                description:
-                  description: The description of the job.
-                  type: string
-                dueDate:
-                  description: The UTC value of the due date for the job.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                firstCompletedDate:
-                  description: The UTC value of when the job was first completed.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                jobName:
-                  description: The name of the job.
-                  type: string
-                jobStatus:
-                  description: The status of the job.
-                  example: >-
-                    DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED |
-                    CANCELLED | CLOSED
-                  type: string
-                lastCompletedDate:
-                  description: The UTC value of when the job was last completed.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                modifiedByUserUid:
-                  description: The userUid of who last modified the job.
-                  type: string
-                modifiedDate:
-                  description: The UTC value of the date the job was modified.
-                  example: '2015-11-21T01:51:17.000Z'
-                  format: date-time
-                  type: string
-                targetLocaleIds:
-                  description: The array of localeIds for the job.
-                  items:
-                    type: string
-                  type: array
-                translationJobUid:
-                  description: The unique identifier for the job.
-                  type: string
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    callbackMethod:
+                      description: >-
+                        The http method (GET|POST) to use when Smartling invokes the
+                        callback URL upon job completion.
+                      type: string
+                    callbackUrl:
+                      description: The callback URL to invoke when a job is completed.
+                      type: string
+                    createdByUserUid:
+                      description: The userUid of who created the job.
+                      type: string
+                    createdDate:
+                      description: The UTC value of the date the job was created.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    description:
+                      description: The description of the job.
+                      type: string
+                    dueDate:
+                      description: The UTC value of the due date for the job.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    firstCompletedDate:
+                      description: The UTC value of when the job was first completed.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    jobName:
+                      description: The name of the job.
+                      type: string
+                    jobStatus:
+                      description: The status of the job.
+                      example: >-
+                        DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED |
+                        CANCELLED | CLOSED
+                      type: string
+                    lastCompletedDate:
+                      description: The UTC value of when the job was last completed.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    modifiedByUserUid:
+                      description: The userUid of who last modified the job.
+                      type: string
+                    modifiedDate:
+                      description: The UTC value of the date the job was modified.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    targetLocaleIds:
+                      description: The array of localeIds for the job.
+                      items:
+                        type: string
+                      type: array
+                    translationJobUid:
+                      description: The unique identifier for the job.
+                      type: string
+                  type: object
               type: object
-          type: object
     SourceFile:
       properties:
         data:
@@ -12159,35 +12422,45 @@ components:
           type: string
       type: object
     StringResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    $ref: '#/components/schemas/StringInfo'
-                  type: array
-                totalCount:
-                  type: number
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/StringInfo'
+                      type: array
+                    totalCount:
+                      type: number
+                  type: object
               type: object
-          type: object
     SuccessFailCountJobResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                failCount:
-                  description: >-
-                    The number of strings per locale that could not be added to
-                    the job.
-                  type: string
-                successCount:
-                  description: The number of strings per locale added to the job.
-                  type: string
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    failCount:
+                      description: >-
+                        The number of strings per locale that could not be added to
+                        the job.
+                      type: string
+                    successCount:
+                      description: The number of strings per locale added to the job.
+                      type: string
+                  type: object
               type: object
-          type: object
     SuccessResponse:
       properties:
         code:
@@ -12411,19 +12684,24 @@ components:
           type: string
       type: object
     TranslationResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    $ref: '#/components/schemas/Translation'
-                  type: array
-                totalCount:
-                  type: number
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/Translation'
+                      type: array
+                    totalCount:
+                      type: number
+                  type: object
               type: object
-          type: object
     UpdateGlossary:
       allOf:
         - $ref: '#/components/schemas/CreateGlossary'
@@ -12475,8 +12753,7 @@ components:
           properties:
             workflows:
               items:
-                $ref: >-
-                  #/components/schemas/VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItem
+                $ref: '#/components/schemas/VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItem'
               type: array
           type: object
       type: object
@@ -12484,8 +12761,7 @@ components:
       properties:
         targetLocales:
           items:
-            $ref: >-
-              #/components/schemas/VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItemTargetLocalesItem
+            $ref: '#/components/schemas/VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItemTargetLocalesItem'
           type: array
         workflowName:
           type: string
@@ -12502,8 +12778,7 @@ components:
         localeId:
           type: string
         workflowSteps:
-          $ref: >-
-            #/components/schemas/VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItemTargetLocalesItemWorkflowStepsItem
+          $ref: '#/components/schemas/VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItemTargetLocalesItemWorkflowStepsItem'
       type: object
     VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItemTargetLocalesItemWorkflowStepsItem:
       properties:
@@ -12542,27 +12817,32 @@ components:
           type: string
       type: object
     VendorsAPIJobsListSuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                agency:
-                  $ref: '#/components/schemas/VendorsAPIJobsListAgencyItem'
-                lastUpdatedDate:
-                  description: Date when data for the API response was last refreshed.
-                  format: date-time
-                  type: string
-                translationJobs:
-                  items:
-                    $ref: '#/components/schemas/VendorsAPIJobsListTranslationJobItem'
-                  type: array
-              required:
-                - lastUpdatedDate
-                - agency
-                - translationJobs
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    agency:
+                      $ref: '#/components/schemas/VendorsAPIJobsListAgencyItem'
+                    lastUpdatedDate:
+                      description: Date when data for the API response was last refreshed.
+                      format: date-time
+                      type: string
+                    translationJobs:
+                      items:
+                        $ref: '#/components/schemas/VendorsAPIJobsListTranslationJobItem'
+                      type: array
+                  required:
+                    - lastUpdatedDate
+                    - agency
+                    - translationJobs
+                  type: object
               type: object
-          type: object
     VendorsAPIJobsListTranslationJobItem:
       properties:
         account:
@@ -12621,123 +12901,138 @@ components:
           type: array
       type: object
     WebPageDetailListResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      details:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
                         properties:
-                          contextUids:
-                            description: context identifiers
-                            example:
-                              - 122ssasa323
-                              - 334asds3434
-                            items:
-                              type: string
-                            type: array
-                          created:
-                            description: capture url date
-                            example: '2015-11-21T01:51:17Z'
+                          details:
+                            properties:
+                              contextUids:
+                                description: context identifiers
+                                example:
+                                  - 122ssasa323
+                                  - 334asds3434
+                                items:
+                                  type: string
+                                type: array
+                              created:
+                                description: capture url date
+                                example: '2015-11-21T01:51:17Z'
+                                type: string
+                              stringCount:
+                                description: string count
+                                example: 10
+                                type: integer
+                              wordCount:
+                                description: word count
+                                example: 25
+                                type: integer
+                            type: object
+                          domain:
+                            description: domain
+                            properties:
+                              name:
+                                description: url domain name
+                                example: my.domain.com
+                                type: string
+                            type: object
+                          urlPath:
+                            description: Url path
                             type: string
-                          stringCount:
-                            description: string count
-                            example: 10
-                            type: integer
-                          wordCount:
-                            description: word count
-                            example: 25
-                            type: integer
+                          webPageUid:
+                            description: url identifier
+                            type: string
                         type: object
-                      domain:
-                        description: domain
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object
+    WebPageDetailsResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    details:
+                      properties:
+                        contextUids:
+                          description: context identifiers
+                          example:
+                            - 122ssasa323
+                            - 334asds3434
+                          items:
+                            type: string
+                          type: array
+                        created:
+                          description: capture url date
+                          example: '2015-11-21T01:51:17Z'
+                          type: string
+                        stringCount:
+                          description: string count
+                          example: 10
+                          type: integer
+                        wordCount:
+                          description: word count
+                          example: 25
+                          type: integer
+                      type: object
+                    domain:
+                      description: domain
+                      properties:
+                        name:
+                          description: url domain name
+                          example: my.domain.com
+                          type: string
+                      type: object
+                    urlPath:
+                      description: Url path
+                      type: string
+                    webPageUid:
+                      description: url identifier
+                      type: string
+                  type: object
+              type: object
+    WebPageDomainsResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
                         properties:
                           name:
                             description: url domain name
                             example: my.domain.com
                             type: string
                         type: object
-                      urlPath:
-                        description: Url path
-                        type: string
-                      webPageUid:
-                        description: url identifier
-                        type: string
-                    type: object
-                  type: array
-                totalCount:
-                  description: Total element count
-                  type: integer
-              type: object
-          type: object
-    WebPageDetailsResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                details:
-                  properties:
-                    contextUids:
-                      description: context identifiers
-                      example:
-                        - 122ssasa323
-                        - 334asds3434
-                      items:
-                        type: string
                       type: array
-                    created:
-                      description: capture url date
-                      example: '2015-11-21T01:51:17Z'
-                      type: string
-                    stringCount:
-                      description: string count
-                      example: 10
-                      type: integer
-                    wordCount:
-                      description: word count
-                      example: 25
+                    totalCount:
+                      description: Total element count
                       type: integer
                   type: object
-                domain:
-                  description: domain
-                  properties:
-                    name:
-                      description: url domain name
-                      example: my.domain.com
-                      type: string
-                  type: object
-                urlPath:
-                  description: Url path
-                  type: string
-                webPageUid:
-                  description: url identifier
-                  type: string
               type: object
-          type: object
-    WebPageDomainsResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      name:
-                        description: url domain name
-                        example: my.domain.com
-                        type: string
-                    type: object
-                  type: array
-                totalCount:
-                  description: Total element count
-                  type: integer
-              type: object
-          type: object
     WebPageListRequest:
       properties:
         domainName:
@@ -12811,121 +13106,131 @@ components:
           type: boolean
       type: object
     WebPageListResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      created:
-                        description: url capture date
-                        type: string
-                      domain:
-                        description: domain
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
                         properties:
-                          name:
-                            description: url domain name
-                            example: my.domain.com
+                          created:
+                            description: url capture date
+                            type: string
+                          domain:
+                            description: domain
+                            properties:
+                              name:
+                                description: url domain name
+                                example: my.domain.com
+                                type: string
+                            type: object
+                          urlPath:
+                            description: Watcher name
+                            type: string
+                          webPageUid:
+                            description: url identifier
                             type: string
                         type: object
-                      urlPath:
-                        description: Watcher name
-                        type: string
-                      webPageUid:
-                        description: url identifier
-                        type: string
-                    type: object
-                  type: array
-                totalCount:
-                  description: Total element count
-                  type: integer
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
               type: object
-          type: object
     WordCountResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - properties:
-            data:
-              properties:
-                items:
-                  items:
-                    properties:
-                      accountName:
-                        description: Name of the account
-                        type: string
-                      accountUid:
-                        description: The unique identifier of the account
-                        type: string
-                      agencyName:
-                        description: Name of the agency that was credited for the words
-                        type: string
-                      agencyUid:
-                        description: >-
-                          The unique identifier of the agency that was credited
-                          for the words
-                        type: string
-                      fuzzyProfileName:
-                        description: Name of the fuzzy match profile used
-                        type: string
-                      fuzzyTier:
-                        description: >-
-                          Fuzzy match tier that matches fuzzy score of the
-                          processed words
-                        type: string
-                      jobName:
-                        description: Name of the translation job
-                        type: string
-                      jobUid:
-                        description: The unique identifier of the translation job
-                        type: string
-                      projectId:
-                        description: The unique identifier of the project
-                        type: string
-                      projectName:
-                        description: Name of the project
-                        type: string
-                      targetLocaleId:
-                        description: Locale ID of the translations
-                        type: string
-                      targetLocaleName:
-                        description: Name of the locale of the translations
-                        type: string
-                      translationResourceName:
-                        description: >-
-                          Name of the translation resource who was credited for
-                          the words
-                        type: string
-                      translationResourceUid:
-                        description: >-
-                          The unique identifier of the translation resource who
-                          was credited for the words
-                        type: string
-                      weightedWordCount:
-                        description: >-
-                          The number of weighted words processed by a
-                          translation resource
-                        type: integer
-                      wordCount:
-                        description: >-
-                          The number of words processed by a translation
-                          resource
-                        type: integer
-                      workflowStepType:
-                        description: >-
-                          Type of the workflow step (Translation, Edit, Review)
-                          the words transitioned through
-                        type: string
-                    type: object
-                  type: array
-                resultsTruncated:
-                  description: >-
-                    The flag showing whether all qualified records returned by
-                    the response.
-                  type: boolean
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          accountName:
+                            description: Name of the account
+                            type: string
+                          accountUid:
+                            description: The unique identifier of the account
+                            type: string
+                          agencyName:
+                            description: Name of the agency that was credited for the words
+                            type: string
+                          agencyUid:
+                            description: >-
+                              The unique identifier of the agency that was credited
+                              for the words
+                            type: string
+                          fuzzyProfileName:
+                            description: Name of the fuzzy match profile used
+                            type: string
+                          fuzzyTier:
+                            description: >-
+                              Fuzzy match tier that matches fuzzy score of the
+                              processed words
+                            type: string
+                          jobName:
+                            description: Name of the translation job
+                            type: string
+                          jobUid:
+                            description: The unique identifier of the translation job
+                            type: string
+                          projectId:
+                            description: The unique identifier of the project
+                            type: string
+                          projectName:
+                            description: Name of the project
+                            type: string
+                          targetLocaleId:
+                            description: Locale ID of the translations
+                            type: string
+                          targetLocaleName:
+                            description: Name of the locale of the translations
+                            type: string
+                          translationResourceName:
+                            description: >-
+                              Name of the translation resource who was credited for
+                              the words
+                            type: string
+                          translationResourceUid:
+                            description: >-
+                              The unique identifier of the translation resource who
+                              was credited for the words
+                            type: string
+                          weightedWordCount:
+                            description: >-
+                              The number of weighted words processed by a
+                              translation resource
+                            type: integer
+                          wordCount:
+                            description: >-
+                              The number of words processed by a translation
+                              resource
+                            type: integer
+                          workflowStepType:
+                            description: >-
+                              Type of the workflow step (Translation, Edit, Review)
+                              the words transitioned through
+                            type: string
+                        type: object
+                      type: array
+                    resultsTruncated:
+                      description: >-
+                        The flag showing whether all qualified records returned by
+                        the response.
+                      type: boolean
+                  type: object
               type: object
-          type: object
       description: A list of report records
     WorkflowProgressReportItemResponse:
       properties:
