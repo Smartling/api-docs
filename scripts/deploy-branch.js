@@ -18,5 +18,5 @@ if (branch && branch !== 'gh-pages') {
   cp('-R', 'spec/translation_quality', specFolder);
   cp('-R', 'spec/api_common.yaml', specFolder);
 
-    exec('deploy-to-gh-pages --update .tmp');
+  exec('deploy-to-gh-pages --update .tmp');
 }
