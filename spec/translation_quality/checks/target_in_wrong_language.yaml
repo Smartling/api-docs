@@ -1,48 +1,6 @@
 components:
   schemas:
 
-    check_types_TARGET_IN_WRONG_LANGUAGE_groups_settings:
-      put:
-        description: >-
-          Apply target in wrong language group settings.
-        summary: Apply target in wrong language group settings
-        tags:
-          - Translation quality check
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - $ref: '../../api_common.yaml#/components/schemas/pathParameters/accountUid'
-          - $ref: '../tqc_common.yaml#/components/schemas/pathParameters/groupUid'
-          - name: request
-            description: ''
-            in: body
-            required: true
-            schema:
-              $ref: '#/components/schemas/SettingsRequest'
-
-        responses:
-          200:
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SettingsResponse'
-
-        x-code-samples:
-          - lang: curl
-            source: |
-              curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_IN_WRONG_LANGUAGE/groups/{groupUid}/settings:
-
-    SettingsRequest:
-      allOf:
-        - type: object
-          required:
-            - minTextLengthLimit
-        - $ref: '../tqc_common.yaml#/components/schemas/requestBodyParameter/targetLocaleId'
-        - $ref: '#/components/schemas/responseFields/minTextLengthLimit'
-
     AccountCheckTypeApplySettingsRequest:
       title: TARGET_IN_WRONG_LANGUAGE
       allOf:
@@ -51,14 +9,6 @@ components:
             - minTextLengthLimit
         - $ref: '../tqc_common.yaml#/components/schemas/requestBodyParameter/targetLocaleId'
         - $ref: '#/components/schemas/responseFields/minTextLengthLimit'
-
-    SettingsResponse:
-      allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              $ref: '#/components/schemas/responseFields/minTextLengthLimit'
 
     AccountCheckTypeApplySettingsDTOResponse:
       title: TARGET_IN_WRONG_LANGUAGE

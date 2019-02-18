@@ -1,87 +1,14 @@
 components:
   schemas:
-    path_check_types_NUMBER_CONSISTENCY_settings:
-      put:
-        description: >-
-          Apply number consistency settings.
-        summary: Apply number consistency settings
-        tags:
-          - Translation quality check
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - $ref: '../../api_common.yaml#/components/schemas/pathParameters/accountUid'
-          - name: request
-            description: ''
-            in: body
-            required: true
-            schema:
-              $ref: '#/components/schemas/SettingsRequest'
-
-        responses:
-          200:
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SettingsResponse'
-
-        x-code-samples:
-          - lang: curl
-            source: |
-              curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/NUMBER_CONSISTENCY/settings:
-
-    path_check_types_NUMBER_CONSISTENCY_groups_settings:
-      put:
-        description: >-
-          Apply number consistency group settings.
-        summary: Apply number consistency group settings
-        tags:
-          - Translation quality check
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - $ref: '../../api_common.yaml#/components/schemas/pathParameters/accountUid'
-          - $ref: '../tqc_common.yaml#/components/schemas/pathParameters/groupUid'
-          - name: request
-            description: ''
-            in: body
-            required: true
-            schema:
-              $ref: '#/components/schemas/SettingsRequest'
-
-        responses:
-          200:
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SettingsResponse'
-
-        x-code-samples:
-          - lang: curl
-            source: |
-              curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/NUMBER_CONSISTENCY/groups/{groupUid}/settings:
-
-    SettingsRequest:
+    AccountCheckTypeApplySettingsRequest:
+      title: NUMBER_CONSISTENCY
       allOf:
-        - type: object
-          required:
-            - ignoreSign
-        - $ref: '../tqc_common.yaml#/components/schemas/requestBodyParameter/targetLocaleId'
         - $ref: '#/components/schemas/responseFields/ignoreSign'
 
-    SettingsResponse:
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: NUMBER_CONSISTENCY
       allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              $ref: '#/components/schemas/responseFields/ignoreSign'
+        - $ref: '#/components/schemas/responseFields/ignoreSign'
 
     responseFields:
       ignoreSign:

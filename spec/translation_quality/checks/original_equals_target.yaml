@@ -1,73 +1,6 @@
 components:
   schemas:
 
-    check_types_ORIGINAL_EQUALS_TARGET_settings:
-      put:
-        description: >-
-          Apply original equals target settings.
-        summary: Apply original equals target settings
-        tags:
-          - Translation quality check
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - $ref: '../../api_common.yaml#/components/schemas/pathParameters/accountUid'
-          - name: request
-            description: ''
-            in: body
-            required: true
-            schema:
-              $ref: '#/components/schemas/AccountCheckTypeApplyOriginalEqualsTargetSettingsRequest'
-
-        responses:
-          200:
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/AccountCheckTypeApplyOriginalEqualsTargetSettingsResponse'
-
-        x-code-samples:
-          - lang: curl
-            source: |
-              curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/ORIGINAL_EQUALS_TARGET/settings:
-
-    check_types_ORIGINAL_EQUALS_TARGET_group_settings:
-      put:
-        description: >-
-          Apply original equals target settings.
-        summary: Apply original equals target settings
-        tags:
-          - Translation quality check
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - $ref: '../../api_common.yaml#/components/schemas/pathParameters/accountUid'
-          - $ref: '../tqc_common.yaml#/components/schemas/pathParameters/groupUid'
-          - name: request
-            description: ''
-            in: body
-            required: true
-            schema:
-              $ref: '#/components/schemas/AccountCheckTypeApplyOriginalEqualsTargetSettingsRequest'
-
-        responses:
-          200:
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/AccountCheckTypeApplyOriginalEqualsTargetSettingsResponse'
-
-        x-code-samples:
-          - lang: curl
-            source: |
-              curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/ORIGINAL_EQUALS_TARGET/groups/{groupUid}/settings:
-
     OriginalEqualsTargetSettingsDTO:
       type: object
       properties:
@@ -80,7 +13,8 @@ components:
           description: Must have identical capitalization
           example: true
 
-    AccountCheckTypeApplyOriginalEqualsTargetSettingsRequest:
+    AccountCheckTypeApplySettingsRequest:
+      title: ORIGINAL_EQUALS_TARGET
       allOf:
         - $ref: '#/components/schemas/OriginalEqualsTargetSettingsDTO'
         - $ref: '../tqc_common.yaml#/components/schemas/requestBodyParameter/targetLocaleId'
@@ -89,14 +23,10 @@ components:
             - mustHaveIdenticalTags
             - mustHaveIdenticalCapitalization
 
-    AccountCheckTypeApplyOriginalEqualsTargetSettingsResponse:
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: ORIGINAL_EQUALS_TARGET
       allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              allOf:
-                - $ref: '#/components/schemas/OriginalEqualsTargetSettingsDTO'
+        - $ref: '#/components/schemas/OriginalEqualsTargetSettingsDTO'
 
     AccountCheckTypeEffectiveDTO:
       allOf:
@@ -119,16 +49,6 @@ components:
               ORIGINAL_EQUALS_TARGET: '#/components/schemas/response/ORIGINAL_EQUALS_TARGET'
 
     AccountCheckTypeEffectiveResponse:
-      allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              allOf:
-                - $ref: './accounts.yaml#/components/schemas/CheckTypeSettingBase'
-                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
-
-    AccountCheckTypeEffectiveResponseNew:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
         - type: object

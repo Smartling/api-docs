@@ -511,6 +511,11 @@ components:
                   - $ref: './spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
                   - $ref: './source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
                   - $ref: './target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './number_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './target_source_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './glossary_compliance.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
 
         responses:
           200:
@@ -525,6 +530,51 @@ components:
             source: |
               curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/$checkTypeCode/settings:
 
+    check_types_checkType_group_settings:
+      put:
+        description: >-
+          Apply checktype group settings for certain account.
+        summary: Apply checktype group settings for certain account
+        tags:
+          - Translation quality check
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        parameters:
+          - $ref: '../../api_common.yaml#/components/schemas/pathParameters/accountUid'
+          - $ref: '../tqc_common.yaml#/components/schemas/pathParameters/checkTypeCode'
+          - $ref: '../tqc_common.yaml#/components/schemas/pathParameters/groupUid'
+        requestBody:
+          description: ''
+          required: true
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: './emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './number_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './target_source_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './glossary_compliance.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+                  - $ref: './segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+
+        responses:
+          200:
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AccountCheckTypeApplyGroupSettingsResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/$checkTypeCode/groups/{groupUid}/settings:
+
     AccountCheckTypeApplySettingsResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -536,6 +586,28 @@ components:
                 - $ref: './spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
                 - $ref: './source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
                 - $ref: './target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './number_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './target_source_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './glossary_compliance.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+
+    AccountCheckTypeApplyGroupSettingsResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              oneOf:
+                - $ref: './emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './number_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './target_source_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './glossary_compliance.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+                - $ref: './segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
 
     TqcAccountGetCheckTypesResponse:
       allOf:

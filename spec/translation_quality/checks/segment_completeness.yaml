@@ -1,73 +1,6 @@
 components:
   schemas:
 
-    check_types_SEGMENT_COMPLETENESS_settings:
-      put:
-        description: >-
-          Apply segment completeness settings.
-        summary: Apply segment completeness settings
-        tags:
-          - Translation quality check
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - $ref: '../../api_common.yaml#/components/schemas/pathParameters/accountUid'
-          - name: request
-            description: ''
-            in: body
-            required: true
-            schema:
-              $ref: '#/components/schemas/AccountCheckTypeApplySegmentCompletenessSettingsRequest'
-
-        responses:
-          200:
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/AccountCheckTypeApplySegmentCompletenessSettingsResponse'
-
-        x-code-samples:
-          - lang: curl
-            source: |
-              curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SEGMENT_COMPLETENESS/settings:
-
-    check_types_SEGMENT_COMPLETENESS_group_settings:
-      put:
-        description: >-
-          Apply segment completeness group settings.
-        summary: Apply segment completeness group settings
-        tags:
-          - Translation quality check
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - $ref: '../../api_common.yaml#/components/schemas/pathParameters/accountUid'
-          - $ref: '../tqc_common.yaml#/components/schemas/pathParameters/groupUid'
-          - name: request
-            description: ''
-            in: body
-            required: true
-            schema:
-              $ref: '#/components/schemas/AccountCheckTypeApplySegmentCompletenessSettingsRequest'
-
-        responses:
-          200:
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/AccountCheckTypeApplySegmentCompletenessSettingsResponse'
-
-        x-code-samples:
-          - lang: curl
-            source: |
-              curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SEGMENT_COMPLETENESS/groups/{groupUid}/settings:
-
     SegmentCompletenessSettingsDTO:
       type: object
       properties:
@@ -84,19 +17,16 @@ components:
           description: Minimal lenght threshould
           example: 15
 
-    AccountCheckTypeApplySegmentCompletenessSettingsRequest:
+    AccountCheckTypeApplySettingsRequest:
+      title: SEGMENT_COMPLETENESS
       allOf:
         - $ref: '#/components/schemas/SegmentCompletenessSettingsDTO'
         - $ref: '../tqc_common.yaml#/components/schemas/requestBodyParameter/targetLocaleId'
 
-    AccountCheckTypeApplySegmentCompletenessSettingsResponse:
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: SEGMENT_COMPLETENESS
       allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              allOf:
-                - $ref: '#/components/schemas/SegmentCompletenessSettingsDTO'
+        - $ref: '#/components/schemas/SegmentCompletenessSettingsDTO'
 
     AccountCheckTypeEffectiveDTO:
       allOf:

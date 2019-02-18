@@ -1,38 +1,5 @@
 components:
   schemas:
-    check_types_SOURCE_IN_WRONG_LANGUAGE_group_settings:
-      put:
-        description: >-
-          Apply source in wrong language group settings.
-        summary: Apply source in wrong language group settings
-        tags:
-          - Translation quality check
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - $ref: '../../api_common.yaml#/components/schemas/pathParameters/accountUid'
-          - $ref: '../tqc_common.yaml#/components/schemas/pathParameters/groupUid'
-          - name: request
-            description: ''
-            in: body
-            required: true
-            schema:
-              $ref: '#/components/schemas/AccountCheckTypeApplySourceInWrongLanguageSettingsRequest'
-
-        responses:
-          200:
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/AccountCheckTypeApplySourceInWrongLanguageSettingsResponse'
-
-        x-code-samples:
-          - lang: curl
-            source: |
-              curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SOURCE_IN_WRONG_LANGUAGE/groups/{groupUid}/settings:
 
     SourceInWrongLanguageSettingsDTO:
       type: object
@@ -43,14 +10,6 @@ components:
           description: Minimal text length limit.
           example: 10
 
-    AccountCheckTypeApplySourceInWrongLanguageSettingsRequest:
-      allOf:
-        - $ref: '#/components/schemas/SourceInWrongLanguageSettingsDTO'
-        - $ref: '../tqc_common.yaml#/components/schemas/requestBodyParameter/targetLocaleId'
-        - type: object
-          required:
-            - minTextLengthLimit
-
     AccountCheckTypeApplySettingsRequest:
       title: SOURCE_IN_WRONG_LANGUAGE
       allOf:
@@ -59,15 +18,6 @@ components:
         - type: object
           required:
             - minTextLengthLimit
-
-    AccountCheckTypeApplySourceInWrongLanguageSettingsResponse:
-      allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              allOf:
-                - $ref: '#/components/schemas/SourceInWrongLanguageSettingsDTO'
 
     AccountCheckTypeApplySettingsDTOResponse:
       title: SOURCE_IN_WRONG_LANGUAGE

@@ -1,40 +1,6 @@
 components:
   schemas:
 
-    check_types_EMOJI_CONSISTENCY_group_settings:
-      put:
-        description: >-
-          Apply emoji consistency group settings.
-        summary: Apply emoji consistency group settings
-        tags:
-          - Translation quality check
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - $ref: '../../api_common.yaml#/components/schemas/pathParameters/accountUid'
-          - $ref: '../tqc_common.yaml#/components/schemas/pathParameters/groupUid'
-          - name: request
-            description: ''
-            in: body
-            required: true
-            schema:
-              $ref: '#/components/schemas/AccountCheckTypeApplyEmojiConsistencySettingsRequest'
-
-        responses:
-          200:
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/AccountCheckTypeApplyEmojiConsistencySettingsResponse'
-
-        x-code-samples:
-          - lang: curl
-            source: |
-              curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/EMOJI_CONSISTENCY/groups/{groupUid}/settings:
-
     EmojiConsistencySettingsDTO:
       type: object
       properties:
@@ -42,14 +8,6 @@ components:
           type: boolean
           description: No emoji is allowed in target
           example: false
-
-    AccountCheckTypeApplyEmojiConsistencySettingsRequest:
-      allOf:
-        - $ref: '#/components/schemas/EmojiConsistencySettingsDTO'
-        - $ref: '../tqc_common.yaml#/components/schemas/requestBodyParameter/targetLocaleId'
-        - type: object
-          required:
-            - noEmojisAllowedInTarget
 
     AccountCheckTypeApplySettingsRequest:
       title: EMOJI_CONSISTENCY
@@ -59,15 +17,6 @@ components:
         - type: object
           required:
             - noEmojisAllowedInTarget
-
-    AccountCheckTypeApplyEmojiConsistencySettingsResponse:
-      allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              allOf:
-                - $ref: '#/components/schemas/EmojiConsistencySettingsDTO'
 
     AccountCheckTypeApplySettingsDTOResponse:
       title: EMOJI_CONSISTENCY
