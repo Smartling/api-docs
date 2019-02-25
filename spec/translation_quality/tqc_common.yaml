@@ -31,16 +31,7 @@ components:
         required: true
         schema:
           type: string
-          enum:
-            - ORIGINAL_EQUALS_TARGET
-            - SPELLCHECK
-            - NUMBER_CONSISTENCY
-            - TARGET_IN_WRONG_LANGUAGE
-            - SOURCE_IN_WRONG_LANGUAGE
-            - SEGMENT_COMPLETENESS
-            - EMOJI_CONSISTENCY
-            - TARGET_SOURCE_CONSISTENCY
-            - GLOSSARY_COMPLIANCE
+          $ref: '#/components/schemas/checkTypeCodeWithSettingsEnum'
         description: check type code
 
       checkTypeCodeOnlyWithSubtypes:
@@ -49,15 +40,7 @@ components:
         required: true
         schema:
           type: string
-          enum:
-            - TAG_CONSISTENCY
-            - NUMBER_CONSISTENCY
-            - SEGMENT_COMPLETENESS
-            - NON_TRANSLATABLE_TEXT
-            - EMOJI_CONSISTENCY
-  #          - TAG_VALIDITY
-            - INSERTABLE_CONSISTENCY
-            - TARGET_SOURCE_CONSISTENCY
+          $ref: '#/components/schemas/checkTypeCodeOnlyWithSubtypesEnum'
         description: check type code
 
       checkSubTypeCode:
@@ -91,11 +74,7 @@ components:
         properties:
           severityLevelCode:
             type: string
-            enum:
-              - DISABLED
-              - LOW
-              - MEDIUM
-              - HIGH
+            $ref: '#/components/schemas/severityLevelCodeEnum'
             description: severity level code
             example: "MEDIUM"
 
@@ -162,11 +141,7 @@ components:
         properties:
           severityLevelCode:
             type: string
-            enum:
-              - DISABLED
-              - LOW
-              - MEDIUM
-              - HIGH
+            $ref: '#/components/schemas/severityLevelCodeEnum'
             description: severity level code
             example: "MEDIUM"
 
@@ -175,11 +150,7 @@ components:
         properties:
           severityLevelCode:
             type: string
-            enum:
-              - DISABLED
-              - LOW
-              - MEDIUM
-              - HIGH
+            $ref: '#/components/schemas/severityLevelCodeEnum'
             description: severity level code
             example: "MEDIUM"
 
@@ -237,11 +208,7 @@ components:
                   example: "it-IT"
                 severityLevelCode:
                   type: string
-                  enum:
-                    - DISABLED
-                    - LOW
-                    - MEDIUM
-                    - HIGH
+                  $ref: '#/components/schemas/severityLevelCodeEnum'
                   description: severity level code
                   example: "MEDIUM"
 
@@ -384,18 +351,12 @@ components:
         - $ref: 'checks/whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     AccountCheckTypeApplyGroupSettingsDTOResponseOneOf:
-      oneOf:
-        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
-        - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
-        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
-        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
-        - $ref: 'checks/number_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
-        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
-        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
-        - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
-        - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+      $ref: '#/components/schemas/AccountCheckTypeApplySettingsDTOResponseOneOfCommon'
 
     AccountCheckTypeApplySettingsDTOResponseOneOf:
+      $ref: '#/components/schemas/AccountCheckTypeApplySettingsDTOResponseOneOfCommon'
+
+    AccountCheckTypeApplySettingsDTOResponseOneOfCommon:
       oneOf:
         - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
@@ -408,18 +369,12 @@ components:
         - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
 
     AccountCheckTypeApplySettingsRequestOneOf:
-      oneOf:
-        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
-        - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
-        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
-        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
-        - $ref: 'checks/number_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
-        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
-        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
-        - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
-        - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+      $ref: '#/components/schemas/AccountCheckTypeApplySettingsRequestOneOfCommon'
 
     AccountCheckTypeApplyGroupSettingsRequestOneOf:
+      $ref: '#/components/schemas/AccountCheckTypeApplySettingsRequestOneOfCommon'
+
+    AccountCheckTypeApplySettingsRequestOneOfCommon:
       oneOf:
         - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
         - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
@@ -482,3 +437,33 @@ components:
         - TAG_IS_CHANGED
         - SAME_SOURCE_DIFFERENT_TRANSLATIONS
         - SAME_TRANSLATION_DIFFERENT_SOURCES
+
+    severityLevelCodeEnum:
+      enum:
+        - DISABLED
+        - LOW
+        - MEDIUM
+        - HIGH
+
+    checkTypeCodeWithSettingsEnum:
+      enum:
+        - ORIGINAL_EQUALS_TARGET
+        - SPELLCHECK
+        - NUMBER_CONSISTENCY
+        - TARGET_IN_WRONG_LANGUAGE
+        - SOURCE_IN_WRONG_LANGUAGE
+        - SEGMENT_COMPLETENESS
+        - EMOJI_CONSISTENCY
+        - TARGET_SOURCE_CONSISTENCY
+        - GLOSSARY_COMPLIANCE
+
+    checkTypeCodeOnlyWithSubtypesEnum:
+      enum:
+        - TAG_CONSISTENCY
+        - NUMBER_CONSISTENCY
+        - SEGMENT_COMPLETENESS
+        - NON_TRANSLATABLE_TEXT
+        - EMOJI_CONSISTENCY
+#          - TAG_VALIDITY
+        - INSERTABLE_CONSISTENCY
+        - TARGET_SOURCE_CONSISTENCY
