@@ -69,23 +69,51 @@ components:
               description: check type code
               example: "NUMBER_CONSISTENCY"
             details:
-              type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - NUMBER_ADDED
-                    - NUMBER_DELETED
-                    - NUMBER_INCORRECT_CONVERSION
-                  example: "NUMBER_DELETED"
-                number:
-                  type: string
-                  description: number
-                  example: "1000"
+              oneOf:
+                - type: object
+                  title: NUMBER_ADDED
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - NUMBER_ADDED
+                      example: "NUMBER_ADDED"
+                    number:
+                      type: string
+                      description: number
+                      example: "1000"
+                - type: object
+                  title: NUMBER_DELETED
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - NUMBER_DELETED
+                      example: "NUMBER_DELETED"
+                    number:
+                      type: string
+                      description: number
+                      example: "1000"
+                - type: object
+                  title: NUMBER_INCORRECT_CONVERSION
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - NUMBER_INCORRECT_CONVERSION
+                      example: "NUMBER_INCORRECT_CONVERSION"
+                    number:
+                      type: string
+                      description: number
+                      example: "1000,1"
+                    expectedFormat:
+                      type: string
+                      description: number expected format
+                      example: "1,000.10"
             positionTypeCode:
               type: string
               enum:
-                - SOURCE
                 - TARGET
+                - SOURCE
               description: position type code
               example: "SOURCE"
