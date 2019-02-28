@@ -1,44 +1,46 @@
-components:
-  schemas:
-    tqc_check:
-      post:
-        description: >-
-          Check string translation quality.
-        summary: Check string translation quality
-        tags:
-          - Translation quality check
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - $ref: '../api_common.yaml#/components/schemas/pathParameters/accountUid'
-          - $ref: '../api_common.yaml#/components/schemas/pathParameters/projectId'
-        requestBody:
-          description: ''
-          required: true
+x-paths:
+  tqc_check:
+    post:
+      description: >-
+        Check string translation quality.
+      summary: Check string translation quality
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/schemas/pathParameters/accountUid'
+        - $ref: '../api_common.yaml#/components/schemas/pathParameters/projectId'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/TqcCheckRequest'
+            example:
+              $ref: './examples.yaml#/components/schemas/tqc_check_request_body_example'
+
+      responses:
+        200:
+          description: OK
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/TqcCheckRequest'
-              example:
-                $ref: './examples.yaml#/components/schemas/tqc_check_request_body_example'
+                $ref: '#/components/schemas/TqcCheckResponse'
+              examples:
+                $ref: './examples.yaml#/components/schemas/tqc_check_response_example'
 
-        responses:
-          200:
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/TqcCheckResponse'
-                examples:
-                  $ref: './examples.yaml#/components/schemas/tqc_check_response_example'
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTagJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/projects/$smartlingProjectId/check
 
-        x-code-samples:
-          - lang: curl
-            source: |
-              curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTagJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/projects/$smartlingProjectId/check
+components:
+  schemas:
 
     TqcCheckRequest:
       allOf:
