@@ -75,38 +75,41 @@ components:
                   - $ref: './tqc_common.yaml#/components/schemas/requestBodyParameter/checkTypeCode'
 
     TqcCheckResponse:
-      allOf:
-        - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              type: object
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
               properties:
-                results:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      string:
+                data:
+                  type: object
+                  properties:
+                    results:
+                      type: array
+                      items:
                         type: object
                         properties:
-                          stringUid:
-                            type: string
-                            description: it is string part unique identifier if string is splitted on several parts
-                            example: ""
-                          originalString:
-                            type: string
-                            description: original string
-                            example: "blacklist_term"
-                          translation:
-                            type: string
-                            description: translation of the original string
-                            example: "blacklist_term"
-                          hashcode:
-                            type: string
-                            description: string hashcode
-                            example: "7191152182c69d9b72069ac1290fe24b"
-                      mistakes:
-                        type: array
-                        items:
-                          $ref: 'tqc_common.yaml#/components/schemas/TqcCheckMistakeDTOs'
+                          string:
+                            type: object
+                            properties:
+                              stringUid:
+                                type: string
+                                description: it is string part unique identifier if string is splitted on several parts
+                                example: ""
+                              originalString:
+                                type: string
+                                description: original string
+                                example: "blacklist_term"
+                              translation:
+                                type: string
+                                description: translation of the original string
+                                example: "blacklist_term"
+                              hashcode:
+                                type: string
+                                description: string hashcode
+                                example: "7191152182c69d9b72069ac1290fe24b"
+                          mistakes:
+                            type: array
+                            items:
+                              $ref: 'tqc_common.yaml#/components/schemas/TqcCheckMistakeDTOs'

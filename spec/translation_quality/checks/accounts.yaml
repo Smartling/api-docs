@@ -139,36 +139,45 @@ components:
               curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/$smartlingCheckTypeCode/groups/$smartlingGroupUid/settings
 
     AccountCheckTypeApplySettingsResponse:
-      allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponseOneOf'
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponseOneOf'
 
     AccountCheckTypeApplyGroupSettingsResponse:
-      allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplyGroupSettingsDTOResponseOneOf'
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplyGroupSettingsDTOResponseOneOf'
 
     TqcAccountGetCheckTypesResponse:
-      allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              type: object
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
               properties:
-                totalCount:
-                  type: integer
-                  description: Total element count
-                items:
-                  type: array
-                  items:
-                    $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeEffectiveDTOAnyOf'
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeEffectiveDTOAnyOf'
 
     AccountCheckTypeEffectiveAbstractDTO:
       allOf:
@@ -182,11 +191,14 @@ components:
               example: "NONE"
 
     AccountCheckTypeEffectiveResponse:
-      allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              allOf:
-                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
-                - $ref: '#/components/schemas/AccountCheckTypeEffectiveAbstractDTO'
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  allOf:
+                    - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                    - $ref: '#/components/schemas/AccountCheckTypeEffectiveAbstractDTO'
