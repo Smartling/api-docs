@@ -20,7 +20,7 @@ components:
       required: true
       schema:
         type: string
-        $ref: '#/components/schemas/checkTypeCodeEnum'
+        $ref: '#/components/schemas/enum/checkTypeCodeEnum'
       description: check type code
 
     checkTypeCodeWithSettingsPathParameter:
@@ -86,141 +86,138 @@ components:
       properties:
         checkTypeCode:
           type: string
-          $ref: '#/components/schemas/checkTypeCodeEnum'
+          $ref: '#/components/schemas/enum/checkTypeCodeEnum'
           description: check type code
           example: "LEADING_TRAILING_SPACES"
 
   schemas:
 
-    responseObjects:
+    groupUidResponse:
+      type: object
+      properties:
+        groupUid:
+          type: string
+          description: Unique identifier of corresponding group.
 
-      groupUid:
-        type: object
-        properties:
-          groupUid:
-            type: string
-            description: Unique identifier of corresponding group.
+    checkTypeCodeResponse:
+      type: object
+      properties:
+        checkTypeCode:
+          type: string
+          $ref: '#/components/schemas/enum/checkTypeCodeEnum'
+          description: check type code
 
-      checkTypeCode:
-        type: object
-        properties:
-          checkTypeCode:
-            type: string
-            $ref: '#/components/schemas/checkTypeCodeEnum'
-            description: check type code
+    checkSubTypeCodeResponse:
+      type: object
+      properties:
+        checkSubTypeCode:
+          type: string
+          $ref: '#/components/schemas/enum/checkSubtypeEnum'
+          description: check subtype code
+          example: "EMOJI_ADDED"
+        name:
+          type: string
+          description: check subtype name
+          example: "Emoji added"
 
-      checkSubTypeCodeResponse:
-        type: object
-        properties:
-          checkSubTypeCode:
-            type: string
-            $ref: '#/components/schemas/enum/checkSubtypeEnum'
-            description: check subtype code
-            example: "EMOJI_ADDED"
-          name:
-            type: string
-            description: check subtype name
-            example: "Emoji added"
+    matchMethodCodeResponse:
+      type: object
+      properties:
+        matchMethodCode:
+          type: string
+          enum:
+            - MATCH_BY_PERCENTAGE
+            - EXACT_MATCH
+          description: severity level code
+          example: "MATCH_BY_PERCENTAGE"
 
-      matchMethodCodeResponse:
-        type: object
-        properties:
-          matchMethodCode:
-            type: string
-            enum:
-              - MATCH_BY_PERCENTAGE
-              - EXACT_MATCH
-            description: severity level code
-            example: "MATCH_BY_PERCENTAGE"
+    severityLevelCodeResponse:
+      type: object
+      properties:
+        severityLevelCode:
+          type: string
+          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          description: severity level code
+          example: "MEDIUM"
 
-      severityLevelCodeResponse:
-        type: object
-        properties:
-          severityLevelCode:
-            type: string
-            $ref: '#/components/schemas/enum/severityLevelCodeEnum'
-            description: severity level code
-            example: "MEDIUM"
+    severityLevelCodeResponse1:
+      type: object
+      properties:
+        severityLevelCode:
+          type: string
+          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          description: severity level code
+          example: "MEDIUM"
 
-      severityLevelCodeResponse1:
-        type: object
-        properties:
-          severityLevelCode:
-            type: string
-            $ref: '#/components/schemas/enum/severityLevelCodeEnum'
-            description: severity level code
-            example: "MEDIUM"
+    trademarkTypeCodeResponse:
+      type: object
+      properties:
+        trademarkTypeCode:
+          type: string
+          enum:
+            - SERVICE_MARK
+            - COPYRIGHT
+            - REGISTERED
+            - TRADEMARK
+          description: trademark consistency type code
+          example: "SERVICE_MARK"
 
-      trademarkTypeCodeResponse:
-        type: object
-        properties:
-          trademarkTypeCode:
-            type: string
-            enum:
-              - SERVICE_MARK
-              - COPYRIGHT
-              - REGISTERED
-              - TRADEMARK
-            description: trademark consistency type code
-            example: "SERVICE_MARK"
+    commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective:
+      allOf:
+        - $ref: '#/components/schemas/severityLevelCodeResponse'
+        - $ref: '#/components/schemas/emptySubTypesAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/localeSeverityLevelsAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/groupsAccountCheckTypeSettingsEffective'
 
-    accountCheckTypeSettingsEffectiveResponse:
-      commonWithoutSubTypesResponse:
-        allOf:
-          - $ref: '#/components/schemas/responseObjects/severityLevelCodeResponse'
-          - $ref: '#/components/schemas/accountCheckTypeSettingsEffectiveResponse/emptySubTypes'
-          - $ref: '#/components/schemas/accountCheckTypeSettingsEffectiveResponse/localeSeverityLevels'
-          - $ref: '#/components/schemas/accountCheckTypeSettingsEffectiveResponse/groups'
+    commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective:
+      allOf:
+        - $ref: '#/components/schemas/severityLevelCodeResponse'
+        - $ref: '#/components/schemas/localeSeverityLevelsAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/groupsAccountCheckTypeSettingsEffective'
 
-      commonWithCustomSubTypesResponse:
-        allOf:
-          - $ref: '#/components/schemas/responseObjects/severityLevelCodeResponse'
-          - $ref: '#/components/schemas/accountCheckTypeSettingsEffectiveResponse/localeSeverityLevels'
-          - $ref: '#/components/schemas/accountCheckTypeSettingsEffectiveResponse/groups'
+    emptySubTypesAccountCheckTypeSettingsEffective:
+      type: object
+      properties:
+        subTypes:
+          type: array
+          items:
+            type: object
+            properties:
+              checkSubTypeCode:
+                type: string
+                description: check subtype code
+                example: ""
 
-      emptySubTypes:
-        type: object
-        properties:
-          subTypes:
-            type: array
-            items:
-              type: object
-              properties:
-                checkSubTypeCode:
-                  type: string
-                  description: check subtype code
-                  example: ""
+    localeSeverityLevelsAccountCheckTypeSettingsEffective:
+      type: object
+      properties:
+        localeSeverityLevels:
+          type: array
+          items:
+            type: object
+            properties:
+              targetLocaleId:
+                type: string
+                description: Smartling locale identifier of the translation
+                example: "it-IT"
+              severityLevelCode:
+                type: string
+                $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+                description: severity level code
+                example: "MEDIUM"
 
-      localeSeverityLevels:
-        type: object
-        properties:
-          localeSeverityLevels:
-            type: array
-            items:
-              type: object
-              properties:
-                targetLocaleId:
-                  type: string
-                  description: Smartling locale identifier of the translation
-                  example: "it-IT"
-                severityLevelCode:
-                  type: string
-                  $ref: '#/components/schemas/enum/severityLevelCodeEnum'
-                  description: severity level code
-                  example: "MEDIUM"
-
-      groups:
-        type: object
-        properties:
-          groups:
-            type: array
-            items:
-              type: object
-              properties:
-                groupUid:
-                  type: string
-                  description: unique identifier of group
-                  example: "12dsd344ds"
+    groupsAccountCheckTypeSettingsEffective:
+      type: object
+      properties:
+        groups:
+          type: array
+          items:
+            type: object
+            properties:
+              groupUid:
+                type: string
+                description: unique identifier of group
+                example: "12dsd344ds"
     stringUid:
       type: object
       properties:
@@ -253,21 +250,20 @@ components:
           description: string hashcode
           example: "7191152182c69d9b72069ac1290fe24b"
 
-    TqcCheckDTO:
-      positions:
-        type: object
-        properties:
-          positions:
-            type: array
-            items:
-              type: object
-              properties:
-                from:
-                  type: integer
-                  description: start position in the string
-                to:
-                  type: integer
-                  description: end position in the string
+    PositionsTqcCheckDTO:
+      type: object
+      properties:
+        positions:
+          type: array
+          items:
+            type: object
+            properties:
+              from:
+                type: integer
+                description: start position in the string
+              to:
+                type: integer
+                description: end position in the string
 
     TqcCheckMistakeDTOs:
       oneOf:
@@ -383,32 +379,32 @@ components:
         - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
         - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
 
-    checkTypeCodeEnum:
-      enum:
-        - LEADING_TRAILING_SPACES
-        - ORIGINAL_EQUALS_TARGET
-        - WHITESPACES
-        - SPELLCHECK
-#            - UNCATEGORIZED
-        - TAG_CONSISTENCY
-        - TARGET_LENGTH_LIMIT
-        - NUMBER_CONSISTENCY
-        - REPEATED_WORD
-        - TARGET_IN_WRONG_LANGUAGE
-        - SOURCE_IN_WRONG_LANGUAGE
-        - SEGMENT_COMPLETENESS
-        - NON_TRANSLATABLE_TEXT
-        - EMOJI_CONSISTENCY
-#            - TAG_VALIDITY
-        - INSERTABLE_CONSISTENCY
-        - TARGET_SOURCE_CONSISTENCY
-        - BLACKLISTED_TERMS
-        - GLOSSARY_COMPLIANCE
-        - TRADEMARK_CONSISTENCY
-        - GRAMMAR_CHECK
-        - GLOBAL_CAPITALISATION_CONSISTENCY
-
     enum:
+      checkTypeCodeEnum:
+        enum:
+          - LEADING_TRAILING_SPACES
+          - ORIGINAL_EQUALS_TARGET
+          - WHITESPACES
+          - SPELLCHECK
+  #            - UNCATEGORIZED
+          - TAG_CONSISTENCY
+          - TARGET_LENGTH_LIMIT
+          - NUMBER_CONSISTENCY
+          - REPEATED_WORD
+          - TARGET_IN_WRONG_LANGUAGE
+          - SOURCE_IN_WRONG_LANGUAGE
+          - SEGMENT_COMPLETENESS
+          - NON_TRANSLATABLE_TEXT
+          - EMOJI_CONSISTENCY
+  #            - TAG_VALIDITY
+          - INSERTABLE_CONSISTENCY
+          - TARGET_SOURCE_CONSISTENCY
+          - BLACKLISTED_TERMS
+          - GLOSSARY_COMPLIANCE
+          - TRADEMARK_CONSISTENCY
+          - GRAMMAR_CHECK
+          - GLOBAL_CAPITALISATION_CONSISTENCY
+
       checkSubtypeEnum:
         enum:
           - EMOJI_ADDED
