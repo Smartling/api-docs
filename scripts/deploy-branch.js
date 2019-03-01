@@ -10,8 +10,8 @@ var branch = process.env.TRAVIS_BRANCH && process.env.TRAVIS_BRANCH.toLowerCase(
 if (branch && branch !== 'gh-pages') {
   var branchPath = path.join('.tmp', 'preview', branch, '/');
   mkdir('-p', branchPath);
+  cp('-R', 'web/*', branchPath);
   exec('npm run swagger bundle -- -o ' + branchPath + 'swagger.json');
-  cp('web/index.html', branchPath);
 
   var specFolder = path.join(branchPath, 'spec');
   mkdir('-p', specFolder);
