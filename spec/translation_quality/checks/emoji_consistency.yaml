@@ -1,0 +1,181 @@
+components:
+  schemas:
+
+    EmojiConsistencySettingsDTO:
+      type: object
+      properties:
+        noEmojisAllowedInTarget:
+          type: boolean
+          description: No emoji is allowed in target
+          example: false
+
+    AccountCheckTypeApplySettingsRequest:
+      title: EMOJI_CONSISTENCY
+      allOf:
+        - $ref: '#/components/schemas/EmojiConsistencySettingsDTO'
+        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
+        - type: object
+          required:
+            - noEmojisAllowedInTarget
+
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: EMOJI_CONSISTENCY
+      allOf:
+        - $ref: '#/components/schemas/EmojiConsistencySettingsDTO'
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/EmojiConsistencySettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - EMOJI_CONSISTENCY
+              description: check type code
+              example: "EMOJI_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - EMOJI_ADDED
+                      - EMOJI_DELETED
+                      - EMOJI_PRESENT
+                    description: check subtype code
+                    example: "EMOJI_ADDED"
+
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+
+    TqcCheckMistakeDTO:
+      title: EMOJI_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - EMOJI_CONSISTENCY
+              description: check type code
+              example: "EMOJI_CONSISTENCY"
+            details:
+              type: object
+              properties:
+                emoji:
+                  type: string
+                  description: emoji symbol
+                  example: "😀"
+                type:
+                  type: string
+                  enum:
+                    - EMOJI_ADDED
+                    - EMOJI_DELETED
+                    - EMOJI_PRESENT
+                  description: emoji defect type
+                  example: "EMOJI_DELETED"
+            positionTypeCode:
+              type: string
+              enum:
+                - SOURCE
+                - TARGET
+              description: position type code
+              example: "SOURCE"
+
+  examples:
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "EMOJI_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "EMOJI_PRESENT"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "EMOJI_DELETED"
+          "severityLevelCode": "DISABLED"
+        - "checkSubTypeCode": "EMOJI_ADDED"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+      "noEmojisAllowedInTarget": false
+
+    accounts_check_types_checkType_settings_example:
+      noEmojisAllowedInTarget: true
+
+    accounts_check_types_checkType_group_settings_example:
+      noEmojisAllowedInTarget: true
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "Bonjour 😀"
+                "translation": "Hello"
+                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "stringUid": null
+              "mistakes":
+                - "checkTypeCode": "EMOJI_CONSISTENCY"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    - "from": 14
+                      "to": 16
+                  "details":
+                    - "emoji": "😀"
+                      "type": "EMOJI_DELETED"
+                  "positionTypeCode": "SOURCE"
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "EMOJI_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "EMOJI_PRESENT"
+          "severityLevelCode": "DISABLED"
+        - "checkSubTypeCode": "EMOJI_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "EMOJI_ADDED"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+      "noEmojisAllowedInTarget": false
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "EMOJI_CONSISTENCY"
+      "name": "Emoji consistency"
+      "description": "Check that emoji in the source are correctly transferred to the translation"
+      "checkSubTypes":
+        - "checkSubTypeCode": "EMOJI_ADDED"
+          "name": "Emoji added"
+        - "checkSubTypeCode": "EMOJI_DELETED"
+          "name": "Emoji deleted"
+        - "checkSubTypeCode": "EMOJI_PRESENT"
+          "name": "Emoji present"
+
+    dictionary_checkType_subTypes_example:
+      response:
+        code: SUCCESS
+        data:
+          totalCount: 3
+          items:
+            - "checkSubTypeCode": "EMOJI_ADDED"
+              "name": "Emoji added"
+            - "checkSubTypeCode": "EMOJI_DELETED"
+              "name": "Emoji deleted"
+            - "checkSubTypeCode": "EMOJI_PRESENT"
+              "name": "Emoji present"
+

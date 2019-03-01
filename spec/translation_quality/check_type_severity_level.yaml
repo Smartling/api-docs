@@ -1,0 +1,204 @@
+x-paths:
+
+  check_type_severity_level:
+    put:
+      description: >-
+        Update severity level for check type.
+      summary: Update severity level for check type
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckTypeSeverityLevelPutRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckTypeSeverityLevelResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/severity-level
+
+  check_type_subtype_severity_level:
+    put:
+      description: >-
+        Update severity level for check subtype.
+      summary: Update severity level for check subtype
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodeOnlyWithSubtypesPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/checkSubTypeCodePathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckTypeSeverityLevelPutRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckTypeSeverityLevelResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/sub-types/$smartlingCheckSubTypeCode/severity-level
+
+  check_type_group_severity_level:
+    put:
+      description: >-
+        Update severity level for group.
+      summary: Update severity level for group
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckTypeSeverityLevelPutRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckTypeSeverityLevelResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/severity-level:
+
+  check_type_group_subtype_severity_level:
+    put:
+      description: >-
+        Update severity level for check subtype and group.
+      summary: Update severity level for check subtype and group
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodeOnlyWithSubtypesPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/checkSubTypeCodePathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckTypeSeverityLevelPutRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckTypeSeverityLevelResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/sub-types/$smartlingCheckSubTypeCode/severity-level
+
+  check_type_severity_level_reset:
+    put:
+      description: >-
+        Reset severity level for the check type.
+      summary: Reset severity level for check type
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckTypeSeverityLevelResetPutRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckTypeSeverityLevelResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/severity-level/reset
+
+components:
+  schemas:
+
+    CheckTypeSeverityLevelPutRequest:
+      allOf:
+        - $ref: './tqc_common.yaml#/components/requestBodies/targetLocaleId'
+        - $ref: './tqc_common.yaml#/components/requestBodies/severityLevelCode'
+
+    CheckTypeSeverityLevelResetPutRequest:
+      allOf:
+        - $ref: './tqc_common.yaml#/components/requestBodies/targetLocaleId'
+
+    CheckTypeSeverityLevelResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: './tqc_common.yaml#/components/requestBodies/severityLevelCode'
+

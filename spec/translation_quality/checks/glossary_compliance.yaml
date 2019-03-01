@@ -1,0 +1,268 @@
+components:
+  schemas:
+
+    GlossaryComplianceSettingsDTO:
+      type: object
+      properties:
+        matchMethod:
+          type: string
+          enum:
+            - MATCH_BY_PERCENTAGE
+            - EXACT_MATCH
+          description: Match method.
+          example: "MATCH_BY_PERCENTAGE"
+        matchThreshold:
+          type: integer
+          description: Match threshold.
+          minimum: 0
+          maximum: 100
+          example: 10
+
+    AccountCheckTypeApplySettingsRequest:
+      title: GLOSSARY_COMPLIANCE
+      allOf:
+        - $ref: '#/components/schemas/GlossaryComplianceSettingsDTO'
+        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
+        - type: object
+          required:
+            - matchMethod
+            - matchThreshold
+
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: GLOSSARY_COMPLIANCE
+      allOf:
+        - $ref: '#/components/schemas/GlossaryComplianceSettingsDTO'
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - GLOSSARY_COMPLIANCE
+              description: check type code
+              example: "GLOSSARY_COMPLIANCE"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - $ref: '#/components/schemas/GlossaryComplianceSettingsDTO'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: GLOSSARY_COMPLIANCE
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - GLOSSARY_COMPLIANCE
+              description: check type code
+              example: "GLOSSARY_COMPLIANCE"
+            details:
+              type: object
+              properties:
+                glossaryTerm:
+                  type: object
+                  properties:
+                    termUid:
+                      type: string
+                      description: term uid
+                      example: "cdd443b9-814f-442c-9ba6-4d97e0afce74"
+                    translation:
+                      type: object
+                      properties:
+                        localeId:
+                          type: string
+                          description: locale identifier
+                          example: "ru-RU"
+                        translatedTerm:
+                          type: string
+                          description: translated term
+                          example: "изменить размер"
+                        notes:
+                          type: string
+                          description: notes
+                          example: ""
+                        translatorUserUid:
+                          type: string
+                          description: translator user identifier
+                          example: "23ddd32e"
+                        lockTranslation:
+                          type: boolean
+                          description: lock translation
+                          example: false
+                        submittedForTranslation:
+                          type: boolean
+                          description: submitted for translation
+                          example: false
+                        createdDate:
+                          type: string
+                          description: created date
+                          example: "2018-11-16T16:06:53Z"
+                        modifiedDate:
+                          type: string
+                          description: modified date
+                          example: "2018-11-17T16:06:53Z"
+                    termText:
+                      type: string
+                      description: term text
+                      example: "resize"
+                    caseSensitive:
+                      type: boolean
+                      description: case sensitive
+                      example: false
+                    exactMatch:
+                      type: boolean
+                      description: exact match
+                      example: false
+                    definition:
+                      type: string
+                      description: definition
+                      example: ""
+                    variations:
+                      type: string
+                      description: variations
+                      example: ""
+                    synonyms:
+                      type: string
+                      description: synonyms
+                      example: ""
+                    antonyms:
+                      type: string
+                      description: antonyms
+                      example: ""
+                    seo:
+                      type: boolean
+                      description: seo
+                      example: false
+                    doNotTranslate:
+                      type: boolean
+                      description: do not translate
+                      example: false
+                    notes:
+                      type: string
+                      description: notes
+                      example: ""
+                    partOfSpeechCode:
+                      type: string
+                      description: part of speech code
+                      example: "UNSPECIFIED"
+                    createdByUserUid:
+                      type: string
+                      description: created by user identifier
+                      example: "xas344dsd3"
+                    createdDate:
+                      type: string
+                      description: created date
+                      example: "2018-11-16T16:06:53Z"
+                    modifiedDate:
+                      type: string
+                      description: modified date
+                      example: "2018-11-17T16:06:53Z"
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+                - SOURCE
+              description: position type code
+              example: "SOURCE"
+
+  examples:
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "DISABLED"
+      "checkTypeCode": "GLOSSARY_COMPLIANCE"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "matchMethod": "MATCH_BY_PERCENTAGE"
+      "matchThreshold": 50
+
+    accounts_check_types_checkType_settings_example:
+      matchMethod: MATCH_BY_PERCENTAGE
+      matchThreshold: 10
+
+    accounts_check_types_checkType_group_settings_example:
+      matchMethod: MATCH_BY_PERCENTAGE
+      matchThreshold: 10
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "resize"
+                "translation": "поменять"
+                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "stringUid": null
+              "mistakes":
+                - "checkTypeCode": "GLOSSARY_COMPLIANCE"
+                  "severityLevelCode": "MEDIUM"
+                  "positions":
+                     - "from": 0
+                       "to": 6
+                  "details":
+                    "glossaryTerm":
+                      "termUid": "cdd443b9-814f-442c-9ba6-4d97e0afce74"
+                      "translation":
+                          "localeId": "ru-RU"
+                          "translatedTerm": "изменить размер"
+                          "notes": ""
+                          "translatorUserUid": null
+                          "lockTranslation": false
+                          "submittedForTranslation": false
+                          "createdDate": "2018-11-16T16:06:53Z"
+                          "modifiedDate": "2018-11-16T16:06:53Z"
+                      "termText": "resize"
+                      "caseSensitive": false
+                      "exactMatch": false
+                      "definition": ""
+                      "variations": ""
+                      "synonyms": ""
+                      "antonyms": ""
+                      "seo": false
+                      "doNotTranslate": false
+                      "notes": ""
+                      "partOfSpeechCode": "UNSPECIFIED"
+                      "createdByUserUid": "f64d50d91867"
+                      "createdDate": "2018-11-16T16:06:05Z"
+                      "modifiedDate": "2018-11-16T16:06:05Z"
+                  "positionTypeCode": "SOURCE"
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "MEDIUM"
+      "checkTypeCode": "GLOSSARY_COMPLIANCE"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "matchMethod": "MATCH_BY_PERCENTAGE"
+      "matchThreshold": 50
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "GLOSSARY_COMPLIANCE"
+      "name": "Glossary compliance"
+      "description": "Check that glossary term translations are used"
+      "checkSubTypes": []
+
+    dictionary_checkType_GLOSSARY_COMPLIANCE_match_methods_example:
+      response:
+        code: SUCCESS
+        data:
+          totalCount: 2
+          items:
+            - "matchMethodCode": "MATCH_BY_PERCENTAGE"
+              "matchMethodName": "Match by percentage"
+            - "matchMethodCode": "EXACT_MATCH"
+              "matchMethodName": "Exact match"
