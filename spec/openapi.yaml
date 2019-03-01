@@ -19,256 +19,256 @@ externalDocs:
   url: 'https://help.smartling.com'
 
 tags:
-- name: Authentication
-  description: |-
-    Smartling uses OAuth2 for [authentication](https://help.smartling.com/hc/en-us/articles/360007789914).
-    To access the Smartling APIs, you'll first need to authenticate with your
-    user identifier and user secret. An access token is returned that can be
-    attached to the header of any API request. A refresh token is also returned.
+  - name: Authentication
+    description: |-
+      Smartling uses OAuth2 for [authentication](https://help.smartling.com/hc/en-us/articles/360007789914).
+      To access the Smartling APIs, you'll first need to authenticate with your
+      user identifier and user secret. An access token is returned that can be
+      attached to the header of any API request. A refresh token is also returned.
 
-    To obtain your [user identifier and user secret](https://help.smartling.com/hc/en-us/articles/115004187694),
-    log in to Smartling.com and go to **API > Create Token**. Authenticating is as
-    simple as calling the `/api.smartling.com/auth-api/v2/authenticate` with
-    your `userIdentifier` and `userSecret`. The access token returned is valid
-    for 5-minutes, and is used in the header of all subsequent requests.
+      To obtain your [user identifier and user secret](https://help.smartling.com/hc/en-us/articles/115004187694),
+      log in to Smartling.com and go to **API > Create Token**. Authenticating is as
+      simple as calling the `/api.smartling.com/auth-api/v2/authenticate` with
+      your `userIdentifier` and `userSecret`. The access token returned is valid
+      for 5-minutes, and is used in the header of all subsequent requests.
 
-    **Example for generating your access token:**
+      **Example for generating your access token:**
 
-    ```bash
-    curl -X POST https://api.smartling.com/auth-api/v2/authenticate  -H 'content-type: application/json' -d '{"userIdentifier": "userIdasdklj4348dk34!", "userSecret": "userSecret34i34kkd5634f"}'
-    ```
+      ```bash
+      curl -X POST https://api.smartling.com/auth-api/v2/authenticate  -H 'content-type: application/json' -d '{"userIdentifier": "userIdasdklj4348dk34!", "userSecret": "userSecret34i34kkd5634f"}'
+      ```
 
-    ```
-    {
-        "response": {
-            "code": "SUCCESS",
-            "data": {
-                    "accessToken": "eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOasdlkjn",
-                    "refreshToken": "eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJkMTdkMmEw",
-                    "expiresIn": 480,
-                    "refreshExpiresIn": 3660,
-                    "tokenType": "Bearer"
-            }
-        }
-    }
-    ```
+      ```
+      {
+          "response": {
+              "code": "SUCCESS",
+              "data": {
+                      "accessToken": "eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOasdlkjn",
+                      "refreshToken": "eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJkMTdkMmEw",
+                      "expiresIn": 480,
+                      "refreshExpiresIn": 3660,
+                      "tokenType": "Bearer"
+              }
+          }
+      }
+      ```
 
-    **Example of using your access token to list all projects for your account:**
+      **Example of using your access token to list all projects for your account:**
 
-    ```bash
-    curl -X GET -H "Authorization: Bearer {accessToken}" https://api.smartling.com/accounts-api/v2/accounts/{accountUid}/projects
-    ```
+      ```bash
+      curl -X GET -H "Authorization: Bearer {accessToken}" https://api.smartling.com/accounts-api/v2/accounts/{accountUid}/projects
+      ```
 
-    ```
-    {
-        "response": {
-            "code": "SUCCESS",
-            "data": {
-                "totalCount": 1,
-                "items": [{
-                             "projectId": "df324sdf5",
-                             "projectName": "iOS Strings files",
-                             "accountUid": "ab5f1939",
-                             "archived": false,
-                             "projectTypeCode": "APPLICATION_RESOURCES",
-                             "sourceLocaleId": "en",
-                             "sourceLocaleDescription": "English"
-                         }
-                ]
-            }
-        }
-    }
-    ```
+      ```
+      {
+          "response": {
+              "code": "SUCCESS",
+              "data": {
+                  "totalCount": 1,
+                  "items": [{
+                               "projectId": "df324sdf5",
+                               "projectName": "iOS Strings files",
+                               "accountUid": "ab5f1939",
+                               "archived": false,
+                               "projectTypeCode": "APPLICATION_RESOURCES",
+                               "sourceLocaleId": "en",
+                               "sourceLocaleDescription": "English"
+                           }
+                  ]
+              }
+          }
+      }
+      ```
 
-- name: Account & Projects
-  description: |-
-    Each client within Smartling is given their own account with a designated
-    `accountUid`. Within each account is any number of projects. All files,
-    content, and jobs are tied to a particular project. The Accounts &
-    Projects API will allow you to programmatically find and use the projects
-    within your account.
+  - name: Account & Projects
+    description: |-
+      Each client within Smartling is given their own account with a designated
+      `accountUid`. Within each account is any number of projects. All files,
+      content, and jobs are tied to a particular project. The Accounts &
+      Projects API will allow you to programmatically find and use the projects
+      within your account.
 
-    You may wish to reference the [Overview of Smartling
-    APIs](https://help.smartling.com/hc/en-us/articles/360007811673) article
-    to better understand how content is organized within Smartling.
+      You may wish to reference the [Overview of Smartling
+      APIs](https://help.smartling.com/hc/en-us/articles/360007811673) article
+      to better understand how content is organized within Smartling.
 
-- name: Locales
-  description: |-
-    Locales are the language and country pairs that are used to identify the
-    source content and the desired target locale for your translated content.
+  - name: Locales
+    description: |-
+      Locales are the language and country pairs that are used to identify the
+      source content and the desired target locale for your translated content.
 
-- name: Files
-  description: |-
-    Files are typically how you can exchange your content with Smartling to
-    get translations. Smartling supports a wide variety of [file
-    types](https://help.smartling.com/hc/en-us/articles/360007998893). When
-    you upload a file to Smartling, it gets parsed into strings, which will
-    then be sent into the translation queue.
+  - name: Files
+    description: |-
+      Files are typically how you can exchange your content with Smartling to
+      get translations. Smartling supports a wide variety of [file
+      types](https://help.smartling.com/hc/en-us/articles/360007998893). When
+      you upload a file to Smartling, it gets parsed into strings, which will
+      then be sent into the translation queue.
 
-    **List of Supported File Types and Directives**:
+      **List of Supported File Types and Directives**:
 
-    * [Android XML](https://help.smartling.com/hc/en-us/articles/360008000573)
-    * [CSV](https://help.smartling.com/hc/en-us/articles/360008000593)
-    * [Gettext PO/POT](https://help.smartling.com/hc/en-us/articles/360007894594)
-    * [HTML](https://help.smartling.com/hc/en-us/articles/360007894614)
-    * [InDesign](https://help.smartling.com/hc/en-us/articles/360007894634)
-    * [iOS Strings](https://help.smartling.com/hc/en-us/articles/360008000693)
-    * [iOS Stringsdict](https://help.smartling.com/hc/en-us/articles/360008000713)
-    * [Java Property Files](https://help.smartling.com/hc/en-us/articles/360007894714)
-    * [JSON](https://help.smartling.com/hc/en-us/articles/360008000733)
-    * [MadCap Lingo ZIP Package](https://help.smartling.com/hc/en-us/articles/360008000793)
-    * [Microsoft Office](https://help.smartling.com/hc/en-us/articles/360007894774)
-    * [Plain Text](https://help.smartling.com/hc/en-us/articles/360007894794)
-    * [QT Linguist](https://help.smartling.com/hc/en-us/articles/360007894814)
-    * [RESX](https://help.smartling.com/hc/en-us/articles/360008000833)
-    * [SubRip SRT](https://help.smartling.com/hc/en-us/articles/360007894874)
-    * [XLIFF](https://help.smartling.com/hc/en-us/articles/360007894894)
-    * [XML](https://help.smartling.com/hc/en-us/articles/360008000893)
-    * [YAML](https://help.smartling.com/hc/en-us/articles/360007894934)
+      * [Android XML](https://help.smartling.com/hc/en-us/articles/360008000573)
+      * [CSV](https://help.smartling.com/hc/en-us/articles/360008000593)
+      * [Gettext PO/POT](https://help.smartling.com/hc/en-us/articles/360007894594)
+      * [HTML](https://help.smartling.com/hc/en-us/articles/360007894614)
+      * [InDesign](https://help.smartling.com/hc/en-us/articles/360007894634)
+      * [iOS Strings](https://help.smartling.com/hc/en-us/articles/360008000693)
+      * [iOS Stringsdict](https://help.smartling.com/hc/en-us/articles/360008000713)
+      * [Java Property Files](https://help.smartling.com/hc/en-us/articles/360007894714)
+      * [JSON](https://help.smartling.com/hc/en-us/articles/360008000733)
+      * [MadCap Lingo ZIP Package](https://help.smartling.com/hc/en-us/articles/360008000793)
+      * [Microsoft Office](https://help.smartling.com/hc/en-us/articles/360007894774)
+      * [Plain Text](https://help.smartling.com/hc/en-us/articles/360007894794)
+      * [QT Linguist](https://help.smartling.com/hc/en-us/articles/360007894814)
+      * [RESX](https://help.smartling.com/hc/en-us/articles/360008000833)
+      * [SubRip SRT](https://help.smartling.com/hc/en-us/articles/360007894874)
+      * [XLIFF](https://help.smartling.com/hc/en-us/articles/360007894894)
+      * [XML](https://help.smartling.com/hc/en-us/articles/360008000893)
+      * [YAML](https://help.smartling.com/hc/en-us/articles/360007894934)
 
-- name: Jobs
-  description: |-
-    A Smartling project (such as a mobile, web, files, or connector project)
-    may contain one or more
-    [jobs](https://help.smartling.com/hc/en-us/articles/360007790014). You may
-    have multiple projects, each containing multiple jobs. Each job contains
-    strings, consisting of words or phrases.
+  - name: Jobs
+    description: |-
+      A Smartling project (such as a mobile, web, files, or connector project)
+      may contain one or more
+      [jobs](https://help.smartling.com/hc/en-us/articles/360007790014). You may
+      have multiple projects, each containing multiple jobs. Each job contains
+      strings, consisting of words or phrases.
 
-    The Jobs feature allows you to group and prioritize your content by name,
-    due date, description, and reference number (optional). It also enables
-    you to monitor the progress of your translations throughout completion.
+      The Jobs feature allows you to group and prioritize your content by name,
+      due date, description, and reference number (optional). It also enables
+      you to monitor the progress of your translations throughout completion.
 
-    The Jobs API allows you to create a job, add a file to a job, authorize a
-    job, and cancel a job, among many other actions. You have full control via
-    the API to manage your job(s).
+      The Jobs API allows you to create a job, add a file to a job, authorize a
+      job, and cancel a job, among many other actions. You have full control via
+      the API to manage your job(s).
 
-- name: Job batches
-  description: |-
-    Job batches take care of asynchronous processes when uploading files and
-    attaching them to jobs.
+  - name: Job batches
+    description: |-
+      Job batches take care of asynchronous processes when uploading files and
+      attaching them to jobs.
 
-    Generally, adding multiple files to a job is associated with polling -
-    file is parsed asynchronously and can't be added to a job until it is
-    completed, adding file to a job is also asynchronous, and job can't be
-    authorized until all background tasks completed.
+      Generally, adding multiple files to a job is associated with polling -
+      file is parsed asynchronously and can't be added to a job until it is
+      completed, adding file to a job is also asynchronous, and job can't be
+      authorized until all background tasks completed.
 
-    This forces third-party integration poll every file after every step.
+      This forces third-party integration poll every file after every step.
 
-    Batches hide these asynchronous processes from 3rd party integration -
-    after it accepted file from client it conducts this file through all steps
-    up to the Job authorization. As Job batch Service utilizes internal
-    Smartling events it gets more effective than just polling files and jobs.
+      Batches hide these asynchronous processes from 3rd party integration -
+      after it accepted file from client it conducts this file through all steps
+      up to the Job authorization. As Job batch Service utilizes internal
+      Smartling events it gets more effective than just polling files and jobs.
 
-    From the client side flow consists of simple steps:
+      From the client side flow consists of simple steps:
 
-    1. Client creates Job (or uses existing one, which isn't currently
-    processed with another Batch)
+      1. Client creates Job (or uses existing one, which isn't currently
+      processed with another Batch)
 
-    2. Client Creates a new Batch for this Job
+      2. Client Creates a new Batch for this Job
 
-    3. Client adds (uploads) files into the batch giving target locales list
-    for each file
+      3. Client adds (uploads) files into the batch giving target locales list
+      for each file
 
-    4. When all files are uploaded, client triggers "execute" for the batch.
+      4. When all files are uploaded, client triggers "execute" for the batch.
 
-    5. Batch execution process waiting until all files are uploaded and added
-    to the Job and then, if was requested, authorizes the Job.
+      5. Batch execution process waiting until all files are uploaded and added
+      to the Job and then, if was requested, authorizes the Job.
 
-    6. Clients can check batch status and see if all files uploaded and
-    attached successfully, what errors happened for each file, and statistics
-    for added/skipped strings.
+      6. Clients can check batch status and see if all files uploaded and
+      attached successfully, what errors happened for each file, and statistics
+      for added/skipped strings.
 
-    After Batch is completed it can't be reused.
+      After Batch is completed it can't be reused.
 
-    **Job batches Limitations**
+      **Job batches Limitations**
 
-    - Service doesn't guarantee correct processing of multiple batches for the
-    same job in parallel. Adding files to a new batch should be done only
-    after previous batch reached "completed" state.
+      - Service doesn't guarantee correct processing of multiple batches for the
+      same job in parallel. Adding files to a new batch should be done only
+      after previous batch reached "completed" state.
 
-    - Service doesn't guarantee correct processing of Batch if Job and Files
-    are modified in UI or with another integration.
+      - Service doesn't guarantee correct processing of Batch if Job and Files
+      are modified in UI or with another integration.
 
-- name: Context
-  description: |-
-    [Visual context](https://help.smartling.com/hc/en-us/categories/360000736674)
-    helps Translators make linguistic, layout, and spacing decisions based on
-    where strings appear in your mobile or desktop application. The Context
-    API supports uploading various forms of context (images and HTML), and
-    associate the context with content in Smartling.
+  - name: Context
+    description: |-
+      [Visual context](https://help.smartling.com/hc/en-us/categories/360000736674)
+      helps Translators make linguistic, layout, and spacing decisions based on
+      where strings appear in your mobile or desktop application. The Context
+      API supports uploading various forms of context (images and HTML), and
+      associate the context with content in Smartling.
 
-- name: Issues
-  description: |-
-    The Issues feature is a way for users who are working on a translation
-    workflow to communicate with other users about source content and
-    translations. For example, a Translator might create an
-    [issue](https://help.smartling.com/hc/en-us/articles/115003139313) to ask
-    a question about terminology in a particular string.
+  - name: Issues
+    description: |-
+      The Issues feature is a way for users who are working on a translation
+      workflow to communicate with other users about source content and
+      translations. For example, a Translator might create an
+      [issue](https://help.smartling.com/hc/en-us/articles/115003139313) to ask
+      a question about terminology in a particular string.
 
-    By using Issues, you can record any communication about a string, and this
-    can be seen by anyone working on it. Issues streamline the translation
-    workflow. Translators get answers to their questions about the original
-    content so they can translate it quickly and correctly. Translation
-    resources can review and provide feedback about translations
-    collaboratively.
+      By using Issues, you can record any communication about a string, and this
+      can be seen by anyone working on it. Issues streamline the translation
+      workflow. Translators get answers to their questions about the original
+      content so they can translate it quickly and correctly. Translation
+      resources can review and provide feedback about translations
+      collaboratively.
 
-    The Issues API provides methods for creating issues, changing the state of
-    an issue, commenting on an issue, requesting detailed information, as well
-    as creating reports on issues and comments.
+      The Issues API provides methods for creating issues, changing the state of
+      an issue, commenting on an issue, requesting detailed information, as well
+      as creating reports on issues and comments.
 
-- name: Glossaries
-  description: |-
-    The Glossaries API allows you to create and edit glossaries in a Smartling
-    account, and populate it with glossary terms. You can also download your
-    glossaries as CSV or TBX files and import Excel spreadsheets to create new
-    glossaries.
+  - name: Glossaries
+    description: |-
+      The Glossaries API allows you to create and edit glossaries in a Smartling
+      account, and populate it with glossary terms. You can also download your
+      glossaries as CSV or TBX files and import Excel spreadsheets to create new
+      glossaries.
 
-    **Glossaries API Usage Limitations**:
-    * Maximum request size is 10MB.
-    * Maximum file upload size is 10MB.
-    * Maximum HTTP header size is 128KB.
-    * For requests that use pagination, maximum page size is 5000 elements.
-    * For requests that return entities by their UIDs, maximum is 100 elements.
+      **Glossaries API Usage Limitations**:
+      * Maximum request size is 10MB.
+      * Maximum file upload size is 10MB.
+      * Maximum HTTP header size is 128KB.
+      * For requests that use pagination, maximum page size is 5000 elements.
+      * For requests that return entities by their UIDs, maximum is 100 elements.
 
-    Rate limits:
+      Rate limits:
 
-    * Maximum 5 concurrent requests.
-    * Maximum rate is 200 requests per 15-second window frame.
+      * Maximum 5 concurrent requests.
+      * Maximum rate is 200 requests per 15-second window frame.
 
-- name: Strings
-  description: |-
-    A string is a piece of translation. Based on the source content, strings
-    can be parsed differently. A string is then broken down further, into one
-    or more segments.
+  - name: Strings
+    description: |-
+      A string is a piece of translation. Based on the source content, strings
+      can be parsed differently. A string is then broken down further, into one
+      or more segments.
 
-    The Strings API allows you to directly upload strings to a Smartling
-    project and fetch original strings or translations.
+      The Strings API allows you to directly upload strings to a Smartling
+      project and fetch original strings or translations.
 
-    For each string in a Smartling project, there is a unique identifier
-    created by hashing together the parsed string text, [variant
-    metadata](https://help.smartling.com/hc/en-us/articles/360008143853), and
-    in some cases,
-    [namespace](https://help.smartling.com/hc/en-us/articles/360008143833).
-    When adding strings via the Strings API, each string will be unique. If
-    you try to create a string with identical variant metadata and string text
-    to a string that already exists in the project, the string will be
-    overwritten.
+      For each string in a Smartling project, there is a unique identifier
+      created by hashing together the parsed string text, [variant
+      metadata](https://help.smartling.com/hc/en-us/articles/360008143853), and
+      in some cases,
+      [namespace](https://help.smartling.com/hc/en-us/articles/360008143833).
+      When adding strings via the Strings API, each string will be unique. If
+      you try to create a string with identical variant metadata and string text
+      to a string that already exists in the project, the string will be
+      overwritten.
 
-- name: Tags
-  description: |-
-    Tags can help you manage your strings. The Tags API allows you to
-    add/remove string tags, and search for tags in a project.
+  - name: Tags
+    description: |-
+      Tags can help you manage your strings. The Tags API allows you to
+      add/remove string tags, and search for tags in a project.
 
-- name: Vendors
-  description: |-
-    The Vendors API is for Language Service Providers to view work that's
-    available in Smartling.
+  - name: Vendors
+    description: |-
+      The Vendors API is for Language Service Providers to view work that's
+      available in Smartling.
 
-- name: Reports
-  description: |-
-    The Reports API allows to request various reports available on Smartling
-    platform and specify additional filtering criteria to narrow down data
-    returned by the reports.
+  - name: Reports
+    description: |-
+      The Reports API allows to request various reports available on Smartling
+      platform and specify additional filtering criteria to narrow down data
+      returned by the reports.
 
   - name: Translation quality check
     description: Translation quality check service provides API that allows to check translation quality.
