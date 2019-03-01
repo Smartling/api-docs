@@ -8791,6 +8791,31 @@ paths:
     $ref: './spec/translation_quality/tqc_check.yaml#/x-paths/tqc_check'
 
 components:
+  requestBodies:
+    TagsWithStrings:
+      content:
+        application/json:
+          schema:
+            properties:
+              tags:
+                description: List of tags
+                items:
+                  type: string
+                maxItems: 100
+                minItems: 1
+                type: array
+              stringHashcodes:
+                description: List of string hashcodes
+                items:
+                  type: string
+                maxItems: 1000
+                type: array
+            required:
+              - tags
+              - stringHashcodes
+            type: object
+      required: true
+
   schemas:
     LEADING_TRAILING_SPACES:
       $ref: './spec/translation_quality/checks/leading_trailing_spaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
@@ -8836,32 +8861,7 @@ components:
       $ref: './spec/translation_quality/checks/grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     GLOBAL_CAPITALISATION_CONSISTENCY:
       $ref: './spec/translation_quality/checks/global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-  requestBodies:
-    TagsWithStrings:
-      content:
-        application/json:
-          schema:
-            properties:
-              tags:
-                description: List of tags
-                items:
-                  type: string
-                maxItems: 100
-                minItems: 1
-                type: array
-              stringHashcodes:
-                description: List of string hashcodes
-                items:
-                  type: string
-                maxItems: 1000
-                type: array
-            required:
-              - tags
-              - stringHashcodes
-            type: object
-      required: true
 
-  schemas:
     BatchStatus:
       enum:
       - DRAFT
