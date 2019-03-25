@@ -3809,6 +3809,51 @@ paths:
           curl -X GET -H "Authorization: Bearer $smartlingToken" -H
           "Content-Type: application/json"
           https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/comments/$issueCommentUid
+    delete:
+      summary: Delete comment text
+      description: >-
+        Delete comment text.
+
+        **Note**: The author of an issue comment, account owner and project manager can perform this action.
+      tags:
+      - Issues
+      parameters:
+      - description: Unique identifier of corresponding project.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of corresponding issue.
+        in: path
+        name: issueUid
+        required: true
+        schema:
+          type: string
+      - description: Unique identifier of corresponding issue commment.
+        in: path
+        name: issueCommentUid
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+              schema:
+                $ref: '#/components/schemas/IssueCommentDeleteResponse'
+          description: OK
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json"
+          https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/comments/$issueCommentUid
 
   '/issues-api/v2/projects/{projectId}/issues/list':
     post:
@@ -11098,6 +11143,13 @@ components:
                       type: string
                   type: object
               type: object
+    IssueCommentDeleteResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          $ref: '#/components/schemas/SuccessResponse'
     IssueCommentEditResponse:
       type: object
       required:
