@@ -276,9 +276,11 @@ tags:
 paths:
   /auth-api/v2/authenticate:
     post:
-      tags:
-      - Authentication
+      summary: Authenticate
       description: Verifies the credentials of the connection attempt.
+      tags:
+        - Authentication
+      operationId: authenticate
       requestBody:
         content:
           application/json:
@@ -286,7 +288,6 @@ paths:
               $ref: '#/components/schemas/AuthenticationRequest'
         description: Authentication Request
         required: true
-      summary: Authenticate
       responses:
         200:
           description: OK
@@ -329,6 +330,7 @@ paths:
         A [renewed access token](https://help.smartling.com/hc/en-us/articles/360007789914) that
         can be attached to the header of any API request.
       summary: Refresh access token
+      operationId: refreshAccessToken
       requestBody:
         content:
           application/json:
@@ -370,6 +372,7 @@ paths:
       description: |
         Returns the list of projects for the account.
       summary: List projects
+      operationId: getProjectsByAccount
 
       parameters:
         - in: path
@@ -459,6 +462,7 @@ paths:
       description: |
         Returns the details of a project.
       summary: Get project details
+      operationId: getProjectDetails
 
       parameters:
       - in: path
@@ -522,6 +526,7 @@ paths:
       - Account & Projects
       description: |
         Add a new target locale to the project.
+      operationId: addLocaleToProject
 
       parameters:
       - in: path
@@ -594,6 +599,7 @@ paths:
       description: >
         Make a copy of an existing project, thereby creating a new one with a
         new name
+      operationId: copyProject
 
       parameters:
       - in: path
@@ -656,6 +662,7 @@ paths:
         Used to check if the copy project request is complete and to retrieve
         the new projectId
       summary: Get the status of the project copy request
+      operationId: getProjectCopyRequestStatus
 
       parameters:
       - in: path
@@ -716,6 +723,7 @@ paths:
 
         To find out the `localedID` for a specific project, refer to [Get project
         details](https://api-reference.smartling.com/#tag/Account-and-Projects%2Fpaths%2F~1projects-api~1v2~1projects~1%7BprojectId%7D%2Fget).
+      operationId: getAvailableLocalesList
 
       parameters:
       - description: Optional parameter to filter to the specified list of locales.
@@ -780,6 +788,7 @@ paths:
         into the Smartling project identified by the `projectId`. Smartling will
         ingest this file, parse out the keys and text as strings for
         translation. At this point, content is ready for translation.
+      operationId: uploadSourceFile
 
       tags:
       - Files
@@ -1012,6 +1021,7 @@ paths:
         specified as the fileUri, Smartling returns a .po file.
       tags:
       - Files
+      operationId: downloadSourceFile
 
       parameters:
       - name: projectId
@@ -1062,6 +1072,7 @@ paths:
         ```bash
           curl -X GET -H "Authorization: Bearer {token}" 'https://api.smartling.com/files-api/v2/projects/{projectId}/file/status?fileUri=file.properties'
         ```
+      operationId: getFileTranslationStatusAllLocales
 
       parameters:
       - name: projectId
@@ -1131,6 +1142,7 @@ paths:
         ```
       tags:
       - Files
+      operationId: getFileTranslationStatusSingleLocale
 
       parameters:
       - description: A unique identifier for a project.
@@ -1212,6 +1224,7 @@ paths:
         exactly the fileUri provided. The only exception to this is with .pot
         gettext files. When a .pot file is specified as the fileUri, Smartling
         returns a .po file.`
+      operationId: downloadTranslatedFileSingleLocale
 
       parameters:
       - name: projectId
@@ -1312,6 +1325,7 @@ paths:
         request to determine the character encoding.
       tags:
       - Files
+      operationId: downloadTranslatedFilesAllLocales
 
       parameters:
       - name: projectId
@@ -1417,6 +1431,7 @@ paths:
         ```
       tags:
       - Files
+      operationId: downloadMultipleTranslatedFiles
 
       parameters:
       - name: projectId
@@ -1543,6 +1558,7 @@ paths:
       description: This lists recently uploaded files, and returns a maximum of 100 files.
       tags:
       - Files
+      operationId: getRecentlyUploadedSourceFilesList
 
       parameters:
       - name: projectId
@@ -1661,6 +1677,7 @@ paths:
         This returns a list of all file types currently represented in the project.
       tags:
       - Files
+      operationId: getFileTypesList
 
       parameters:
       - description: A unique identifier for a project.
@@ -1708,6 +1725,7 @@ paths:
         provide.
       tags:
       - Files
+      operationId: renameUploadedSourceFile
 
       parameters:
       - description: A unique identifier for a project.
@@ -1779,6 +1797,7 @@ paths:
         with the same `fileUri`.
       tags:
       - Files
+      operationId: deleteUploadedSourceFile
 
       parameters:
       - description: A unique identifier for a project.
@@ -1832,6 +1851,7 @@ paths:
         This returns the date that a file was last modified in a specified locale.
       tags:
       - Files
+      operationId: getTranslatedFileLastModifiedDateSingleLocale
 
       parameters:
       - description: A unique identifier for a project.
@@ -1900,6 +1920,7 @@ paths:
         This returns the date that a file was last modified in each locale.
       tags:
       - Files
+      operationId: getTranslatedFileLastModifiedDateAllLocales
 
       parameters:
       - description: A unique identifier for a project.
@@ -1963,6 +1984,7 @@ paths:
       description: ''
       tags:
       - Files
+      operationId: importFileTranslations
 
       parameters:
       - description: A unique identifier for a project.
@@ -2086,6 +2108,7 @@ paths:
         available translations.
       tags:
       - Files
+      operationId: exportFileTranslations
 
       parameters:
       - description: A unique identifier for a project.
@@ -2194,6 +2217,7 @@ paths:
         This endpoint accepts *multipart/form-data* request body.
       tags:
       - Context
+      operationId: uploadNewVisualContext
 
       parameters:
       - description: Unique identifier of a project
@@ -2282,6 +2306,7 @@ paths:
         should be repeated with **offset** parameter specified.
       tags:
       - Context
+      operationId: getVisualContextsListByProject
 
       parameters:
       - description: Unique identifier of a project.
@@ -2353,6 +2378,7 @@ paths:
       description: Retrieves basic information about the context.
       tags:
       - Context
+      operationId: getVisualContextInfo
 
       parameters:
       - description: Unique identifier of a project
@@ -2418,6 +2444,7 @@ paths:
         As well, bindings of this context to strings are removed, and strings are marked as having no context.
       tags:
       - Context
+      operationId: deleteVisualContext
 
       parameters:
       - description: Unique identifier of a project
@@ -2489,6 +2516,7 @@ paths:
         |`VIDEO`| Empty response.|
       tags:
       - Context
+      operationId: downloadVisualContextFileContent
 
       parameters:
       - description: Unique identifier of a project
@@ -2587,6 +2615,7 @@ paths:
         ```
       tags:
       - Context
+      operationId: uploadAndMatchVisualContext
 
       parameters:
       - description: Unique identifier of a project
@@ -2678,6 +2707,7 @@ paths:
         script-like font.
       tags:
       - Context
+      operationId: runAutomaticContextMatching
 
       parameters:
       - description: Unique identifier of a project
@@ -2750,6 +2780,7 @@ paths:
         When the match has been completed, any newly created bindings are also returned in the response.
       tags:
       - Context
+      operationId: getAsyncContextMatchResults
 
       parameters:
       - description: Unique identifier of a project
@@ -2828,6 +2859,7 @@ paths:
         The context referenced by the binding will no longer be displayed for the referenced string in the CAT tool.
       tags:
       - Context
+      operationId: deleteStringToContextBinding
 
       parameters:
       - description: Unique identifier of a project.
@@ -2893,6 +2925,7 @@ paths:
         Results are not paginated.
       tags:
       - Context
+      operationId: getStringToContextBindingsByContext
 
       parameters:
       - description: Unique identifier of a project
@@ -2963,6 +2996,7 @@ paths:
       description: Returns all bindings that reference a given string.
       tags:
       - Context
+      operationId: getStringToContextBindingsByString
 
       parameters:
       - description: Unique identifier of a project.
@@ -3083,6 +3117,7 @@ paths:
         ```
       tags:
       - Context
+      operationId: createStringToContextBindings
 
       parameters:
         - description: Unique identifier of a project
@@ -3158,6 +3193,7 @@ paths:
         future, Smartling may introduce additional states.
       tags:
       - Issues
+      operationId: getAllIssuesStates
       responses:
         '200':
           content:
@@ -3190,6 +3226,7 @@ paths:
       description: Returns a list of issue severity levels.
       tags:
       - Issues
+      operationId: getAllIssueSeverityLevels
       responses:
         200:
           description: OK
@@ -3227,6 +3264,7 @@ paths:
         types.
       tags:
       - Issues
+      operationId: getIssueTypesByAccount
 
       parameters:
       - description: Unique identifier of corresponding account.
@@ -3289,6 +3327,7 @@ paths:
         length is 4000 characters.
       tags:
       - Issues
+      operationId: createIssue
       parameters:
       - description: Unique identifier of corresponding project
         in: path
@@ -3342,9 +3381,11 @@ paths:
       description: >-
         Replaces the text of an issue with new text.
 
+
         **Note**: Only the author of the issue can perform this action. The
         `issueTextModifiedDate` property of an issue object shows when it was
         last updated.
+
 
         Issue text is treated as plain text. Smartling will save the text as
         provided and will not attempt to render this text with any special
@@ -3353,6 +3394,7 @@ paths:
         attempting to render it. Maximum length is 4000 characters.
       tags:
       - Issues
+      operationId: editIssue
 
       parameters:
       - description: Unique identifier of corresponding project.
@@ -3401,6 +3443,7 @@ paths:
       description: The state of an issue. Accepted values are `OPENED` or `RESOLVED`.
       tags:
       - Issues
+      operationId: openOrCloseIssue
       parameters:
       - description: Unique identifier of corresponding project.
         in: path
@@ -3447,12 +3490,14 @@ paths:
       description: >-
         Returns detailed information of a single issue.
 
+
         **Note**: The `resolvedByUserUid` and `reportedByUserUid` values are not
         currently usable for identifying the users who created or resolved
         issues. In the future, a People API will be exposed for looking up user
         details.
       tags:
       - Issues
+      operationId: getIssueDetails
       parameters:
       - description: Unique identifier of corresponding project
         in: path
@@ -3507,6 +3552,7 @@ paths:
         Update issue attribute (answered). "Answered" is a boolean; (true/false).
       tags:
       - Issues
+      operationId: updateIssueAnsweredStatus
       parameters:
       - description: Unique identifier of corresponding project.
         in: path
@@ -3553,6 +3599,7 @@ paths:
       description: Update issue attribute (severity level) (LOW / MEDIUM / HIGH)
       tags:
       - Issues
+      operationId: updateIssueSeverityLevel
       parameters:
       - description: Unique identifier of corresponding project.
         in: path
@@ -3605,6 +3652,7 @@ paths:
         characters.
       tags:
       - Issues
+      operationId: addIssueComment
       parameters:
       - description: Unique identifier of corresponding project
         in: path
@@ -3652,11 +3700,13 @@ paths:
       description: >-
         Returns all comments on an issue.
 
+
         **Note**: The `createdByUserUid` value is not currently usable for
         identifying the users who created comments. In the future, a People API
         will be exposed for looking up user details.
       tags:
       - Issues
+      operationId: getIssueComments
       parameters:
       - description: Unique identifier of corresponding project
         in: path
@@ -3702,9 +3752,11 @@ paths:
       description: >-
         Replaces the text of an issue with new text.
 
+
         **Note**: Only the author of an issue can perform this action. The
         `commentTextModifiedDate` property of an issue object shows when it was
         last updated.
+
 
         Comment text is treated as plain text. Smartling will save the text as
         provided and will not attempt to render this text with any special
@@ -3713,6 +3765,7 @@ paths:
         to render it. Maximum length is 4000 characters.
       tags:
       - Issues
+      operationId: updateIssueComment
       parameters:
       - description: Unique identifier of corresponding project.
         in: path
@@ -3767,11 +3820,13 @@ paths:
       description: >-
         Returns detailed information on a single issue comment.
 
+
         **Note**: The `createdByUserUid` value is not currently usable for
         identifying the users who created comments. In the future, a People API
         will be exposed for looking up user details.
       tags:
       - Issues
+      operationId: getIssueCommentDetails
       parameters:
       - description: Unique identifier of corresponding project.
         in: path
@@ -3819,9 +3874,11 @@ paths:
       description: >-
         Delete comment.
 
+
         **Note**: The author of the issue comment, account owner and project manager can perform this action.
       tags:
       - Issues
+      operationId: deleteIssueComment
       parameters:
       - description: Unique identifier of corresponding project.
         in: path
@@ -3871,6 +3928,7 @@ paths:
         parameters are optional.
       tags:
       - Issues
+      operationId: getIssuesList
       parameters:
       - description: Unique identifier of the corresponding project.
         in: path
@@ -3930,6 +3988,7 @@ paths:
         optional.
       tags:
       - Issues
+      operationId: getIssuesCount
       parameters:
       - description: Unique identifier of corresponding project.
         in: path
@@ -3970,6 +4029,7 @@ paths:
       description: Get a list of all issue watchers for the entire account.
       tags:
       - Issues
+      operationId: getIssuesWatchersListByAccount
       parameters:
       - description: Unique identifier of corresponding account.
         in: path
@@ -4029,6 +4089,7 @@ paths:
       description: Create a new watcher.
       tags:
       - Issues
+      operationId: addIssuesWatcher
       parameters:
       - description: Unique identifier of the corresponding account.
         in: path
@@ -4074,6 +4135,7 @@ paths:
       description: Update the attributes of a watcher.
       tags:
       - Issues
+      operationId: updateIssuesWatcher
       parameters:
       - description: Unique identifier of the corresponding account.
         in: path
@@ -4129,6 +4191,7 @@ paths:
         account the emails include links to view the issue in the dashboard.
       tags:
       - Issues
+      operationId: addWatcherToIssue
       parameters:
       - description: Unique identifier of corresponding account
         in: path
@@ -4180,6 +4243,7 @@ paths:
         be received by them.
       tags:
       - Issues
+      operationId: deleteWatcherFromIssue
       parameters:
       - description: Unique identifier of corresponding account
         in: path
@@ -4230,6 +4294,7 @@ paths:
       description: Get a list of watchers that are linked to the issue.
       tags:
       - Issues
+      operationId: getWatchersListLinkedToIssue
       parameters:
       - description: Unique identifier of corresponding account
         in: path
@@ -4288,6 +4353,7 @@ paths:
       deprecated: true
       tags:
       - Issues
+      operationId: getAllIssueTypes
       responses:
         '200':
           content:
@@ -4363,6 +4429,7 @@ paths:
         for more details.
       tags:
       - Strings
+      operationId: addStringsToProject
 
       parameters:
       - in: path
@@ -4525,6 +4592,7 @@ paths:
         will fail if you specify an expired `processUid`.
       tags:
       - Strings
+      operationId: getAddStringsToProjectRequestStatus
 
       parameters:
       - in: path
@@ -4587,6 +4655,7 @@ paths:
         strings will have placeholders in the format `{0}`, `{1}`, etc.
       tags:
       - Strings
+      operationId: getAllSourceStringsByProject
       parameters:
       - in: path
         name: projectId
@@ -4671,6 +4740,7 @@ paths:
         strings will have placeholders in the format `{0}`, `{1}`, etc.
       tags:
       - Strings
+      operationId: getAllTranslationsByProject
       parameters:
       - in: path
         name: projectId
@@ -4750,6 +4820,7 @@ paths:
         glossary name and UID can be added.
       tags:
       - Glossaries
+      operationId: getGlossariesList
 
       parameters:
       - in: path
@@ -4812,6 +4883,7 @@ paths:
       description: Creates a new glossary in an account.
       tags:
       - Glossaries
+      operationId: addGlossary
 
       parameters:
       - description: Unique identifier of corresponding account.
@@ -4862,6 +4934,7 @@ paths:
         glossary.
       tags:
       - Glossaries
+      operationId: getGlossaryDetails
 
       parameters:
       - description: Unique identifier for the corresponding account.
@@ -4895,6 +4968,7 @@ paths:
         existing information will be deleted.
       tags:
       - Glossaries
+      operationId: updateGlossaryDetails
 
       parameters:
       - description: Unique identifier for the corresponding account.
@@ -4934,11 +5008,15 @@ paths:
     delete:
       summary: Delete glossary
       description: >-
-        Deletes a glossary. **Note:** If a glossary has been assigned to a
+        Deletes a glossary.
+
+
+        **Note:** If a glossary has been assigned to a
         Linguistic Package, you will not be able to delete it. Linguistic
         Packages are managed in the Smartling Dashboard.
       tags:
       - Glossaries
+      operationId: deleteGlossary
 
       parameters:
       - description: Unique identifier for the corresponding account.
@@ -4987,6 +5065,7 @@ paths:
         response.
       tags:
       - Glossaries
+      operationId: getGlossaryTerms
 
       parameters:
       - description: Unique identifier of corresponding account.
@@ -5087,6 +5166,7 @@ paths:
         translations, use Edit Glossary term.
       tags:
       - Glossaries
+      operationId: addSingleGlossaryTerm
 
       parameters:
       - description: Unique identifier for the corresponding account.
@@ -5156,6 +5236,7 @@ paths:
         none of them will be. Translation section is optional.
       tags:
       - Glossaries
+      operationId: addGlossaryTermsBatch
 
       parameters:
       - description: Unique identifier for the corresponding account.
@@ -5240,6 +5321,7 @@ paths:
         translations.
       tags:
       - Glossaries
+      operationId: getGlossaryTermsTranslationsByGlossary
 
       parameters:
       - description: Unique identifier of corresponding account.
@@ -5384,6 +5466,7 @@ paths:
         which glossary it belongs.
       tags:
       - Glossaries
+      operationId: getGlossaryTermsTranslationsByAccount
 
       parameters:
       - description: Unique identifier for the corresponding account.
@@ -5528,6 +5611,7 @@ paths:
         request.
       tags:
       - Glossaries
+      operationId: updateGlossaryTerm
 
       parameters:
       - description: Unique identifier for the corresponding account.
@@ -5569,6 +5653,7 @@ paths:
       description: Delete a glossary term. This will remove the term and all translations.
       tags:
       - Glossaries
+      operationId: deleteGlossaryTerm
 
       parameters:
       - description: Unique identifier of a corresponding account.
@@ -5618,6 +5703,7 @@ paths:
         target locales.
       tags:
       - Glossaries
+      operationId: authorizeGlossaryTermForTranslation
 
       parameters:
       - description: Unique identifier for the corresponding project.
@@ -5665,6 +5751,7 @@ paths:
       description: 'Downloads a glossary as a CSV, TBX, or XLSX (Open Excel) file.'
       tags:
       - Glossaries
+      operationId: downloadGlossary
 
       parameters:
       - description: Unique identifier of corresponding account.
@@ -5721,6 +5808,7 @@ paths:
         [Glossary Spreadsheet Format](https://help.smartling.com/hc/article_attachments/360002278634/Glossary%20Import%20Template.xlsx).
       tags:
       - Glossaries
+      operationId: importGlossary
 
       parameters:
       - description: Unique identifier of corresponding account.
@@ -5800,6 +5888,7 @@ paths:
       description: Checks the status of a glossary import.
       tags:
       - Glossaries
+      operationId: getGlossaryImportStatus
 
       parameters:
       - description: Unique identifier of corresponding account.
@@ -5859,6 +5948,7 @@ paths:
       description: Order is fixed and consistent throughout the calls.
       tags:
       - Glossaries
+      operationId: getGlossaryPartsOfSpeech
 
       responses:
         200:
@@ -5910,6 +6000,7 @@ paths:
       description: List / search the jobs within a project.
       tags:
       - Jobs
+      operationId: getJobsByProject
 
       parameters:
       - in: path
@@ -6028,6 +6119,7 @@ paths:
       description: Creates a job within Smartling.
       tags:
       - Jobs
+      operationId: addJob
 
       parameters:
       - in: path
@@ -6120,6 +6212,7 @@ paths:
         complete until the returned process has completed.
       tags:
       - Jobs
+      operationId: addStringsToJob
 
       parameters:
       - in: path
@@ -6209,6 +6302,7 @@ paths:
         returned process has completed.
       tags:
       - Jobs
+      operationId: removeStringsFromJob
 
       parameters:
       - in: path
@@ -6278,6 +6372,7 @@ paths:
         against the job.
       tags:
       - Jobs
+      operationId: closeJob
 
       parameters:
       - in: path
@@ -6338,6 +6433,7 @@ paths:
         has completed.
       tags:
       - Jobs
+      operationId: cancelJob
 
       parameters:
       - in: path
@@ -6427,6 +6523,7 @@ paths:
         when it has content and is in an AWAITING_AUTHORIZATION state.
       tags:
       - Jobs
+      operationId: authorizeJob
 
       parameters:
       - in: path
@@ -6493,6 +6590,7 @@ paths:
         and reference number.
       tags:
       - Jobs
+      operationId: getJobDetails
 
       parameters:
       - in: path
@@ -6562,6 +6660,7 @@ paths:
         due date, and reference number.
       tags:
       - Jobs
+      operationId: updateJob
 
       parameters:
       - in: path
@@ -6655,6 +6754,7 @@ paths:
         `fileUri`s, and `translationJobUid`s.
       tags:
       - Jobs
+      operationId: searchForJob
 
       parameters:
       - in: path
@@ -6719,6 +6819,7 @@ paths:
       description: This checks for an asynchronous process for a job.
       tags:
       - Jobs
+      operationId: getJobAsyncProcessStatus
 
       parameters:
       - in: path
@@ -6795,6 +6896,7 @@ paths:
         the job will not be complete until the returned process has completed.
       tags:
       - Jobs
+      operationId: addFileToJob
 
       parameters:
       - in: path
@@ -6909,6 +7011,7 @@ paths:
         has completed.
       tags:
       - Jobs
+      operationId: removeFileFromJob
 
       parameters:
       - in: path
@@ -6991,6 +7094,7 @@ paths:
       description: This lists all files within a job.
       tags:
       - Jobs
+      operationId: getJobFilesList
 
       parameters:
         - in: path
@@ -7054,6 +7158,7 @@ paths:
         has completed.
       tags:
       - Jobs
+      operationId: addLocaleToJob
 
       parameters:
       - in: path
@@ -7136,6 +7241,7 @@ paths:
         completed.
       tags:
       - Jobs
+      operationId: removeLocaleFromJob
       parameters:
       - in: path
         name: projectId
@@ -7196,6 +7302,7 @@ paths:
       description: This shows the progress of a file within a job.
       tags:
       - Jobs
+      operationId: getJobFileProgress
 
       parameters:
         - in: path
@@ -7299,6 +7406,7 @@ paths:
       description: This gets the progress of a job.
       tags:
       - Jobs
+      operationId: getJobProgress
 
       parameters:
       - in: path
@@ -7420,6 +7528,7 @@ paths:
         job.
       tags:
       - Jobs
+      operationId: getJobLastCompletionDatesPerLocale
 
       parameters:
         - description: A unique identifier for a project.
@@ -7485,6 +7594,7 @@ paths:
       description: List / search tags within a project.
       tags:
       - Tags
+      operationId: getTagsListByProject
 
       parameters:
       - description: Project Id for search.
@@ -7546,6 +7656,7 @@ paths:
       description: Retrieve all tags linked to strings.
       tags:
       - Tags
+      operationId: getAllTagsForStrings
 
       parameters:
       - description: Project Id for search.
@@ -7590,6 +7701,7 @@ paths:
       description: Add a list of tags to a list of strings.
       tags:
       - Tags
+      operationId: addTagToStrings
 
       parameters:
       - description: Project Id.
@@ -7625,6 +7737,7 @@ paths:
       description: Remove a list of tags from a list of strings.
       tags:
       - Tags
+      operationId: removeTagsFromStrings
 
       parameters:
       - description: Project Id.
@@ -7660,6 +7773,7 @@ paths:
       description: Remove all tags from a list of strings.
       tags:
       - Tags
+      operationId: removeAllTagsFromStrings
 
       parameters:
       - description: Project Id.
@@ -7711,6 +7825,7 @@ paths:
       description: Get list of URLs.
       tags:
       - GDN url management
+      operationId: getGdnUrlsList
 
       parameters:
       - description: Unique identifier of the project within an account.
@@ -7759,6 +7874,7 @@ paths:
       description: Retrieve details of the URLs.
       tags:
       - GDN url management
+      operationId: getGdnUrlsDetails
 
       parameters:
       - description: Unique identifier of the project within an account.
@@ -7812,6 +7928,7 @@ paths:
       description: Retrieve detail for the URL.
       tags:
       - GDN url management
+      operationId: getGdnUrlDetailsSingleUrl
 
       parameters:
       - description: Unique identifier of the project within an account.
@@ -7862,6 +7979,7 @@ paths:
       description: Get domains for project.
       tags:
       - GDN url management
+      operationId: getProjectDomains
 
       parameters:
       - description: Unique identifier of the project within an account.
@@ -7905,6 +8023,7 @@ paths:
         batch is created, it has the status: `NEW`.
       tags:
       - Job batches
+      operationId: createJobBatch
 
       parameters:
       - description: A unique identifier for a project.
@@ -7969,6 +8088,7 @@ paths:
       description: 'List existing batches for the project, filtered by the given criteria.'
       tags:
       - Job batches
+      operationId: getJobBatchesList
 
       parameters:
         - description: An unique identifier for a project.
@@ -8075,6 +8195,7 @@ paths:
         locales.
       tags:
       - Job batches
+      operationId: getJobBatchStatus
 
       parameters:
         - description: A unique identifier for a project.
@@ -8169,6 +8290,7 @@ paths:
         status.
       tags:
       - Job batches
+      operationId: startJobBatch
 
       parameters:
         - description: A unique identifier for a project.
@@ -8254,6 +8376,7 @@ paths:
         is linked to the batch for locales, described in `localeIdsToAuthorize`.
       tags:
       - Job batches
+      operationId: addFileToJobBatch
 
       parameters:
         - description: A unique identifier for a project.
@@ -8463,6 +8586,7 @@ paths:
       description: Returns the list of jobs available for the agency.
       tags:
       - Vendors
+      operationId: getJobsListByAgency
 
       parameters:
       - in: path
@@ -8501,6 +8625,7 @@ paths:
       description: Word Count report data for the specified parameters.
       tags:
       - Reports
+      operationId: getWordCountReport
 
       parameters:
         - description: >-
@@ -8663,6 +8788,7 @@ paths:
       description: Export Word Count report in CSV format.
       tags:
       - Reports
+      operationId: expoertWordCountReport
 
       parameters:
         - description: >-
