@@ -8193,6 +8193,75 @@ paths:
             'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches?translationJobUid={translationJobUid}&status={status}&sortBy=createdDate&orderBy=desc&offset=0&limit=20' \
             -H "Authorization: Bearer $smartlingToken"
 
+  '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}/items/{batchItemId}':
+    get:
+      summary: Get batch item status
+      description: >-
+        Returns batch item status.
+      tags:
+      - Job batches
+      operationId: getJobBatchItemStatus
+
+      parameters:
+        - description: A unique identifier for a project
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uid
+            type: string
+        - description: A unique identifier for a batch
+          in: path
+          name: batchUid
+          required: true
+          schema:
+            format: uid
+            type: string
+        - description: A unique identifier for a batch item
+          in: path
+          name: batchItemId
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchItemStatusResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: OK
+                      data:
+                        status: ATTACHING
+                        generalErrors: ''
+                        fileUri: files/example1.json
+                        projectUid: dg63gkb4v
+                        batchUid: ab97gkr4v
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        404:
+          description: provided batchItemId is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        key: batch.item.not.found
+                        message: 'Batch item {batchItemId} not found for batch {batchUid} in project {projectId}.'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
   '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}':
     get:
       summary: Get batch status
@@ -8358,7 +8427,212 @@ paths:
             -H "Authorization: Bearer $smartlingToken" \
             -H "Content-Type: application/json" \
             -d '{ "action": "execute" }'
+  /jobs-batch-api/v2/projects/{projectId}/batches/{batchUid}/file:
+    post:
+      summary: Add file to a batch asynchrounosly
+      description: >
+        This endpoint is actually a proxy for Upload File in the Files API, and
+        it works with these two differences:
+         1. It additionally gets `batchUid` as a path parameter.
+         2. It doesn't relay `localeIdsToAuthorize` to Files Api, therefore the file stays unauthorized. Instead, `localeIdsToAuthorize` are saved just for this batch session and are used when a file is being attached to a job.
 
+        When the first file is added to the new batch, it becomes an
+        `ADDING_FILES` status. Adds original source content to a Job batch in
+        Smartling.
+
+
+        The curl example provided will upload your Java properties file directly
+        to a Smartling project, identified by the `projectId`, and attaches it
+        to a Job linked to `batchUid`. The response is returned right after the
+        content of a file is accepted by the Files API. After that, the Batch
+        service controls whether the file upload finished. Content is parsed,
+        all strings are ingested, and the file is then attached to the Job which
+        is linked to the batch for locales, described in `localeIdsToAuthorize`.
+
+        Endpoint returns response as soon as file uploaded to jobs batch server. File is uploaded to FILE API in separate thread.
+      tags:
+      - Job batches
+      operationId: addFileToJobBatchAsync
+
+      parameters:
+        - description: A unique identifier for a project.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uid
+            type: string
+        - description: A unique identifier for a batch.
+          in: path
+          name: batchUid
+          required: true
+          schema:
+            format: uid
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The file contents to upload.
+                fileUri:
+                  description: >
+                    A value that uniquely identifies the uploaded file. This ID
+                    can be used to request the file back. We recommend that you
+                    use file path and file name, similar to how version control
+                    systems identify the file.
+
+
+                    Example: `/myproject/i18n/ui.properties`
+                  type: string
+                fileType:
+                  $ref: '#/components/schemas/FileType'
+                authorize:
+                  default: false
+                  description: >
+                    Ignored
+
+                    Endpoint accepts this field to be consistent with `File
+                    Upload` but it doesn't relay it to File Api
+                  type: boolean
+                'localeIdsToAuthorize[]':
+                  description: >
+                    This value declares locales list which should be used when
+                    file is attached to a job.
+
+
+                    **Note**: File will not be authorized for these locales once
+                    it is uploaded. Authorization is happened only when job is
+                    authorized.
+                  items:
+                    type: string
+                  type: array
+                smartling.namespace:
+                  description: >
+                    This is only for accounts created after July 31st, 2015.
+                    Define a custom
+                    [namespace](https://developer.smartling.com/v2.0/docs/string-sharing-namespaces)
+                    for the file.
+
+
+                    **Note**: While this parameter shares the format of other
+                    file directives, it will not work as an inline directive and
+                    must be specified in the API call.
+                  type: string
+                smartling.file_charset:
+                  description: >
+                    Specifies a custom charset for text-format files. The value
+                    should be the name of the character set. See a full list of
+                    supported character sets here.
+
+
+                    If this directive is not used, Smartling will use the
+                    ```Content-Type``` request header to determine if the
+                    content is encoded with UTF-16, UTF-16B or UTF-16LE. If
+                    there is no ```Content-Type``` header, Smartling will
+                    examine the file for UTF-16 characters. If none are
+                    detected, UTF-8 encoding will be used.
+
+
+                    **Note**: Once this property has been set for a file, it
+                    cannot be changed. If you reupload the file, it will use the
+                    original charset, even if you change the directive. An error
+                    will be returned if this directive is used when uploading
+                    binary-format file types, such as Office or IDML files.
+                  type: string
+                'smartling.[command]':
+                  description: >
+                    Provides custom parser configuration for supported file
+                    types. See [Supported File
+                    Types](https://developer.smartling.com/docs/supported-file-types)
+                    for more details.
+                  type: string
+                callbackUrl:
+                  description: >
+                    A GET request that creates a callback to a URL when a file
+                    is 100% published for a locale. The callback gives the
+                    fileUri and locale with the format
+                    `http[/s]://your.url?locale=xx-XX&fileUri=your.file`. If you
+                    upload the file again, without a callbackUrl, it will remove
+                    any previous callbackUrl for that file. The RequestBin
+                    (http://requestb.in) service is a convenient way to test
+                    callback. RequestBin generates a short-lived disposable URL
+                    that displays all posted requests.
+
+
+                    If a callback fails, Smartling will make multiple attempts
+                    to reach the designated URL, however, we do not keep
+                    retrying a failed callback indefinitely. Try to make sure
+                    your callback URL is as stable as possible and be aware that
+                    callbacks are not a 100% reliable way of being notified that
+                    a file is published.
+
+
+                    If the upload has begun but is taking more than a minute to
+                    complete, it responds with status `202`.
+                  format: url
+                  type: string
+              required:
+                - file
+                - fileUri
+                - fileType
+                - localeIdsToAuthorize[]
+              type: object
+        required: true
+      responses:
+        202:
+          description: ACCEPTED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddFileToBatchAsyncResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: ACCEPTED
+                      data:
+                        fileUri: files/example1.json
+                        batchUid: sdf3jdf32
+                        batchItemId: 12456
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        404:
+          description: Batch provided in path is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        key: batch.not.found
+                        message: >-
+                          Batch with uid={batchUid} and projectId={projectId}
+                          not found.
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X POST \
+              'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches/{batchUid}/file' \
+              -H "Authorization: Bearer $smartlingToken" \
+              -F "file=@file.properties;type=text/plain" \
+              -F "fileUri=file.properties" \
+              -F "fileType=javaProperties" \
+              -F "localeIdsToAuthorize[]=fr-FR" \
+              -F "localeIdsToAuthorize[]=ru-RU"
   /jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}/file:
     post:
       summary: Add file to a batch
@@ -9489,6 +9763,60 @@ components:
           description: Number of strings not added to the translationJob from this file
           type: integer
       type: object
+    AddFileToBatchAsyncResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/AsyncAcceptedResponse'
+            - properties:
+                data:
+                  properties:
+                    fileUri:
+                      description: Uri of the file linked to the Batch
+                      type: string
+                    batchUid:
+                      description: The UID of the batch
+                      type: string
+                    batchItemId:
+                      description: The id of the batch item
+                      type: integer
+    BatchItemStatusResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    status:
+                      description: The status of the Batch Item
+                      enum:
+                        - UPLOADING
+                        - UPLOAD_FAILED
+                        - ATTACHING
+                        - ATTACH_FAILED
+                        - COMPLETED
+                      type: string
+                    generalErrors:
+                      description: >-
+                        Describes a list of errors which occured while batch item
+                        processing
+                      type: string
+                    fileUri:
+                      description: Uri of the file linked to the Batch
+                      type: string
+                    projectUid:
+                      description: The UID of the project
+                      type: string
+                    batchUid:
+                      description: The UID of the batch
+                      type: string
     BatchStatusResponse:
       type: object
       required:
