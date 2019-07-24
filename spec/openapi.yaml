@@ -8193,75 +8193,6 @@ paths:
             'https://api.smartling.com/jobs-batch-api/v1/projects/$smartlingProjectId/batches?translationJobUid={translationJobUid}&status={status}&sortBy=createdDate&orderBy=desc&offset=0&limit=20' \
             -H "Authorization: Bearer $smartlingToken"
 
-  '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}/items/{batchItemId}':
-    get:
-      summary: Get batch item status
-      description: >-
-        Returns batch item status.
-      tags:
-      - Job batches
-      operationId: getJobBatchItemStatus
-
-      parameters:
-        - description: A unique identifier for a project
-          in: path
-          name: projectId
-          required: true
-          schema:
-            format: uid
-            type: string
-        - description: A unique identifier for a batch
-          in: path
-          name: batchUid
-          required: true
-          schema:
-            format: uid
-            type: string
-        - description: A unique identifier for a batch item
-          in: path
-          name: batchItemId
-          required: true
-          schema:
-            format: int64
-            type: integer
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/JobBatchItemStatusResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: OK
-                      data:
-                        status: ATTACHING
-                        generalErrors: ''
-                        fileUri: files/example1.json
-                        projectUid: dg63gkb4v
-                        batchUid: ab97gkr4v
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        404:
-          description: provided batchItemId is not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        key: batch.item.not.found
-                        message: 'Batch item {batchItemId} not found for batch {batchUid} in project {projectId}.'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
   '/jobs-batch-api/v1/projects/{projectId}/batches/{batchUid}':
     get:
       summary: Get batch status
@@ -8588,16 +8519,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddFileToBatchAsyncResponse'
+                $ref: '#/components/schemas/EmptyResponse'
               examples:
                 response:
                   value:
                     response:
                       code: ACCEPTED
                       data:
-                        fileUri: files/example1.json
-                        batchUid: sdf3jdf32
-                        batchItemId: 12456
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -9763,26 +9691,6 @@ components:
           description: Number of strings not added to the translationJob from this file
           type: integer
       type: object
-    AddFileToBatchAsyncResponse:
-      type: object
-      required:
-      - response
-      properties:
-        response:
-          allOf:
-            - $ref: '#/components/schemas/AsyncAcceptedResponse'
-            - properties:
-                data:
-                  properties:
-                    fileUri:
-                      description: Uri of the file linked to the Batch
-                      type: string
-                    batchUid:
-                      description: The UID of the batch
-                      type: string
-                    batchItemId:
-                      description: The id of the batch item
-                      type: integer
     JobBatchItemStatusResponse:
       type: object
       required:
