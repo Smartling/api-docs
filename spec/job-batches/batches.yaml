@@ -3,14 +3,6 @@ x-paths:
     parameters:
       - $ref: '../api_common.yaml#/components/parameters/projectId'
 
-    responses:
-      400:
-        $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
-      401:
-        $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
-      500:
-        $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
-
     post:
       summary: Create batch
       description: >-
@@ -56,6 +48,12 @@ x-paths:
                         key: job.not.found
                         message: >-
                           Job {translationJobUid} not found for project {projectId}.
+        400:
+          $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: >
@@ -149,6 +147,12 @@ x-paths:
                             status: EXECUTING
                             translationJobUid: 635gf40f9846
                         totalCount: 2
+        400:
+          $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: |
@@ -160,13 +164,6 @@ x-paths:
     parameters:
       - $ref: '../api_common.yaml#/components/parameters/projectId'
       - $ref: 'batches-commons.yaml#/components/parameters/batchUid'
-    responses:
-      400:
-        $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
-      401:
-        $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
-      500:
-        $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
 
     get:
       summary: Get batch status
@@ -233,6 +230,12 @@ x-paths:
                       errors:
                         key: Batch.not.found
                         message: 'Bob {batchUid} not found for project {projectId}.'
+        400:
+          $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
     put:
       summary: Cancel file
       description: >-
@@ -274,6 +277,12 @@ x-paths:
                       errors:
                         key: Batch.not.found
                         message: 'Bob {batchUid} not found for project {projectId}.'
+        400:
+          $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: |
@@ -287,13 +296,6 @@ x-paths:
     parameters:
       - $ref: '../api_common.yaml#/components/parameters/projectId'
       - $ref: 'batches-commons.yaml#/components/parameters/batchUid'
-    responses:
-      400:
-        $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
-      401:
-        $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
-      500:
-        $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
 
     post:
       summary: Upload file to a batch
@@ -466,17 +468,23 @@ x-paths:
                           not found.
         429:
           $ref: '../api_common.yaml#/components/responses/Error429ResponseDefinition'
-        x-code-samples:
-          - lang: curl
-            source: |
-              curl -X POST \
-              'https://api.smartling.com/job-batches-api/v2/projects/$smartlingProjectId/batches/{batchUid}/file' \
-              -H "Authorization: Bearer $smartlingToken" \
-              -F "file=@file.properties;type=text/plain" \
-              -F "fileUri=file.properties" \
-              -F "fileType=javaProperties" \
-              -F "localeIdsToAuthorize[]=fr-FR" \
-              -F "localeIdsToAuthorize[]=ru-RU"
+        400:
+          $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST \
+            'https://api.smartling.com/job-batches-api/v2/projects/$smartlingProjectId/batches/{batchUid}/file' \
+            -H "Authorization: Bearer $smartlingToken" \
+            -F "file=@file.properties;type=text/plain" \
+            -F "fileUri=file.properties" \
+            -F "fileType=javaProperties" \
+            -F "localeIdsToAuthorize[]=fr-FR" \
+            -F "localeIdsToAuthorize[]=ru-RU"
 
 components:
   schemas:
