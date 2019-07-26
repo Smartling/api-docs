@@ -1,7 +1,5 @@
 x-paths:
   batches:
-    parameters:
-      - $ref: '../api_common.yaml#/components/parameters/projectId'
 
     post:
       summary: Create batch
@@ -12,6 +10,9 @@ x-paths:
       tags:
         - Job Batches
       operationId: createJobBatch
+
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
 
       requestBody:
         content:
@@ -71,6 +72,7 @@ x-paths:
       operationId: getJobBatchesList
 
       parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - description: A unique identifier for a translationJob.
           in: query
           name: translationJobUid
@@ -161,9 +163,6 @@ x-paths:
             -H "Authorization: Bearer $smartlingToken"
 
   batchUid:
-    parameters:
-      - $ref: '../api_common.yaml#/components/parameters/projectId'
-      - $ref: 'batches-commons.yaml#/components/parameters/batchUid'
 
     get:
       summary: Get batch status
@@ -173,6 +172,10 @@ x-paths:
       tags:
         - Job Batches
       operationId: getJobBatchStatus
+
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+        - $ref: 'batches-commons.yaml#/components/parameters/batchUid'
 
       responses:
         200:
@@ -246,6 +249,10 @@ x-paths:
         - Job Batches
       operationId: cancelFile
 
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+        - $ref: 'batches-commons.yaml#/components/parameters/batchUid'
+
       requestBody:
         content:
           application/json:
@@ -293,9 +300,6 @@ x-paths:
             -d '{ "action": "CANCEL_FILE", "fileUri": "file1.xml", "reason": "Requested asset doesn't exist in Zendesk" }'
 
   file:
-    parameters:
-      - $ref: '../api_common.yaml#/components/parameters/projectId'
-      - $ref: 'batches-commons.yaml#/components/parameters/batchUid'
 
     post:
       summary: Upload file to a batch
@@ -323,6 +327,10 @@ x-paths:
       tags:
         - Job Batches
       operationId: uploadFileToJobBatch
+
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+        - $ref: 'batches-commons.yaml#/components/parameters/batchUid'
 
       requestBody:
         content:
