@@ -156,7 +156,7 @@ tags:
 
       Batches hide these asynchronous processes from 3rd party integration -
       after it accepted file from client it conducts this file through all steps
-      up to the Job authorization. As Job batch Service utilizes internal
+      up to the Job authorization. As Job Batches Service utilizes internal
       Smartling events it gets more effective than just polling files and jobs.
 
       From the client side flow consists of simple steps:
@@ -164,15 +164,19 @@ tags:
       1. Client creates Job (or uses existing one, which isn't currently
       processed with another Batch)
 
-      2. Client Creates a new Batch for this Job
+      2. Client Creates a new Batch for this Job with the declared list of
+      files to be uploaded into the Job
 
-      3. Client adds (uploads) files into the batch giving target locales list
+      3. Client uploads files into the batch giving target locales list
       for each file
 
-      4. When all files are uploaded, client triggers "execute" for the batch.
+      3a. Client cancels file if there is no reason in uploading (no translatable content etc.)
 
-      5. Batch execution process waiting until all files are uploaded and added
-      to the Job and then, if was requested, authorizes the Job.
+      4. When all files are uploaded or canceled, "execute" is automatically
+      triggered for the batch.
+
+      5. Batch execution process waiting until all asynchronous processes with
+      uploading and adding to the Job finished and then, if was requested, authorizes the Job.
 
       6. Clients can check batch status and see if all files uploaded and
       attached successfully, what errors happened for each file, and statistics
