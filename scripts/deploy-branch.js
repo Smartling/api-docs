@@ -17,6 +17,8 @@ if (branch && branch !== 'gh-pages') {
   mkdir('-p', specFolder);
   cp('-R', 'spec/translation_quality', specFolder);
   cp('-R', 'spec/api_common.yaml', specFolder);
+  cp('-R', 'spec/job-batches', branchPath);
+  cp('-R', 'spec/api_common.yaml', branchPath);
 
   exec('deploy-to-gh-pages --update .tmp');
 }
