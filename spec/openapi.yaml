@@ -7591,6 +7591,127 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/schedule:
+    get:
+      summary: Find schedule for translation job
+      description: >-
+        Get all schedule items for a specific job.
+      tags:
+      - Jobs
+      operationId: findScheduleForTranslationJob
+
+      parameters:
+        - description: A unique identifier for a project.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: A unique identifier for a job.
+          in: path
+          name: translationJobUid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobSchedule'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - scheduleUid: hfphrhef8awr
+                            targetLocaleId: de-DE
+                            workflowStepUid: 568cd2bae16f
+                            dueDate: 1565902800000
+                        totalCount: 1
+          description: OK
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        404:
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: NOT_FOUND_ERROR
+                      errors:
+                      - key: null
+                        message: null
+                        details: null
+
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  '/jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/schedule':
+    post:
+      summary: Modify schedule items for translation job
+      description: >
+        This modifies translation job schedule for provided items
+      tags:
+      - Jobs
+      operationId: modifyScheduleItemsForTranslationJob
+
+      parameters:
+        - description: A unique identifier for a project.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: A unique identifier for a job.
+          in: path
+          name: translationJobUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobScheduleEditCommand'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobSchedule'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - scheduleUid: hfphrhef8awr
+                            targetLocaleId: de-DE
+                            workflowStepUid: 568cd2bae16f
+                            dueDate: 1565902800000
+                        totalCount: 1
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
 #
 # Tags API
 #
@@ -12298,6 +12419,31 @@ components:
               type: string
           type: object
       type: object
+    JobSchedule:
+      properties:
+        data:
+          properties:
+            scheduleUid:
+              description: schedule universal identifier.
+              example: ngahq6dgh4ed
+              format: uuid
+              type: string
+            workflowStepUid:
+              description: workflow step universal identifier.
+              example: 568cd2bae16f
+              format: uuid
+              type: string
+            dueDate:
+              description: due date in milliseconds format.
+              example: 1565211600000
+              format: number
+              type: number
+            targetLocaleId:
+              description: The locale identidier.
+              example: de-DE
+              type: string
+          type: object
+      type: object
     ListBatchesResponse:
       type: object
       required:
@@ -12823,6 +12969,37 @@ components:
         fileUri:
           description: The URI of the file that is to be removed from the job.
           type: string
+      type: object
+    JobScheduleEditCommand:
+      description: The payload to use modifying translation job schedule.
+      properties:
+        schedules:
+          description: Array of translation job schedule edit items.
+          items:
+            $ref: '#/components/schemas/JobScheduleEditItemCommand'
+          example:
+            targetLocaleId: ru-RU
+            workflowStepUid: 568cd2bae16f
+            dueDate: 1565211600000
+          type: array
+      type: object
+    JobScheduleEditItemCommand:
+      properties:
+        workflowStepUid:
+          description: workflow step universal identifier.
+          format: uuid
+          type: string
+        dueDate:
+          description: due date in milliseconds format.
+          format: number
+          type: number
+        targetLocaleId:
+          description: The locale identidier.
+          type: string
+      required:
+        - targetLocaleId
+        - workflowStepUid
+        - dueDate
       type: object
     RemoveStringsJobRequest:
       description: The payload to use when removing strings from a job.
