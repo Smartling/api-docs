@@ -7732,7 +7732,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProjectCustomFields'
+                $ref: '#/components/schemas/CustomFields'
               examples:
                 response:
                   value:
@@ -7820,114 +7820,198 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
-#  /jobs-api/v3/accounts/{accountUid}/custom-fields:
-#    get:
-#      summary: Find custom fields for specified account
-#      description: >-
-#        Get all custom fields for specified account.
-#      tags:
-#        - Jobs
-#      operationId: getAccountCustomFields
-#
-#      parameters:
-#        - description: Unique identifier for the corresponding account.
-#          in: path
-#          name: accountUid
-#          required: true
-#          schema:
-#            type: string
-#      responses:
-#        '200':
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/AccountCustomFields'
-#              examples:
-#                response:
-#                  value:
-#                    response:
-#                      code: SUCCESS
-#                      data:
-#                        items:
-#                          - fieldUid: ngahq6dgh4ed
-#                            type: SELECTBOX
-#                            fieldName: field-name
-#                            enabled: true
-#                            required: true
-#                            searchable: true
-#                            displayToTranslators: true
-#                            options:
-#                              - option1
-#                              - option2
-#                            defaultValue: default-field-name
-#                            description: custom field description
-#                        totalCount: 1
-#          description: OK
-#        400:
-#          $ref: '#/components/responses/Error400ResponseDefinition'
-#        401:
-#          $ref: '#/components/responses/Error401ResponseDefinition'
-#        404:
-#          description: Not found error
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/Error404Response'
-#              examples:
-#                response:
-#                  value:
-#                    response:
-#                      code: NOT_FOUND_ERROR
-#                      errors:
-#                        - key: null
-#                          message: null
-#                          details: null
-#
-#        429:
-#          $ref: '#/components/responses/Error429ResponseDefinition'
-#        500:
-#          $ref: '#/components/responses/Error500ResponseDefinition'
-#
-#    post:
-#      summary: Assign new custom fields to project
-#      description: >-
-#        Accepts new values for assignment. If empty list is passed - all assignments are deleted
-#      tags:
-#        - Jobs
-#      operationId: assignCustomFieldsToProject
-#
-#      parameters:
-#        - description: A unique identifier for a project.
-#          in: path
-#          name: projectId
-#          required: true
-#          schema:
-#            type: string
-#      requestBody:
-#        content:
-#          application/json:
-#            schema:
-#              $ref: '#/components/schemas/CustomFieldAssignmentList'
-#      responses:
-#        200:
-#          description: OK
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/EmptyResponse'
-#              examples:
-#                response:
-#                  value:
-#                    response:
-#                      code: SUCCESS
-#        400:
-#          $ref: '#/components/responses/Error400ResponseDefinition'
-#        401:
-#          $ref: '#/components/responses/Error401ResponseDefinition'
-#        429:
-#          $ref: '#/components/responses/Error429ResponseDefinition'
-#        500:
-#          $ref: '#/components/responses/Error500ResponseDefinition'
+  /jobs-api/v3/accounts/{accountUid}/custom-fields:
+    get:
+      summary: Find custom fields for specified account
+      description: >-
+        Get all custom fields for specified account.
+      tags:
+        - Jobs
+      operationId: getAccountCustomFields
+
+      parameters:
+        - description: Unique identifier for the corresponding account.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - name: searchableOnly
+          description: Get only searchable custom fields.
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: enabledOnly
+          description: Get only enabled custom fields.
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFields'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - fieldUid: ngahq6dgh4ed
+                            type: SELECTBOX
+                            fieldName: field-name
+                            enabled: true
+                            required: true
+                            searchable: true
+                            displayToTranslators: true
+                            options:
+                              - option1
+                              - option2
+                            defaultValue: default-field-name
+                            description: custom field description
+                        totalCount: 1
+          description: OK
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        404:
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: NOT_FOUND_ERROR
+                      errors:
+                        - key: null
+                          message: null
+                          details: null
+
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+    post:
+      summary: Create new custom field in account
+      description: >-
+        Creates new custom field in account
+      tags:
+        - Jobs
+      operationId: createCustomField
+
+      parameters:
+        - description: A unique identifier for an account.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomField'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFields'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - fieldUid: ngahq6dgh4ed
+                            type: SELECTBOX
+                            fieldName: field-name
+                            enabled: true
+                            required: true
+                            searchable: true
+                            displayToTranslators: true
+                            options:
+                              - option1
+                              - option2
+                            defaultValue: default-field-name
+                            description: custom field description
+                        totalCount: 1
+          description: OK
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /jobs-api/v3/accounts/{accountUid}/custom-fields/{fieldUid}:
+    put:
+      summary: Update custom field in account
+      description: >-
+        Updates custom field in account using field UID specified
+      tags:
+        - Jobs
+      operationId: updateCustomField
+
+      parameters:
+        - description: A unique identifier for an account.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomField'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFields'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - fieldUid: ngahq6dgh4ed
+                            type: SELECTBOX
+                            fieldName: field-name
+                            enabled: true
+                            required: true
+                            searchable: true
+                            displayToTranslators: true
+                            options:
+                              - option1
+                              - option2
+                            defaultValue: default-field-name
+                            description: custom field description
+                        totalCount: 1
+          description: OK
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
 
 
 #
@@ -12662,18 +12746,18 @@ components:
               type: string
           type: object
       type: object
-    ProjectCustomFields:
+    CustomFields:
       properties:
         data:
           properties:
             fieldUid:
-              description: custom field univeral identifier.
+              description: custom field universal identifier.
               example: ngahq6dgh4ed
               format: uuid
               type: string
             type:
               description: custom field type.
-              example: SELECTBOX
+              example: SHORT_TEXT | LONG_TEXT | SELECTBOX | CHECKBOX
               type: string
             fieldName:
               description: custom field name.
@@ -12696,7 +12780,6 @@ components:
               example: true
               type: boolean
             options:
-              description: ???.
               items:
                 example:
                   - option1
@@ -12722,7 +12805,93 @@ components:
       properties:
         fieldUid:
           description: Custom field description.
-          example: ngahq6dgh4ed
+          example: Field description
+    CreateCustomField:
+      properties:
+        data:
+          properties:
+            type:
+              description: custom field type.
+              example: SHORT_TEXT | LONG_TEXT | SELECTBOX | CHECKBOX
+              type: string
+            fieldName:
+              description: custom field name.
+              example: field-name
+              type: boolean
+            enabled:
+              description: is custom field enabled.
+              example: true
+              type: boolean
+            required:
+              description: is custom field required.
+              example: true
+              type: boolean
+            searchable:
+              description: can search be performed by the custom field.
+              example: true
+              type: boolean
+            displayToTranslators:
+              description: is displayed to translators.
+              example: true
+              type: boolean
+            options:
+              items:
+                example:
+                  - option1
+                  - option2
+                type: string
+              type: array
+            defaultValue:
+              description: default value for custom field.
+              example: default field value
+              type: string
+            description:
+              description: custom field description.
+              example: Custom field example
+              type: string
+          type: object
+      type: object
+    UpdateCustomField:
+      properties:
+        data:
+          properties:
+            fieldName:
+              description: custom field name.
+              example: field-name
+              type: boolean
+            enabled:
+              description: is custom field enabled.
+              example: true
+              type: boolean
+            required:
+              description: is custom field required.
+              example: true
+              type: boolean
+            searchable:
+              description: can search be performed by the custom field.
+              example: true
+              type: boolean
+            displayToTranslators:
+              description: is displayed to translators.
+              example: true
+              type: boolean
+            options:
+              items:
+                example:
+                  - option1
+                  - option2
+                type: string
+              type: array
+            defaultValue:
+              description: default value for custom field.
+              example: default field value
+              type: string
+            description:
+              description: custom field description.
+              example: Custom field example
+              type: string
+          type: object
+      type: object
     ListBatchesResponse:
       type: object
       required:
