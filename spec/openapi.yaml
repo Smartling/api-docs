@@ -7715,7 +7715,7 @@ paths:
     get:
       summary: Find custom fields for specified project
       description: >-
-        Get all custom fields for specified project.
+        Returns custom fields assigned to the project. Order is the one that was specified during assignment operation.
       tags:
         - Jobs
       operationId: getProjectCustomFields
@@ -7782,7 +7782,7 @@ paths:
     post:
       summary: Assign new custom fields to project
       description: >-
-        Accepts new values for assignment. If empty list is passed - all assignments are deleted
+        Accepts new values for assignment. If empty list is passed - all assignments are deleted. Order of the fields in the request is preserved during saving.
       tags:
         - Jobs
       operationId: assignCustomFieldsToProject
@@ -7824,7 +7824,7 @@ paths:
     get:
       summary: Find custom fields for specified account
       description: >-
-        Get all custom fields for specified account.
+        Gets all custom fields for specified account.
       tags:
         - Jobs
       operationId: getAccountCustomFields
@@ -7903,7 +7903,7 @@ paths:
     post:
       summary: Create new custom field in account
       description: >-
-        Creates new custom field in account
+        Creates new custom field in account.
       tags:
         - Jobs
       operationId: createCustomField
@@ -7960,7 +7960,7 @@ paths:
     put:
       summary: Update custom field in account
       description: >-
-        Updates custom field in account using field UID specified
+        Updates custom field in account using field UID specified.
       tags:
         - Jobs
       operationId: updateCustomField
@@ -7969,6 +7969,12 @@ paths:
         - description: A unique identifier for an account.
           in: path
           name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: A unique identifier for a custom field.
+          in: path
+          name: fieldUid
           required: true
           schema:
             type: string
