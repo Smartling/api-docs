@@ -6169,6 +6169,13 @@ paths:
                         modifiedByUserUid: userUid321abc
                         modifiedDate: '2015-11-21T11:51:17Z'
                         referenceNumber: myReferenceNumber1
+                        customFields:
+                        - fieldUid: rbrbn69wa1pa
+                          fieldName: Department
+                          fieldValue: Finance Dept
+                        - fieldUid: 3rrwchzmjf27
+                          fieldName: Adaptation Required
+                          fieldValue: 'true'
         400:
           description: Validation error during job creation.
           content:
@@ -6635,6 +6642,13 @@ paths:
                         - uk-UA
                         - ru-RU
                         translationJobUid: jhcgalvnb6za
+                        customFields:
+                        - fieldUid: rbrbn69wa1pa
+                          fieldName: Department
+                          fieldValue: Finance Dept
+                        - fieldUid: 3rrwchzmjf27
+                          fieldName: Adaptation Required
+                          fieldValue: 'true'
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -6712,6 +6726,13 @@ paths:
                         targetLocaleIds:
                         - uk-UA
                         - ru-RU
+                        customFields:
+                        - fieldUid: rbrbn69wa1pa
+                          fieldName: Department
+                          fieldValue: Finance Dept
+                        - fieldUid: 3rrwchzmjf27
+                          fieldName: Adaptation Required
+                          fieldValue: 'true'
                         translationJobUid: jhcgalvnb6za
         400:
           description: Validation error on updating a job
@@ -10762,7 +10783,38 @@ components:
           description: The HTTP method to call (GET|POST) when invoking the `callbackUrl`.
           example: GET
           type: string
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldBasicRequest'
+          description: Custom fields assigned to the project which job is created in. Validation on custom fields is done in scope of that request.
       type: object
+    CustomFieldBasicRequest:
+      type: object
+      properties:
+        fieldUid:
+          type: string
+          description: Custom field unique identifier.
+          example: 3rrwchzmjf24
+        fieldValue:
+          type: string
+          description: Custom field value.
+          example: Finance Dept
+    CustomFieldBasicResponse:
+      type: object
+      properties:
+        fieldUid:
+          type: string
+          description: Custom field unique identifier.
+          example: 3rrwchzmjf24
+        fieldName:
+          type: string
+          description: Custom field name.
+          example: Department Name
+        fieldValue:
+          type: string
+          description: Custom field value.
+          example: Finance Dept
     CreateStringResponse:
       type: object
       required:
@@ -10915,6 +10967,9 @@ components:
                     jobName:
                       description: The name of the job.
                       type: string
+                    referenceNumber:
+                      description: Some text to reference job in external systems.
+                      type: string
                     jobStatus:
                       description: The status of the job.
                       example: >-
@@ -10944,6 +10999,10 @@ components:
                         example: de-DE
                         type: string
                       type: array
+                    customFields:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/CustomFieldBasicResponse'
                     translationJobUid:
                       description: The unique identifier created for the job.
                       type: string
@@ -13573,6 +13632,10 @@ components:
                       items:
                         type: string
                       type: array
+                    customFields:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/CustomFieldBasicResponse'
                     translationJobUid:
                       description: The unique identifier for the job.
                       type: string
@@ -13983,6 +14046,10 @@ components:
           description: The HTTP method to call (GET|POST) when invoking the `callbackUrl`.
           example: GET
           type: string
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldBasicRequest'
       type: object
     UpdateTerm:
       allOf:
