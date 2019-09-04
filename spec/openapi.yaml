@@ -3367,6 +3367,7 @@ paths:
                         accountUid: 2sadsa3se
                         issueNumber: 34
                         reportedByUserUid: 661801f19693
+                        assigneeUserUid: 7c9ff09e71b2
                         string:
                           hashcode: c32c16cddafd63dfa0dc12449372a093
                         issueCommentsCount: 0
@@ -3539,6 +3540,7 @@ paths:
                           hashcode: c32c16cddafd63dfa0dc12449372a093
                           localeId: ru-RU
                         issueCommentsCount: 5
+                        assigneeUserUid: 661801f19693
               schema:
                 $ref: '#/components/schemas/IssueGetResponse'
           description: OK
@@ -3596,6 +3598,54 @@ paths:
           curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
           "Content-Type: application/json" -d "$smartlingIssueAnsweredJSON"
           https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/answered
+
+  '/issues-api/v2/projects/{projectId}/issues/{issueUid}/assignee':
+    put:
+      summary: Update issue attribute (assigneeUserUid)
+      description: >-
+        Update issue attribute (assigneeUserUid). "assigneeUserUid" is a string.
+      tags:
+        - Issues
+      operationId: updateIssueAssignee
+      parameters:
+        - description: Unique identifier of corresponding project.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueAssigneeRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        assigneeUserUid: 661801f19693
+              schema:
+                $ref: '#/components/schemas/IssueAssigneeResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssueAssigneeJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/assignee
 
   '/projects/{projectId}/issues/{issueUid}/severity-level':
     put:
@@ -3927,7 +3977,7 @@ paths:
       description: >-
         Returns a list of issues matching specified filter options. You can
         filter based on the date issues were created, target languages, strings,
-        issue types, states, issue numbers, job unique ids, issues not associated with strings in a job,
+        issue types, states, issue numbers, job unique ids, issues not associated with strings in a job, issue assignee,
         and which user opened the issue. Unless otherwise specified, the request will return a maximum of 30 results. All
         parameters are optional.
       tags:
@@ -3972,6 +4022,7 @@ paths:
                           accountUid: e3e3d44r5d
                           issueNumber: 32
                           reportedByUserUid: 661801f19693
+                          assigneeUserUid: 661801f19693
                           string:
                             hashcode: c32c16cddafd63dfa0dc12449372a093
                             localeId: ru-RU
@@ -3990,7 +4041,7 @@ paths:
       description: >-
         Returns a count of issues matching specified filter options. You can
         filter based on the date issues were created, strings, target languages,
-        issue types, states, issue numbers, job unique ids, issues not associated with strings in a job,
+        issue types, states, issue numbers, job unique ids, issues not associated with strings in a job, issue assignee,
         and which user opened the issue. All parameters are optional.
       tags:
       - Issues
@@ -10509,6 +10560,10 @@ components:
           description: User identifier who created issue
           example: 661801f19693
           type: string
+        assigneeUserUid:
+          description: User identifier who assigneed to issue
+          example: 661801f19693
+          type: string
         issueNumbers:
           example:
             - 10
@@ -10719,6 +10774,9 @@ components:
                       type: string
                     resolvedByUserUid:
                       description: User uid who resolved issue
+                      type: string
+                    assigneeUserUid:
+                      description: User uid who assigned to issue
                       type: string
                     resolvedDate:
                       description: Issue resolve date
@@ -11757,6 +11815,10 @@ components:
           description: User identifier who created the issue.
           example: 661801f19693
           type: string
+        assigneeUserUid:
+          description: User identifier who assigneed to issue.
+          example: 661801f19693
+          type: string
         issueNumbers:
           example:
             - 10
@@ -12043,6 +12105,30 @@ components:
                       type: boolean
                   type: object
               type: object
+    IssueAssigneeRequest:
+      properties:
+        assigneeUserUid:
+          description: Issue assignee "assigneeUserUid"
+          type: string
+      required:
+        - assigneeUserUid
+      type: object
+    IssueAssigneeResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    assigneeUserUid:
+                      description: Issue assignee "assigneeUserUid"
+                      type: string
+                  type: object
+              type: object
     IssueCommentAddResponse:
       type: object
       required:
@@ -12241,6 +12327,9 @@ components:
                       type: string
                     resolvedByUserUid:
                       description: User uid who resolved issue
+                      type: string
+                    assigneeUserUid:
+                      description: User uid who assigneed to issue
                       type: string
                     resolvedDate:
                       description: Issue resolve date
@@ -12743,6 +12832,9 @@ components:
                             type: string
                           resolvedByUserUid:
                             description: User uid who resolved issue
+                            type: string
+                          assigneeUserUid:
+                            description: User uid who assigneed to issue
                             type: string
                           resolvedDate:
                             description: Issue resolve date
