@@ -3646,6 +3646,43 @@ paths:
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
             "Content-Type: application/json" -d "$smartlingIssueAssigneeJSON"
             https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/assignee
+    delete:
+      summary: Delete issue attribute (assigneeUserUid)
+      description: >-
+        Delete issue attribute (assigneeUserUid). "assigneeUserUid" is a string.
+      tags:
+        - Issues
+      operationId: deleteIssueAssignee
+      parameters:
+        - description: Unique identifier of corresponding project.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+              schema:
+                $ref: '#/components/schemas/IssueAssigneeDeleteResponse'
+          description: OK
+        x-code-samples:
+          - lang: curl
+            source: >
+              curl -X DELETE -H "Authorization: Bearer $smartlingToken" -
+              https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/assignee
 
   '/projects/{projectId}/issues/{issueUid}/severity-level':
     put:
@@ -12158,6 +12195,13 @@ components:
                   type: object
               type: object
     IssueCommentDeleteResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          $ref: '#/components/schemas/SuccessResponse'
+    IssueAssigneeDeleteResponse:
       type: object
       required:
         - response
