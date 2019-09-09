@@ -6032,12 +6032,20 @@ paths:
           items:
             type: string
           type: array
-      - description: Used for searching jobs by `jobStatus`.
+      - description: Used for searching jobs by their status.
         in: query
         name: translationJobStatus
         required: false
         schema:
           items:
+            enum:
+              - DRAFT
+              - AWAITING_AUTHORIZATION
+              - IN_PROGRESS
+              - COMPLETED
+              - CANCELLED
+              - CLOSED
+              - DELETED
             type: string
           type: array
       - description: The limit on the number of jobs returned.
@@ -10972,9 +10980,14 @@ components:
                       type: string
                     jobStatus:
                       description: The status of the job.
-                      example: >-
-                        DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED |
-                        CANCELLED | CLOSED
+                      enum:
+                        - DRAFT
+                        - AWAITING_AUTHORIZATION
+                        - IN_PROGRESS
+                        - COMPLETED
+                        - CANCELLED
+                        - CLOSED
+                        - DELETED
                       type: string
                     lastCompletedDate:
                       description: The UTC value of when the job was last completed.
