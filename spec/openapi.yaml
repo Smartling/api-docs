@@ -6032,12 +6032,20 @@ paths:
           items:
             type: string
           type: array
-      - description: Used for searching jobs by `jobStatus`.
+      - description: Used for searching jobs by their status.
         in: query
         name: translationJobStatus
         required: false
         schema:
           items:
+            enum:
+              - DRAFT
+              - AWAITING_AUTHORIZATION
+              - IN_PROGRESS
+              - COMPLETED
+              - CANCELLED
+              - CLOSED
+              - DELETED
             type: string
           type: array
       - description: The limit on the number of jobs returned.
@@ -6768,6 +6776,75 @@ paths:
                         message: null
                         details: null
           description: Job not found error
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+    delete:
+      summary: Delete job
+      description: >
+        This deletes a job. Only job that is in `CANCELLED` status can be deleted.
+
+        If a job is successfully deleted, a `200` response status will be
+        returned.
+      tags:
+      - Jobs
+      operationId: deleteJob
+
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: translationJobUid
+        required: true
+        schema:
+          type: string
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NullDataJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+
+        400:
+          description: Validation error when deleting a job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                      - message: Job can be deleted only in CANCELLED status
+        401:
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: AUTHENTICATION_ERROR
+                      errors:
+                      - details: {}
+                        key: invalid_token
+                        message: Invalid token
         429:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
@@ -10972,9 +11049,14 @@ components:
                       type: string
                     jobStatus:
                       description: The status of the job.
-                      example: >-
-                        DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED |
-                        CANCELLED | CLOSED
+                      enum:
+                        - DRAFT
+                        - AWAITING_AUTHORIZATION
+                        - IN_PROGRESS
+                        - COMPLETED
+                        - CANCELLED
+                        - CLOSED
+                        - DELETED
                       type: string
                     lastCompletedDate:
                       description: The UTC value of when the job was last completed.
