@@ -3370,6 +3370,7 @@ paths:
                         string:
                           hashcode: c32c16cddafd63dfa0dc12449372a093
                         issueCommentsCount: 0
+                        assigneeUserUid: 7c9ff09e71b2
       x-code-samples:
       - lang: curl
         source: >
@@ -3539,6 +3540,7 @@ paths:
                           hashcode: c32c16cddafd63dfa0dc12449372a093
                           localeId: ru-RU
                         issueCommentsCount: 5
+                        assigneeUserUid: 661801f19693
               schema:
                 $ref: '#/components/schemas/IssueGetResponse'
           description: OK
@@ -3596,6 +3598,91 @@ paths:
           curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
           "Content-Type: application/json" -d "$smartlingIssueAnsweredJSON"
           https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/answered
+
+  '/issues-api/v2/projects/{projectId}/issues/{issueUid}/assignee':
+    put:
+      summary: Update issue attribute (assigneeUserUid)
+      description: >-
+        Update issue attribute (assigneeUserUid). "assigneeUserUid" is a string.
+      tags:
+        - Issues
+      operationId: updateIssueAssignee
+      parameters:
+        - description: Unique identifier of corresponding project.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueAssigneeRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        assigneeUserUid: 661801f19693
+              schema:
+                $ref: '#/components/schemas/IssueAssigneeResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssueAssigneeJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/assignee
+    delete:
+      summary: Delete issue attribute (assigneeUserUid)
+      description: >-
+        Delete issue attribute (assigneeUserUid). "assigneeUserUid" is a string.
+      tags:
+        - Issues
+      operationId: deleteIssueAssignee
+      parameters:
+        - description: Unique identifier of corresponding project.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+              schema:
+                $ref: '#/components/schemas/IssueAssigneeDeleteResponse'
+          description: OK
+        x-code-samples:
+          - lang: curl
+            source: >
+              curl -X DELETE -H "Authorization: Bearer $smartlingToken" -
+              https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/assignee
 
   '/projects/{projectId}/issues/{issueUid}/severity-level':
     put:
@@ -3927,7 +4014,7 @@ paths:
       description: >-
         Returns a list of issues matching specified filter options. You can
         filter based on the date issues were created, target languages, strings,
-        issue types, states, issue numbers, job unique ids, issues not associated with strings in a job,
+        issue types, states, issue numbers, job unique ids, issues not associated with strings in a job, issue assignee,
         and which user opened the issue. Unless otherwise specified, the request will return a maximum of 30 results. All
         parameters are optional.
       tags:
@@ -3972,6 +4059,7 @@ paths:
                           accountUid: e3e3d44r5d
                           issueNumber: 32
                           reportedByUserUid: 661801f19693
+                          assigneeUserUid: 661801f19693
                           string:
                             hashcode: c32c16cddafd63dfa0dc12449372a093
                             localeId: ru-RU
@@ -3990,7 +4078,7 @@ paths:
       description: >-
         Returns a count of issues matching specified filter options. You can
         filter based on the date issues were created, strings, target languages,
-        issue types, states, issue numbers, job unique ids, issues not associated with strings in a job,
+        issue types, states, issue numbers, job unique ids, issues not associated with strings in a job, issue assignee,
         and which user opened the issue. All parameters are optional.
       tags:
       - Issues
@@ -10586,6 +10674,10 @@ components:
           description: User identifier who created issue
           example: 661801f19693
           type: string
+        assigneeUserUid:
+          description: User identifier who is assigned to issue
+          example: 661801f19693
+          type: string
         issueNumbers:
           example:
             - 10
@@ -10795,7 +10887,10 @@ components:
                       description: User identifier who created (reported) issue
                       type: string
                     resolvedByUserUid:
-                      description: User uid who resolved issue
+                      description: User identifier who resolved issue
+                      type: string
+                    assigneeUserUid:
+                      description: User identifier who is assigned to issue
                       type: string
                     resolvedDate:
                       description: Issue resolve date
@@ -11839,6 +11934,10 @@ components:
           description: User identifier who created the issue.
           example: 661801f19693
           type: string
+        assigneeUserUid:
+          description: User identifier who is assigned to issue.
+          example: 661801f19693
+          type: string
         issueNumbers:
           example:
             - 10
@@ -11931,6 +12030,7 @@ components:
                     - issueTextModifiedDate
                     - resolvedByUserUid
                     - reportedByUserUid
+                    - assigneeUserUid
                     type: string
                 type: object
               type: array
@@ -12125,6 +12225,30 @@ components:
                       type: boolean
                   type: object
               type: object
+    IssueAssigneeRequest:
+      properties:
+        assigneeUserUid:
+          description: User identifier who is assigned to issue
+          type: string
+      required:
+        - assigneeUserUid
+      type: object
+    IssueAssigneeResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    assigneeUserUid:
+                      description: User identifier who is assigned to issue
+                      type: string
+                  type: object
+              type: object
     IssueCommentAddResponse:
       type: object
       required:
@@ -12154,6 +12278,13 @@ components:
                   type: object
               type: object
     IssueCommentDeleteResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          $ref: '#/components/schemas/SuccessResponse'
+    IssueAssigneeDeleteResponse:
       type: object
       required:
         - response
@@ -12322,7 +12453,10 @@ components:
                       description: User identifier who created (reported) issue
                       type: string
                     resolvedByUserUid:
-                      description: User uid who resolved issue
+                      description: User identifier who resolved issue
+                      type: string
+                    assigneeUserUid:
+                      description: User identifier who is assigned to issue
                       type: string
                     resolvedDate:
                       description: Issue resolve date
@@ -12429,6 +12563,10 @@ components:
             - hashcode
             - localeId
           type: object
+        assigneeUserUid:
+          description: User identifier who is assigned to issue
+          example: 7c9ff09e71b3
+          type: string
         issueSeverityLevelCode:
           description: Issue Severity Level identifier
           enum:
@@ -12824,7 +12962,10 @@ components:
                             description: User identifier who created (reported) issue
                             type: string
                           resolvedByUserUid:
-                            description: User uid who resolved issue
+                            description: User identifier who resolved issue
+                            type: string
+                          assigneeUserUid:
+                            description: User identifier who is assigned to issue
                             type: string
                           resolvedDate:
                             description: Issue resolve date
