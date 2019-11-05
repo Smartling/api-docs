@@ -4446,6 +4446,69 @@ paths:
           "Content-Type: application/json"
           https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/projects/$smartlingProjectId/issues/$issueUid/watchers
 
+  /issues-api/v2/accounts/{accountUid}/callback:
+    post:
+      summary: Setup issues callback
+      description: Setup url for receiving issues callbacks
+      tags:
+      - Issues
+      operationId: setupIssuesCallbackForAccount
+      parameters:
+      - description: Unique identifier of corresponding account
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/issuesSetupCallbackRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        callbackUrl: 'https://example.com/send/callback/here'
+                        enabled: 'true'
+              schema:
+                $ref: '#/components/schemas/IssueWatcherGetListResponse'
+          description: OK
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json"
+          https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/callback
+      callbacks:
+        issueCreatedEvent:
+          post:
+            requestBody:
+              content:
+                application/json:
+                  example:
+                    message: Some event
+            responses:
+              '200':
+                description: OK
+        issueUpdatedEvent:
+          post:
+            requestBody:
+              content:
+                application/json:
+                  example:
+                    message: Some event
+            responses:
+              '200':
+                description: OK
+
   /issues-api/v2/dictionary/issue-types:
     get:
       summary: Get issue types
@@ -13061,6 +13124,17 @@ components:
                       type: integer
                   type: object
               type: object
+    issuesSetupCallbackRequest:
+      properties:
+        callbackUrl:
+            description: URL were to send all issue callbacks.all
+            example: 'https://example.com/send/callback/here'
+            type: String
+        enabled:
+            description: Enable/disable sending callback
+            example: 'true'
+            type: boolean
+      type: object
     JobLocalesCompletionDate:
       properties:
         data:
