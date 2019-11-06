@@ -4476,7 +4476,7 @@ paths:
                     response:
                       code: SUCCESS
                       data:
-                        callbackUrl: 'https://example.com/send/callback/here'
+                        callbackUrl: 'https://your.domain.com/send/callback/here'
                         enabled: 'true'
               schema:
                 $ref: '#/components/schemas/IssueWatcherGetListResponse'
@@ -4509,6 +4509,43 @@ paths:
               '200':
                 description: OK
 
+  https://your.domain.com/send/callback/here:
+    post:
+      summary: Receive issues callback
+      description: API on client side to receive callbacks
+      tags:
+      - Issues
+      operationId: receiveIssueCallback
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/issuesReceiveCallbackRequest1'
+                - $ref: '#/components/schemas/issuesReceiveCallbackRequest2'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        callbackUrl: 'https://your.domain.com/send/callback/here'
+                        enabled: 'true'
+              schema:
+                $ref: '#/components/schemas/IssueWatcherGetListResponse'
+          description: OK
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json"
+          https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/callback
+ 
   /issues-api/v2/dictionary/issue-types:
     get:
       summary: Get issue types
@@ -13128,12 +13165,40 @@ components:
       properties:
         callbackUrl:
             description: URL were to send all issue callbacks.all
-            example: 'https://example.com/send/callback/here'
+            example: 'https://your.domain.com/send/callback/here'
             type: String
         enabled:
             description: Enable/disable sending callback
             example: 'true'
             type: boolean
+      type: object
+    issuesReceiveCallbackRequest1:
+      title: 'ISSUE_CREATED'
+      properties:
+        eventTypeCode:
+            description: Event type code
+            type: String
+            example: 'ISSUE_CREATED'
+            enum:
+              - ISSUE_CREATED
+        data:
+            description: Enable/disable sending callback
+            example: 'true'
+            type: boolean
+      type: object
+    issuesReceiveCallbackRequest2:
+      title: 'ISSUE_UPDATED'
+      properties:
+        eventTypeCode:
+          description: Event type code
+          type: String
+          example: 'ISSUE_UPDATED'
+          enum:
+            - ISSUE_UPDATED
+        data:
+          description: Enable/disable sending callback
+          example: 'true'
+          type: boolean
       type: object
     JobLocalesCompletionDate:
       properties:
