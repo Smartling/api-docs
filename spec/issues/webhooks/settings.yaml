@@ -1,0 +1,103 @@
+x-paths:
+
+  setup_webhook:
+    post:
+      summary: Setup URL for issues webhooks
+      description: >-
+        This is Smartling API endpoint
+        Setup URL for receiving issues webhooks
+      tags:
+      - Issues Webhooks
+      operationId: setupIssuesWebhoook
+      parameters:
+      - description: Unique identifier of corresponding account
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './commons.yaml#/components/schemas/setupWebhookRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    $ref: './examples.yaml#/components/examples/webhookSettings'
+              schema:
+                $ref: './commons.yaml#/components/schemas/setupWebhookResponse'
+          description: OK
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json"
+          https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/webhook
+    get:
+      summary: Get settings issues webhooks
+      description: >-
+        This is Smartling API endpoint
+        Get settings issues webhooks
+      tags:
+      - Issues Webhooks
+      operationId: getIssuesWebhoookSettings
+      parameters:
+      - description: Unique identifier of corresponding account
+        in: path
+        name: accountUid
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    $ref: './examples.yaml#/components/examples/webhookSettings'
+              schema:
+                $ref: './commons.yaml#/components/schemas/setupWebhookResponse'
+          description: OK
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json"
+          https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/webhook
+
+  receive_webhook:
+     post:
+       summary: Receive issues webhooks
+       description: >-
+         API on client side to receive webhooks
+       tags:
+       - Issues Webhooks
+       operationId: receiveIssueCallback
+       requestBody:
+         content:
+           application/json:
+             schema:
+               oneOf:
+                 - $ref: './commons.yaml#/components/schemas/issuesReceiveCallbackRequest1'
+                 - $ref: './commons.yaml#/components/schemas/issuesReceiveCallbackRequest2'
+         required: true
+       responses:
+         '200':
+           content:
+             application/json:
+               schema:
+                 $ref: './commons.yaml#/components/schemas/receiveWebhookResponse'
+           description: OK
+       x-code-samples:
+       - lang: curl
+         source: >
+           curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+           "Content-Type: application/json"
+           https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/callback

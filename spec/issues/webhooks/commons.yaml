@@ -1,0 +1,65 @@
+components:
+  schemas:
+    setupWebhookRequest:
+      properties:
+        webhookUrl:
+            description: URL were to send all issues webhooks.
+            example: 'https://your.domain.com/send/webhook/here'
+            type: String
+        enabled:
+            description: Enable/disable sending webhooks
+            example: 'true'
+            type: boolean
+      type: object
+
+    setupWebhookResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    webhookUrl:
+                      description: URL were to send all issues webhooks.
+                      type: string
+                    enabled:
+                      description: Sending webhooks is Enabled/disabled
+                      type: boolean
+                  type: object
+              type: object
+
+    receiveWebhookResponse:
+      type: object
+             
+    issuesReceiveCallbackRequest1:
+      title: 'Issue Created'
+      properties:
+        eventTypeCode:
+            description: Event type code
+            type: String
+            example: 'issue.created'
+            enum:
+              - 'issue.created'
+        data:
+            description: Enable/disable sending callback
+            example: 'true'
+            type: boolean
+      type: object
+    issuesReceiveCallbackRequest2:
+      title: 'Issue State Changed'
+      properties:
+        eventTypeCode:
+          description: Event type code
+          type: String
+          example: 'issue.stateChanged'
+          enum:
+            - 'issue.stateChanged'
+        data:
+          description: Enable/disable sending callback
+          example: 'true'
+          type: boolean
+      type: object
