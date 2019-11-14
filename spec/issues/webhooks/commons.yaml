@@ -48,7 +48,7 @@ components:
           resolvedByUserUid:
             type: string
             description: >-
-              User identifier who resolved issue
+              User identifier who resolved issue.
             example: "j8hD1LBFA3Ol"
       reportedByUserUid:
        type: object
@@ -56,7 +56,7 @@ components:
          reportedByUserUid:
            type: string
            description: >-
-             User identifier who created (reported) issue
+             User identifier who created (reported) issue.
            example: "j8hD1LBFA3Ol"
       createdDate:
         type: object
@@ -64,7 +64,7 @@ components:
           createdDate:
             type: string
             description: >-
-              Issue creation date
+              Issue creation date.
             example: "2019-10-09 15:20:11"
       resolvedDate:
         type: object
@@ -72,30 +72,30 @@ components:
           resolvedDate:
             type: String
             description: >-
-              Issue resolve date
-            example: "2019-10-09 15:22:16"
+              Issue resolve date.
+            example: "2019-10-09T15:22:16Z"
       issueTextModifiedDate:
         type: object
         properties:
           issueTextModifiedDate:
             type: String
             description: >-
-              Issue text modification date
-            example: "2019-11-09 15:22:16"
+              Issue text modification date.
+            example: "2019-11-09T15:22:16Z"
       issueText:
         type: object
         properties:
           issueText:
             type: String
             description: >-
-              Issue text
+              Issue text.
             example: "Some text"
       issueStateCode:
         type: object
         properties:
           issueStateCode:
             description: >-
-              Issue State identifier
+              Issue State identifier.
             enum:
               - OPENED
               - RESOLVED
@@ -106,7 +106,7 @@ components:
         properties:
           issueTypeCode:
             description: ->
-              Issue Type identifier
+              Issue Type identifier.
             enum:
               - SOURCE
               - TRANSLATION
@@ -117,7 +117,7 @@ components:
         properties:
           issueSubTypeCode:
             description: >-
-              Issue SubType identifier
+              Issue SubType identifier.
             enum:
               - CLARIFICATION
               - MISSPELLING
@@ -135,7 +135,7 @@ components:
           issueCommentsCount:
             type: integer
             description: >-
-              Issue comments count
+              Issue comments count.
             example: 0
       answered:
         type: object
@@ -143,14 +143,14 @@ components:
           answered:
             type: boolean
             description: >-
-              Issue flag "aswered"
+              Issue flag "aswered".
             example: false
       issueSeverityLevelCode:
         type: object
         properties:
           issueSeverityLevelCode:
             description: >-
-              Issue Severity Level identifier
+              Issue Severity Level identifier.
             enum:
               - LOW
               - MEDIUM
@@ -163,7 +163,7 @@ components:
           issueNumber:
             type: integer
             description: >-
-              Issue number
+              Issue number.
             example: 1
       assigneeUserUid:
         type: object
@@ -171,8 +171,106 @@ components:
           assigneeUserUid:
             type: String
             description: >-
-              User identifier who is assigned to issue
+              User identifier who is assigned to issue.
             example: "j8hD1LBFA3Ol"
+
+      commentCreatedDate:
+        type: object
+        properties:
+          createdDate:
+            type: string
+            description: >-
+              Comment creation date.
+            example: "2019-10-09 15:20:11"
+      commentText:
+        type: object
+        properties:
+          commentText:
+            type: String
+            description: >-
+              Comment text.
+            example: "comment text"
+      commentTextModifiedDate:
+        type: object
+        properties:
+          commentTextModifiedDate:
+            type: String
+            description: >-
+              Comment text modification date.
+            example: "2016-12-22T12:34:49Z"
+      createdByUserUid:
+        type: object
+        properties:
+          createdByUserUid:
+            type: String
+            description: >-
+              User identifier who added comment.
+            example: "661801f19693"
+      createdByWatcherUid:
+        type: object
+        properties:
+          createdByWatcherUid:
+            type: String
+            description: >-
+              Watcher identifier who added comment.
+      issueCommentUid:
+        type: object
+        properties:
+          issueCommentUid:
+            type: String
+            description: >-
+              Unique identifier of comment.
+            example: "a75fea779bbb"
+
+      watcher:
+        uid:
+          type: object
+          properties:
+            uid:
+              type: String
+              description: >-
+                Unique identifier of watcher.
+              example: "323323wsss"
+        email:
+          type: object
+          properties:
+            email:
+              type: String
+              description: >-
+                Watcher email.
+              example: "my@mail.com"
+        name:
+           type: object
+           properties:
+             name:
+               type: String
+               description: >-
+                 Watcher name.
+               example: "Mike Albert"
+        created:
+           type: object
+           properties:
+             created:
+               type: boolean
+               description: >-
+                 Watcher creation date.
+               example: "2015-12-21T16:38:48Z"
+        modified:
+          type: object
+          properties:
+            modified:
+              type: boolean
+              description: >-
+                Watcher modification date.
+              example: "2015-12-21T16:38:48Z"
+        enabled:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              description: >-
+                Should send email notification to this watcher email.
+              example: true
 
   schemas:
     setupWebhookRequest:
@@ -339,35 +437,35 @@ components:
               - $ref: '#/components/requestBodies/projectId'
               - $ref: '#/components/requestBodies/issueUid'
               - $ref: '#/components/requestBodies/string'
-              - $ref: '#/components/requestBodies/resolvedByUserUid'
-              - $ref: '#/components/requestBodies/reportedByUserUid'
-              - $ref: '#/components/requestBodies/createdDate'
-              - $ref: '#/components/requestBodies/resolvedDate'
-              - $ref: '#/components/requestBodies/issueTextModifiedDate'
-              - $ref: '#/components/requestBodies/issueText'
+              - $ref: '#/components/requestBodies/commentText'
+              - $ref: '#/components/requestBodies/commentTextModifiedDate'
+              - $ref: '#/components/requestBodies/commentCreatedDate'
+              - $ref: '#/components/requestBodies/createdByUserUid'
+              - $ref: '#/components/requestBodies/createdByWatcherUid'
+              - $ref: '#/components/requestBodies/issueCommentUid'
             type: object
         type: object
       issueWatcherAdded:
-        title: 'Issue comment added'
+        title: 'Issue watcher added'
         properties:
           type:
             description: Event type code
             type: String
-            example: 'issue.created'
+            example: 'issue.watcherAdded'
             enum:
-              - 'issue.created'
+              - 'issue.watcherAdded'
           data:
             allOf:
               - $ref: '#/components/requestBodies/accountUid'
               - $ref: '#/components/requestBodies/projectId'
               - $ref: '#/components/requestBodies/issueUid'
               - $ref: '#/components/requestBodies/string'
-              - $ref: '#/components/requestBodies/resolvedByUserUid'
-              - $ref: '#/components/requestBodies/reportedByUserUid'
-              - $ref: '#/components/requestBodies/createdDate'
-              - $ref: '#/components/requestBodies/resolvedDate'
-              - $ref: '#/components/requestBodies/issueTextModifiedDate'
-              - $ref: '#/components/requestBodies/issueText'
+              - $ref: '#/components/requestBodies/watcher/uid'
+              - $ref: '#/components/requestBodies/watcher/email'
+              - $ref: '#/components/requestBodies/watcher/name'
+              - $ref: '#/components/requestBodies/watcher/created'
+              - $ref: '#/components/requestBodies/watcher/modified'
+              - $ref: '#/components/requestBodies/watcher/enabled'
             type: object
         type: object
 
