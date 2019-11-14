@@ -7,15 +7,10 @@ x-paths:
         This is Smartling API endpoint
         Setup URL for receiving issues webhooks
       tags:
-      - Issues Webhooks
+        - Issues Webhooks
       operationId: setupIssuesWebhoook
       parameters:
-      - description: Unique identifier of corresponding account
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
+        - $ref: '../../api_common.yaml#/components/parameters/accountUid'
       requestBody:
         content:
           application/json:
@@ -26,10 +21,8 @@ x-paths:
         '200':
           content:
             application/json:
-              examples:
-                response:
-                  value:
-                    $ref: './examples.yaml#/components/examples/webhookSettings'
+              example:
+                $ref: './examples.yaml#/components/examples/webhookSettings'
               schema:
                 $ref: './commons.yaml#/components/schemas/setupWebhookResponse'
           description: OK
@@ -45,23 +38,16 @@ x-paths:
         This is Smartling API endpoint
         Get settings issues webhooks
       tags:
-      - Issues Webhooks
+        - Issues Webhooks
       operationId: getIssuesWebhoookSettings
       parameters:
-      - description: Unique identifier of corresponding account
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
+        - $ref: '../../api_common.yaml#/components/parameters/accountUid'
       responses:
         '200':
           content:
             application/json:
-              examples:
-                response:
-                  value:
-                    $ref: './examples.yaml#/components/examples/webhookSettings'
+              example:
+                $ref: './examples.yaml#/components/examples/webhookSettings'
               schema:
                 $ref: './commons.yaml#/components/schemas/setupWebhookResponse'
           description: OK
@@ -78,15 +64,19 @@ x-paths:
        description: >-
          API on client side to receive webhooks
        tags:
-       - Issues Webhooks
+         - Issues Webhooks
        operationId: receiveIssueCallback
        requestBody:
          content:
            application/json:
              schema:
                oneOf:
-                 - $ref: './commons.yaml#/components/schemas/issuesReceiveCallbackRequest1'
-                 - $ref: './commons.yaml#/components/schemas/issuesReceiveCallbackRequest2'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueCreatedRequest'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueDeletedRequest'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueAnsweredRequest'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueSeverityLevelChangedRequest'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueCommentAdded'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueWatcherAdded'
          required: true
        responses:
          '200':
