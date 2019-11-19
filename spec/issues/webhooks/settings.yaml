@@ -56,6 +56,27 @@ x-paths:
           curl -X GET -H "Authorization: Bearer $smartlingToken" -H
           "Content-Type: application/json"
           https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/webhook
+    delete:
+      summary: Delete issue webhook settings
+      description: >-
+        This URL is the Smartling API endpoint for deleting issue webhook settings.
+      tags:
+        - Issue Webhooks
+      operationId: deleteIssuesWebhoookSettings
+      parameters:
+        - $ref: '../../api_common.yaml#/components/parameters/accountUid'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: './commons.yaml#/components/schemas/receiveWebhookResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/webhook
 
   receive_webhook:
      post:
@@ -64,7 +85,7 @@ x-paths:
          This client-side API endpoint should be configured to receive issue webhooks.
        tags:
          - Issue Webhooks
-       operationId: receiveIssueCallback
+       operationId: receiveIssueWebhook
        requestBody:
          content:
            application/json:
