@@ -143,7 +143,7 @@ components:
           answered:
             type: boolean
             description: >-
-              Issue flag "aswered".
+              Issue flag "answered".
             example: false
       issueSeverityLevelCode:
         type: object
@@ -173,6 +173,30 @@ components:
             description: >-
               User identifier who is assigned to issue.
             example: "j8hD1LBFA3Ol"
+      reopened:
+        type: object
+        properties:
+          reopened:
+            type: boolean
+            description: >-
+              Issue flag "reopened".
+            example: false
+      reopenedByUserUid:
+        type: object
+        properties:
+          reopenedByUserUid:
+            type: String
+            description: >-
+              User identifier who is reopened the issue.
+            example: "j8hD1LBFA3Ol"
+      reopenedDate:
+        type: object
+        properties:
+          reopenedDate:
+            type: string
+            description: >-
+              Issue reopen date.
+            example: "2019-10-09 15:20:11"
 
       commentCreatedDate:
         type: object
@@ -338,6 +362,9 @@ components:
               - $ref: '#/components/requestBodies/issueSeverityLevelCode'
               - $ref: '#/components/requestBodies/issueNumber'
               - $ref: '#/components/requestBodies/assigneeUserUid'
+              - $ref: '#/components/requestBodies/reopened'
+              - $ref: '#/components/requestBodies/reopenedByUserUid'
+              - $ref: '#/components/requestBodies/reopenedDate'
             type: object
         type: object
       issueDeletedRequest:
@@ -369,12 +396,15 @@ components:
               - $ref: '#/components/requestBodies/issueSeverityLevelCode'
               - $ref: '#/components/requestBodies/issueNumber'
               - $ref: '#/components/requestBodies/assigneeUserUid'
+              - $ref: '#/components/requestBodies/reopened'
+              - $ref: '#/components/requestBodies/reopenedByUserUid'
+              - $ref: '#/components/requestBodies/reopenedDate'
             type: object
         type: object
       issueStateChangedRequest:
         title: 'Issue state changed'
         properties:
-          eventTypeCode:
+          type:
             description: Event type code
             type: String
             example: 'issue.stateChanged'
@@ -391,7 +421,7 @@ components:
       issueAnsweredRequest:
         title: 'Issue answered'
         properties:
-          eventTypeCode:
+          type:
             description: Event type code
             type: String
             example: 'issue.answered'
@@ -408,7 +438,7 @@ components:
       issueSeverityLevelChangedRequest:
         title: 'Issue severity level changed'
         properties:
-          eventTypeCode:
+          type:
             description: Event type code
             type: String
             example: 'issue.severityLevelChanged'
