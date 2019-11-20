@@ -16,6 +16,7 @@ if (branch && branch !== 'gh-pages') {
   var specFolder = path.join(branchPath, 'spec');
   mkdir('-p', specFolder);
   cp('-R', 'spec/translation_quality', specFolder);
+  cp('-R', 'spec/issues', specFolder);
   cp('-R', 'spec/api_common.yaml', specFolder);
 
   exec('deploy-to-gh-pages --update .tmp');
