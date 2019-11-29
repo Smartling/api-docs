@@ -4446,6 +4446,12 @@ paths:
           "Content-Type: application/json"
           https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/projects/$smartlingProjectId/issues/$issueUid/watchers
 
+  /issues-api/v2/accounts/{accountUid}/webhook:
+    $ref: './spec/issues/webhooks/settings.yaml#/x-paths/setup_webhook'
+
+  /your.domain.com/send/webhook/here:
+    $ref: './spec/issues/webhooks/settings.yaml#/x-paths/receive_webhook'
+
   /issues-api/v2/dictionary/issue-types:
     get:
       summary: Get issue types
@@ -9884,6 +9890,8 @@ components:
       $ref: './spec/translation_quality/checks/grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     GLOBAL_CAPITALISATION_CONSISTENCY:
       $ref: './spec/translation_quality/checks/global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+    PLURALS_REPETITION:
+      $ref: './spec/translation_quality/checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     BatchStatus:
       enum:
@@ -10652,6 +10660,10 @@ components:
           type: string
         answered:
           description: Issue flag "answered"
+          example: true
+          type: boolean
+        reopened:
+          description: Issue flag "reopened".
           example: true
           type: boolean
         issueSeverityLevelCodes:
@@ -11926,6 +11938,10 @@ components:
         answered:
           description: Issue flag "answered".
           example: false
+          type: boolean
+        reopened:
+          description: Issue flag "reopened".
+          example: true
           type: boolean
         issueSeverityLevelCodes:
           items:
