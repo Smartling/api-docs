@@ -2,6 +2,7 @@ x-paths:
 
   check_type_groups:
     post:
+      deprecated: true
       description: >-
         Create check type group.
       summary: Create check type group
@@ -30,6 +31,7 @@ x-paths:
             curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups
 
     get:
+      deprecated: true
       description: >-
         Get check type groups settings.
       summary: Get check type groups settings
@@ -57,8 +59,68 @@ x-paths:
           source: |
             curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups
 
+  profiles_check_type_groups:
+    post:
+      description: >-
+        Create check type group.
+      summary: Create check type group
+      tags:
+        - Translation quality check
+      operationId: CreateProfilesTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountCheckTypeCreateGroupResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups
+
+    get:
+      description: >-
+        Get check type groups settings.
+      summary: Get check type groups settings
+      tags:
+        - Translation quality check
+      operationId: getProfilesTranslationQualityCheckTypeGroupDetails
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountCheckTypeCreateGroupResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups
+
   check_type_groups_group:
     get:
+      deprecated: true
       description: >-
         Get check type group by the group identifier.
       summary: Get check type group by the group identifier
@@ -88,6 +150,7 @@ x-paths:
             curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid
 
     delete:
+      deprecated: true
       description: >-
         Delete check type group by the group identifier.
       summary: Delete check type group by the group identifier
@@ -116,8 +179,72 @@ x-paths:
           source: |
             curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid
 
+
+  profiles_check_type_groups_group:
+    get:
+      description: >-
+        Get check type group by the group identifier.
+      summary: Get check type group by the group identifier
+      tags:
+        - Translation quality check
+      operationId: getProfilesTranslationQualityCheckTypeGroupDetailsByGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountCheckTypeGroupGetByUidResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid
+
+    delete:
+      description: >-
+        Delete check type group by the group identifier.
+      summary: Delete check type group by the group identifier
+      tags:
+        - Translation quality check
+      operationId: deleteProfilesTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountCheckTypeGroupDeleteByUidResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid
+
+
   check_type_groups_group_locales:
     post:
+      deprecated: true
       description: >-
         Add locale to group.
       summary: Add locale to group
@@ -151,11 +278,49 @@ x-paths:
       x-code-samples:
         - lang: curl
           source: |
-            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales
 
+  profiles_check_type_groups_group_locales:
+    post:
+      description: >-
+        Add locale to group.
+      summary: Add locale to group
+      tags:
+        - Translation quality check
+      operationId: addLocaleToProfilesTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCheckTypeGroupAddLocaleRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountCheckTypeGroupAddLocaleResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales
 
   check_type_groups_group_locales_locale:
     delete:
+      deprecated: true
       description: >-
         Delete locale from group.
       summary: Delete locale from group
@@ -184,6 +349,38 @@ x-paths:
         - lang: curl
           source: |
             curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales/$smartlingTargetLocaleId
+
+  profiles_check_type_groups_group_locales_locale:
+    delete:
+      description: >-
+        Delete locale from group.
+      summary: Delete locale from group
+      tags:
+        - Translation quality check
+      operationId: deleteLocaleFromProfilesTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/targetLocaleIdPathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountCheckTypeGroupDeleteLocaleResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales/$smartlingTargetLocaleId
 
 components:
   schemas:
