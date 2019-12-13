@@ -97,6 +97,10 @@ tags:
       Locales are the language and country pairs that are used to identify the
       source content and the desired target locale for your translated content.
 
+  - name: Peoples
+    description: |-
+      People - it is user of the system who works, processes, translates context.
+
   - name: Files
     description: |-
       Files are typically how you can exchange your content with Smartling to
@@ -774,6 +778,95 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
+
+
+#
+# Peoples API
+#
+
+  /people-api/v2/users:
+    post:
+      summary: Get list of user information
+      tags:
+      - Peoples
+      description: >
+        People is user of the system who process, translate context
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                userUids:
+                  description: >-
+                    List of user uids.
+                  example:
+                    - "323edsads"
+                  items:
+                    type: string
+                  type: array
+                excludeProfileImage:
+                  description: >-
+                    Exclude user profile image. It is optimization to avoid fetching user's profile image
+                  example: true
+                  type: boolean
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectCopySuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - userUid: ac48ht4qy
+                            firstName: user first name 1
+                            lastName: user last name 1
+                            profileImage: https://my.gravatar.net/avatar/eeca2d632c1weeeaf5dsd3e32e32ddsasd
+                          - userUid: vc79ht5ay
+                            firstName: user first name 2
+                            lastName: user last name 2
+                            profileImage: https://my.gravatar.net/avatar/ess3a2d632c1weeeaf5dsd3e32e32dds333
+                        totalCount: 2
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+			  
+      # summary: Get list of user information
+      # tags:
+      # - Peoples
+      # description: |
+      #   People is user of the system who process, translate context
+      #
+      # requestBody:
+      #   content:
+      #     application/json:
+      #       schema:
+      #         properties:
+      # 				  #                userUids:
+      # 				  #                  description: List of user uids.
+      # 				  # items:
+      # 				  #   description: User idendifier
+      # 				  #   type: string
+      # 				  #                  type: array
+      #           excludeProfileImage:
+      #             description: >-
+      #               Exclude user profile image. It is optimization to avoid fetching user's profile image
+      #             example: true
+      #             type: boolean
+      #         type: object
+
 
 #
 # File API
@@ -14891,6 +14984,50 @@ components:
           description: The uid of the workflow step.
           type: string
       type: object
+
+    UserInfoApiItem:
+      properties:
+        userUid:
+          description: User identifier.
+          type: string
+        firstName:
+          description: User first name.
+          type: string
+        lastName:
+          description: User last name.
+          type: string
+        profileImage:
+          description: User's profile url.
+          type: string
+      required:
+        - userUid
+        - firstName
+        - lastName
+      type: object
+
+    PeopleAPIUserInfosSuccessResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/UserInfoApiItem'
+                      type: array
+                    totalCount:
+                      description: The total number of users matching the request
+                      type: integer
+                  required:
+                    - totalCount
+                    - items
+                  type: object
+              type: object
 
   responses:
     Error400ResponseDefinition:
