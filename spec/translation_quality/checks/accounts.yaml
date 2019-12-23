@@ -292,6 +292,34 @@ x-paths:
           source: |
             curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/settings
 
+  get_project_check_types_settings:
+    get:
+      description: >-
+        Get project check types settings.
+      summary: Get project check types settings
+      tags:
+        - Translation quality check
+      operationId: getProjectCheckTypesSettings
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/components/parameters/projectId'
+        - $ref: '../../api_common.yaml#/components/parameters/localeId'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TqcAccountGetCheckTypesResponse'
+              example:
+                $ref: '../examples.yaml#/components/examples/accounts_check_types_settings_example'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/check-types/
 
 components:
   schemas:
