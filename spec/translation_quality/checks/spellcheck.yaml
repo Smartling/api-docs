@@ -66,6 +66,21 @@ components:
               description: check type code
               example: "SPELLCHECK"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: SPELLCHECK
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/SpellcheckSettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - SPELLCHECK
+              description: check type code
+              example: "SPELLCHECK"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -74,6 +89,16 @@ components:
             data:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/ProfilesCheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:

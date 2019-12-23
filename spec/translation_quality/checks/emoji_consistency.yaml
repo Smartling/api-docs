@@ -49,6 +49,34 @@ components:
                     description: check subtype code
                     example: "EMOJI_ADDED"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: EMOJI_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/EmojiConsistencySettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - EMOJI_CONSISTENCY
+              description: check type code
+              example: "EMOJI_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - EMOJI_ADDED
+                      - EMOJI_DELETED
+                      - EMOJI_PRESENT
+                    description: check subtype code
+                    example: "EMOJI_ADDED"
+
 
     AccountCheckTypeEffectiveResponse:
       allOf:
@@ -58,6 +86,16 @@ components:
             data:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/ProfilesCheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
 
 

@@ -27,6 +27,34 @@ components:
                     description: check subtype code
                     example: "PLACEABLE_ADDED"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: NON_TRANSLATABLE_TEXT
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - NON_TRANSLATABLE_TEXT
+              description: check type code
+              example: "NON_TRANSLATABLE_TEXT"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - PLACEABLE_ADDED
+                      - PLACEABLE_DELETED
+                      - SPACES_AROUND_PLACEABLE
+                      - PLACEABLE_FORMAT
+                    description: check subtype code
+                    example: "PLACEABLE_ADDED"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -35,6 +63,16 @@ components:
             data:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/ProfilesCheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:

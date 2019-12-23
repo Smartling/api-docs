@@ -38,6 +38,21 @@ components:
               description: check type code
               example: "TARGET_IN_WRONG_LANGUAGE"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: TARGET_IN_WRONG_LANGUAGE
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/responseFields/minTextLengthLimit'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TARGET_IN_WRONG_LANGUAGE
+              description: check type code
+              example: "TARGET_IN_WRONG_LANGUAGE"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -46,6 +61,16 @@ components:
             data:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/ProfilesCheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:

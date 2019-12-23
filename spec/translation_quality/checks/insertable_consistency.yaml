@@ -25,6 +25,32 @@ components:
                     description: check subtype code
                     example: "INSERTABLE_ADDED"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: INSERTABLE_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - INSERTABLE_CONSISTENCY
+              description: check type code
+              example: "INSERTABLE_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - INSERTABLE_ADDED
+                      - INSERTABLE_DELETED
+                    description: check subtype code
+                    example: "INSERTABLE_ADDED"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -33,6 +59,16 @@ components:
             data:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/ProfilesCheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:

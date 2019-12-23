@@ -52,6 +52,33 @@ components:
                     description: check subtype code
                     example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: TARGET_SOURCE_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/SourceConsistencySettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TARGET_SOURCE_CONSISTENCY
+              description: check type code
+              example: "TARGET_SOURCE_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                      - SAME_TRANSLATION_DIFFERENT_SOURCES
+                    description: check subtype code
+                    example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -60,6 +87,16 @@ components:
             data:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/ProfilesCheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:

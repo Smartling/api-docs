@@ -48,6 +48,28 @@ components:
               LEADING_TRAILING_SPACES: '#/components/schemas/response/LEADING_TRAILING_SPACES'
               ORIGINAL_EQUALS_TARGET: '#/components/schemas/response/ORIGINAL_EQUALS_TARGET'
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: ORIGINAL_EQUALS_TARGET
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/OriginalEqualsTargetSettingsDTO'
+        - type: object
+          required:
+            - checkTypeCode
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - ORIGINAL_EQUALS_TARGET
+              description: check type code
+              example: "ORIGINAL_EQUALS_TARGET"
+          discriminator:
+            propertyName: checkTypeCode
+            mapping:
+              LEADING_TRAILING_SPACES: '#/components/schemas/response/LEADING_TRAILING_SPACES'
+              ORIGINAL_EQUALS_TARGET: '#/components/schemas/response/ORIGINAL_EQUALS_TARGET'
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -56,6 +78,16 @@ components:
             data:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/ProfilesCheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:

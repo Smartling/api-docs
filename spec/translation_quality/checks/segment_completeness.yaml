@@ -54,6 +54,34 @@ components:
                     description: check subtype code
                     example: "TARGET_IS_EMPTY"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: SEGMENT_COMPLETENESS
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/SegmentCompletenessSettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - SEGMENT_COMPLETENESS
+              description: check type code
+              example: "SEGMENT_COMPLETENESS"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - TARGET_IS_EMPTY
+                      - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                      - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                    description: check subtype code
+                    example: "TARGET_IS_EMPTY"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -62,6 +90,16 @@ components:
             data:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/ProfilesCheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:

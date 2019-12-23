@@ -13,6 +13,20 @@ components:
               description: check type code
               example: "GLOBAL_CAPITALISATION_CONSISTENCY"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: GLOBAL_CAPITALISATION_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - GLOBAL_CAPITALISATION_CONSISTENCY
+              description: check type code
+              example: "GLOBAL_CAPITALISATION_CONSISTENCY"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -21,6 +35,16 @@ components:
             data:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/ProfilesCheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:

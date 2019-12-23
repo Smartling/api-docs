@@ -26,6 +26,34 @@ components:
                     description: check subtype code
                     example: "TAG_ADDED"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: TAG_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TAG_CONSISTENCY
+              description: check type code
+              example: "TAG_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - TAG_ADDED
+                      - TAG_DELETED
+                      - SPACES_AROUND_TAGS
+                      - TAG_ORDER_IS_CHANGED
+                    description: check subtype code
+                    example: "TAG_ADDED"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -34,6 +62,16 @@ components:
             data:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/ProfilesCheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:
