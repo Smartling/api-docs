@@ -97,6 +97,10 @@ tags:
       Locales are the language and country pairs that are used to identify the
       source content and the desired target locale for your translated content.
 
+  - name: People
+    description: |-
+      Smartling users, who process and translate content with the Smartling platform.
+
   - name: Files
     description: |-
       Files are typically how you can exchange your content with Smartling to
@@ -775,6 +779,67 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+
+#
+# People API
+#
+
+  /people-api/v2/users:
+    post:
+      summary: Get list of user information
+      tags:
+      - People
+      description: >
+        Smartling users, who process and translate content with the Smartling platform.
+      operationId: getUsersList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                userUids:
+                  description: >-
+                    List of user uids.
+                  example:
+                    - "ac48ht4qy"
+					
+                  items:
+                    type: string
+                  type: array
+                excludeProfileImage:
+                  description: >-
+                    As a performance optimization, exclude the user's profile image.
+                  example: false
+                  type: boolean
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeopleAPIUserInfosSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - userUid: ac48ht4qy
+                            firstName: user first name 1
+                            lastName: user last name 1
+                            profileImage: https://my.gravatar.net/avatar/eeca2d632c1weeeaf5dsd3e32e32ddsasd
+                        totalCount: 1
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+			  
 #
 # File API
 #
@@ -12110,11 +12175,6 @@ components:
           type: integer
         sortBy:
           description: Sort result by fields
-          example:
-          - direction: ASC
-            fieldName: createdDate
-          - direction: DESC
-            fieldName: resolvedDate
           properties:
             items:
               items:
@@ -14941,6 +15001,50 @@ components:
           description: The uid of the workflow step.
           type: string
       type: object
+
+    UserInfoApiItem:
+      properties:
+        userUid:
+          description: User identifier.
+          type: string
+        firstName:
+          description: User first name.
+          type: string
+        lastName:
+          description: User last name.
+          type: string
+        profileImage:
+          description: User's profile url.
+          type: string
+      required:
+        - userUid
+        - firstName
+        - lastName
+      type: object
+
+    PeopleAPIUserInfosSuccessResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/UserInfoApiItem'
+                      type: array
+                    totalCount:
+                      description: The total number of users matching the request
+                      type: integer
+                  required:
+                    - totalCount
+                    - items
+                  type: object
+              type: object
 
   responses:
     Error400ResponseDefinition:
