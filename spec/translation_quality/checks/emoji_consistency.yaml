@@ -23,6 +23,32 @@ components:
       allOf:
         - $ref: '#/components/schemas/EmojiConsistencySettingsDTO'
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profilesCommonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/EmojiConsistencySettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - EMOJI_CONSISTENCY
+              description: check type code
+              example: "EMOJI_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - EMOJI_ADDED
+                      - EMOJI_DELETED
+                      - EMOJI_PRESENT
+                    description: check subtype code
+                    example: "EMOJI_ADDED"
+
     AccountCheckTypeEffectiveDTO:
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
@@ -114,6 +140,7 @@ components:
       "noEmojisAllowedInTarget": false
 
     profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
       "checkTypeCode": "EMOJI_CONSISTENCY"
       "subTypes":
@@ -163,6 +190,21 @@ components:
                   "positionTypeCode": "SOURCE"
 
     accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "EMOJI_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "EMOJI_PRESENT"
+          "severityLevelCode": "DISABLED"
+        - "checkSubTypeCode": "EMOJI_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "EMOJI_ADDED"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+      "noEmojisAllowedInTarget": false
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
       "checkTypeCode": "EMOJI_CONSISTENCY"
       "subTypes":
