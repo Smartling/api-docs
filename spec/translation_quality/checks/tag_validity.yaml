@@ -26,6 +26,33 @@ components:
                     description: check subtype code
                     example: "OPEN_CLOSED_TAG_ORDER_IS_CHANGED"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: TAG_VALIDITY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TAG_VALIDITY
+              description: check type code
+              example: "TAG_VALIDITY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+                      - INVALID_TAG_NESTING
+                      - TAG_IS_CHANGED
+                    description: check subtype code
+                    example: "OPEN_CLOSED_TAG_ORDER_IS_CHANGED"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -35,6 +62,16 @@ components:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/ProfilesCheckTypeSettingBase'
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
   examples:
 
