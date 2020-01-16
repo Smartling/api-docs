@@ -45,6 +45,34 @@ components:
                     description: check subtype code
                     example: "NUMBER_ADDED"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: NUMBER_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/responseFields/ignoreSign'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - NUMBER_CONSISTENCY
+              description: check type code
+              example: "NUMBER_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - NUMBER_ADDED
+                      - NUMBER_DELETED
+                      - NUMBER_INCORRECT_CONVERSION
+                    description: check subtype code
+                    example: "NUMBER_ADDED"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -54,6 +82,15 @@ components:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:
       title: NUMBER_CONSISTENCY
@@ -136,7 +173,41 @@ components:
         - "groupUid": "a853df2cf8ac"
       "ignoreSign": true
 
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "NUMBER_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "NUMBER_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_INCORRECT_CONVERSION"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups":
+        - "groupUid": "b0dd258b05ee"
+        - "groupUid": "a853df2cf8ac"
+      "ignoreSign": true
+
     accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "NUMBER_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "NUMBER_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_INCORRECT_CONVERSION"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups":
+        - "groupUid": "b0dd258b05ee"
+        - "groupUid": "a853df2cf8ac"
+      "ignoreSign": true
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
       "checkTypeCode": "NUMBER_CONSISTENCY"
       "subTypes":
@@ -155,7 +226,13 @@ components:
     accounts_check_types_checkType_settings_example:
       ignoreSign: true
 
+    profiles_accounts_check_types_checkType_settings_example:
+      ignoreSign: true
+
     accounts_check_types_checkType_group_settings_example:
+      ignoreSign: true
+
+    profiles_accounts_check_types_checkType_group_settings_example:
       ignoreSign: true
 
     tqc_check_response_example:

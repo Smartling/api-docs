@@ -14,11 +14,22 @@ components:
                 - LEADING_TRAILING_SPACES
               description: check type code
               example: "LEADING_TRAILING_SPACES"
-          discriminator:
-            propertyName: checkTypeCode
-            mapping:
-              LEADING_TRAILING_SPACES: '#/components/schemas/response/LEADING_TRAILING_SPACES'
-              ORIGINAL_EQUALS_TARGET: '#/components/schemas/response/ORIGINAL_EQUALS_TARGET'
+
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: LEADING_TRAILING_SPACES
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          required:
+            - checkTypeCode
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - LEADING_TRAILING_SPACES
+              description: check type code
+              example: "LEADING_TRAILING_SPACES"
 
     AccountCheckTypeEffectiveResponse:
       allOf:
@@ -29,6 +40,15 @@ components:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
     AccountCheckTypeEffectiveResponseNew:
       allOf:
@@ -64,6 +84,14 @@ components:
               example: "TARGET"
 
   examples:
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "LEADING_TRAILING_SPACES 1"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
 
     accounts_check_types_settings_example:
       "severityLevelCode": "LOW"

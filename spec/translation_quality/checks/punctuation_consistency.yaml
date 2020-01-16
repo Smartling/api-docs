@@ -9,12 +9,12 @@ components:
             checkTypeCode:
               type: string
               enum:
-                - GRAMMAR_CHECK
+                - PUNCTUATION_CONSISTENCY
               description: check type code
-              example: "GRAMMAR_CHECK"
+              example: "PUNCTUATION_CONSISTENCY"
 
     ProfilesAccountCheckTypeEffectiveDTO:
-      title: GRAMMAR_CHECK
+      title: PUNCTUATION_CONSISTENCY
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
         - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
@@ -23,9 +23,9 @@ components:
             checkTypeCode:
               type: string
               enum:
-                - GRAMMAR_CHECK
+                - PUNCTUATION_CONSISTENCY
               description: check type code
-              example: "GRAMMAR_CHECK"
+              example: "PUNCTUATION_CONSISTENCY"
 
     AccountCheckTypeEffectiveResponse:
       allOf:
@@ -47,7 +47,7 @@ components:
                 - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:
-      title: GRAMMAR_CHECK
+      title: PUNCTUATION_CONSISTENCY
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
         - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
@@ -56,45 +56,23 @@ components:
             checkTypeCode:
               type: string
               enum:
-                - GRAMMAR_CHECK
+                - PUNCTUATION_CONSISTENCY
               description: check type code
-              example: "GRAMMAR_CHECK"
+              example: "PUNCTUATION_CONSISTENCY"
             details:
               type: object
-              properties:
-                text:
-                  type: string
-                  description: text
-                  example: "play"
-                message:
-                  type: string
-                  description: message
-                  example: "Possible agreement error -- use past participle here: <suggestion>played</suggestion>."
-                description:
-                  type: string
-                  description: description
-                  example: "Had + verb present tense"
-                mistakeTypeCode:
-                  type: string
-                  description: mistake type code
-                  example: "Grammar"
-                suggestions:
-                  type: array
-                  items:
-                    type: string
-                    example: "played"
             positionTypeCode:
               type: string
               enum:
-                - TARGET
+                - SOURCE
               description: position type code
-              example: "TARGET"
+              example: "SOURCE"
 
   examples:
 
     accounts_account_check_types_settings_effective_example:
       "severityLevelCode": "LOW"
-      "checkTypeCode": "GRAMMAR_CHECK"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
       "subTypes": []
       "localeSeverityLevels": []
       "groups": []
@@ -102,14 +80,14 @@ components:
     profiles_account_check_types_settings_effective_example:
       "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
-      "checkTypeCode": "GRAMMAR_CHECK"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
       "subTypes": []
       "localeSeverityLevels": []
       "groups": []
 
     accounts_check_types_settings_example:
       "severityLevelCode": "LOW"
-      "checkTypeCode": "GRAMMAR_CHECK"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
       "subTypes": []
       "localeSeverityLevels": []
       "groups": []
@@ -117,7 +95,7 @@ components:
     profiles_accounts_check_types_settings_example:
       "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
-      "checkTypeCode": "GRAMMAR_CHECK"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
       "subTypes": []
       "localeSeverityLevels": []
       "groups": []
@@ -128,29 +106,26 @@ components:
         "data":
           "results":
             - "string":
-                "originalString": "Le chien a mangé mes devoirs."
-                "translation": "The dog have ate my homework."
+                "originalString": "Hello!"
+                "translation": "Привет. Как дела?"
                 "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888"
                 "stringUid": null
                 "pluralFormGroupUid": null
                 "pluralForm": null
               "mistakes":
-                - "checkTypeCode": "GRAMMAR_CHECK"
+                - "checkTypeCode": "PUNCTUATION_CONSISTENCY"
                   "severityLevelCode": "LOW"
                   "positions":
-                    "from": 9
-                    "to": 13
+                    "from": 5
+                    "to": 6
                   "details":
-                    "text": "ate"
-                    "message": "Possible agreement error"
-                    "description": "Agreement: 'have' + past/present tense"
-                    "mistakeTypeCode": "Grammar"
-                    "suggestions":
-                      - "eaten"
-                  "positionTypeCode": "TARGET"
+                    "punctuationMark": "!"
+                    "type": "PUNCTUATION_MARK_DELETED"
+                    "punctuationMarkType": "TERMINAL"
+                  "positionTypeCode": "SOURCE"
 
     dictionary_checkTypes_response_example:
-      "checkTypeCode": "GRAMMAR_CHECK"
-      "name": "Grammar"
-      "description": "Check for grammar errors"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
+      "name": "Punctuation consistency"
+      "description": "Check for punctuation consistency"
       "checkSubTypes": []

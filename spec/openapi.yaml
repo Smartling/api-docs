@@ -274,8 +274,8 @@ tags:
       platform and specify additional filtering criteria to narrow down data
       returned by the reports.
 
-  - name: Translation quality check
-    description: Translation quality check service provides API that allows to check translation quality.
+  - name: Translation quality checks
+    description: The translation quality check service is an API endpoint at which you can check the quality of your translations.
 
 paths:
   /auth-api/v2/authenticate:
@@ -9870,14 +9870,77 @@ paths:
   /translation-quality-api/v2/users/current/settings/dictionaries/{localeId}/{wordUid}:
     $ref: './spec/translation_quality/dictionaries.yaml#/x-paths/users_current_settings_dictionaries_locale_word'
 
+  /translation-quality-api/v2/accounts/{accountUid}/profiles:
+    $ref: './spec/translation_quality/profiles.yaml#/x-paths/create_tqc_profile_or_get_profiles'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/name:
+    $ref: './spec/translation_quality/profiles.yaml#/x-paths/update_tqc_profile'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}:
+    $ref: './spec/translation_quality/profiles.yaml#/x-paths/get_or_delete_tqc_profile'
+
+  /translation-quality-api/v2/accounts/{accountUid}/default-profile:
+    $ref: './spec/translation_quality/profiles.yaml#/x-paths/default_profile'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/severity-level:
+    $ref: './spec/translation_quality/check_type_severity_level.yaml#/x-paths/profiles_check_type_severity_level'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/sub-types/{checkSubTypeCode}/severity-level:
+    $ref: './spec/translation_quality/check_type_severity_level.yaml#/x-paths/profiles_check_type_subtype_severity_level'
+
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/severity-level/reset:
+    $ref: './spec/translation_quality/check_type_severity_level.yaml#/x-paths/check_type_severity_level_reset'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/groups:
+    $ref: './spec/translation_quality/account_settings.yaml#/x-paths/profiles_check_type_groups'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/groups/{groupUid}:
+    $ref: './spec/translation_quality/account_settings.yaml#/x-paths/profiles_check_type_groups_group'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/groups/{groupUid}/locales:
+    $ref: './spec/translation_quality/account_settings.yaml#/x-paths/profiles_check_type_groups_group_locales'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/groups/{groupUid}/locales/{targetLocaleId}:
+    $ref: './spec/translation_quality/account_settings.yaml#/x-paths/profiles_check_type_groups_group_locales_locale'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/groups/{groupUid}/sub-types/{checkSubTypeCode}/severity-level:
+    $ref: './spec/translation_quality/check_type_severity_level.yaml#/x-paths/profiles_check_type_group_subtype_severity_level'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/groups/{groupUid}/severity-level:
+    $ref: './spec/translation_quality/check_type_severity_level.yaml#/x-paths/profiles_check_type_group_severity_level'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types:
+    $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/profiles_check_types_settings'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}:
+    $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/profiles_check_types_settings_effective'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/settings:
+    $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/profiles_check_types_checkType_settings'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/groups/{groupUid}/settings:
+    $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/profiles_check_types_checkType_group_settings'
+
+  /translation-quality-api/v2/projects/{projectId}/locales/{localeId}/check-types/:
+    $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/get_project_check_types_settings'
+
+  /translation-quality-api/v2/accounts/{accountUid}/projects/{projectId}/check:
+    $ref: './spec/translation_quality/tqc_check.yaml#/x-paths/tqc_check'
+
+  /translation-quality-api/v2/accounts/{accountUid}/check-types:
+    $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/check_types_settings'
+
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}:
+    $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/account_check_types_settings_effective'
+
   /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/severity-level:
     $ref: './spec/translation_quality/check_type_severity_level.yaml#/x-paths/check_type_severity_level'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/sub-types/{checkSubTypeCode}/severity-level:
     $ref: './spec/translation_quality/check_type_severity_level.yaml#/x-paths/check_type_subtype_severity_level'
 
-  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/severity-level/reset:
-    $ref: './spec/translation_quality/check_type_severity_level.yaml#/x-paths/check_type_severity_level_reset'
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/settings:
+    $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/check_types_checkType_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups:
     $ref: './spec/translation_quality/account_settings.yaml#/x-paths/check_type_groups'
@@ -9891,26 +9954,14 @@ paths:
   /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups/{groupUid}/locales/{targetLocaleId}:
     $ref: './spec/translation_quality/account_settings.yaml#/x-paths/check_type_groups_group_locales_locale'
 
-  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups/{groupUid}/sub-types/{checkSubTypeCode}/severity-level:
-    $ref: './spec/translation_quality/check_type_severity_level.yaml#/x-paths/check_type_group_subtype_severity_level'
-
   /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups/{groupUid}/severity-level:
     $ref: './spec/translation_quality/check_type_severity_level.yaml#/x-paths/check_type_group_severity_level'
 
-  /translation-quality-api/v2/accounts/{accountUid}/check-types:
-    $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/check_types_settings'
-
-  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}:
-    $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/account_check_types_settings_effective'
-
-  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/settings:
-    $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/check_types_checkType_settings'
+  /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups/{groupUid}/sub-types/{checkSubTypeCode}/severity-level:
+    $ref: './spec/translation_quality/check_type_severity_level.yaml#/x-paths/check_type_group_subtype_severity_level'
 
   /translation-quality-api/v2/accounts/{accountUid}/check-types/{checkTypeCode}/groups/{groupUid}/settings:
     $ref: './spec/translation_quality/checks/accounts.yaml#/x-paths/check_types_checkType_group_settings'
-
-  /translation-quality-api/v2/accounts/{accountUid}/projects/{projectId}/check:
-    $ref: './spec/translation_quality/tqc_check.yaml#/x-paths/tqc_check'
 
 components:
   requestBodies:
@@ -9947,8 +9998,6 @@ components:
       $ref: './spec/translation_quality/checks/whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     SPELLCHECK:
       $ref: './spec/translation_quality/checks/spellcheck.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-    UNCATEGORIZED:
-      $ref: './spec/translation_quality/checks/uncategorized.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     TAG_CONSISTENCY:
       $ref: './spec/translation_quality/checks/tag_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     TARGET_LENGTH_LIMIT:
@@ -9967,8 +10016,6 @@ components:
       $ref: './spec/translation_quality/checks/non_translatable_text.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     EMOJI_CONSISTENCY:
       $ref: './spec/translation_quality/checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-    TAG_VALIDITY:
-      $ref: './spec/translation_quality/checks/tag_validity.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     INSERTABLE_CONSISTENCY:
       $ref: './spec/translation_quality/checks/insertable_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     TARGET_SOURCE_CONSISTENCY:
@@ -9983,6 +10030,8 @@ components:
       $ref: './spec/translation_quality/checks/grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     GLOBAL_CAPITALISATION_CONSISTENCY:
       $ref: './spec/translation_quality/checks/global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+    PUNCTUATION_CONSISTENCY:
+      $ref: './spec/translation_quality/checks/punctuation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     PLURALS_REPETITION:
       $ref: './spec/translation_quality/checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
 

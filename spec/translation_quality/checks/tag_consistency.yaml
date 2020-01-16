@@ -26,6 +26,34 @@ components:
                     description: check subtype code
                     example: "TAG_ADDED"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: TAG_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TAG_CONSISTENCY
+              description: check type code
+              example: "TAG_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - TAG_ADDED
+                      - TAG_DELETED
+                      - SPACES_AROUND_TAGS
+                      - TAG_ORDER_IS_CHANGED
+                    description: check subtype code
+                    example: "TAG_ADDED"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -35,6 +63,15 @@ components:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:
       title: TAG_CONSISTENCY
@@ -89,7 +126,39 @@ components:
       "localeSeverityLevels": []
       "groups": []
 
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TAG_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "TAG_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_ORDER_IS_CHANGED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "SPACES_AROUND_TAGS"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+
     accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TAG_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "TAG_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_ORDER_IS_CHANGED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "SPACES_AROUND_TAGS"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
       "checkTypeCode": "TAG_CONSISTENCY"
       "subTypes":

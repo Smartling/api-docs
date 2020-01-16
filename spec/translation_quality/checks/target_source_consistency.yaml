@@ -52,6 +52,33 @@ components:
                     description: check subtype code
                     example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
 
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: TARGET_SOURCE_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/SourceConsistencySettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TARGET_SOURCE_CONSISTENCY
+              description: check type code
+              example: "TARGET_SOURCE_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                      - SAME_TRANSLATION_DIFFERENT_SOURCES
+                    description: check subtype code
+                    example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+
     AccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
@@ -61,6 +88,15 @@ components:
               allOf:
                 - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
                 - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:
       title: TARGET_SOURCE_CONSISTENCY
@@ -115,7 +151,35 @@ components:
       "ignoreTagsAndPlaceholders": true
       "ignoreCase": true
 
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TARGET_SOURCE_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "SAME_TRANSLATION_DIFFERENT_SOURCES"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+      "ignoreTagsAndPlaceholders": true
+      "ignoreCase": true
+
     accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TARGET_SOURCE_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "SAME_TRANSLATION_DIFFERENT_SOURCES"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+      "ignoreTagsAndPlaceholders": true
+      "ignoreCase": true
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
       "checkTypeCode": "TARGET_SOURCE_CONSISTENCY"
       "subTypes":
@@ -132,7 +196,15 @@ components:
       ignoreTagsAndPlaceholders: true
       ignoreCase: true
 
+    profiles_accounts_check_types_checkType_settings_example:
+      ignoreTagsAndPlaceholders: true
+      ignoreCase: true
+
     accounts_check_types_checkType_group_settings_example:
+      ignoreTagsAndPlaceholders: true
+      ignoreCase: true
+
+    profiles_accounts_check_types_checkType_group_settings_example:
       ignoreTagsAndPlaceholders: true
       ignoreCase: true
 
