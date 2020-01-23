@@ -213,6 +213,44 @@ x-paths:
           - lang: curl
             source: |
               curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON"  https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/default-profile
+
+  copy_tqc_profile:
+    post:
+      description: >-
+        Copy a profile.
+      summary: Copy a profile
+      tags:
+        - Translation quality checks
+      operationId: copyTQCProfile
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/copyProfileUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TQCProfileRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCProfileResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/copy
+
+
 components:
   schemas:
 
