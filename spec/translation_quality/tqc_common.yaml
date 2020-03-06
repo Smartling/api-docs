@@ -71,6 +71,13 @@ components:
       type: string
       description: Unique identifier of corresponding profile.
 
+    regexRuleUidPathParameter:
+      name: ruleUid
+      in: path
+      required: true
+      type: string
+      description: Unique identifier of corresponding check rule.
+
     copyProfileUidPathParameter:
       name: profileUid
       in: path
@@ -170,6 +177,50 @@ components:
           type: string
           $ref: '#/components/schemas/enum/checkTypeCodeEnum'
           description: check type code
+
+    regexRuleModel:
+      type: object
+      properties:
+        ruleName:
+          type: string
+          description: name of check rule
+          example: "ruleName"
+        severityLevelCode:
+          type: string
+          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          description: severity level code
+          example: "MEDIUM"
+        ruleTypeCode:
+          type: string
+          $ref: '#/components/schemas/enum/ruleTypeCodeEnum'
+          description: rule type code of check rule
+          example: "FORBIDDEN"
+        flavorCode:
+          type: string
+          description: flavor code of check rule
+          example: "DOT_NET"
+        originalPattern:
+          type: string
+          description: original pattern of rule
+          example: "@mail"
+        translationPattern:
+          type: string
+          description: translation pattern of rule
+          example: "@gmail"
+        caseInsensitive:
+          type: boolean
+          description: case insensitive flag
+          example: true
+
+    regexRuleWithRuleUid:
+      allOf:
+        - type: object
+          properties:
+            ruleUid:
+              type: string
+              description: unique identifier of corresponding check rule
+              example: ce6d6b5dbc12
+        - $ref: '#/components/schemas/regexRuleModel'
 
     profileResponse:
       type: object
@@ -577,6 +628,12 @@ components:
           - LOW
           - MEDIUM
           - HIGH
+
+      ruleTypeCodeEnum:
+        enum:
+          - FORBIDDEN
+          - MISSING
+          - COUNT_MISMATCH
 
       checkTypeCodeWithSettingsEnum:
         enum:
