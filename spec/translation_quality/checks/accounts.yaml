@@ -88,7 +88,7 @@ x-paths:
         content:
           application/json:
             schema:
-              $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplySettingsRequestOneOf'
+              $ref: '../tqc_common.yaml#/components/schemas/ProfilesAccountCheckTypeApplySettingsRequestOneOf'
 
       responses:
         200:
@@ -96,7 +96,7 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountCheckTypeApplySettingsResponse'
+                $ref: '#/components/schemas/ProfilesAccountCheckTypeApplySettingsResponse'
               examples:
                 $ref: '../examples.yaml#/components/examples/profiles_accounts_check_types_checkType_settings_example'
 
@@ -128,7 +128,7 @@ x-paths:
         content:
           application/json:
             schema:
-              $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplyGroupSettingsRequestOneOf'
+              $ref: '../tqc_common.yaml#/components/schemas/ProfilesAccountCheckTypeApplyGroupSettingsRequestOneOf'
 
       responses:
         200:
@@ -136,7 +136,7 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountCheckTypeApplyGroupSettingsResponse'
+                $ref: '#/components/schemas/ProfilesAccountCheckTypeApplyGroupSettingsResponse'
               examples:
                 $ref: '../examples.yaml#/components/examples/profiles_accounts_check_types_checkType_group_settings_example'
 
@@ -165,9 +165,9 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TqcAccountGetCheckTypesResponse'
+                $ref: '#/components/schemas/TqcProjectGetCheckTypesResponse'
               example:
-                $ref: '../examples.yaml#/components/examples/accounts_check_types_settings_example'
+                $ref: '../examples.yaml#/components/examples/projects_check_types_settings_example'
 
       x-code-samples:
         - lang: curl
@@ -188,6 +188,17 @@ components:
                 data:
                   $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponseOneOf'
 
+    ProfilesAccountCheckTypeApplySettingsResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: '../tqc_common.yaml#/components/schemas/ProfilesAccountCheckTypeApplySettingsDTOResponseOneOf'
+
     AccountCheckTypeApplyGroupSettingsResponse:
       type: object
       properties:
@@ -198,6 +209,36 @@ components:
               properties:
                 data:
                   $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplyGroupSettingsDTOResponseOneOf'
+
+    ProfilesAccountCheckTypeApplyGroupSettingsResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: '../tqc_common.yaml#/components/schemas/ProfilesAccountCheckTypeApplyGroupSettingsDTOResponseOneOf'
+
+    TqcProjectGetCheckTypesResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        $ref: '../tqc_common.yaml#/components/schemas/ProjectCheckTypeEffectiveDTOAnyOf'
 
     TqcAccountGetCheckTypesResponse:
       type: object
