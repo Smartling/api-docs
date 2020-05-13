@@ -18,11 +18,28 @@ components:
           maximum: 100
           example: 10
 
+    ProfilesGlossaryComplianceSettingsDTO:
+      allOf:
+        - $ref: '#/components/schemas/GlossaryComplianceSettingsDTO'
+        - type: object
+          properties:
+            ignoreSourceCount:
+              type: boolean
+              description: By default this option is enabled. When enabled, the term does not need to appear the same number of times in the source string and the target string. When disabled, when a glossary term appears X times in the source string, we will expect that a translation for this term will appear the same number of times in the target string.
+
     AccountCheckTypeApplySettingsRequest:
       title: GLOSSARY_COMPLIANCE
       allOf:
         - $ref: '#/components/schemas/GlossaryComplianceSettingsDTO'
-        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
+        - type: object
+          required:
+            - matchMethod
+            - matchThreshold
+
+    ProfilesAccountCheckTypeApplySettingsRequest:
+      title: GLOSSARY_COMPLIANCE
+      allOf:
+        - $ref: '#/components/schemas/ProfilesGlossaryComplianceSettingsDTO'
         - type: object
           required:
             - matchMethod
@@ -33,9 +50,34 @@ components:
       allOf:
         - $ref: '#/components/schemas/GlossaryComplianceSettingsDTO'
 
+    ProfilesAccountCheckTypeApplySettingsDTOResponse:
+      title: GLOSSARY_COMPLIANCE
+      allOf:
+        - $ref: '#/components/schemas/ProfilesGlossaryComplianceSettingsDTO'
+
     AccountCheckTypeEffectiveDTO:
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/GlossaryComplianceSettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - GLOSSARY_COMPLIANCE
+              description: check type code
+              example: "GLOSSARY_COMPLIANCE"
+
+    ProjectCheckTypeEffectiveDTO:
+      title: GLOSSARY_COMPLIANCE
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/GlossaryComplianceSettingsDTO'
+        - type: object
+          properties:
+            ignoreSourceCount:
+              type: boolean
+              description: By default this option is enabled. When enabled, the term does not need to appear the same number of times in the source string and the target string. When disabled, when a glossary term appears X times in the source string, we will expect that a translation for this term will appear the same number of times in the target string.
         - type: object
           properties:
             checkTypeCode:
@@ -50,6 +92,7 @@ components:
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
         - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/ProfilesGlossaryComplianceSettingsDTO'
         - type: object
           properties:
             checkTypeCode:
@@ -62,7 +105,7 @@ components:
     ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - $ref: '#/components/schemas/GlossaryComplianceSettingsDTO'
+        - $ref: '#/components/schemas/ProfilesGlossaryComplianceSettingsDTO'
         - type: object
           properties:
             data:
@@ -201,6 +244,7 @@ components:
       "groups": []
       "matchMethod": "MATCH_BY_PERCENTAGE"
       "matchThreshold": 50
+      "ignoreSourceCount": true
 
     accounts_check_types_checkType_settings_example:
       matchMethod: MATCH_BY_PERCENTAGE
@@ -209,6 +253,7 @@ components:
     profiles_accounts_check_types_checkType_settings_example:
       matchMethod: MATCH_BY_PERCENTAGE
       matchThreshold: 10
+      ignoreSourceCount: true
 
     accounts_check_types_checkType_group_settings_example:
       matchMethod: MATCH_BY_PERCENTAGE
@@ -217,6 +262,7 @@ components:
     profiles_accounts_check_types_checkType_group_settings_example:
       matchMethod: MATCH_BY_PERCENTAGE
       matchThreshold: 10
+      ignoreSourceCount: true
 
     tqc_check_response_example:
       "response":
@@ -272,6 +318,16 @@ components:
       "matchMethod": "MATCH_BY_PERCENTAGE"
       "matchThreshold": 50
 
+    projects_check_types_settings_example:
+      "severityLevelCode": "MEDIUM"
+      "checkTypeCode": "GLOSSARY_COMPLIANCE"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "matchMethod": "MATCH_BY_PERCENTAGE"
+      "matchThreshold": 50
+      "ignoreSourceCount": true
+
     profiles_accounts_check_types_settings_example:
       "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "MEDIUM"
@@ -280,6 +336,7 @@ components:
       "groups": []
       "matchMethod": "MATCH_BY_PERCENTAGE"
       "matchThreshold": 50
+      "ignoreSourceCount": true
 
     dictionary_checkTypes_response_example:
       "checkTypeCode": "GLOSSARY_COMPLIANCE"
