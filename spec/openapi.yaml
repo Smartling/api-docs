@@ -4537,7 +4537,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccountIssueSubTypeRequest'
+              $ref: '#/components/schemas/AccountIssueSubTypeModel'
         required: true
       responses:
         '200':
@@ -4594,7 +4594,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccountIssueSubTypeRequest'
+              $ref: '#/components/schemas/AccountIssueSubTypeDescriptionField'
         required: true
       responses:
         '200':
@@ -14809,16 +14809,22 @@ components:
         - email
         - name
       type: object
-    AccountIssueSubTypeRequest:
+    AccountIssueSubTypeDescriptionField:
       properties:
-        issueSubTypeCode:
-          description: issue sub-type code identifier
-          example: testCode
-          type: string
         description:
           description: issue sub-type code description
           example: testCode description
           type: string
+
+    AccountIssueSubTypeModel:
+      allOf:
+        - type: object
+          properties:
+            issueSubTypeCode:
+              description: issue sub-type code identifier
+              example: testCode
+              type: string
+        - $ref: '#/components/schemas/AccountIssueSubTypeDescriptionField'
     WebPageDetailListRequest:
       properties:
         webPageUids:
