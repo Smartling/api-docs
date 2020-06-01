@@ -4510,6 +4510,159 @@ paths:
           "Content-Type: application/json"
           https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/projects/$smartlingProjectId/issues/$issueUid/watchers
 
+  /issues-api/v2/accounts/{accountUid}/issue-types/{issueType}/sub-types:
+    post:
+      summary: Create account issue sub-type
+      description: Create account issue sub-type.
+      tags:
+        - Issues
+      operationId: createAccountIssuesSubType
+      parameters:
+        - description: Unique identifier of corresponding account
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of issue type
+          in: path
+          name: issueType
+          required: true
+          schema:
+            type: string
+          enum:
+            - SOURCE
+            - TRANSLATION
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountIssueSubTypeRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        issueSubTypeCode: "testCode"
+                        description: "testCode description"
+              schema:
+                $ref: '#/components/schemas/AccountIssueSubTypeResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingAccountIssueSubTypeJSON"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/issue-types/$smartlingIssueType/sub-types
+
+
+  /issues-api/v2/accounts/{accountUid}/issue-types/{issueType}/sub-types/{issueSubTypeCode}:
+    put:
+      summary: Update account issue sub-type
+      description: Update account issue sub-type.
+      tags:
+        - Issues
+      operationId: updateAccountIssuesSubType
+      parameters:
+        - description: Unique identifier of corresponding account
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of issue type
+          in: path
+          name: issueType
+          required: true
+          schema:
+            type: string
+          enum:
+            - SOURCE
+            - TRANSLATION
+        - description: Unique identifier of issue sub-type
+          in: path
+          name: issueSubTypeCode
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountIssueSubTypeRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        issueSubTypeCode: "testCode"
+                        description: "testCode description"
+              schema:
+                $ref: '#/components/schemas/AccountIssueSubTypeResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingAccountIssueSubTypeJSON"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/issue-types/$smartlingIssueType/sub-types/$smartlingIssueSubTypeCode
+    delete:
+      summary: Delete account issue sub-type
+      description: Delete account issue sub-type.
+      tags:
+        - Issues
+      operationId: deleteAccountIssuesSubType
+      parameters:
+        - description: Unique identifier of corresponding account
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of issue type
+          in: path
+          name: issueType
+          required: true
+          schema:
+            type: string
+          enum:
+            - SOURCE
+            - TRANSLATION
+        - description: Unique identifier of issue sub-type
+          in: path
+          name: issueSubTypeCode
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/issue-types/$smartlingIssueType/sub-types/$smartlingIssueSubTypeCode
+
   /issues-api/v2/accounts/{accountUid}/webhook:
     $ref: './spec/issues/webhooks/settings.yaml#/x-paths/setup_webhook'
 
@@ -13075,6 +13228,26 @@ components:
                       type: integer
                   type: object
               type: object
+    AccountIssueSubTypeResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    issueSubTypeCode:
+                      description: issue sub-type code identifier
+                      type: string
+                    description:
+                      description: issue sub-type code description
+                      type: string
+                  type: object
+              type: object
+
     IssuesFindResponse:
       type: object
       required:
@@ -14636,6 +14809,16 @@ components:
         - email
         - name
       type: object
+    AccountIssueSubTypeRequest:
+      properties:
+        issueSubTypeCode:
+          description: issue sub-type code identifier
+          example: testCode
+          type: string
+        description:
+          description: issue sub-type code description
+          example: testCode description
+          type: string
     WebPageDetailListRequest:
       properties:
         webPageUids:
