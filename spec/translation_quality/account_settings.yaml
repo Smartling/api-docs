@@ -60,6 +60,35 @@ x-paths:
             curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups
 
   profiles_check_type_groups:
+    get:
+      description: >-
+        Get check type groups settings.
+      summary: Get check type groups settings
+      tags:
+        - Translation quality checks
+      operationId: getProfilesTranslationQualityCheckTypeGroupDetails
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfilesAccountCheckTypeGetGroupsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups
+
     post:
       description: >-
         Create check type group.
@@ -89,6 +118,8 @@ x-paths:
                   items:
                     type: string
                   type: array
+              required:
+                - targetLocaleIds
 
       responses:
         200:
@@ -103,34 +134,6 @@ x-paths:
           source: |
             curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups
 
-    get:
-      description: >-
-        Get check type groups settings.
-      summary: Get check type groups settings
-      tags:
-        - Translation quality checks
-      operationId: getProfilesTranslationQualityCheckTypeGroupDetails
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - $ref: '../api_common.yaml#/components/parameters/accountUid'
-        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
-        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
-
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProfilesAccountCheckTypeGetGroupsResponse'
-
-      x-code-samples:
-        - lang: curl
-          source: |
-            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups
 
   check_type_groups_group:
     get:

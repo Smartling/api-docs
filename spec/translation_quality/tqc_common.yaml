@@ -21,7 +21,7 @@ components:
       schema:
         type: string
         $ref: '#/components/schemas/enum/checkTypeCodeEnum'
-      description: check type code
+      description: '[check type code](#operation/getTranslationQualityCheckTypes)'
 
     checkTypeCodeWithSettingsPathParameter:
       name: checkTypeCode
@@ -30,7 +30,7 @@ components:
       schema:
         type: string
         $ref: '#/components/schemas/enum/checkTypeCodeWithSettingsEnum'
-      description: check type code
+      description: '[check type code](#operation/getTranslationQualityCheckTypes)'
 
     checkTypeCodeOnlyWithSubtypesPathParameter:
       name: checkTypeCode
@@ -39,7 +39,7 @@ components:
       schema:
         type: string
         $ref: '#/components/schemas/enum/checkTypeCodeOnlyWithSubtypesEnum'
-      description: check type code
+      description: '[check type code](#operation/getTranslationQualityCheckTypes)'
 
     checkSubTypeCodePathParameter:
       name: checkSubTypeCode
@@ -48,7 +48,7 @@ components:
       schema:
         type: string
         $ref: '#/components/schemas/enum/checkSubtypeEnum'
-      description: Check subtype code
+      description: '[check subtype code](#operation/getTranslationQualityCheckSubTypes)'
 
     targetLocaleIdPathParameter:
       name: targetLocaleId
@@ -109,9 +109,11 @@ components:
       properties:
         severityLevelCode:
           type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
-          description: severity level code
+          $ref: '#/components/schemas/enum/severityLevelCodeEnumCopyForRequest'
+          description: '[severity level code](#operation/getTranslationQualityCheckSeverityLevels)'
           example: "MEDIUM"
+      required:
+        - severityLevelCode
 
     targetLocaleId:
       type: object
@@ -120,14 +122,19 @@ components:
           type: string
           description: Smartling ID for the language you want to translate to.
           example: "it-IT"
+      required:
+        - targetLocaleId
 
     profileUid:
       type: object
       properties:
         profileUid:
           type: string
+          required: true
           description: Unique identifier of corresponding profile.
           example: "ce6d6b5dbc12"
+      required:
+        - profileUid
 
     profileName:
       type: object
@@ -136,6 +143,8 @@ components:
           type: string
           description: profile name.
           example: "default name"
+      required:
+        - name
 
     checkTypeCode:
       type: object
@@ -143,7 +152,7 @@ components:
         checkTypeCode:
           type: string
           $ref: '#/components/schemas/enum/checkTypeCodeEnum'
-          description: check type code
+          description: '[check type code](#operation/getTranslationQualityCheckTypes)'
           example: "LEADING_TRAILING_SPACES"
 
   schemas:
@@ -630,6 +639,13 @@ components:
           - SAME_TRANSLATION_DIFFERENT_SOURCES
 
       severityLevelCodeEnum:
+        enum:
+          - DISABLED
+          - LOW
+          - MEDIUM
+          - HIGH
+
+      severityLevelCodeEnumCopyForRequest:
         enum:
           - DISABLED
           - LOW
