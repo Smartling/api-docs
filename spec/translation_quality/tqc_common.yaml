@@ -196,13 +196,13 @@ components:
           example: "ruleName"
         severityLevelCode:
           type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
-          description: Severity level code
+          $ref: '#/components/schemas/enum/severityLevelCodeEnumCopyForRequest'
+          description: '[Severity level code](#operation/getTranslationQualityCheckSeverityLevels)'
           example: "MEDIUM"
         ruleTypeCode:
           type: string
-          $ref: '#/components/schemas/enum/ruleTypeCodeEnum'
-          description: Rule type code
+          $ref: '#/components/schemas/enum/ruleTypeCodeEnumCopyForRequest'
+          description: '[Rule type code](#operation/getRegexQualityCheckRuleTypes)'
           example: "FORBIDDEN"
         flavorCode:
           type: string
@@ -221,6 +221,14 @@ components:
           type: boolean
           description: Enable case insensitive search
           example: true
+      required:
+        - ruleName
+        - severityLevelCode
+        - ruleTypeCode
+        - flavorCode
+        - originalPattern
+        - translationPattern
+        - caseInsensitive
 
     regexRuleWithRuleUid:
       allOf:
@@ -698,6 +706,12 @@ components:
           - HIGH
 
       ruleTypeCodeEnum:
+        enum:
+          - FORBIDDEN
+          - MISSING
+          - COUNT_MISMATCH
+
+      ruleTypeCodeEnumCopyForRequest:
         enum:
           - FORBIDDEN
           - MISSING
