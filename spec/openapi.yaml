@@ -2646,19 +2646,19 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/upload-and-match-async:
     post:
-      summary: Upload HTML file and match strings to create context bindings
+      summary: Upload HTML context and run automatic context matching
       description: |-
         Uploads new HTML context and asynhronously matches it with strings.
         Strings to match are retrieved from the project specified by the `projectId` and
         can be filtered further by the optional `matchParams` parameter.
 
-        If the uploaded file doesn't match any string, the context won't be created.
+        If the uploaded file doesn't match any string, **the context won't be created**.
         Supported for `HTML` context only.
         Example of the raw request accepted by this API:
         ```
         Content-Type: multipart/form-data; boundary
         ----------------------------293641908835402749402839
-        Content-Disposition: form-data; name="content"; filename="1.html"
+        Content-Disposition: form-data; name="content"; filename="example.html"
         Content-Type: text/html
         <html>
           <body>
@@ -2667,12 +2667,12 @@ paths:
         </html>
         ----------------------------293641908835402749402839
         Content-Disposition: form-data; name="name"
-        bla2.html
+        https://your.domain.com/path/example.html
         ----------------------------293641908835402749402839
         Content-Disposition: form-data; name="matchParams"
         Content-Type: application/json
         {
-          "contentFileUri":"bla.html",
+          "contentFileUri":"example.properties",
           "stringHashcodes": [],
           "overrideContextOlderThanDays": 1
         }
@@ -2705,12 +2705,7 @@ paths:
                     Overrides the filename in the `content` part.
                   type: string
                 matchParams:
-                  description: |-
-                    String representation of `MatchRequest` JSON object
-                    Array of string hashcodes to match against, and/or context override specifier.
-                    If the string hashcodes are not specified, all strings from the project will be included in the match.
-                    If context override is not specified, *strings with existing context will not be bound to this context*.
-                  type: string
+                  $ref: '#/components/schemas/MatchParams'
               type: object
               required:
                 - content
@@ -2792,11 +2787,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MatchRequest'
+              $ref: '#/components/schemas/MatchParams'
         description: |-
-          Array of string hashcodes to match against, and/or context override specifier.
-          If string hashcodes are not specified, all strings from the project will be included in the match.
-          If context override is not specified, strings with context will not be bound to this context.
+          If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+          <br/>
+          If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
       responses:
         202:
           description: ACCEPTED
@@ -11087,13 +11082,34 @@ components:
                     - items
                   type: object
               type: object
-    MatchRequest:
+    MatchParams:
+      type: object
+      description: |-
+        *Uncollapse this block to get the detailed description of `matchParams`.*
+        <br/><br/>
+        If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+        <br/>
+        If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
       properties:
         contentFileUri:
           description: >-
-            File URI containing strings to perform matching with context. Can't
-            be used with the `stringHashcodes` parameter.
+            File URI containing strings to perform matching with the context:
+            <br/>
+            Example: `"contentFileUri": "example.properties"`
+            <br/>
+            Can't be used along with the `stringHashcodes` parameter.
           type: string
+        stringHashcodes:
+          description: >-
+            An array of string hashcodes to perform matching with the context:
+            <br/>
+            Example: `"stringHashcodes": ["hashcode1", "hashcode2"]`
+            <br/>
+            Can't be used along with the `contentFileUri` parameter.
+          items:
+            format: hash
+            type: string
+          type: array
         overrideContextOlderThanDays:
           description: >-
             Specifies whether to override context for strings that were already
@@ -11101,15 +11117,6 @@ components:
             "overrideContextOlderThanDays" old.
           minimum: 1
           type: integer
-        stringHashcodes:
-          description: >-
-            String hashcodes to perform matching with context. Can't be used
-            with the `contentFileUri` parameter.
-          items:
-            format: hash
-            type: string
-          type: array
-      type: object
     NullDataJobResponse:
       type: object
       required:
