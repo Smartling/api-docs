@@ -2301,6 +2301,7 @@ paths:
                   format: binary
                   description: |-
                     The context file to upload.
+
                     If specified, it should be one of the supported content types:
                      - `image/\*`
                      - `text/html`
@@ -2317,7 +2318,7 @@ paths:
                     |----------|--------|
                     | `HTML` | Context URL or file name. If a valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If the file name is used, the context file should have the `<base />` tag specified with the valid URL to resolve all relative links to resources. In all other cases, links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
                     | `IMAGE` | Image file name defaults to context file name if not specified. |
-                    | `VIDEO` | Publicly available link to video. Required for this context type. |
+                    | `VIDEO` | Publicly available link to video. **Required** for this context type. |
                   type: string
               type: object
       responses:
@@ -2646,19 +2647,28 @@ paths:
 
   /context-api/v2/projects/{projectId}/contexts/upload-and-match-async:
     post:
-      summary: Upload HTML file and match strings to create context bindings
+      summary: Upload new context and run automatic context matching
       description: |-
-        Uploads new HTML context and asynhronously matches it with strings.
+        Combines two endpoints:
+        - [Upload new context](/#operation/uploadNewVisualContext)
+        - [Run automatic context matching](/#operation/runAutomaticContextMatching)
+
+        But only the following context types are supported:
+
+        - **HTML**: HTML files or files with content type text/html
+        - **VIDEO**: Public link to a video, such as:
+          - Link to an .mp4 file
+
         Strings to match are retrieved from the project specified by the `projectId` and
         can be filtered further by the optional `matchParams` parameter.
 
-        If the uploaded file doesn't match any string, the context won't be created.
-        Supported for `HTML` context only.
+        If the uploaded file doesn't match any string, the context may not be created.
+
         Example of the raw request accepted by this API:
         ```
         Content-Type: multipart/form-data; boundary
         ----------------------------293641908835402749402839
-        Content-Disposition: form-data; name="content"; filename="1.html"
+        Content-Disposition: form-data; name="content"; filename="example.html"
         Content-Type: text/html
         <html>
           <body>
@@ -2667,12 +2677,12 @@ paths:
         </html>
         ----------------------------293641908835402749402839
         Content-Disposition: form-data; name="name"
-        bla2.html
+        https://your.domain.com/path/example.html
         ----------------------------293641908835402749402839
         Content-Disposition: form-data; name="matchParams"
         Content-Type: application/json
         {
-          "contentFileUri":"bla.html",
+          "contentFileUri":"example.properties",
           "stringHashcodes": [],
           "overrideContextOlderThanDays": 1
         }
@@ -2698,19 +2708,26 @@ paths:
                   type: string
                   format: binary
                   description: |-
-                    The context file part with content type. Supported content type is `text/html`.
+                    The context file to upload.
+
+                    If specified, it should be one of the supported content types:
+                     - `text/html`
+
+                    Maximum file upload size is `20MB`.
+
+                    **Note**: Should be omitted for video context.
                 name:
                   description: |-
-                    Context URL or whatever has to be served as context name.
-                    Overrides the filename in the `content` part.
+                    Context name. Will override context file name if specified.
+                    Parameter meanings for different context types:
+
+                    |Context Type|Meaning|
+                    |----------|--------|
+                    | `HTML` | Context URL or file name. If a valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If the file name is used, the context file should have the `<base />` tag specified with the valid URL to resolve all relative links to resources. In all other cases, links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
+                    | `VIDEO` | Publicly available link to video. **Required** for this context type. |
                   type: string
                 matchParams:
-                  description: |-
-                    String representation of `MatchRequest` JSON object
-                    Array of string hashcodes to match against, and/or context override specifier.
-                    If the string hashcodes are not specified, all strings from the project will be included in the match.
-                    If context override is not specified, *strings with existing context will not be bound to this context*.
-                  type: string
+                  $ref: '#/components/schemas/MatchParams'
               type: object
               required:
                 - content
@@ -2762,13 +2779,25 @@ paths:
         Optionally, you can restrict matching to only a set of strings that you specify to ensure that no unwanted
         bindings are created.
 
-        Optical Character Recognition (OCR) is used for `IMAGE` context, while `HTML` context uses an approximate string matching algorithm.
+        The following context types are supported:
+
+        - **HTML**: HTML files or files with content type text/html
+        - **IMAGE**: Image files
+        - **VIDEO**: Public link to a video, such as:
+          - Link to an .mp4 file
+
+        Optical Character Recognition (OCR) is used for `IMAGE` and `VIDEO` contexts, while `HTML` context uses an approximate string matching algorithm.
 
         This is a convenient method provided to save time and complexity in your integration.
-        While our OCR functionality is advanced, it cannot match 100% of strings. If you need complete context coverage,
-        use either the manual Create Bindings request or check your context images in the Smartling Dashboard after
-        running this request to fill in any blanks. Be mindful of the limitations of OCR if you are using an unusual or
+        Despite that our OCR functionality is advanced, it cannot match 100% of strings. If you need complete context coverage,
+        use either [Create string to context bindings](/#operation/createStringToContextBindings) endpoint to bind
+        strings manually or check your image contexts in the Smartling Dashboard after
+        running this request to fill in any blanks. Be mindful of OCR quality may be lower if you are using an unusual or
         script-like font.
+
+        Applying this operation to a video context, keep in mind the original context will be removed
+        and image contexts will be created instead for each frame that has one matched string at least.
+        A string can't be bound to multiple frames simultaneously.
       tags:
       - Context
       operationId: runAutomaticContextMatching
@@ -2792,11 +2821,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MatchRequest'
+              $ref: '#/components/schemas/MatchParams'
         description: |-
-          Array of string hashcodes to match against, and/or context override specifier.
-          If string hashcodes are not specified, all strings from the project will be included in the match.
-          If context override is not specified, strings with context will not be bound to this context.
+          If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+          <br/>
+          If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
       responses:
         202:
           description: ACCEPTED
@@ -11102,13 +11131,34 @@ components:
                     - items
                   type: object
               type: object
-    MatchRequest:
+    MatchParams:
+      type: object
+      description: |-
+        *Uncollapse this block to get the detailed description of `matchParams`.*
+        <br/><br/>
+        If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+        <br/>
+        If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
       properties:
         contentFileUri:
           description: >-
-            File URI containing strings to perform matching with context. Can't
-            be used with the `stringHashcodes` parameter.
+            File URI containing strings to perform matching with the context:
+            <br/>
+            Example: `"contentFileUri": "example.properties"`
+            <br/>
+            Can't be used along with the `stringHashcodes` parameter.
           type: string
+        stringHashcodes:
+          description: >-
+            An array of string hashcodes to perform matching with the context:
+            <br/>
+            Example: `"stringHashcodes": ["hashcode1", "hashcode2"]`
+            <br/>
+            Can't be used along with the `contentFileUri` parameter.
+          items:
+            format: hash
+            type: string
+          type: array
         overrideContextOlderThanDays:
           description: >-
             Specifies whether to override context for strings that were already
@@ -11116,15 +11166,6 @@ components:
             "overrideContextOlderThanDays" old.
           minimum: 1
           type: integer
-        stringHashcodes:
-          description: >-
-            String hashcodes to perform matching with context. Can't be used
-            with the `contentFileUri` parameter.
-          items:
-            format: hash
-            type: string
-          type: array
-      type: object
     NullDataJobResponse:
       type: object
       required:
@@ -11667,6 +11708,9 @@ components:
         stringVariant:
           description: String variant
           type: string
+        maxLength:
+          description: Maximum character length
+          type: number
       type: object
     StringResponse:
       type: object
