@@ -2257,6 +2257,65 @@ paths:
           "file=@filename.properties" -F 'fileUri=filename.properties'
           'https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file/get-translations'
 
+  '/published-files-api/v2/projects/{projectId}/files/list/recently-published':
+    get:
+      summary: List recently published files
+      description: >
+        Response is limited to files published after 14 days from the time called.
+      tags:
+      - Files
+      operationId: getRecentlyPublishedFilesList
+
+      parameters:
+      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          format: uuid
+          type: string
+      - description:
+          Limits the response to only those files that have a ```publishDate```
+          date after the ```publishedAfter``` parameter. The items array can
+          be empty if no files match this criteria.
+        in: query
+        name: publishedAfter
+        required: true
+        schema:
+          format: 'YYYY-MM-DDThh:mm:ssZ'
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishedFilesAPIRecentlyPublishedFilesSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                        - fileUri: files/example1.json
+                          localeId: fr-CA
+                          publishDate: 2019-11-21T11:51:17Z
+                        totalCount: 1
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -H "Authorization: Bearer $smartlingToken"
+          'https://api.smartling.com/published-files-api/v2/projects/$smartlingProjectId/files/list/recently-published?publishedAfter=2019-11-21T11:51:17Z'
+
 #
 # Context API endpoints
 #
@@ -10567,6 +10626,35 @@ components:
         - stringHashcode
         - fileUri
         - messages
+      type: object
+    PublishedFilesAPIRecentlyPublishedFilesSuccessResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/PublishedFilesAPIRecentlyPublishedFilesResponseItem'
+              type: object
+    PublishedFilesAPIRecentlyPublishedFilesResponseItem:
+      properties:
+        fileUri:
+          description: The URI of the file that was published
+          type: string
+        publishDate:
+          description: The date the file was published for the specified locale
+          format: 'YYYY-MM-DDThh:mm:ssZ'
+          type: string
+        localeId:
+          description: Identifier for a locale
+          type: string
+      required:
+        - fileUri
+        - localeId
+        - publishDate
       type: object
     GetProjectTagsResponse:
       properties:
