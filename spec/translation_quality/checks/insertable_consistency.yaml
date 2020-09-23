@@ -25,15 +25,40 @@ components:
                     description: check subtype code
                     example: "INSERTABLE_ADDED"
 
-    AccountCheckTypeEffectiveResponse:
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: INSERTABLE_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - INSERTABLE_CONSISTENCY
+              description: check type code
+              example: "INSERTABLE_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - INSERTABLE_ADDED
+                      - INSERTABLE_DELETED
+                    description: check subtype code
+                    example: "INSERTABLE_ADDED"
+
+    ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
         - type: object
           properties:
             data:
               allOf:
-                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
-                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:
       title: INSERTABLE_CONSISTENCY
@@ -76,7 +101,8 @@ components:
 
   examples:
 
-    accounts_account_check_types_settings_effective_example:
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
       "checkTypeCode": "INSERTABLE_CONSISTENCY"
       "subTypes":
@@ -98,6 +124,29 @@ components:
       "localeSeverityLevels": []
       "groups": []
 
+    projects_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "INSERTABLE_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "INSERTABLE_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "INSERTABLE_ADDED"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "INSERTABLE_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "INSERTABLE_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "INSERTABLE_ADDED"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+
     tqc_check_response_example:
       "response":
         "code": "SUCCESS"
@@ -108,6 +157,8 @@ components:
                 "translation": "Hello"
                 "hashcode": "7191152182c69d9b72069ac1290fe24b"
                 "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
               "mistakes":
                 - "checkTypeCode": "INSERTABLE_CONSISTENCY"
                   "severityLevelCode": "LOW"

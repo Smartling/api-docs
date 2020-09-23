@@ -5,31 +5,27 @@ components:
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
         - type: object
-          required:
-            - checkTypeCode
           properties:
             checkTypeCode:
               type: string
               enum:
-                - LEADING_TRAILING_SPACES
+                - PLURALS_REPETITION
               description: check type code
-              example: "LEADING_TRAILING_SPACES"
+              example: "PLURALS_REPETITION"
 
     ProfilesAccountCheckTypeEffectiveDTO:
-      title: LEADING_TRAILING_SPACES
+      title: PLURALS_REPETITION
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
         - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
         - type: object
-          required:
-            - checkTypeCode
           properties:
             checkTypeCode:
               type: string
               enum:
-                - LEADING_TRAILING_SPACES
+                - PLURALS_REPETITION
               description: check type code
-              example: "LEADING_TRAILING_SPACES"
+              example: "PLURALS_REPETITION"
 
     ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
@@ -40,19 +36,8 @@ components:
               allOf:
                 - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
-    AccountCheckTypeEffectiveResponseNew:
-      allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              allOf:
-                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
-                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
-
-
     TqcCheckMistakeDTO:
-      title: LEADING_TRAILING_SPACES
+      title: PLURALS_REPETITION
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
         - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
@@ -61,11 +46,21 @@ components:
             checkTypeCode:
               type: string
               enum:
-                - LEADING_TRAILING_SPACES
+                - PLURALS_REPETITION
               description: check type code
-              example: "LEADING_TRAILING_SPACES"
+              example: "PLURALS_REPETITION"
             details:
               type: object
+              properties:
+                pluralFormGroupUid:
+                  type: string
+                  description: unique identifier of plural form
+                  example: "7191152182c69d9b72069ac1290fe24b"
+                repeatedPluralForms:
+                  type: array
+                  items:
+                    type: string
+                    example: "ONE"
             positionTypeCode:
               type: string
               enum:
@@ -75,24 +70,32 @@ components:
 
   examples:
 
-    profiles_accounts_check_types_settings_example:
+    profiles_account_check_types_settings_effective_example:
       "profileUid": "ce6d6b5dbc12"
-      "severityLevelCode": "LOW"
-      "checkTypeCode": "LEADING_TRAILING_SPACES 1"
+      "severityLevelCode": "MEDIUM"
+      "checkTypeCode": "PLURALS_REPETITION"
       "subTypes": []
       "localeSeverityLevels": []
       "groups": []
 
     accounts_check_types_settings_example:
-      "severityLevelCode": "LOW"
-      "checkTypeCode": "LEADING_TRAILING_SPACES 1"
+      "severityLevelCode": "MEDIUM"
+      "checkTypeCode": "PLURALS_REPETITION"
       "subTypes": []
       "localeSeverityLevels": []
       "groups": []
 
     projects_check_types_settings_example:
-      "severityLevelCode": "LOW"
-      "checkTypeCode": "LEADING_TRAILING_SPACES 1"
+      "severityLevelCode": "MEDIUM"
+      "checkTypeCode": "PLURALS_REPETITION"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "MEDIUM"
+      "checkTypeCode": "PLURALS_REPETITION"
       "subTypes": []
       "localeSeverityLevels": []
       "groups": []
@@ -103,25 +106,27 @@ components:
         "data":
           "results":
             - "string":
-                "originalString": "Bonjour"
-                "translation": " Hello "
-                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "originalString": "2 rows"
+                "translation": "2 rows"
+                "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888"
                 "stringUid": null
-                "pluralFormGroupUid": null
-                "pluralForm": null
+                "pluralFormGroupUid": "a0b1acda22fc97da9c2b9ae5f3b25888"
+                "pluralForm": "MANY"
               "mistakes":
-                - "checkTypeCode": "LEADING_TRAILING_SPACES"
-                  "severityLevelCode": "LOW"
+                - "checkTypeCode": "PLURALS_REPETITION"
+                  "severityLevelCode": "MEDIUM"
                   "positions":
-                    - "from": 0
-                      "to": 1
-                    - "from": 6
-                      "to": 7
-                  "details": null
+                    "from": 0
+                    "to": 5
+                  "details":
+                    "pluralFormGroupUid": "a0b1acda22fc97da9c2b9ae5f3b25888"
+                    "repeatedPluralForms":
+                      - "MANY"
+                      - "FEW"
                   "positionTypeCode": "TARGET"
 
     dictionary_checkTypes_response_example:
-      checkTypeCode: "LEADING_TRAILING_SPACES"
-      name: "Leading/trailing spaces"
-      description: "Check that spacing at the beginning/end of the translation is consistent with the source"
+      "checkTypeCode": "PLURALS_REPETITION"
+      "name": "Plurals"
+      "description": "Validate the translation of a plural source string has a unique translation for each different \"plural form\" that is required for the target language. Does not apply to languages that only require one plural form (Chinese, Japanese, etc.)."
       "checkSubTypes": []

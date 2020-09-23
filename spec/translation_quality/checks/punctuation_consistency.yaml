@@ -5,31 +5,27 @@ components:
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
         - type: object
-          required:
-            - checkTypeCode
           properties:
             checkTypeCode:
               type: string
               enum:
-                - LEADING_TRAILING_SPACES
+                - PUNCTUATION_CONSISTENCY
               description: check type code
-              example: "LEADING_TRAILING_SPACES"
+              example: "PUNCTUATION_CONSISTENCY"
 
     ProfilesAccountCheckTypeEffectiveDTO:
-      title: LEADING_TRAILING_SPACES
+      title: PUNCTUATION_CONSISTENCY
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
         - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
         - type: object
-          required:
-            - checkTypeCode
           properties:
             checkTypeCode:
               type: string
               enum:
-                - LEADING_TRAILING_SPACES
+                - PUNCTUATION_CONSISTENCY
               description: check type code
-              example: "LEADING_TRAILING_SPACES"
+              example: "PUNCTUATION_CONSISTENCY"
 
     ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
@@ -40,19 +36,8 @@ components:
               allOf:
                 - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
-    AccountCheckTypeEffectiveResponseNew:
-      allOf:
-        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              allOf:
-                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
-                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
-
-
     TqcCheckMistakeDTO:
-      title: LEADING_TRAILING_SPACES
+      title: PUNCTUATION_CONSISTENCY
       allOf:
         - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
         - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
@@ -61,38 +46,46 @@ components:
             checkTypeCode:
               type: string
               enum:
-                - LEADING_TRAILING_SPACES
+                - PUNCTUATION_CONSISTENCY
               description: check type code
-              example: "LEADING_TRAILING_SPACES"
+              example: "PUNCTUATION_CONSISTENCY"
             details:
               type: object
             positionTypeCode:
               type: string
               enum:
-                - TARGET
+                - SOURCE
               description: position type code
-              example: "TARGET"
+              example: "SOURCE"
 
   examples:
 
-    profiles_accounts_check_types_settings_example:
+    profiles_account_check_types_settings_effective_example:
       "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
-      "checkTypeCode": "LEADING_TRAILING_SPACES 1"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
       "subTypes": []
       "localeSeverityLevels": []
       "groups": []
 
     accounts_check_types_settings_example:
       "severityLevelCode": "LOW"
-      "checkTypeCode": "LEADING_TRAILING_SPACES 1"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
       "subTypes": []
       "localeSeverityLevels": []
       "groups": []
 
     projects_check_types_settings_example:
       "severityLevelCode": "LOW"
-      "checkTypeCode": "LEADING_TRAILING_SPACES 1"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
       "subTypes": []
       "localeSeverityLevels": []
       "groups": []
@@ -103,25 +96,26 @@ components:
         "data":
           "results":
             - "string":
-                "originalString": "Bonjour"
-                "translation": " Hello "
-                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "originalString": "Hello!"
+                "translation": "Привет. Как дела?"
+                "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888"
                 "stringUid": null
                 "pluralFormGroupUid": null
                 "pluralForm": null
               "mistakes":
-                - "checkTypeCode": "LEADING_TRAILING_SPACES"
+                - "checkTypeCode": "PUNCTUATION_CONSISTENCY"
                   "severityLevelCode": "LOW"
                   "positions":
-                    - "from": 0
-                      "to": 1
-                    - "from": 6
-                      "to": 7
-                  "details": null
-                  "positionTypeCode": "TARGET"
+                    "from": 5
+                    "to": 6
+                  "details":
+                    "punctuationMark": "!"
+                    "type": "PUNCTUATION_MARK_DELETED"
+                    "punctuationMarkType": "TERMINAL"
+                  "positionTypeCode": "SOURCE"
 
     dictionary_checkTypes_response_example:
-      checkTypeCode: "LEADING_TRAILING_SPACES"
-      name: "Leading/trailing spaces"
-      description: "Check that spacing at the beginning/end of the translation is consistent with the source"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
+      "name": "Punctuation consistency"
+      "description": "Check for punctuation consistency"
       "checkSubTypes": []

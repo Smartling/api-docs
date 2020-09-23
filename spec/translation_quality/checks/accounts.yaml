@@ -1,20 +1,18 @@
 x-paths:
 
-  check_types_settings:
+  profiles_check_types_settings:
     get:
       description: >-
-        Get account check types settings.
-      summary: Get account check types settings
+        Get all profile settings that are available.
+      summary: Get all profile settings
       tags:
-        - Translation quality check
-      operationId: getAccountCheckTypesSettings
-      consumes:
-        - application/json
+        - Translation quality checks
+      operationId: getProfilesAccountCheckTypesSettings
       produces:
         - application/json
       parameters:
         - $ref: '../../api_common.yaml#/components/parameters/accountUid'
-        - $ref: '../tqc_common.yaml#/components/parameters/targetLocaleIdQueryParameter'
+        - $ref: './../tqc_common.yaml#/components/parameters/profileUidPathParameter'
 
       responses:
         200:
@@ -22,31 +20,29 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TqcAccountGetCheckTypesResponse'
+                $ref: '#/components/schemas/ProfilesTqcAccountGetCheckTypesResponse'
               example:
-                $ref: '../examples.yaml#/components/examples/accounts_check_types_settings_example'
+                $ref: '../examples.yaml#/components/examples/profiles_accounts_check_types_settings_example'
 
       x-code-samples:
         - lang: curl
           source: |
-            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types
 
-  account_check_types_settings_effective:
+  profiles_check_types_settings_effective:
     get:
       description: >-
-        Get account check type settings.
-      summary: Get account check type settings
+        Get the settings for a single profile check type.
+      summary: Get profile check type setting
       tags:
-        - Translation quality check
-      operationId: getAccountSingleCheckTypeSettings
-      consumes:
-        - application/json
+        - Translation quality checks
+      operationId: getProfilesSingleCheckTypeSettings
       produces:
         - application/json
       parameters:
         - $ref: '../../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './../tqc_common.yaml#/components/parameters/profileUidPathParameter'
         - $ref: '../tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
-        - $ref: '../tqc_common.yaml#/components/parameters/targetLocaleIdQueryParameter'
 
       responses:
         200:
@@ -55,29 +51,30 @@ x-paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/AccountCheckTypeEffectiveResponse'
+                  - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveResponse'
               examples:
-                $ref: '../examples.yaml#/components/examples/accounts_account_check_types_settings_effective_example'
+                $ref: '../examples.yaml#/components/examples/profiles_account_check_types_settings_effective_example'
 
       x-code-samples:
         - lang: curl
           source: |
-            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode
 
-  check_types_checkType_settings:
+  profiles_check_types_checkType_settings:
     put:
       description: >-
-        Update account check type settings.
-      summary: Update account check type settings
+        Update profile check type settings.
+      summary: Update profile check type settings
       tags:
-        - Translation quality check
-      operationId: updateAccountCheckTypesSettings
+        - Translation quality checks
+      operationId: profilesUpdateAccountCheckTypesSettings
       consumes:
         - application/json
       produces:
         - application/json
       parameters:
         - $ref: '../../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './../tqc_common.yaml#/components/parameters/profileUidPathParameter'
         - $ref: '../tqc_common.yaml#/components/parameters/checkTypeCodeWithSettingsPathParameter'
       requestBody:
         description: ''
@@ -85,7 +82,7 @@ x-paths:
         content:
           application/json:
             schema:
-              $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplySettingsRequestOneOf'
+              $ref: '../tqc_common.yaml#/components/schemas/ProfilesAccountCheckTypeApplySettingsRequestOneOf'
 
       responses:
         200:
@@ -93,29 +90,30 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountCheckTypeApplySettingsResponse'
+                $ref: '#/components/schemas/ProfilesAccountCheckTypeApplySettingsResponse'
               examples:
-                $ref: '../examples.yaml#/components/examples/accounts_check_types_checkType_settings_example'
+                $ref: '../examples.yaml#/components/examples/profiles_accounts_check_types_checkType_settings_example'
 
       x-code-samples:
         - lang: curl
           source: |
-            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/settings
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/settings
 
-  check_types_checkType_group_settings:
+  profiles_check_types_checkType_group_settings:
     put:
       description: >-
-        Update account check type group settings.
-      summary: Update account check type group settings
+        Update profile check type group settings.
+      summary: Update profile check type group settings
       tags:
-        - Translation quality check
-      operationId: updateAccountCheckTypeGroupSettings
+        - Translation quality checks
+      operationId: updateProfilesCheckTypeGroupSettings
       consumes:
         - application/json
       produces:
         - application/json
       parameters:
         - $ref: '../../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './../tqc_common.yaml#/components/parameters/profileUidPathParameter'
         - $ref: '../tqc_common.yaml#/components/parameters/checkTypeCodeWithSettingsPathParameter'
         - $ref: '../tqc_common.yaml#/components/parameters/groupUidPathParameter'
       requestBody:
@@ -124,7 +122,7 @@ x-paths:
         content:
           application/json:
             schema:
-              $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplyGroupSettingsRequestOneOf'
+              $ref: '../tqc_common.yaml#/components/schemas/ProfilesAccountCheckTypeApplyGroupSettingsRequestOneOf'
 
       responses:
         200:
@@ -132,14 +130,43 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountCheckTypeApplyGroupSettingsResponse'
+                $ref: '#/components/schemas/ProfilesAccountCheckTypeApplyGroupSettingsResponse'
               examples:
-                $ref: '../examples.yaml#/components/examples/accounts_check_types_checkType_group_settings_example'
+                $ref: '../examples.yaml#/components/examples/profiles_accounts_check_types_checkType_group_settings_example'
 
       x-code-samples:
         - lang: curl
           source: |
-            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/$smartlingCheckTypeCode/groups/$smartlingGroupUid/settings
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/settings
+
+  get_project_check_types_settings:
+    get:
+      description: >-
+        Get project check types settings.
+      summary: Get project check types settings
+      tags:
+        - Translation quality checks
+      operationId: getProjectCheckTypesSettings
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/components/parameters/projectId'
+        - $ref: '../../api_common.yaml#/components/parameters/localeId'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TqcProjectGetCheckTypesResponse'
+              example:
+                $ref: '../examples.yaml#/components/examples/projects_check_types_settings_example'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/check-types/
 
 components:
   schemas:
@@ -155,6 +182,17 @@ components:
                 data:
                   $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponseOneOf'
 
+    ProfilesAccountCheckTypeApplySettingsResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: '../tqc_common.yaml#/components/schemas/ProfilesAccountCheckTypeApplySettingsDTOResponseOneOf'
+
     AccountCheckTypeApplyGroupSettingsResponse:
       type: object
       properties:
@@ -165,6 +203,36 @@ components:
               properties:
                 data:
                   $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeApplyGroupSettingsDTOResponseOneOf'
+
+    ProfilesAccountCheckTypeApplyGroupSettingsResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: '../tqc_common.yaml#/components/schemas/ProfilesAccountCheckTypeApplyGroupSettingsDTOResponseOneOf'
+
+    TqcProjectGetCheckTypesResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        $ref: '../tqc_common.yaml#/components/schemas/ProjectCheckTypeEffectiveDTOAnyOf'
 
     TqcAccountGetCheckTypesResponse:
       type: object
@@ -185,6 +253,25 @@ components:
                       items:
                         $ref: '../tqc_common.yaml#/components/schemas/AccountCheckTypeEffectiveDTOAnyOf'
 
+    ProfilesTqcAccountGetCheckTypesResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        $ref: '../tqc_common.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTOAnyOf'
+
     AccountCheckTypeEffectiveAbstractDTO:
       allOf:
         - type: object
@@ -196,7 +283,7 @@ components:
               description: check type code
               example: "NONE"
 
-    AccountCheckTypeEffectiveResponse:
+    ProfilesAccountCheckTypeEffectiveResponse:
       type: object
       properties:
         response:
@@ -205,6 +292,27 @@ components:
             - type: object
               properties:
                 data:
-                  allOf:
-                    - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
-                    - $ref: '#/components/schemas/AccountCheckTypeEffectiveAbstractDTO'
+                  anyOf:
+                    - $ref: './leading_trailing_spaces.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './whitespaces.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './original_equals_target.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './spellcheck.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './tag_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './target_length_limit.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './number_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './repeated_word.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './target_in_wrong_language.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './source_in_wrong_language.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './segment_completeness.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './non_translatable_text.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './emoji_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './insertable_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './target_source_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './blacklisted_terms.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './glossary_compliance.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './trademark_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './grammar_check.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './global_capitalisation_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './punctuation_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+                    - $ref: './plurals_repetition.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+

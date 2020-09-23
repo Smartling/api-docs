@@ -42,21 +42,32 @@ components:
                 - ORIGINAL_EQUALS_TARGET
               description: check type code
               example: "ORIGINAL_EQUALS_TARGET"
-          discriminator:
-            propertyName: checkTypeCode
-            mapping:
-              LEADING_TRAILING_SPACES: '#/components/schemas/response/LEADING_TRAILING_SPACES'
-              ORIGINAL_EQUALS_TARGET: '#/components/schemas/response/ORIGINAL_EQUALS_TARGET'
 
-    AccountCheckTypeEffectiveResponse:
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: ORIGINAL_EQUALS_TARGET
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/OriginalEqualsTargetSettingsDTO'
+        - type: object
+          required:
+            - checkTypeCode
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - ORIGINAL_EQUALS_TARGET
+              description: check type code
+              example: "ORIGINAL_EQUALS_TARGET"
+
+    ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
         - type: object
           properties:
             data:
               allOf:
-                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
-                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:
       title: ORIGINAL_EQUALS_TARGET
@@ -100,7 +111,27 @@ components:
       "mustHaveIdenticalTags": true
       "mustHaveIdenticalCapitalization": true
 
-    accounts_account_check_types_settings_effective_example:
+    projects_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "ORIGINAL_EQUALS_TARGET"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "mustHaveIdenticalTags": true
+      "mustHaveIdenticalCapitalization": true
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "ORIGINAL_EQUALS_TARGET"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "mustHaveIdenticalTags": true
+      "mustHaveIdenticalCapitalization": true
+
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
       "checkTypeCode": "ORIGINAL_EQUALS_TARGET"
       "subTypes": []
@@ -113,7 +144,15 @@ components:
       mustHaveIdenticalTags: false
       mustHaveIdenticalCapitalization: false
 
+    profiles_accounts_check_types_checkType_settings_example:
+      mustHaveIdenticalTags: false
+      mustHaveIdenticalCapitalization: false
+
     accounts_check_types_checkType_group_settings_example:
+      mustHaveIdenticalTags: false
+      mustHaveIdenticalCapitalization: false
+
+    profiles_accounts_check_types_checkType_group_settings_example:
       mustHaveIdenticalTags: false
       mustHaveIdenticalCapitalization: false
 
@@ -127,6 +166,8 @@ components:
                 "translation": "hello"
                 "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888"
                 "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
               "mistakes":
                 - "checkTypeCode": "ORIGINAL_EQUALS_TARGET"
                   "severityLevelCode": "LOW"

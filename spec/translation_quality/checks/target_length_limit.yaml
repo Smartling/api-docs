@@ -13,15 +13,28 @@ components:
               description: check type code
               example: "TARGET_LENGTH_LIMIT"
 
-    AccountCheckTypeEffectiveResponse:
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: TARGET_LENGTH_LIMIT
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TARGET_LENGTH_LIMIT
+              description: check type code
+              example: "TARGET_LENGTH_LIMIT"
+
+    ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
         - type: object
           properties:
             data:
               allOf:
-                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
-                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:
       title: TARGET_LENGTH_LIMIT
@@ -47,7 +60,8 @@ components:
 
   examples:
 
-    accounts_account_check_types_settings_effective_example:
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "HIGH"
       "checkTypeCode": "TARGET_LENGTH_LIMIT"
       "subTypes": []
@@ -55,6 +69,21 @@ components:
       "groups": []
 
     accounts_check_types_settings_example:
+      "severityLevelCode": "HIGH"
+      "checkTypeCode": "TARGET_LENGTH_LIMIT"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    projects_check_types_settings_example:
+      "severityLevelCode": "HIGH"
+      "checkTypeCode": "TARGET_LENGTH_LIMIT"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "HIGH"
       "checkTypeCode": "TARGET_LENGTH_LIMIT"
       "subTypes": []
@@ -71,6 +100,8 @@ components:
                 "translation": "Hello"
                 "hashcode": "7191152182c69d9b72069ac1290fe24b"
                 "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
               "mistakes":
                 - "checkTypeCode": "TARGET_LENGTH_LIMIT"
                   "severityLevelCode": "HIGH"

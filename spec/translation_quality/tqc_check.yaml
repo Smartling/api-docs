@@ -5,7 +5,7 @@ x-paths:
         Check string translation quality.
       summary: Check string translation quality
       tags:
-        - Translation quality check
+        - Translation quality checks
       operationId: runStringTranslationQualityCheck
       consumes:
         - application/json
@@ -53,10 +53,6 @@ components:
               type: boolean
               description: skip suggestions
               example: false
-            excludePlaceholderWithinTag:
-              type: boolean
-              description: exclude placeholder within tag
-              example: true
             strings:
               type: array
               items:
@@ -65,6 +61,8 @@ components:
                   - $ref: './tqc_common.yaml#/components/schemas/stringUid'
                   - $ref: './tqc_common.yaml#/components/schemas/originalString'
                   - $ref: './tqc_common.yaml#/components/schemas/translation'
+                  - $ref: './tqc_common.yaml#/components/schemas/pluralFormGroupUid'
+                  - $ref: './tqc_common.yaml#/components/schemas/pluralForm'
             useDefaultSettings:
               type: boolean
               description: use default settings
@@ -76,6 +74,7 @@ components:
               items:
                 allOf:
                   - $ref: './tqc_common.yaml#/components/requestBodies/checkTypeCode'
+              description: '[check type codes](#operation/getTranslationQualityCheckTypes)'
 
     TqcCheckResponse:
       type: object
@@ -112,6 +111,14 @@ components:
                                 type: string
                                 description: string hashcode
                                 example: "7191152182c69d9b72069ac1290fe24b"
+                              pluralFormGroupUid:
+                                type: string
+                                description: unique identifier of plural form
+                                example: "7191152182c69d9b72069ac1290fe24b"
+                              pluralForm:
+                                type: string
+                                description: plural form
+                                example: "FEW"
                           mistakes:
                             type: array
                             items:

@@ -54,15 +54,42 @@ components:
                     description: check subtype code
                     example: "TARGET_IS_EMPTY"
 
-    AccountCheckTypeEffectiveResponse:
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: SEGMENT_COMPLETENESS
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/SegmentCompletenessSettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - SEGMENT_COMPLETENESS
+              description: check type code
+              example: "SEGMENT_COMPLETENESS"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - TARGET_IS_EMPTY
+                      - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                      - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                    description: check subtype code
+                    example: "TARGET_IS_EMPTY"
+
+    ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
         - type: object
           properties:
             data:
               allOf:
-                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
-                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:
       title: SEGMENT_COMPLETENESS
@@ -97,7 +124,8 @@ components:
 
   examples:
 
-    accounts_account_check_types_settings_effective_example:
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "MEDIUM"
       "checkTypeCode": "SEGMENT_COMPLETENESS"
       "subTypes":
@@ -129,12 +157,55 @@ components:
       "upperLengthThreshold": 250
       "minLengthThreshold": 10
 
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "MEDIUM"
+      "checkTypeCode": "SEGMENT_COMPLETENESS"
+      "subTypes":
+        - "checkSubTypeCode": "TARGET_IS_MUCH_SHORTER_THAN_SOURCE"
+          "severityLevelCode": "MEDIUM"
+        - "checkSubTypeCode": "TARGET_IS_MUCH_LONGER_THAN_SOURCE"
+          "severityLevelCode": "MEDIUM"
+        - "checkSubTypeCode": "TARGET_IS_EMPTY"
+          "severityLevelCode": "DISABLED"
+      "localeSeverityLevels": []
+      "groups": []
+      "lowerLengthThreshold": 50
+      "upperLengthThreshold": 250
+      "minLengthThreshold": 10
+
     accounts_check_types_checkType_settings_example:
       lowerLengthThreshold: 10
       upperLengthThreshold: 20
       minLengthThreshold: 15
 
+    projects_check_types_settings_example:
+      "severityLevelCode": "MEDIUM"
+      "checkTypeCode": "SEGMENT_COMPLETENESS"
+      "subTypes":
+        - "checkSubTypeCode": "TARGET_IS_MUCH_SHORTER_THAN_SOURCE"
+          "severityLevelCode": "MEDIUM"
+        - "checkSubTypeCode": "TARGET_IS_MUCH_LONGER_THAN_SOURCE"
+          "severityLevelCode": "MEDIUM"
+        - "checkSubTypeCode": "TARGET_IS_EMPTY"
+          "severityLevelCode": "DISABLED"
+      "localeSeverityLevels": []
+      "groups": []
+      "lowerLengthThreshold": 50
+      "upperLengthThreshold": 250
+      "minLengthThreshold": 10
+
+    profiles_accounts_check_types_checkType_settings_example:
+      lowerLengthThreshold: 10
+      upperLengthThreshold: 20
+      minLengthThreshold: 15
+
     accounts_check_types_checkType_group_settings_example:
+      lowerLengthThreshold: 10
+      upperLengthThreshold: 20
+      minLengthThreshold: 15
+
+    profiles_accounts_check_types_checkType_group_settings_example:
       lowerLengthThreshold: 10
       upperLengthThreshold: 20
       minLengthThreshold: 15
@@ -149,6 +220,8 @@ components:
                 "translation": "The dog ate"
                 "hashcode": "7191152182c69d9b72069ac1290fe24b"
                 "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
               "mistakes":
                 - "checkTypeCode": "SEGMENT_COMPLETENESS"
                   "severityLevelCode": "MEDIUM"

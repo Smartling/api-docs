@@ -13,15 +13,28 @@ components:
               description: check type code
               example: "GRAMMAR_CHECK"
 
-    AccountCheckTypeEffectiveResponse:
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: GRAMMAR_CHECK
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - GRAMMAR_CHECK
+              description: check type code
+              example: "GRAMMAR_CHECK"
+
+    ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
         - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
         - type: object
           properties:
             data:
               allOf:
-                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
-                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
     TqcCheckMistakeDTO:
       title: GRAMMAR_CHECK
@@ -69,7 +82,8 @@ components:
 
   examples:
 
-    accounts_account_check_types_settings_effective_example:
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
       "checkTypeCode": "GRAMMAR_CHECK"
       "subTypes": []
@@ -77,6 +91,21 @@ components:
       "groups": []
 
     accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "GRAMMAR_CHECK"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    projects_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "GRAMMAR_CHECK"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
       "severityLevelCode": "LOW"
       "checkTypeCode": "GRAMMAR_CHECK"
       "subTypes": []
@@ -93,6 +122,8 @@ components:
                 "translation": "The dog have ate my homework."
                 "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888"
                 "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
               "mistakes":
                 - "checkTypeCode": "GRAMMAR_CHECK"
                   "severityLevelCode": "LOW"
