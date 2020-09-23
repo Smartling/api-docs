@@ -195,39 +195,39 @@ tags:
 
       Generally, adding multiple files to a job is associated with polling -
       file is parsed asynchronously and can't be added to a job until it is
-      completed, adding file to a job is also asynchronous, and job can't be
+      completed. Adding file to a job is also asynchronous, and job can't be
       authorized until all background tasks completed.
 
-      This forces third-party integration poll every file after every step.
+      This forces a third-party integration poll for every file after every step.
 
       Batches hide these asynchronous processes from 3rd party integration -
-      after it accepted file from client it conducts this file through all steps
-      up to the Job authorization. As Job Batches Service utilizes internal
-      Smartling events it gets more effective than just polling files and jobs.
+      after it accepts the file from the Smartling User, it processes this file
+      through all steps up to the Job authorization. As Job Batches Service utilizes
+      internal Smartling events it gets more effective than just polling files and jobs.
 
-      From the client side flow consists of simple steps:
+      From the Smartling user's perspective, the flow consists of the following simple steps:
 
-      1. Client creates Job (or uses existing one, which isn't currently
+      1. Create a Job (or uses existing one, which isn't currently
       processed with another Batch)
 
-      2. Client Creates a new Batch for this Job with the declared list of
+      2. Create a new Batch for this Job with the declared list of
       files to be uploaded into the Job
 
-      3. Client uploads files into the batch giving target locales list
+      3. Upload the files into the batch giving target locales list
       for each file
 
-      4. Client can cancel some of declared files if there is no reason
+      4. You can cancel some of the declared files if there is no reason
       in uploading (no translatable content etc.)
 
       5. When all files are uploaded or canceled, "execute" is automatically
       triggered for the batch.
 
-      6. Batch execution process waiting until all asynchronous processes with
-      uploading and adding to the Job finished and then, if was requested, authorizes the Job.
+      6. Batch execution process waits until all asynchronous processes
+      are complete and then, if requested, authorizes the Job for translation.
 
-      7. Clients can check batch status and see if all files uploaded and
-      attached successfully, what errors happened for each file, and statistics
-      for added/skipped strings.
+      7. You can check batch status and see if all files have been uploaded and
+      attached successfully. You can also see if any errors occurred for each file
+      upload and the statistics for ingested/excluded strings.
 
       After Batch is completed it can't be reused.
 
@@ -8709,7 +8709,7 @@ paths:
 
 
                     **Note**: File will not be authorized for these locales once
-                    it is uploaded. Authorization is happened only when a job is
+                    it is uploaded. Authorization happens only when a job is
                     authorized.
                   items:
                     type: string
@@ -8844,8 +8844,8 @@ paths:
       summary: Create batch
       description: >-
         Creates a new batch for the given Job with a list of file names to be uploaded.
-        File names can be added during files uploading to the batch, but only before the batch will start executing.
-        The batch is executed once the last file in the initial list or added files is uploaded or cancelled
+        File names can be added while files are uploading to the batch, but only before the batch will start executing.
+        The batch is executed as soon as the last file in the initial list or added files are uploaded or cancelled
       tags:
         - Job Batches V2
       operationId: createJobBatchV2
@@ -8858,7 +8858,7 @@ paths:
             format: uid
             type: string
           description: Unique identifier of the project within an account.
-          
+
       requestBody:
         content:
           application/json:
@@ -9256,7 +9256,7 @@ paths:
 
 
                     **Note**: File will not be authorized for these locales once
-                    it is uploaded. Authorization is happened only when a job is
+                    it is uploaded. Authorization happens only when a job is
                     authorized.
                   items:
                     type: string
@@ -10305,7 +10305,7 @@ components:
           type: integer
       type: object
     BatchItemLocaleV2:
-      description: A smartling locale which file should be authorized to
+      description: A smartling locale which the file should be authorized and translated into
       properties:
         localeId:
           description: Smartling locale identifier
@@ -10319,7 +10319,7 @@ components:
       properties:
         authorize:
           description: >-
-            if set true then job will be authorized when upload and attach
+            if the set is true then the job will be authorized when uploaded and attach
             processes completed for all files in the batch.
           type: boolean
         translationJobUid:
@@ -10331,14 +10331,14 @@ components:
       properties:
         authorize:
           description: >-
-            if set true then job will be authorized when upload and attach
+            if the set is true then the job will be authorized when uploaded and attach
             processes completed for all files in the batch.
           type: boolean
         translationJobUid:
           description: The UID of the previously created translation job.
           type: string
         fileUris:
-          description: A list of File Uris to be uploaded later
+          description: A list of File URI's to be uploaded later
           type: array
           items:
             type: string
