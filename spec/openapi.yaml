@@ -2335,7 +2335,10 @@ paths:
         schema:
           format: 'YYYY-MM-DDThh:mm:ssZ'
           type: string
-      - description: List of Smartling values that each uniquely identify a file. Maximum list's size is 20.
+      - description:
+          A list of fileUris to filter the response list by. Value must be exact match.
+          Up to 20 fileUris can be specified. See getRecentlyUploadedSourceFilesList
+          to get a project's fileUris.
         in: query
         name: 'fileUris[]'
         required: false
@@ -2343,7 +2346,9 @@ paths:
           type: array
           items:
             type: string
-      - description: List of locales. Maximum list's size is 50.
+      - description:
+          A list of locale identifiers to filter the response list by. Up to 50 localeIds
+          can be specified. See getProjectDetails to get a project's localeIds.
         in: query
         name: 'localeIds[]'
         required: false
@@ -2393,7 +2398,7 @@ paths:
       - lang: curl
         source: >
           curl -H "Authorization: Bearer $smartlingToken"
-          'https://api.smartling.com/published-files-api/v2/projects/$smartlingProjectId/files/list/recently-published?publishedAfter=2019-11-21T11:51:17Z&fileUris[]=files/example1.json&localeIds[]=fr-CA'
+          'https://api.smartling.com/published-files-api/v2/projects/$smartlingProjectId/files/list/recently-published?publishedAfter=2019-11-21T11:51:17Z&fileUris[]=files/example1.json&localeIds[]=fr-CA&limit=10&offset=100'
 
 #
 # Context API endpoints
