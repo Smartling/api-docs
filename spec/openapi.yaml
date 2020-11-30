@@ -5372,7 +5372,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessFailCountJobResponse'
+                $ref: '#/components/schemas/AddContentSuccessFailCountJobResponse'
               examples:
                 response:
                   value:
@@ -6160,7 +6160,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessFailCountJobResponse'
+                $ref: '#/components/schemas/AddContentSuccessFailCountJobResponse'
               examples:
                 response:
                   value:
@@ -10663,6 +10663,9 @@ components:
                       format: date-time
                       type: string
                     sourceFiles:
+                      description: >-
+                        List of source files of the job. Limited to **300** unordered entries.
+                        To get all of the job files use [List files within job](/#operation/getJobFilesList) API
                       items:
                         $ref: '#/components/schemas/SourceFile'
                       type: array
@@ -12557,12 +12560,32 @@ components:
                   properties:
                     failCount:
                       description: >-
+                        The number of strings per locale that were not successfully processed.
+                      type: integer
+                    successCount:
+                      description: The number of strings per locale that were successfully processed.
+                      type: integer
+                  type: object
+              type: object
+    AddContentSuccessFailCountJobResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    failCount:
+                      description: >-
                         The number of strings per locale that could not be added to
-                        the job.
-                      type: string
+                        the job. As for now the only reason of failure is that strings are already in another job.
+                      type: integer
                     successCount:
                       description: The number of strings per locale added to the job.
-                      type: string
+                      type: integer
                   type: object
               type: object
     SuccessResponse:
