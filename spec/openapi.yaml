@@ -5366,6 +5366,7 @@ paths:
                     response:
                       code: SUCCESS
                       data:
+                        totalCount: 2
                         items:
                           - translationJobUid: abc123abc
                             jobName: myJobName
@@ -5408,6 +5409,72 @@ paths:
                           details: null
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/strings:
+    get:
+      summary: Get translation job strings.
+      description: >
+        This gets translation job string hashcodes with locales
+      tags:
+      - Jobs
+      operationId: getStringsForTranslationJob
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: translationJobUid
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocaleHashcodeResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 3
+                        items:
+                          - targetLocaleId: uk-UA
+                            hashcode: hashcode1
+                          - targetLocaleId: es
+                            hashcode: hashcode2
+                          - targetLocaleId: es
+                            hashcode: hashcode1
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        404:
+          description: Job not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: NOT_FOUND_ERROR
+                      errors:
+                        - key: null
+                          message: 'Translation job is not found'
+                          details: null
         429:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
@@ -10698,6 +10765,35 @@ components:
           description: String variant
           type: string
       type: object
+    LocaleHashcodeResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      description: Total amount of elements
+                      type: integer
+                    items:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          targetLocaleId:
+                            type: string
+                            description: The locale identidier.
+                            example: de-DE
+                          hashcode:
+                            description: Unique identifier for the translatable.
+                            format: hash
+                            type: string
+              type: object
     DetailedJobResponse:
       type: object
       required:
@@ -12691,26 +12787,31 @@ components:
             - $ref: '#/components/schemas/SuccessResponse'
             - properties:
                 data:
-                  items:
-                    type: array
+                  type: object
+                  properties:
+                    totalCount:
+                      description: Total count
+                      type: number
                     items:
-                      properties:
-                        translationJobUid:
-                          description: The UID of the translationJob
-                          format: uid
-                          type: string
-                        jobName:
-                          description: Name of the translation job
-                          type: string
-                        dueDate:
-                          description: The date by which the job is requested to be completed.
-                          example: '2020-11-21T01:51:17Z'
-                          format: date-time
-                          type: string
-                        hashcodesByLocale:
-                          type: array
-                          items:
-                            $ref: '#/components/schemas/HashcodesByLocaleResponse'
+                      type: array
+                      items:
+                        properties:
+                          translationJobUid:
+                            description: The UID of the translationJob
+                            format: uid
+                            type: string
+                          jobName:
+                            description: Name of the translation job
+                            type: string
+                          dueDate:
+                            description: The date by which the job is requested to be completed.
+                            example: '2020-11-21T01:51:17Z'
+                            format: date-time
+                            type: string
+                          hashcodesByLocale:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/HashcodesByLocaleResponse'
 
     AddContentSuccessFailCountJobResponse:
       type: object
