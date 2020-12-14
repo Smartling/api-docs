@@ -5328,6 +5328,172 @@ paths:
           "Content-Type: application/json" -d "$smartlingJobJSON"
           https://api.smartling.com/jobs-api/v3/projects/$smartlingProjectId/jobs
 
+  /jobs-api/v3/projects/{projectId}/jobs/find-jobs-by-strings:
+    post:
+      summary: Search Jobs By Hashcodes And Locales
+      description: >
+        Search Job(s), based on locales and hashcodes.
+        We allow total 20000 records to be passed.
+        Means it could be 10 locales * 2000 hashcodes or 1 locale * 20000 hashcodes
+        or no locales and just 20000 hashcodes, etc
+      tags:
+        - Jobs
+      operationId: findJobsByStrings
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchTranslationJobByLocalesAndHashcodesRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchTranslationJobByLocalesAndHashcodesResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 2
+                        items:
+                          - translationJobUid: abc123abc
+                            jobName: myJobName
+                            dueDate: '2015-11-21T11:51:17Z'
+                            hashcodesByLocale:
+                              - localeId: fr-FR
+                                hashcodes:
+                                  - hashcode1
+                                  - hashcode3
+                              - localeId: de-DE
+                                hashcodes:
+                                  - hashcode4
+                                  - hashcode3
+                          - translationJobUid: abc456abc
+                            jobName: myJobName2
+                            dueDate: '2015-11-21T11:51:17Z'
+                            hashcodesByLocale:
+                              - localeId: ru-RU
+                                hashcodes:
+                                  - hashcode1
+                                  - hashcode3
+                              - localeId: uk-UA
+                                hashcodes:
+                                  - hashcode4
+                                  - hashcode3
+        400:
+          description: Validation error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: null
+                          message: 'Limit 20,000 of total elements (hashcodes * locales) has been exceeded'
+                          details: null
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/strings:
+    get:
+      summary: Get translation job strings.
+      description: >
+        This gets translation job string hashcodes with locales
+      tags:
+      - Jobs
+      operationId: getStringsForTranslationJob
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: translationJobUid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: targetLocaleId
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocaleHashcodeResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 3
+                        items:
+                          - targetLocaleId: uk-UA
+                            hashcode: hashcode1
+                          - targetLocaleId: es
+                            hashcode: hashcode2
+                          - targetLocaleId: es
+                            hashcode: hashcode1
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        404:
+          description: Job not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: NOT_FOUND_ERROR
+                      errors:
+                        - key: null
+                          message: 'Translation job is not found'
+                          details: null
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
 
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/strings/add:
     post:
@@ -9592,6 +9758,24 @@ components:
             type: string
           type: array
       type: object
+    SearchTranslationJobByLocalesAndHashcodesRequest:
+      description: The payload to use when searching translation jobs by hashcodes and locales.
+      properties:
+        hashcodes:
+          description: >-
+            The array of hashcodes to search a job containing given hashcodes.
+            If empty, response will also be empty list.
+          items:
+            type: string
+          type: array
+        localeIds:
+          description: >-
+            List of localeIds to search jobs associated with provided hashcodes and locales.
+            If empty, search will be performed only by hashcodes.
+          items:
+            type: string
+          type: array
+      type: object
     AddStringsJobRequest:
       description: The payload to use when adding strings to a job.
       properties:
@@ -10460,6 +10644,18 @@ components:
           type: string
           description: Custom field value.
           example: Finance Dept
+    HashcodesByLocaleResponse:
+      type: object
+      properties:
+        localeId:
+          description: Smartling locale identifier.
+          type: string
+        hashcodes:
+          description: >-
+            The array of hashcodes.
+          items:
+            type: string
+          type: array
     CustomFieldBasicResponse:
       type: object
       properties:
@@ -10584,6 +10780,35 @@ components:
           description: String variant
           type: string
       type: object
+    LocaleHashcodeResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      description: Total amount of elements
+                      type: integer
+                    items:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          targetLocaleId:
+                            type: string
+                            description: The locale identidier.
+                            example: de-DE
+                          hashcode:
+                            description: Unique identifier for the translatable.
+                            format: hash
+                            type: string
+              type: object
     DetailedJobResponse:
       type: object
       required:
@@ -12567,6 +12792,42 @@ components:
                       type: integer
                   type: object
               type: object
+    SearchTranslationJobByLocalesAndHashcodesResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      description: Total count
+                      type: number
+                    items:
+                      type: array
+                      items:
+                        properties:
+                          translationJobUid:
+                            description: The UID of the translationJob
+                            format: uid
+                            type: string
+                          jobName:
+                            description: Name of the translation job
+                            type: string
+                          dueDate:
+                            description: The date by which the job is requested to be completed.
+                            example: '2020-11-21T01:51:17Z'
+                            format: date-time
+                            type: string
+                          hashcodesByLocale:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/HashcodesByLocaleResponse'
+
     AddContentSuccessFailCountJobResponse:
       type: object
       required:
