@@ -5101,6 +5101,132 @@ paths:
 #
 # Jobs API endpoints
 #
+  '/jobs-api/v3/account/{accountUid}/jobs':
+    get:
+      summary: List jobs within an account
+      description: List / search the jobs within an account.
+      tags:
+        - Jobs
+      operationId: getJobsByAccount
+
+      parameters:
+        - name: accountUid
+          description: A unique account identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          required: true
+          schema:
+            type: string
+        - description: >-
+            Used for searching jobs by `jobName`. Any entry is treated as a LIKE
+            query on the name of the job.
+          in: query
+          name: jobName
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Used for searching jobs by `projectId`. Supports up to 500 `projectId`s.
+          in: query
+          name: projectIds
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Used for searching jobs by their status.
+          in: query
+          name: translationJobStatus
+          required: false
+          schema:
+            items:
+              enum:
+                - DRAFT
+                - AWAITING_AUTHORIZATION
+                - IN_PROGRESS
+                - COMPLETED
+                - CANCELLED
+                - CLOSED
+                - DELETED
+              type: string
+            type: array
+        - name: withPriority
+          description: If set to `true`, returns jobs only with priority.
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - description: The limit on the number of jobs returned.
+          in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+        - description: The offset to use when searching for jobs.
+          in: query
+          name: offset
+          required: false
+          schema:
+            type: integer
+        - description: The field to sort by.
+          in: query
+          name: sortBy
+          required: false
+          schema:
+            enum:
+              - createdDate
+              - priority
+            type: string
+        - description: The direction to sort.
+          in: query
+          name: sortDirection
+          required: false
+          schema:
+            enum:
+              - ASC
+              - DESC
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountListJobsResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - createdDate: '2015-11-21T11:51:17Z'
+                            description: my job description
+                            dueDate: '2015-11-21T11:51:17Z'
+                            jobName: myJobName
+                            jobNumber: SMTL-123
+                            jobStatus: IN_PROGRESS
+                            priority: 2
+                            projectId: fd7244365
+                            referenceNumber: myReferenceNumber1
+                            targetLocaleIds:
+                              - fr-FR
+                              - es
+                            translationJobUid: abc123abc
+                        totalCount: 1
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/jobs-api/v3/accounts/$smartlingAccountId/jobs
+
   '/jobs-api/v3/projects/{projectId}/jobs':
     get:
       summary: List jobs within a project
@@ -12014,6 +12140,80 @@ components:
               type: object
       required:
         - response
+      type: object
+    AccountListJobsResponse:
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/AccountListJobsResponseItem'
+                      type: array
+                    totalCount:
+                      type: number
+                  type: object
+              required:
+                - data
+              type: object
+      required:
+        - response
+      type: object
+    AccountListJobsResponseItem:
+      properties:
+        data:
+          properties:
+            createdDate:
+              description: The UTC value of the date the job was created.
+              example: '2015-11-21T01:51:17.000Z'
+              format: date-time
+              type: string
+            description:
+              description: The description of the job.
+              type: string
+            dueDate:
+              description: The UTC value of the due date for the job.
+              example: '2015-11-21T01:51:17.000Z'
+              format: date-time
+              type: string
+            jobName:
+              description: The name of the job.
+              type: string
+            jobNumber:
+              description: The account level unique number of the job. Consist of unique short prefix and sequence number.
+              example: SMTL-123
+              type: string
+            jobStatus:
+              description: The status of the job
+              example: >-
+                DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED |
+                CANCELLED | CLOSED | DELETED
+              type: string
+            priority:
+              description: Priority order in account. Strats from 1 and can be null.
+              example: 2
+              type: integer
+            projectId:
+              description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+              example: fd7244365
+              type: string
+            referenceNumber:
+              description: Customer specific number/identifier for the job.
+              example: CustomerReferenceNum1
+              type: string
+            targetLocaleIds:
+              description: The array of localeIds for the job.
+              items:
+                example: de-DE
+                type: string
+              type: array
+            translationJobUid:
+              description: The unique identifier of the job.
+              type: string
+          type: object
       type: object
     ListJobsResponse:
       properties:
