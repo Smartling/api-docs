@@ -327,9 +327,9 @@ tags:
 
   - name: Attachments
     description: |-
-      The Attachments API allows upload, download and link binary data with entity.
-      Unlinked attachments will be deleted after 2 days of the last upload
-      Client is responsible for entity uid validation and removing attachments within entity removal process
+      The Attachments API allows for file attachment upload and download, as well as the ability to link binary data with entity.
+      Unlinked attachments will be deleted after 2 days of the last upload.
+      The user is responsible for entity uid validation and removing attachments within the entity removal process.
       The following attachment types are supported:
       - **jobs**: attachements for jobs
       - **issues**: attachments for issues
@@ -9780,13 +9780,14 @@ paths:
                   description: |-
                     Functional name of the file uploaded. This is not a unique identifier.
                   type: string
+                  maxLength: 150
                 description:
                   description: |-
-                    (Optional) Additional meta information of uploaded binary file
+                    (Optional) Additional meta information of uploaded binary file.
                   type: string
                 entityUids:
                   description: |-
-                    (Optional) List of entity uids attachment will be linked with (max 100)
+                    (Optional) List of entity uids attachment will be linked with. Maximum number of uids is 100.
                   type: string
               type: object
       responses:
@@ -9872,7 +9873,7 @@ paths:
       summary: Link attachment with entity
       description: |-
         Link all attachments with all specified entity uids (cross join).
-        Max amount of uids are depend on attachment type and amount of already linked attachments per entity
+        Max amount of uids depend on the attachment type and the amount of existing linked attachments per entity.
         - **jobs**: 50 attachment per entity
         - **issues**: 1 attachment per entity
         - **strings**: 1 attachment per entity
@@ -10512,7 +10513,7 @@ components:
                         $ref: '#/components/schemas/AttachmentResponseItem'
                       type: array
                     totalCount:
-                      description: total number of attachemnts
+                      description: Total number of attachemnts.
                       type: integer
                   type: object
               required:
