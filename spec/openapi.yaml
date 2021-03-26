@@ -6507,12 +6507,13 @@ paths:
                 response:
                   value:
                     response:
-                      code: RESOURCE_LOCKED
+                      code: VALIDATION_ERROR
                       errors:
-                        key: resource.locked
-                        message: >-
-                          The file is currently being processed and will be
-                          available in a few minutes.
+                        - key: null
+                          message: >-
+                            The file is currently being processed and will be
+                            available in a few minutes.
+                          details: null
         429:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
@@ -6704,16 +6705,17 @@ paths:
         required: true
         schema:
           type: string
-      - description: >-
-          Default to true. When a new locale is being added to a job, by
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddLocaleJobRequest'
+        description: >-
+          `syncContent` is default to true. When a new locale is being added to a job, by
           default all content in the job will be added to the job for the new
           locale. If set to false, then no content will be added to the job,
           and only a locale placeholder will be added to the job.
-        in: query
-        name: syncContent
-        required: false
-        schema:
-          type: string
+        required: true
       responses:
         200:
           description: OK
@@ -12713,6 +12715,18 @@ components:
         fileUri:
           description: The URI of the file that is to be removed from the job.
           type: string
+      type: object
+    AddLocaleJobRequest:
+      description: The payload to use when add a locale to a job.
+      properties:
+        syncContent:
+          description: >-
+            When a new locale is being added to a job, by
+            default all content in the job will be added to the job for the new
+            locale. If set to false, then no content will be added to the job,
+            and only a locale placeholder will be added to the job.
+          type: boolean
+          default: true
       type: object
     JobScheduleEditCommand:
       description: The payload to use modifying translation job schedule.
