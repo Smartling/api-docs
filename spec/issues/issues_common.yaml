@@ -603,7 +603,50 @@ x-paths:
             -H "Content-Type: application/json" -d "$smartlingIssuesFilterJSON"
             https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountUid/issues/list
 
-
+  count_account_issues:
+    post:
+      summary: Count account issues
+      description: >-
+        Returns a count of issues matching specified filter options. You can
+        filter based on the date issues were created, target languages, strings,
+        issue types, states, issue numbers, project ids, job unique ids, issues not associated with strings in a job, issue assignee,
+        and which user opened the issue. All parameters are optional.
+      tags:
+        - Issues
+      operationId: getAccountIssuesCount
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindAccountIssuesRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        count: 2
+              schema:
+                $ref: '#/components/schemas/IssuesCountResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssuesFilterJSON"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountUid/issues/count
 components:
   schemas:
     SuccessResponse:
