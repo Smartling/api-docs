@@ -3,13 +3,14 @@
 
 ## Links
 
-- Documentation(ReDoc): https://smartling.github.io/api-docs/
-- SwaggerUI: https://smartling.github.io/api-docs/swagger-ui/
+- Documentation(ReDoc): https://api-reference.smartling.com/
+- SwaggerUI: https://api-reference.smartling.com/swagger-ui/
 - Look full spec:
-    + JSON https://smartling.github.io/api-docs/swagger.json
-    + YAML https://smartling.github.io/api-docs/swagger.yaml
-- Preview spec version for branch `[branch]`: https://smartling.github.io/api-docs/preview/[branch] (note: use lower case name in the url for the branch)
-
+    + JSON https://api-reference.smartling.com/swagger.json
+    + YAML https://api-reference.smartling.com/swagger.yaml
+- Preview spec version for branch `<branch>`: https://api-reference.smartling.com/preview/<branch>
+  (Note: use lower case name in the url for the branch)
+  
 **Warning:** All above links are updated only after Travis CI finishes deployment
 
 ## Working on specification

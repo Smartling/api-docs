@@ -3480,6 +3480,9 @@ paths:
   /issues-api/v2/accounts/{accountUid}/issues/list:
     $ref: './spec/issues/issues_common.yaml#/x-paths/find_account_issues'
 
+  /issues-api/v2/accounts/{accountUid}/issues/count:
+    $ref: './spec/issues/issues_common.yaml#/x-paths/count_account_issues'
+
   /issues-api/v2/accounts/{accountUid}/watchers:
     $ref: './spec/issues/issue_watchers.yaml#/x-paths/issue_watchers'
 
@@ -6514,17 +6517,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error423Response'
+                $ref: '#/components/schemas/JobFiledAddError423Response'
               examples:
                 response:
                   value:
                     response:
-                      code: RESOURCE_LOCKED
+                      code: VALIDATION_ERROR
                       errors:
-                        key: resource.locked
-                        message: >-
-                          The file is currently being processed and will be
-                          available in a few minutes.
+                        - key: null
+                          message: >-
+                            The file is currently being processed and will be
+                            available in a few minutes.
+                          details: null
         429:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
@@ -6716,16 +6720,17 @@ paths:
         required: true
         schema:
           type: string
-      - description: >-
-          Default to true. When a new locale is being added to a job, by
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddLocaleJobRequest'
+        description: >-
+          `syncContent` is default to true. When a new locale is being added to a job, by
           default all content in the job will be added to the job for the new
           locale. If set to false, then no content will be added to the job,
           and only a locale placeholder will be added to the job.
-        in: query
-        name: syncContent
-        required: false
-        schema:
-          type: string
+        required: true
       responses:
         200:
           description: OK
@@ -9418,38 +9423,120 @@ paths:
               type: string
             type: array
         - description: >
+            Optional comma-separated list of fields names to be returned by the endpoint. If this parameter
+            is not set then the list of fields returned is defined by `include...` parameters.
+
+
+            Both `fields` and `include...` parameters are not allowed at the same time.
+
+
+            The supported list of fields names is:
+
+              - accountUid
+
+              - accountName
+
+              - projectId
+
+              - projectName
+
+              - targetLocaleId
+
+              - targetLocale
+
+              - jobUid
+
+              - jobName
+
+              - jobReferenceNumber
+
+              - translationResourceUid
+
+              - translationResourceName
+
+              - agencyUid
+
+              - agencyName
+
+              - workflowStepType
+
+              - workflowStepUid
+
+              - workflowStepName
+
+              - fuzzyProfileName
+
+              - fuzzyTier
+
+              - wordCount
+
+              - weightedWordCount
+          in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+        - description: >
             Optional parameter to specify whether the report should group word
             count by translation resource name.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeTranslationResource
           required: false
+          deprecated: true
+          schema:
+            default: true
+            type: boolean
+        - description: >
+            Optional parameter to specify whether the report should group word count by translation job name.
+
+
+            Deprecated, use parameter `fields` instead.
+          in: query
+          name: includeJob
+          required: false
+          deprecated: true
           schema:
             default: true
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
-            count by translation job name.
+            count by translation job and include reference number in the response.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
-          name: includeJob
+          name: includeJobReferenceNumber
           required: false
+          deprecated: true
           schema:
-            default: true
+            default: false
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
             count by fuzzy match profile and tier.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeFuzzyMatchProfile
           required: false
+          deprecated: true
           schema:
             default: true
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
             count by workflow step uid and name.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeWorkflowStep
           required: false
+          deprecated: true
           schema:
             default: false
             type: boolean
@@ -9458,8 +9545,8 @@ paths:
           name: limit
           required: false
           schema:
-            default: 5000
-            maximum: 5000
+            default: 10000
+            maximum: 10000
             minimum: 0
             type: integer
       responses:
@@ -9484,6 +9571,7 @@ paths:
                           fuzzyTier: 85 - 94.9%
                           jobName: Translation Job 1
                           jobUid: f12ad8e9
+                          jobReferenceNumber: Job reference number
                           projectId: ba952f4c
                           projectName: Test Project 1
                           targetLocaleId: es-ES
@@ -9503,6 +9591,7 @@ paths:
                           fuzzyTier: 85 - 94.9%
                           jobName: Translation Job 1
                           jobUid: f12ad8e9
+                          jobReferenceNumber: Job reference number
                           projectId: ba952f4c
                           projectName: Test Project 1
                           targetLocaleId: es-ES
@@ -9596,38 +9685,120 @@ paths:
               type: string
             type: array
         - description: >
+            Optional comma-separated list of fields names to be returned by the endpoint. If this parameter
+            is not set then the list of fields returned is defined by `include...` parameters.
+
+
+            Both `fields` and `include...` parameters are not allowed at the same time.
+
+
+            The supported list of fields names is:
+
+              - accountUid
+
+              - accountName
+
+              - projectId
+
+              - projectName
+
+              - targetLocaleId
+
+              - targetLocale
+
+              - jobUid
+
+              - jobName
+
+              - jobReferenceNumber
+
+              - translationResourceUid
+
+              - translationResourceName
+
+              - agencyUid
+
+              - agencyName
+
+              - workflowStepType
+
+              - workflowStepUid
+
+              - workflowStepName
+
+              - fuzzyProfileName
+
+              - fuzzyTier
+
+              - wordCount
+
+              - weightedWordCount
+          in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+        - description: >
             Optional parameter to specify whether the report should group word
             count by translation resource name.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeTranslationResource
           required: false
+          deprecated: true
+          schema:
+            default: true
+            type: boolean
+        - description: >
+            Optional parameter to specify whether the report should group word count by translation job name.
+
+
+            Deprecated, use parameter `fields` instead.
+          in: query
+          name: includeJob
+          required: false
+          deprecated: true
           schema:
             default: true
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
-            count by translation job name.
+            count by translation job and include reference number in the response.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
-          name: includeJob
+          name: includeJobReferenceNumber
           required: false
+          deprecated: true
           schema:
-            default: true
+            default: false
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
             count by fuzzy match profile and tier.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeFuzzyMatchProfile
           required: false
+          deprecated: true
           schema:
             default: true
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
             count by workflow step uid and name.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeWorkflowStep
           required: false
+          deprecated: true
           schema:
             default: false
             type: boolean
@@ -9641,11 +9812,11 @@ paths:
               examples:
                 response:
                   value: >-
-                    Account,Project,Job Uid,Job,Translation Resource,Agency,Target
-                    Language,Workflow Step,Workflow Step Uid,Workflow Step Name,
+                    Account,Project,Job Uid,Job,Translation Resource,Agency Uid,Agency,
+                    Target Language,Workflow Step,Workflow Step Uid,Workflow Step Name,
                     Fuzzy Profile,Fuzzy Breakdown,Word Count,Weighted Words
                     Test Account,Test Project,f12ad8e9,Translation Job,Translator 1,
-                    Test Agency 1,Spanish (Spain),Translation,123abc456def,
+                    Test Agency 1 Uid, Test Agency 1,Spanish (Spain),Translation,123abc456def,
                     Translation,Default,85 - 94.9%,1,1
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
@@ -11220,6 +11391,27 @@ components:
                       type: string
                   type: object
               type: object
+    JobFiledAddError423Response:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - VALIDATION_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+      type: object
     EmptyResponse:
       type: object
       required:
@@ -12878,6 +13070,18 @@ components:
         fileUri:
           description: The URI of the file that is to be removed from the job.
           type: string
+      type: object
+    AddLocaleJobRequest:
+      description: The payload to use when add a locale to a job.
+      properties:
+        syncContent:
+          description: >-
+            When a new locale is being added to a job, by
+            default all content in the job will be added to the job for the new
+            locale. If set to false, then no content will be added to the job,
+            and only a locale placeholder will be added to the job.
+          type: boolean
+          default: true
       type: object
     JobScheduleEditCommand:
       description: The payload to use modifying translation job schedule.
