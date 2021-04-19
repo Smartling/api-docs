@@ -325,6 +325,18 @@ tags:
       platform and specify additional filtering criteria to narrow down data
       returned by the reports.
 
+  - name: Attachments
+    description: |-
+      The Attachments API allows for file attachment download and checking linked attachments for an entity.
+      Attachment entities can be from three domains: strings, jobs or issues.
+      Each entity is referenced by an entity UID. These UIDs have a specific form for each of the domains.
+      - jobs: `<jobUid>`
+      - issues: `<accountUid>-<issueUid>` or `<accountUid>-<issueUid>-<commentUid>`
+      - strings: `<projectUid>:<stringHashcode>`
+
+      **Attachments API Usage Limitations**:
+      * Maximum attachment size is 500MB.
+
   - name: Translation quality checks
     description: The translation quality check service is an API endpoint at which you can check the quality of your translations.
 
@@ -9893,6 +9905,130 @@ paths:
   /translation-quality-api/v2/accounts/{accountUid}/projects/{projectId}/check:
     $ref: './spec/translation_quality/tqc_check.yaml#/x-paths/tqc_check'
 
+#
+# Attachments API
+#
+  '/attachments-api/v2/accounts/{accountUid}/{type}/attachments/{attachmentUid}':
+    get:
+      summary: Download binary attachment
+      description: |-
+        Download attachment file
+      tags:
+      - Attachments
+      operationId: downloadAttachment
+
+      parameters:
+      - name: accountUid
+        in: path
+        required: true
+        description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        schema:
+          format: uuid
+          type: string
+      - name: type
+        in: path
+        required: true
+        description: Attachment type
+        schema:
+          enum:
+          - jobs
+          - strings
+          - issues
+          type: string
+      - name: attachmentUid
+        in: path
+        required: true
+        description: Attachment unique identifier.
+        schema:
+          format: uuid
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  '/attachments-api/v2/accounts/{accountUid}/{type}/{entityUid}':
+    get:
+      summary: Get list of linked attachments
+      description: List of linked attachments with entity
+      tags:
+      - Attachments
+      operationId: listAttachment
+
+      parameters:
+      - name: accountUid
+        in: path
+        required: true
+        description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        schema:
+          format: uuid
+          type: string
+      - name: type
+        in: path
+        required: true
+        description: Attachment type
+        schema:
+          enum:
+          - jobs
+          - strings
+          - issues
+          type: string
+      - name: entityUid
+        in: path
+        required: true
+        description: Entity uid
+        schema:
+          format: uuid
+          type: string
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentListEntityResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 2
+                        items:
+                          - attachmentUid: '1e2f4378324e'
+                            name: 'my-attachment'
+                            description: 'meta-for-my-attachment'
+                            createdDate: '2018-03-30T12:58:22Z'
+                            createdByUserUid: '5789003e276a'
+                            canDelete: false
+                          - attachmentUid: '198eafe96267'
+                            name: 'my-attachment'
+                            description: 'meta-for-my-attachment'
+                            createdDate: '2018-03-30T12:58:22Z'
+                            createdByUserUid: '5789003e276a'
+                            canDelete: true
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
 components:
   requestBodies:
     TagsWithStrings:
@@ -10296,6 +10432,55 @@ components:
         - termUids
         - authorization
       type: object
+
+    AttachmentListEntityResponse:
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      description: attachemnts
+                      items:
+                        $ref: '#/components/schemas/AttachmentResponseItem'
+                      type: array
+                    totalCount:
+                      description: total number of attachemnts
+                      type: integer
+                  type: object
+              required:
+                - data
+              type: object
+      required:
+        - response
+      type: object
+
+    AttachmentResponseItem:
+      properties:
+        attachmentJobUid:
+          description: The unique identifier of the attachment.
+          format: uid
+          type: string
+        name:
+          description: The name of the attachemnt.
+          type: string
+        description:
+          description: The description of the attachment.
+          type: string
+        createdDate:
+          description: The UTC value of the date the attachemnt was uploaded.
+          example: '2018-03-30T12:58:22Z'
+          format: date-time
+          type: string
+        createdByUserUid:
+          description: The unique identifier of user whom upload attachment
+          format: uid
+          example: c297ff10f584
+          type: string
+      type: object
+
     BatchStatus:
       description: The status of the Batch
       enum:
