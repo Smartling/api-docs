@@ -2420,22 +2420,23 @@ paths:
     post:
       summary: Upload new context
       description: |-
-        Uploads a file or web link that can be linked to translations and shown
-        to linguists as visual context for the strings they're working on.
+        [Visual Context](https://help.smartling.com/hc/en-us/articles/360057484273-Overview-of-Visual-Context) provides a visual representation of the source content to Translators and Editors as
+        they are performing their work, and is a very effective way to ensure high-quality translations. Visual
+        Context is displayed in the Smartling CAT Tool - the environment in which translations are performed.
 
-        The following context types are supported:
+        The following context types are supported via the Smartling API:
 
         - **HTML**: HTML files or files with content type text/html
         - **IMAGE**: Image files
-        - **VIDEO**: Public link to a video, such as:
-          - YouTube link
-          - Vimeo link
-          - Link to an .mp4 file
+        - **VIDEO**:
+          - Video file
+          - Link to video, such as:
+            - YouTube link
+            - Vimeo link
+            - Direct link to an .mp4 file
 
         Context type is not specified directly, but rather, inferred via
         analyzing the request body.
-
-        **Note**: If you are uploading **IMAGE** files, you will need to [run Automatic Context Matching](https://api-reference.smartling.com/#tag/Context/paths/~1context-api~1v2~1projects~1{projectId}~1contexts~1{contextUid}~1match~1async/post) after you upload new context. You can skip this step if you upload HTML files for context. 
 
         This endpoint accepts *multipart/form-data* request body.
       tags:
@@ -2455,30 +2456,34 @@ paths:
           multipart/form-data:
             schema:
               properties:
+                name:
+                  description: |
+                    Context name. Overwrites the `content`'s file name if specified.
+                    Parameter meanings for different context types:
+
+                    |Context Type|Meaning|
+                    |----------|--------|
+                    | `HTML` | Context URL or file name. If a valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If the file name is used, the context file should have the `<base />` tag specified with the valid URL to resolve all relative links to resources. In all other cases, links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
+                    | `IMAGE` | Image file name. |
+                    | `VIDEO` | Link to a publicly available video in case `content` field is empty. The parameter is required for this particular case. Otherwise, video file name. |
+                  type: string
                 content:
                   type: string
                   format: binary
                   description: |-
                     The context file to upload.
 
-                    If specified, it should be one of the supported content types:
-                     - `image/\*`
+                    If specified, it should be one of the supported content types(user should insert content type instead of the *. E.g. image/jpeg.):
+                     - `image/*`
                      - `text/html`
+                     - `video/*`
 
-                    Maximum file upload size is `20MB`.
+                    Maximum file upload size is:
+                     - `20MB` – for HTML and image files.
+                     - `500MB` – for video files.
 
-                    **Note**: Should be omitted for video context.
-                name:
-                  description: |
-                    Context name. Will override context file name if specified.
-                    Parameter meanings for different context types:
-
-                    |Context Type|Meaning|
-                    |----------|--------|
-                    | `HTML` | Context URL or file name. If a valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If the file name is used, the context file should have the `<base />` tag specified with the valid URL to resolve all relative links to resources. In all other cases, links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
-                    | `IMAGE` | Image file name defaults to context file name if not specified. |
-                    | `VIDEO` | Publicly available link to video. **Required** for this context type. |
-                  type: string
+                    **Note**: Exclude this parameter if you choose to upload a
+                    video context pointing to external MP4 file, youtube or vimeo.
               type: object
       responses:
         '200':
@@ -2804,6 +2809,96 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  /context-api/v2/projects/{projectId}/contexts/{contextUid}/match/async:
+    post:
+      summary: Run automatic context matching
+      description: |-
+        Automatically matches context against strings in the project and creates corresponding bindings.
+        Optionally, you can restrict matching to only a set of strings that you specify to ensure that no unwanted
+        bindings are created.
+
+        The following endpoint does not support video contexts pointing to Youtube or Vimeo videos.
+
+        Optical Character Recognition (OCR) is used for `IMAGE` and `VIDEO` contexts, while `HTML` context uses an approximate string matching algorithm.
+
+        This is a convenient method provided to save time and complexity in your integration.
+        Although that our OCR functionality is advanced, it cannot match 100% of strings. If you need complete context coverage,
+        use either [Create string to context bindings](/#operation/createStringToContextBindings) endpoint to bind
+        strings manually or check your image contexts in the Smartling Dashboard after
+        running this request to fill in any blanks. Note that OCR quality may be lower if you are using an unusual or
+        script-like font.
+
+        Applying this operation to a video context, keep in mind the original context will be removed
+        and image contexts will be created instead for each frame that has one matched string at least.
+        A string can't be bound to multiple frames simultaneously.
+      tags:
+        - Context
+      operationId: runAutomaticContextMatching
+
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - description: Unique identifier of a context
+          in: path
+          name: contextUid
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchParams'
+        description: |-
+          To ensure context is mapped to the correct string, `stringHashcodes` or `contentFileUri` must be specified.
+          If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+          <br/>
+          If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
+      responses:
+        202:
+          description: ACCEPTED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncMatchResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        matchId: ffd90ec4-5ca8-4720-8ecf-15dce3404823
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: wrong_parameters
+                          message: >-
+                            Check request parameters, error message - 'Context
+                            with Uid=cb081827-2daa-4611-915c-4d207829be27
+                            doesn't exist', ref id:
+                            '11f8b832-8154-4e6e-a196-a69a88009736'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
   /context-api/v2/projects/{projectId}/contexts/upload-and-match-async:
     post:
       summary: Upload new context and run automatic context matching
@@ -2812,11 +2907,16 @@ paths:
         - [Upload new context](/#operation/uploadNewVisualContext)
         - [Run automatic context matching](/#operation/runAutomaticContextMatching)
 
-        But only the following context types are supported:
+        The following context types are supported via the Smartling API:
 
         - **HTML**: HTML files or files with content type text/html
-        - **VIDEO**: Public link to a video, such as:
-          - Link to an .mp4 file
+        - **IMAGE**: Image files
+        - **VIDEO**:
+          - Video file
+          - Link to video, such as:
+            - YouTube link
+            - Vimeo link
+            - Direct link to an .mp4 file
 
         Strings to match are retrieved from the project specified by the `projectId` and
         can be filtered further by the optional `matchParams` parameter.
@@ -2863,28 +2963,34 @@ paths:
           multipart/form-data:
             schema:
               properties:
+                name:
+                  description: |
+                    Context name. Will overwrites the `content`'s file name if specified.
+                    Parameter meanings for different context types:
+
+                    |Context Type|Meaning|
+                    |----------|--------|
+                    | `HTML` | Context URL or file name. If a valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If the file name is used, the context file should have the `<base />` tag specified with the valid URL to resolve all relative links to resources. In all other cases, links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
+                    | `IMAGE` | Image file name. |
+                    | `VIDEO` | Link to a publicly available video in case `content` field is empty. The parameter is required for this particular case. Otherwise, video file name. |
+                  type: string
                 content:
                   type: string
                   format: binary
                   description: |-
                     The context file to upload.
 
-                    If specified, it should be one of the supported content types:
+                    If specified, it should be one of the supported content types(user should insert content type instead of the *. E.g. image/jpeg.):
+                     - `image/*`
                      - `text/html`
+                     - `video/*`
 
-                    Maximum file upload size is `20MB`.
+                    Maximum file upload size is:
+                     - `20MB` – for HTML and image files.
+                     - `500MB` – for video files.
 
-                    **Note**: Should be omitted for video context.
-                name:
-                  description: |-
-                    Context name. Will override context file name if specified.
-                    Parameter meanings for different context types:
-
-                    |Context Type|Meaning|
-                    |----------|--------|
-                    | `HTML` | Context URL or file name. If a valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If the file name is used, the context file should have the `<base />` tag specified with the valid URL to resolve all relative links to resources. In all other cases, links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
-                    | `VIDEO` | Publicly available link to video. **Required** for this context type. |
-                  type: string
+                    **Note**: Exclude this parameter if you choose to upload a
+                    video context pointing to external MP4 file, youtube or vimeo.
                 matchParams:
                   $ref: '#/components/schemas/MatchParams'
               type: object
@@ -2923,100 +3029,6 @@ paths:
                             Check request parameters, error message - 'Content
                             stream is required for this context.', ref id:
                             'af4706d9-c5c1-40aa-93e4-1ec3498c1f05'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /context-api/v2/projects/{projectId}/contexts/{contextUid}/match/async:
-    post:
-      summary: Run automatic context matching
-      description: |-
-        Automatically matches context against strings in the project and creates corresponding bindings.
-        Optionally, you can restrict matching to only a set of strings that you specify to ensure that no unwanted
-        bindings are created.
-
-        The following context types are supported:
-
-        - **HTML**: HTML files or files with content type text/html
-        - **IMAGE**: Image files
-        - **VIDEO**: Public link to a video, such as:
-          - Link to an .mp4 file
-
-        Optical Character Recognition (OCR) is used for `IMAGE` and `VIDEO` contexts, while `HTML` context uses an approximate string matching algorithm.
-
-        This is a convenient method provided to save time and complexity in your integration.
-        Despite that our OCR functionality is advanced, it cannot match 100% of strings. If you need complete context coverage,
-        use either [Create string to context bindings](/#operation/createStringToContextBindings) endpoint to bind
-        strings manually or check your image contexts in the Smartling Dashboard after
-        running this request to fill in any blanks. Be mindful of OCR quality may be lower if you are using an unusual or
-        script-like font.
-
-        Applying this operation to a video context, keep in mind the original context will be removed
-        and image contexts will be created instead for each frame that has one matched string at least.
-        A string can't be bound to multiple frames simultaneously.
-      tags:
-      - Context
-      operationId: runAutomaticContextMatching
-
-      parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
-      - description: Unique identifier of a context
-        in: path
-        name: contextUid
-        required: true
-        schema:
-          format: uuid
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MatchParams'
-        description: |-
-          If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
-          <br/>
-          If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
-      responses:
-        202:
-          description: ACCEPTED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AsyncMatchResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        matchId: ffd90ec4-5ca8-4720-8ecf-15dce3404823
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                      - key: wrong_parameters
-                        message: >-
-                          Check request parameters, error message - 'Context
-                          with Uid=cb081827-2daa-4611-915c-4d207829be27
-                          doesn't exist', ref id:
-                          '11f8b832-8154-4e6e-a196-a69a88009736'
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
         429:
