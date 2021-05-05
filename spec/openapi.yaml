@@ -5129,6 +5129,837 @@ paths:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
 #
+# Estimates API endpoints
+#
+  '/estimates-api/v2/projects/{projectId}/jobs/{translationJobUid}/reports/fuzzy':
+    get:
+      summary: Get List of Job Fuzzy Estimate Reports
+      description: List fuzzy estimate reports.
+      tags:
+        - Estimates
+      operationId: getJobFuzzyEstimateReports
+
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: translationJobUid
+          description: A unique translation job identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportStatus
+          description: Status of report.
+          in: query
+          required: false
+          schema:
+            enum:
+              - NOT_FOUND
+              - PENDING
+              - PROCESSING
+              - COMPLETED
+              - FAILED
+              - TIMEOUT
+            type: string
+        - name: contentCoverage
+          description: Specifies level of content coverage report should have.
+          in: query
+          required: false
+          schema:
+            enum:
+              - FULL
+              - PARTIAL
+            type: string
+        - name: creatorUserUids
+          description: Array of report creator uids.
+          in: query
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - name: translationJobSchemaContents
+          description: if report was generated for the job,.
+          in: query
+          required: false
+          schema:
+            items:
+              enum:
+                - TRANSLATION
+                - ALL_CONTENT
+                - CLAIMING
+                - UNAUTHORIZED
+              type: string
+            type: array
+        - name: tags 
+          description: Search is done via or logic, i.e. if a report has any of the given tags, it will be returned.
+          in: query
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - name: createdFrom 
+          description: Date filter for report.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: createdTo 
+          description: Date filter for report.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit  
+          description: Paging parameter. The number of reports to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: offset  
+          description: Paging parameter. The index of the repor to start with.
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobReportResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 4
+                        items:
+                          - reportUid: f84491fc
+                            schemaType: siteLocales
+                            reportType: FUZZY
+                            schema: '{"schema":"siteLocales","projectId":"fd7244365"}'
+                            reportStatus: PROCESSING
+                            totalStrings: 27828
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation: null
+                            localeEstimates: null
+                            tags: null
+                            warnings:
+                              - No rates specified for 'fr-FR' locale.
+                            errors:
+                              - >-
+                                Report generation failed. Rates of account defined in different
+                                currencies: USD, JPY. Only one should be used per account. Please
+                                fix this and re-run estimation.
+                          - reportUid: 0ec805d4
+                            schemaType: job
+                            reportType: COST
+                            schema: '{"schema":"job","jobUid":"e2f3dcac30cc"}'
+                            reportStatus: COMPLETED
+                            totalStrings: 3200
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - bbbbb456566
+                            warnings: null
+                            errors: null
+                          - reportUid: 702cdae5
+                            schemaType: listView
+                            schema: >-
+                              {"schema":"listView","projectId":"fd7244365","localeList":["hy-AM"],"stringState":"IN_TRANSLATION","stringIds":["5086f27e4a123ac0e573b7d45240b674","9d67960622910cb2e6ab0525fb8ec747","816a4bf2e30577ea2cfcb2eec231e50e"],"workflowStepIds":["19565","120859","120860","19567","19571","19570","19569","57497","65867","57499","61329","67758","67760","109463","109465","136550","110388","136548","136549"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 2
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                            localeEstimates: null
+                            tags: null
+                            warnings: null
+                            errors: null
+                          - reportUid: 8532918d
+                            schemaType: unauthorized
+                            schema: >-
+                              {"schema":"unauthorized","projectId":"fd7244365","localeList":["hy-AM","zh-TW","nl-BE","pt-BR","ru-RU","uk-UA","cy-GB"],"stringState":"AWAITING_APPROVAL","stringIds":["975d88fd8c9290c8356364b91f88af02","33eb5a93062cb5981168533500668a49","a781299a67d7bd57511a14cffce40257","afdf1b5d0aa538184cd67372c0acc7c2","302d3f85228cd41d2267c7505dafb9e5"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 700
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - new label
+                            warnings: null
+                            errors: null
+    post:
+      summary: Generate Fuzzy Estimate Report for the Job
+      description: This is simplified version of API to generate fuzzy reports. It creates further request to FES composing proper schema string based on input information. forced flag in this case is sent with false value being set.
+      tags:
+        - Estimates
+      operationId: generateJobFuzzyEstimateReports
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: translationJobUid
+          description: A unique translation job identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobFuzzyReportRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobGenericReportResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        reportUid: f84491fc
+                        reportType: FUZZY
+                        reportStatus: PENDING
+  
+  '/estimates-api/v2/projects/{projectId}/jobs/{translationJobUid}/reports/cost':
+    get:
+      summary: Get List of Job Cost Estimate Reports
+      description: List cost estimate reports.
+      tags:
+        - Estimates
+      operationId: getJobCostEstimateReports
+
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: translationJobUid
+          description: A unique translation job identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportStatus
+          description: Status of report.
+          in: query
+          required: false
+          schema:
+            enum:
+              - NOT_FOUND
+              - PENDING
+              - PROCESSING
+              - COMPLETED
+              - FAILED
+              - TIMEOUT
+            type: string
+        - name: contentCoverage
+          description: Specifies level of content coverage report should have.
+          in: query
+          required: false
+          schema:
+            enum:
+              - FULL
+              - PARTIAL
+            type: string
+        - name: creatorUserUids
+          description: Array of report creator uids.
+          in: query
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - name: translationJobSchemaContents
+          description: if report was generated for the job,.
+          in: query
+          required: false
+          schema:
+            items:
+              enum:
+                - TRANSLATION
+                - ALL_CONTENT
+                - CLAIMING
+                - UNAUTHORIZED
+              type: string
+            type: array
+        - name: tags 
+          description: Search is done via or logic, i.e. if a report has any of the given tags, it will be returned.
+          in: query
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - name: createdFrom 
+          description: Date filter for report.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: createdTo 
+          description: Date filter for report.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit  
+          description: Paging parameter. The number of reports to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: offset  
+          description: Paging parameter. The index of the repor to start with.
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobReportResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 4
+                        items:
+                          - reportUid: f84491fc
+                            schemaType: siteLocales
+                            reportType: FUZZY
+                            schema: '{"schema":"siteLocales","projectId":"fd7244365"}'
+                            reportStatus: PROCESSING
+                            totalStrings: 27828
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation: null
+                            localeEstimates: null
+                            tags: null
+                            warnings:
+                              - No rates specified for 'fr-FR' locale.
+                            errors:
+                              - >-
+                                Report generation failed. Rates of account defined in different
+                                currencies: USD, JPY. Only one should be used per account. Please
+                                fix this and re-run estimation.
+                          - reportUid: 0ec805d4
+                            schemaType: job
+                            reportType: COST
+                            schema: '{"schema":"job","jobUid":"e2f3dcac30cc"}'
+                            reportStatus: COMPLETED
+                            totalStrings: 3200
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - bbbbb456566
+                            warnings: null
+                            errors: null
+                          - reportUid: 702cdae5
+                            schemaType: listView
+                            schema: >-
+                              {"schema":"listView","projectId":"fd7244365","localeList":["hy-AM"],"stringState":"IN_TRANSLATION","stringIds":["5086f27e4a123ac0e573b7d45240b674","9d67960622910cb2e6ab0525fb8ec747","816a4bf2e30577ea2cfcb2eec231e50e"],"workflowStepIds":["19565","120859","120860","19567","19571","19570","19569","57497","65867","57499","61329","67758","67760","109463","109465","136550","110388","136548","136549"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 2
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                            localeEstimates: null
+                            tags: null
+                            warnings: null
+                            errors: null
+                          - reportUid: 8532918d
+                            schemaType: unauthorized
+                            schema: >-
+                              {"schema":"unauthorized","projectId":"fd7244365","localeList":["hy-AM","zh-TW","nl-BE","pt-BR","ru-RU","uk-UA","cy-GB"],"stringState":"AWAITING_APPROVAL","stringIds":["975d88fd8c9290c8356364b91f88af02","33eb5a93062cb5981168533500668a49","a781299a67d7bd57511a14cffce40257","afdf1b5d0aa538184cd67372c0acc7c2","302d3f85228cd41d2267c7505dafb9e5"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 700
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - new label
+                            warnings: null
+                            errors: null
+    post:
+      summary: Generate Cost Estimate Report for the Job
+      description: This is simplified version of API to generate cost reports. It creates further request to FES composing proper schema string based on input information. forced flag in this case is sent with false value being set.
+      tags:
+        - Estimates
+      operationId: generateJobCostEstimateReports
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: translationJobUid
+          description: A unique translation job identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobCostReportRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobGenericReportResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        reportUid: f84491fc
+                        reportType: FUZZY
+                        reportStatus: PENDING
+  '/estimates-api/v2/projects/{projectId}/reports/{reportUid}/status':
+    get:
+      summary: Get Estimate Report Status
+      tags:
+        - Estimates
+      operationId: getJobEstimateReportStatus
+
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportUid
+          description: A unique report identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportStatus
+          description: Status of report.
+          in: query
+          required: false
+          schema:
+            enum:
+              - NOT_FOUND
+              - PENDING
+              - PROCESSING
+              - COMPLETED
+              - FAILED
+              - TIMEOUT
+            type: string
+        - name: reportType
+          description: Report type.
+          in: query
+          required: false
+          schema:
+            enum:
+              - FUZZY
+              - COST
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobReportStatusResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        reportUid: f84491fc
+                        reportStatus: PROCESSING
+                        totalStrings: 27828
+                        percentComplete: 18
+                        reportType: FUZZY
+                        createdDate: '2016-03-21T15:00:48Z'
+  '/estimates-api/v2/projects/{projectId}/reports/{reportUid}':
+    get:
+      summary: Get Estimate Report
+      tags:
+        - Estimates
+      operationId: getJobEstimateReport
+
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportUid
+          description: A unique report identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportStatus
+          description: Status of report.
+          in: query
+          required: false
+          schema:
+            enum:
+              - NOT_FOUND
+              - PENDING
+              - PROCESSING
+              - COMPLETED
+              - FAILED
+              - TIMEOUT
+            type: string
+        - name: reportType
+          description: Report type.
+          in: query
+          required: false
+          schema:
+            enum:
+              - FUZZY
+              - COST
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobReportResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 4
+                        items:
+                          - reportUid: f84491fc
+                            schemaType: siteLocales
+                            reportType: FUZZY
+                            schema: '{"schema":"siteLocales","projectId":"fd7244365"}'
+                            reportStatus: PROCESSING
+                            totalStrings: 27828
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation: null
+                            localeEstimates: null
+                            tags: null
+                            warnings:
+                              - No rates specified for 'fr-FR' locale.
+                            errors:
+                              - >-
+                                Report generation failed. Rates of account defined in different
+                                currencies: USD, JPY. Only one should be used per account. Please
+                                fix this and re-run estimation.
+                          - reportUid: 0ec805d4
+                            schemaType: job
+                            reportType: COST
+                            schema: '{"schema":"job","jobUid":"e2f3dcac30cc"}'
+                            reportStatus: COMPLETED
+                            totalStrings: 3200
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - bbbbb456566
+                            warnings: null
+                            errors: null
+                          - reportUid: 702cdae5
+                            schemaType: listView
+                            schema: >-
+                              {"schema":"listView","projectId":"fd7244365","localeList":["hy-AM"],"stringState":"IN_TRANSLATION","stringIds":["5086f27e4a123ac0e573b7d45240b674","9d67960622910cb2e6ab0525fb8ec747","816a4bf2e30577ea2cfcb2eec231e50e"],"workflowStepIds":["19565","120859","120860","19567","19571","19570","19569","57497","65867","57499","61329","67758","67760","109463","109465","136550","110388","136548","136549"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 2
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                            localeEstimates: null
+                            tags: null
+                            warnings: null
+                            errors: null
+                          - reportUid: 8532918d
+                            schemaType: unauthorized
+                            schema: >-
+                              {"schema":"unauthorized","projectId":"fd7244365","localeList":["hy-AM","zh-TW","nl-BE","pt-BR","ru-RU","uk-UA","cy-GB"],"stringState":"AWAITING_APPROVAL","stringIds":["975d88fd8c9290c8356364b91f88af02","33eb5a93062cb5981168533500668a49","a781299a67d7bd57511a14cffce40257","afdf1b5d0aa538184cd67372c0acc7c2","302d3f85228cd41d2267c7505dafb9e5"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 700
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - new label
+                            warnings: null
+                            errors: null
+    delete:
+          summary: Delete Estimation Report
+          description: The report is only "soft"-deleted, i.e. it remains persisted in the DB, but is marked as "not enabled"
+          tags:
+            - Estimates
+          operationId: deleteJobEstimateReport
+
+          parameters:
+            - name: projectId
+              description: A unique project identifier.
+              in: path
+              required: true
+              schema:
+                type: string
+            - name: reportUid
+              description: A unique report identifier.
+              in: path
+              required: true
+              schema:
+                type: string
+          responses:
+            200:
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/EmptyResponse'
+                  examples:
+                    response:
+                      value:
+                        response:
+                          code: SUCCESS
+                          data: null
+  '/estimates-api/v2/projects/{projectId}/reports/{reportUid}/tags':
+    put:
+      summary: Modify Tags of Estimation Report
+      description: The new set of tags completely replaces the old ones.
+      tags:
+        - Estimates
+      operationId: modifyJobEstimateReportTags
+
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportUid
+          description: A unique report identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyJobReportTagsRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobReportTagsResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        tags:
+                          - AdminJob
+                          - NEWTAG1
+                          - NEWTAG2
+  '/estimates-api/v2/projects/{projectUid}/reports/{reportUid}/download':
+    get:
+      summary: Export Estimation Report as CSV
+      tags:
+        - Estimates
+      operationId: exportJobEstimationReport
+
+      parameters:
+        - name: projectUid
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportUid
+          description: A unique report identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: format
+          description: for now, only csv is supported.
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+
+#
 # Jobs API endpoints
 #
   '/jobs-api/v3/account/{accountUid}/jobs':
@@ -11130,6 +11961,49 @@ components:
             $ref: '#/components/schemas/CustomFieldBasicRequest'
           description: Custom fields assigned to the project which job is created in. Validation on custom fields is done in scope of that request.
       type: object
+    CreateJobFuzzyReportRequest:
+      description: The payload to use when generating a job fuzzy report.
+      properties:
+        contentType:
+          enum:
+            - JOB_CONTENT_TRANSLATION
+            - JOB_CONTENT_ALL_CONTENT
+            - JOB_CONTENT_CLAIMING
+            - JOB_CONTENT_UNAUTHORIZED
+          type: string
+        tags:
+          example: ["tag1", "tag2"]
+          type: array
+          items:
+            type: string
+      type: object
+    CreateJobCostReportRequest:
+      description: The payload to use when generating a job cost report.
+      properties:
+        contentType:
+          enum:
+            - JOB_CONTENT_TRANSLATION
+            - JOB_CONTENT_ALL_CONTENT
+            - JOB_CONTENT_CLAIMING
+            - JOB_CONTENT_UNAUTHORIZED
+          type: string
+        tags:
+          example: ["tag1", "tag2"]
+          type: array
+          items:
+            type: string
+        localeWorkflows:
+          type: array
+          items:
+            type: object
+            properties:
+              targetLocaleId:
+                type: string
+              workflowUid:
+                type: string
+        fuzzyProfileUid:
+          type: string
+      type: object
     CustomFieldBasicRequest:
       type: object
       properties:
@@ -11586,6 +12460,172 @@ components:
       required:
         - response
       type: object
+    EstimateJobReportResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - GENERAL_ERROR
+                - MAINTENANCE_MODE_ERROR
+              type: string
+            data:
+              items:
+                $ref: '#/components/schemas/EstimateJobReport'
+              type: array
+          required:
+            - code
+            - data
+          type: object
+      required:
+        - response
+      type: object
+    EstimateJobReport:
+      type: object
+      properties:
+        reportUid:
+          type: string
+        schemaType:
+          type: string
+        reportType:
+          type: string
+        schema:
+          type: string
+        reportStatus:
+          type: string
+        totalStrings:
+          type: integer
+        projectId:
+          type: string
+        creatorUserUid:
+          type: string
+        creatorUserRole:
+          type: string
+        contentCoverage:
+          type: string
+        creatorAgencyUid:
+          type: string
+        createdDate:
+          type: string
+          format: 'YYYY-MM-DDThh:mm:ssZ'
+        totalWordCount:
+          type: string
+        totalWeightedWordCount:
+          type: integer
+        priceInformation:
+          type: string
+        localeEstimates:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+    EstimateJobGenericReportResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - GENERAL_ERROR
+                - MAINTENANCE_MODE_ERROR
+              type: string
+            data:
+              items:
+                $ref: '#/components/schemas/EstimateJobGenericReport'
+              type: array
+          required:
+            - code
+            - data
+          type: object
+      required:
+        - response
+      type: object
+    EstimateJobGenericReport:
+      type: object
+      properties:
+        reportUid:
+          type: string
+        reportType:
+          type: string
+        reportStatus:
+          type: string
+    EstimateJobReportStatusResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - GENERAL_ERROR
+                - MAINTENANCE_MODE_ERROR
+              type: string
+            data:
+              $ref: '#/components/schemas/EstimateJobReportStatus'
+              type: object
+          required:
+            - code
+            - data
+          type: object
+      required:
+        - response
+      type: object
+    EstimateJobReportStatus:
+      type: object
+      properties:
+        reportUid:
+          type: string
+        reportType:
+          type: string
+        reportStatus:
+          type: string
+        totalStrings:
+          type: integer
+        percentComplete:
+          type: integer
+        createdDate:
+          type: string
+          format: 'YYYY-MM-DDThh:mm:ssZ'
+    EstimateJobReportTagsResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - GENERAL_ERROR
+                - MAINTENANCE_MODE_ERROR
+              type: string
+            data:
+              $ref: '#/components/schemas/EstimateJobReportTags'
+              type: object
+          required:
+            - code
+            - data
+          type: object
+      required:
+        - response
+      type: object
+    EstimateJobReportTags:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: string
     FileType:
       type: string
       description: A unique identifier for the file type.
@@ -12799,6 +13839,15 @@ components:
             "overrideContextOlderThanDays" old.
           minimum: 1
           type: integer
+    ModifyJobReportTagsRequest:
+      description: The payload to modify job estimation report tags.
+      properties:
+        tags:
+          example: ["tag1", "tag2"]
+          type: array
+          items:
+            type: string
+      type: object  
     NullDataJobResponse:
       type: object
       required:
