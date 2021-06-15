@@ -3124,200 +3124,6 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
-  /context-api/v2/projects/{projectId}/bindings/{bindingUid}:
-    delete:
-      summary: Remove binding of a string to a context
-      description: |-
-        Deletes a context binding.
-        The context referenced by the binding will no longer be displayed for the referenced string in the CAT tool.
-      tags:
-      - Context
-      operationId: deleteStringToContextBinding
-
-      parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
-      - description: Unique identifier for the binding to be deleted.
-        in: path
-        name: bindingUid
-        required: true
-        schema:
-          format: uuid
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                - response
-                properties:
-                  response:
-                    $ref: '#/components/schemas/SuccessResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        404:
-          description: Not found response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: NOT_FOUND_ERROR
-                      errors:
-                      - key: not_found_error
-                        message: Binding not found
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /context-api/v2/projects/{projectId}/contexts/{contextUid}/bindings:
-    get:
-      summary: Return all strings bindings for context
-      description: |-
-        Returns all bindings that reference the given context.
-        Results are not paginated.
-      tags:
-      - Context
-      operationId: getStringToContextBindingsByContext
-
-      parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
-      - description: Unique identifier of a context
-        in: path
-        name: contextUid
-        required: true
-        schema:
-          format: uuid
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BindingsResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                        - bindingUid: d6414f8c-4gdf-4415-9a69-f8e7902ca9ec
-                          contextUid: 25137b65-e075-4341-8362-14b1a3e558f5
-                          coordinates:
-                            bottom: 400
-                            left: 50
-                            right: 400
-                            top: 50
-                          stringHashcode: bd603147d945h3ec74d6874422ebe4e0
-                        totalCount: 1
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        404:
-          description: Context not found error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: NOT_FOUND_ERROR
-                      errors:
-                      - key: not_found_error
-                        message: >-
-                          Context not found, ref id:
-                          'ffd90ec4-5ca8-4720-8ecf-15dce3404823'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /context-api/v2/projects/{projectId}/strings/{stringHashcode}/bindings:
-    get:
-      summary: Get bindings for string
-      description: Returns all bindings that reference a given string.
-      tags:
-      - Context
-      operationId: getStringToContextBindingsByString
-
-      parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
-      - description: Hashcode for the string to get bindings for.
-        in: path
-        name: stringHashcode
-        required: true
-        schema:
-          format: hash
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BindingsResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                        - bindingUid: d6414f8c-4gdf-4415-9a69-f8e7902ca9ec
-                          contextUid: 25137b65-e075-4341-8362-14b1a3e558f5
-                          coordinates:
-                            bottom: 400
-                            left: 50
-                            right: 400
-                            top: 50
-                          stringHashcode: bd603147d945h3ec74d6874422ebe4e0
-                        totalCount: 1
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
   /context-api/v2/projects/{projectId}/bindings:
     post:
       summary: Create string to context bindings
@@ -3446,6 +3252,127 @@ paths:
                         message: >-
                           Please, limit number of bindings to no more than 150
                           in one request
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /context-api/v2/projects/{projectId}/bindings/list:
+    post:
+      summary: List string to context bindings
+      description: |-
+        Returns a paginated list of bindings according to specified parameters.
+
+        Response is limited to *5000* items, to retrieve all items the request
+        should be repeated with **offset** parameter specified.
+      tags:
+        - Context
+      operationId: getBindings
+
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - description: |-
+            If your original request returns an *offset* value, the set of results is incomplete.
+            Run the request again, with the given offset value to see more results.
+            When offset is null, there are no more results to return.
+          in: query
+          name: offset
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchBindingsRequest'
+        description: Search bindings parameters. Only on of them should be specified
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BindingListResponse'
+          description: OK
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: wrong_parameters
+                          message: >-
+                            Please, limit number of bindings to no more than 150
+                            in one request
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /context-api/v2/projects/{projectId}/bindings/remove:
+    post:
+      summary: Delete string to context bindings
+      description: |-
+        Delete bindings for specified parameters.
+
+      tags:
+        - Context
+      operationId: deleteBindings
+
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteBatchBindingsRequest'
+        description: Bindings delete parameter. Only on of them should be specified
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+          description: OK
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: wrong_parameters
+                          message: >-
+                            Please, limit number of bindings to no more than 150
+                            in one request
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
         429:
@@ -11725,6 +11652,78 @@ components:
                       type: array
                     totalCount:
                       type: integer
+                  required:
+                    - items
+                  type: object
+              type: object
+    BatchBindingsRequest:
+      properties:
+        batchBindingsRequest:
+          description: Parameters for bindings search
+          properties:
+            stringHashcodes:
+              description: List of the hashcodes for the strings to get bindings for.
+              items:
+                type: string
+              type: array
+            contentFileUri:
+              description: Content file name to get bindings for.
+              type: string
+            contextUid:
+              description: ContextUID to get bindings for.
+              format: uuid
+              type: string
+            bindingUids:
+              description: List of unique binding identifiers.
+              items:
+                type: string
+              type: array
+          type: object
+      type: object
+    DeleteBatchBindingsRequest:
+      properties:
+        batchBindingsRequest:
+          description: Parameters for bindings search
+          properties:
+            stringHashcodes:
+              description: List of the hashcodes for the strings to delete bindings for.
+              items:
+                type: string
+              type: array
+            contentFileUri:
+              description: Content file name to delete bindings for.
+              type: string
+            contextUid:
+              description: ContextUID to delete bindings for.
+              format: uuid
+              type: string
+            bindingUids:
+              description: Unique binding identifier to delete.
+              items:
+                type: string
+              type: array
+          type: object
+      type: object
+    BindingListResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/Binding'
+                      type: array
+                    offset:
+                      description: >-
+                        Result set is partial, if not empty. To retreive everything,
+                        request should be repeated with offset value.
+                      type: string
                   required:
                     - items
                   type: object
