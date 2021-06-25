@@ -1,5 +1,5 @@
 # Smartling REST OpenAPI Specification
-[![Build Status](https://travis-ci.org/Smartling/api-docs.svg?branch=master)](https://travis-ci.org/Smartling/api-docs)
+[![Build Status](https://travis-ci.com/Smartling/api-docs.svg?branch=master)](https://travis-ci.com/Smartling/api-docs)
 
 ## Links
 
