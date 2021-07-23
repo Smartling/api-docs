@@ -1,0 +1,108 @@
+x-paths:
+
+  setup_webhook:
+    put:
+      summary: Set up issue webhooks
+      description: >-
+        This URL is the Smartling API endpoint for receiving issue webhook setup requests.
+      tags:
+        - Issue Webhooks
+      operationId: setupIssuesWebhook
+      parameters:
+        - $ref: '../../api_common.yaml#/components/parameters/accountUid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './commons.yaml#/components/schemas/setupWebhookRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                $ref: './examples.yaml#/components/examples/webhookSettings'
+              schema:
+                $ref: './commons.yaml#/components/schemas/setupWebhookResponse'
+          description: OK
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json"
+          -d "$smartlingIssueWebhookTemlateJSON"
+          https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/webhook
+    get:
+      summary: Get issue webhook settings
+      description: >-
+        This URL is the Smartling API endpoint for receiving issue webhook settings.
+      tags:
+        - Issue Webhooks
+      operationId: getIssuesWebhoookSettings
+      parameters:
+        - $ref: '../../api_common.yaml#/components/parameters/accountUid'
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                $ref: './examples.yaml#/components/examples/webhookSettings'
+              schema:
+                $ref: './commons.yaml#/components/schemas/setupWebhookResponse'
+          description: OK
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+          "Content-Type: application/json"
+          https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/webhook
+    delete:
+      summary: Delete issue webhook settings
+      description: >-
+        This URL is the Smartling API endpoint for deleting issue webhook settings.
+      tags:
+        - Issue Webhooks
+      operationId: deleteIssuesWebhookSettings
+      parameters:
+        - $ref: '../../api_common.yaml#/components/parameters/accountUid'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: './commons.yaml#/components/schemas/receiveWebhookResponse'
+          description: OK
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X DELETE -H "Authorization: Bearer $smartlingToken"
+          https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/webhook
+
+  receive_webhook:
+     post:
+       summary: Receive issue webhooks
+       description: >-
+         This client-side API endpoint should be configured to receive issue webhooks.
+       tags:
+         - Issue Webhooks
+       operationId: receiveIssueWebhook
+       requestBody:
+         content:
+           application/json:
+             schema:
+               oneOf:
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueCreatedRequest'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueDeletedRequest'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueStateChangedRequest'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueAnsweredRequest'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueSeverityLevelChangedRequest'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueCommentAdded'
+                 - $ref: './commons.yaml#/components/schemas/webhooks/issueWatcherAdded'
+         required: true
+       responses:
+         '200':
+           content:
+             application/json:
+               schema:
+                 $ref: './commons.yaml#/components/schemas/receiveWebhookResponse'
+           description: OK

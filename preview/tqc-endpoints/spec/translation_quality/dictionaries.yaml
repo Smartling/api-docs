@@ -1,0 +1,580 @@
+definitions:
+  dictionary_checkTypes:
+    get:
+      description: >-
+        Get check types.
+      summary: Get check types
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/DictionaryCheckTypesResponse'
+
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 22
+                  items:
+                    - checkTypeCode: "LEADING_TRAILING_SPACES"
+                      name: "Leading/trailing spaces"
+                      description: "Check that spacing at the beginning/end of the translation is consistent with the source"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "ORIGINAL_EQUALS_TARGET"
+                      "name": "Original string equals target string"
+                      "description": "Check that original string equals target string"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "WHITESPACES"
+                      "name": "Spacing error"
+                      "description": "Check that translation does not have additional whitespace"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "SPELLCHECK"
+                      "name": "Spell check"
+                      "description": "Spellcheck for translation"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "UNCATEGORIZED"
+                      "name": "Uncategorized"
+                      "description": "Uncategorized checks"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "TAG_CONSISTENCY"
+                      "name": "Tag consistency"
+                      "description": "Check that tags in the source are correctly transferred to the translation"
+                      "checkSubTypes":
+                        - "checkSubTypeCode": "TAG_ADDED"
+                          "name": "Tag added"
+                        - "checkSubTypeCode": "TAG_DELETED"
+                          "name": "Tag deleted"
+                        - "checkSubTypeCode": "SPACES_AROUND_TAGS"
+                          "name": "Spaces around tags"
+                        - "checkSubTypeCode": "TAG_ORDER_IS_CHANGED"
+                          "name": "Tag order changed"
+                    - "checkTypeCode": "TARGET_LENGTH_LIMIT"
+                      "name": "Target length limit"
+                      "description": "Check that the translation is within the word count limit"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "NUMBER_CONSISTENCY"
+                      "name": "Number consistency"
+                      "description": "Check that numbers in the source are correctly transferred to the translation"
+                      "checkSubTypes":
+                        - "checkSubTypeCode": "NUMBER_ADDED"
+                          "name": "Number added"
+                        - "checkSubTypeCode": "NUMBER_DELETED"
+                          "name": "Number deleted"
+                        - "checkSubTypeCode": "NUMBER_INCORRECT_CONVERSION"
+                          "name": "Incorrect number format conversion"
+                    - "checkTypeCode": "REPEATED_WORD"
+                      "name": "Repeated Word"
+                      "description": "Check to see if a word is repeated multiple times in a translation"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "TARGET_IN_WRONG_LANGUAGE"
+                      "name": "Target in the wrong language"
+                      "description": "Check that translated string is in the target language"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "SOURCE_IN_WRONG_LANGUAGE"
+                      "name": "Source in the wrong language"
+                      "description": "Check that source string is in the source language"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "SEGMENT_COMPLETENESS"
+                      "name": "Segment completeness"
+                      "description": "Check that a translation has a similar length to the source string"
+                      "checkSubTypes":
+                        - "checkSubTypeCode": "TARGET_IS_EMPTY"
+                          "name": "Target is empty"
+                        - "checkSubTypeCode": "TARGET_IS_MUCH_SHORTER_THAN_SOURCE"
+                          "name": "Translation is too long compared to source"
+                        - "checkSubTypeCode": "TARGET_IS_MUCH_LONGER_THAN_SOURCE"
+                          "name": "Translation is too short compared to source"
+                    - "checkTypeCode": "NON_TRANSLATABLE_TEXT"
+                      "name": "Placeholder"
+                      "description": "Check that placeables in the source are correctly transferred to the translation"
+                      "checkSubTypes":
+                        - "checkSubTypeCode": "PLACEABLE_ADDED"
+                          "name": "Placeholder added"
+                        - "checkSubTypeCode": "PLACEABLE_DELETED"
+                          "name": "Placeholder deleted"
+                        - "checkSubTypeCode": "SPACES_AROUND_PLACEABLE"
+                          "name": "Incorrect spacing around placeholders"
+                        - "checkSubTypeCode": "PLACEABLE_FORMAT"
+                          "name": "Incorrect placeholder format"
+                    - "checkTypeCode": "EMOJI_CONSISTENCY"
+                      "name": "Emoji consistency"
+                      "description": "Check that emoji in the source are correctly transferred to the translation"
+                      "checkSubTypes":
+                        - "checkSubTypeCode": "EMOJI_ADDED"
+                          "name": "Emoji added"
+                        - "checkSubTypeCode": "EMOJI_DELETED"
+                          "name": "Emoji deleted"
+                        - "checkSubTypeCode": "EMOJI_PRESENT"
+                          "name": "Emoji present"
+                    - "checkTypeCode": "TAG_VALIDITY"
+                      "name": "Tag validity"
+                      "description": "Check that tags in the source are correctly transferred to the translation"
+                      "checkSubTypes":
+                        - "checkSubTypeCode": "OPEN_CLOSED_TAG_ORDER_IS_CHANGED"
+                          "name": "Opening tag appears before closing tag"
+                        - "checkSubTypeCode": "INVALID_TAG_NESTING"
+                          "name": "Invalid tag nesting"
+                        - "checkSubTypeCode": "TAG_IS_CHANGED"
+                          "name": "Malformed HTML tag"
+                    - "checkTypeCode": "INSERTABLE_CONSISTENCY"
+                      "name": "Insertable consistency"
+                      "description": "Check that insertables in the source are correctly transferred to the translation"
+                      "checkSubTypes":
+                        - "checkSubTypeCode": "INSERTABLE_ADDED"
+                          "name": "Insertable added"
+                        - "checkSubTypeCode": "INSERTABLE_DELETED"
+                          "name": "Insertable deleted"
+                    - "checkTypeCode": "TARGET_SOURCE_CONSISTENCY"
+                      "name": "Target/Source consistency"
+                      "description": "Check for inconsistent translations"
+                      "checkSubTypes":
+                        - "checkSubTypeCode": "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+                          "name": "Same source string is translated differently"
+                        - "checkSubTypeCode": "SAME_TRANSLATION_DIFFERENT_SOURCES"
+                          "name": "Same translation is used for different sources"
+                    - "checkTypeCode": "BLACKLISTED_TERMS"
+                      "name": "Blacklisted terms"
+                      "description": "Check for blacklisted glossary terms"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "GLOSSARY_COMPLIANCE"
+                      "name": "Glossary compliance"
+                      "description": "Check that glossary term translations are used"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "TRADEMARK_CONSISTENCY"
+                      "name": "Legal symbol consistency"
+                      "description": "Check that legal symbols in the source like trademark and copyright are used in the translation"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "GRAMMAR_CHECK"
+                      "name": "Grammar"
+                      "description": "Check for grammar errors"
+                      "checkSubTypes": []
+                    - "checkTypeCode": "GLOBAL_CAPITALISATION_CONSISTENCY"
+                      "name": "Global capitalization consistency"
+                      "description": "If source or target is in all caps, check that capitalization matches"
+                      "checkSubTypes": []
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types
+
+  dictionary_checkType_subTypes:
+    get:
+      description: >-
+        Get check subtypes.
+      summary: Get check subtypes
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/checkTypeCode'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/DictionaryCheckSubTypeResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 3
+                  items:
+                    - "checkSubTypeCode": "EMOJI_ADDED"
+                      "name": "Emoji added"
+                    - "checkSubTypeCode": "EMOJI_DELETED"
+                      "name": "Emoji deleted"
+                    - "checkSubTypeCode": "EMOJI_PRESENT"
+                      "name": "Emoji present"
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/$checkTypeCode/sub-types
+
+  dictionary_checkType_GLOSSARY_COMPLIANCE_match_methods:
+    get:
+      description: >-
+        Get Glossary complience match methods.
+      summary: Get Glossary complience match methods
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/DictionaryCheckTypeMatchMethodsGlossaryComplianceResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 2
+                  items:
+                    - "matchMethodCode": "MATCH_BY_PERCENTAGE"
+                      "matchMethodName": "Match by percentage"
+                    - "matchMethodCode": "EXACT_MATCH"
+                      "matchMethodName": "Exact match"
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/GLOSSARY_COMPLIANCE/match-methods
+
+  dictionary_severity_levels:
+    get:
+      description: >-
+        Get severity levels.
+      summary: Get severity levels
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/DictionaryCheckSeverityLevelResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 4
+                  items:
+                    - "severityLevelCode": "DISABLED"
+                      "name": "Disabled"
+                    - "severityLevelCode": "LOW"
+                      "name": "Low Severity"
+                    - "severityLevelCode": "MEDIUM"
+                      "name": "Medium Severity"
+                    - "severityLevelCode": "HIGH"
+                      "name": "High Severity"
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/severity-levels
+
+  dictionary_checkType_TRADEMARK_CONSISTENCY_trademark_types:
+    get:
+      description: >-
+        Get trademark consistency types.
+      summary: Get trademark consistency types
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/DictionaryCheckTypeTrademarkTypesTrademarkConsistencyResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  totalCount: 4
+                  items:
+                    - "name": "Service Mark"
+                      "trademarkTypeCode": "SERVICE_MARK"
+                    - "name": "Copyright"
+                      "trademarkTypeCode": "COPYRIGHT"
+                    - "name": "Registered"
+                      "trademarkTypeCode": "REGISTERED"
+                    - "name": "Trademark symbol"
+                      "trademarkTypeCode": "TRADEMARK"
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/TRADEMARK_CONSISTENCY/trademark-types
+
+  users_current_settings_dictionaries_locale:
+      get:
+        description: >-
+          Get current user settings dictionary for the locale.
+        summary: Get current user settings dictionary for the locale
+        tags:
+          - Translation quality check
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        parameters:
+          - $ref: '../api_common.yaml#/definitions/pathParameters/localeId'
+          - name: request
+            description: ''
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/CurrentUserSettingsDictionaryForLocaleRequest'
+
+        responses:
+          200:
+            description: OK
+            schema:
+              $ref: '#/definitions/CurrentUserSettingsDictionaryForLocaleResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
+
+      post:
+        description: >-
+          Add word into current user settings dictionary for the locale.
+        summary: Add word into current user settings dictionary for the locale
+        tags:
+          - Translation quality check
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        parameters:
+          - $ref: '../api_common.yaml#/definitions/pathParameters/localeId'
+          - name: request
+            description: ''
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/CurrentUserSettingsDictionaryForLocalePostRequest'
+
+        responses:
+          200:
+            description: OK
+            schema:
+              $ref: '#/definitions/CurrentUserSettingsDictionaryForLocalePostResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
+
+  users_current_settings_dictionaries_locale_word:
+    delete:
+      description: >-
+        Remove word from current user settings dictionary for the locale.
+      summary: Remove word from current user settings dictionary for the locale
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/definitions/pathParameters/localeId'
+        - $ref: './tqc_common.yaml#/definitions/pathParameters/wordUid'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CurrentUserSettingsDictionaryForLocalePostResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
+
+
+  DictionaryCheckTypesResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  allOf:
+                    - $ref: './tqc_common.yaml#/definitions/responseObjects/checkTypeCode'
+                    - type: object
+                      properties:
+                        name:
+                          type: string
+                          description: check type name
+                          example: "Insertable consistency"
+                        description:
+                          type: string
+                          description: check type description
+                          example: "Check that insertables in the source are correctly transferred to the translation"
+                        checkSubTypes:
+                          type: array
+                          items:
+                            allOf:
+                              - $ref: './tqc_common.yaml#/definitions/responseObjects/checkSubTypeCodeResponse'
+
+  DictionaryCheckSubTypeResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  allOf:
+                    - $ref: './tqc_common.yaml#/definitions/responseObjects/checkSubTypeCodeResponse'
+
+  DictionaryCheckTypeMatchMethodsGlossaryComplianceResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  allOf:
+                    - $ref: './tqc_common.yaml#/definitions/responseObjects/matchMethodCodeResponse'
+                    - type: object
+                      properties:
+                        matchMethodName:
+                          type: string
+                          description: severity level name
+                          example: "Match by percentage"
+
+  DictionaryCheckSeverityLevelResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  allOf:
+                    - $ref: './tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+                    - type: object
+                      properties:
+                        name:
+                          type: string
+                          description: severity level name
+                          example: "Medium Severity"
+
+  DictionaryCheckTypeTrademarkTypesTrademarkConsistencyResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  allOf:
+                    - $ref: './tqc_common.yaml#/definitions/responseObjects/trademarkTypeCodeResponse'
+                    - type: object
+                      properties:
+                        name:
+                          type: string
+                          description: trademark consistency type name
+                          example: "Service Mark"
+
+################################
+
+  CurrentUserSettingsDictionaryForLocaleRequest:
+    type: object
+    properties:
+      wordMask:
+        type: string
+        example: "uni"
+
+  CurrentUserSettingsDictionaryForLocalePostRequest:
+    type: object
+    properties:
+      word:
+        type: string
+        minimum: 1
+        example: "universe"
+
+  CurrentUserSettingsDictionaryForLocaleDTO:
+    type: object
+    properties:
+      wordUid:
+        type: string
+        description: word unique identifier
+        example: "23jkj23sa"
+      word:
+        type: string
+        description: trademark consistency type name
+        example: "hello"
+      createdDate:
+        type: string
+        format: date-time
+        description: the UTC value of the date the word was added.
+        example: 2018-11-21T01:51:17Z
+
+  CurrentUserSettingsDictionaryForLocaleResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              totalCount:
+                type: integer
+                description: Total element count
+              items:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/definitions/CurrentUserSettingsDictionaryForLocaleDTO'
+
+  CurrentUserSettingsDictionaryForLocalePostResponse:
+    allOf:
+      - $ref: '../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/CurrentUserSettingsDictionaryForLocaleDTO'

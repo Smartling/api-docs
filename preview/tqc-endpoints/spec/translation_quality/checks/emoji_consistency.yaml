@@ -1,0 +1,241 @@
+definitions:
+  check_types_EMOJI_CONSISTENCY_settings:
+    put:
+      description: >-
+        Apply emoji consistency settings.
+      summary: Apply emoji consistency settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyEmojiConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyEmojiConsistencySettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/EMOJI_CONSISTENCY/settings:
+
+  check_types_EMOJI_CONSISTENCY_group_settings:
+    put:
+      description: >-
+        Apply emoji consistency group settings.
+      summary: Apply emoji consistency group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyEmojiConsistencySettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplyEmojiConsistencySettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/EMOJI_CONSISTENCY/groups/{groupUid}/settings:
+
+  account_check_types_EMOJI_CONSISTENCY_settings_effective:
+    get:
+      description: >-
+        Get checktype EMOJI_CONSISTENCY settings for certain account.
+      summary: Get checktype EMOJI_CONSISTENCY settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/EMOJI_CONSISTENCY:
+
+
+  EmojiConsistencySettingsDTO:
+    type: object
+    properties:
+      noEmojisAllowedInTarget:
+        type: boolean
+        description: No emoji is allowed in target
+        example: false
+
+  AccountCheckTypeApplyEmojiConsistencySettingsRequest:
+    allOf:
+      - $ref: '#/definitions/EmojiConsistencySettingsDTO'
+      - $ref: '../tqc_common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - type: object
+        required:
+          - noEmojisAllowedInTarget
+
+  AccountCheckTypeApplyEmojiConsistencySettingsResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/EmojiConsistencySettingsDTO'
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
+      - $ref: '#/definitions/EmojiConsistencySettingsDTO'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - EMOJI_CONSISTENCY
+            description: check type code
+            example: "EMOJI_CONSISTENCY"
+          subTypes:
+            type: array
+            items:
+              type: object
+              properties:
+                checkSubTypeCode:
+                  type: string
+                  enum:
+                    - EMOJI_ADDED
+                    - EMOJI_DELETED
+                    - EMOJI_PRESENT
+                  description: check subtype code
+                  example: "EMOJI_ADDED"
+
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - EMOJI_CONSISTENCY
+            description: check type code
+            example: "EMOJI_CONSISTENCY"
+          details:
+            type: object
+            properties:
+              emoji:
+                type: string
+                description: emoji symbol
+                example: "😀"
+              type:
+                type: string
+                enum:
+                  - EMOJI_ADDED
+                  - EMOJI_DELETED
+                  - EMOJI_PRESENT
+                description: emoji defect type
+                example: "EMOJI_DELETED"
+          positionTypeCode:
+            type: string
+            enum:
+              - SOURCE
+              - TARGET
+            description: position type code
+            example: "SOURCE"
+
+#{
+#    "sourceLocaleId": "en-US",
+#    "targetLocaleId": "hu-HU",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#            "originalString": "hello 😀",
+#            "translation": "Szia"
+#        }],
+#    "checkTypeCodes": [
+#        "EMOJI_CONSISTENCY"
+#    ]
+#}
+#
+#    EMOJI_ADDED("Emoji added", QualityCheckErrorPositionType.TARGET),
+#    EMOJI_DELETED("Emoji deleted", QualityCheckErrorPositionType.SOURCE),
+#    EMOJI_PRESENT("Emoji present", QualityCheckErrorPositionType.TARGET);
+
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "hello 😀",
+#                        "translation": "Szia",
+#                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "EMOJI_CONSISTENCY",
+#                            "severityLevelCode": "LOW",
+#                            "positions": [
+#                                {
+#                                    "from": 6,
+#                                    "to": 8
+#                                }
+#                            ],
+#                            "details": {
+#                                "emoji": "😀",
+#                                "type": "EMOJI_DELETED"
+#                            },
+#                            "positionTypeCode": "SOURCE"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}

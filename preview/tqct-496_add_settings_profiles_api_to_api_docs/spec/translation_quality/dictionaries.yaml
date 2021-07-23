@@ -1,0 +1,452 @@
+x-paths:
+
+  dictionary_checkTypes:
+    get:
+      description: >-
+        Get the quality check types that are available.
+      summary: Get quality check types
+      tags:
+        - Translation quality checks
+      operationId: getTranslationQualityCheckTypes
+      consumes:
+        - application/json
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DictionaryCheckTypesResponse'
+              example:
+                $ref: './examples.yaml#/components/examples/dictionary_checkTypes_response_example'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types
+
+  dictionary_checkType_subTypes:
+    get:
+      description: >-
+        Get the quality check subtypes that are available.
+      summary: Get quality check subtypes
+      tags:
+        - Translation quality checks
+      operationId: getTranslationQualityCheckSubTypes
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: './tqc_common.yaml#/components/parameters/checkTypeCodePathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DictionaryCheckSubTypeResponse'
+              example:
+                $ref: './examples.yaml#/components/examples/dictionary_checkType_subTypes_example'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/$checkTypeCode/sub-types
+
+  dictionary_checkType_GLOSSARY_COMPLIANCE_match_methods:
+    get:
+      description: >-
+        Get Glossary compliance match methods.
+      summary: Get Glossary compliance match methods
+      tags:
+        - Translation quality checks
+      operationId: getGlossaryComplianceMatchMethods
+      consumes:
+        - application/json
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DictionaryCheckTypeMatchMethodsGlossaryComplianceResponse'
+              example:
+                $ref: './examples.yaml#/components/examples/dictionary_checkType_GLOSSARY_COMPLIANCE_match_methods_example'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/GLOSSARY_COMPLIANCE/match-methods
+
+  dictionary_severity_levels:
+    get:
+      description: >-
+        Get severity levels of a quality check that are available.
+      summary: Get quality check severity levels
+      tags:
+        - Translation quality checks
+      operationId: getTranslationQualityCheckSeverityLevels
+      consumes:
+        - application/json
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DictionaryCheckSeverityLevelResponse'
+              example:
+                $ref: './examples.yaml#/components/examples/dictionary_severity_levels_example'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/severity-levels
+
+  dictionary_checkType_TRADEMARK_CONSISTENCY_trademark_types:
+    get:
+      description: >-
+        Get trademark consistency types.
+      summary: Get trademark consistency types
+      tags:
+        - Translation quality checks
+      operationId: getTrademarkConsistencyTrademarkTypes
+      consumes:
+        - application/json
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DictionaryCheckTypeTrademarkTypesTrademarkConsistencyResponse'
+              example:
+                $ref: './examples.yaml#/components/examples/dictionary_checkType_TRADEMARK_CONSISTENCY_trademark_types_example'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/TRADEMARK_CONSISTENCY/trademark-types
+
+  users_current_settings_dictionaries_locale:
+    get:
+      description: >-
+        Get a user’s custom dictionary.
+      summary: Get user custom dictionary
+      tags:
+        - Translation quality checks
+      operationId: getUserCustomDictionary
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/localeId'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUserSettingsDictionaryForLocaleResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
+
+    post:
+      description: >-
+        Add a word to a user’s custom dictionary.
+      summary: Add word to user custom dictionary
+      tags:
+        - Translation quality checks
+      operationId: addWordToUserCustomDictionary
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/localeId'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurrentUserSettingsDictionaryForLocalePostRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUserSettingsDictionaryForLocalePostResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId
+
+  users_current_settings_dictionaries_locale_word:
+    delete:
+      description: >-
+        Remove a word from a user’s custom dictionary.
+      summary: Remove word from user custom dictionary
+      tags:
+        - Translation quality checks
+      operationId: removeWordFromUserCustomDictionary
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/localeId'
+        - $ref: './tqc_common.yaml#/components/parameters/wordUidPathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUserSettingsDictionaryForLocalePostResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId/$wordUid
+
+components:
+  schemas:
+
+    DictionaryCheckTypesResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: './tqc_common.yaml#/components/schemas/checkTypeCodeResponse'
+                          - type: object
+                            properties:
+                              name:
+                                type: string
+                                description: check type name
+                                example: "Insertable consistency"
+                              description:
+                                type: string
+                                description: check type description
+                                example: "Check that insertables in the source are correctly transferred to the translation"
+                              checkSubTypes:
+                                type: array
+                                items:
+                                  allOf:
+                                    - $ref: './tqc_common.yaml#/components/schemas/checkSubTypeCodeResponse'
+
+    DictionaryCheckSubTypeResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: './tqc_common.yaml#/components/schemas/checkSubTypeCodeResponse'
+
+    DictionaryCheckTypeMatchMethodsGlossaryComplianceResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: './tqc_common.yaml#/components/schemas/matchMethodCodeResponse'
+                          - type: object
+                            properties:
+                              matchMethodName:
+                                type: string
+                                description: severity level name
+                                example: "Match by percentage"
+
+    DictionaryCheckSeverityLevelResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: './tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+                          - type: object
+                            properties:
+                              name:
+                                type: string
+                                description: severity level name
+                                example: "Medium Severity"
+
+    DictionaryCheckTypeTrademarkTypesTrademarkConsistencyResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: './tqc_common.yaml#/components/schemas/trademarkTypeCodeResponse'
+                          - type: object
+                            properties:
+                              name:
+                                type: string
+                                description: trademark consistency type name
+                                example: "Service Mark"
+
+  ################################
+
+    CurrentUserSettingsDictionaryForLocaleRequest:
+      type: object
+      properties:
+        wordMask:
+          type: string
+          example: "uni"
+
+    CurrentUserSettingsDictionaryForLocalePostRequest:
+      type: object
+      properties:
+        word:
+          type: string
+          minimum: 1
+          example: "universe"
+
+    CurrentUserSettingsDictionaryForLocaleDTO:
+      type: object
+      properties:
+        wordUid:
+          type: string
+          description: word unique identifier
+          example: "23jkj23sa"
+        word:
+          type: string
+          description: trademark consistency type name
+          example: "hello"
+        createdDate:
+          type: string
+          format: date-time
+          description: the UTC value of the date the word was added.
+          example: 2018-11-21T01:51:17Z
+
+    CurrentUserSettingsDictionaryForLocaleResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: '#/components/schemas/CurrentUserSettingsDictionaryForLocaleDTO'
+
+    CurrentUserSettingsDictionaryForLocalePostResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  allOf:
+                    - $ref: '#/components/schemas/CurrentUserSettingsDictionaryForLocaleDTO'
+
+  examples:
+    dictionary_severity_levels_example:
+      response:
+        code: SUCCESS
+        data:
+          totalCount: 4
+          items:
+            - "severityLevelCode": "DISABLED"
+              "name": "Disabled"
+            - "severityLevelCode": "LOW"
+              "name": "Low Severity"
+            - "severityLevelCode": "MEDIUM"
+              "name": "Medium Severity"
+            - "severityLevelCode": "HIGH"
+              "name": "High Severity"

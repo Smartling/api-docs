@@ -1,0 +1,178 @@
+components:
+  schemas:
+
+    SpellcheckSettingsDTO:
+      type: object
+      properties:
+        skipIfWordInUserDictionary:
+          type: boolean
+          description: Skip if word is in user dictionary.
+          example: false
+        skipIfWordStartsWithCapitalLetter:
+          type: boolean
+          description: Skip if word starts with capital letter.
+          example: false
+        skipIfWordAppearsInSourceString:
+          type: boolean
+          description: Skip if word appears in source string.
+          example: false
+        skipIfWordValidInSourceLocale:
+          type: boolean
+          description: Skip if word is valid in source locale.
+          example: false
+        runSpellcheckForSubWords:
+          type: boolean
+          description: Run spellchek for sub words.
+          example: true
+
+    AccountCheckTypeApplySettingsRequest:
+      title: SPELLCHECK
+      allOf:
+        - $ref: '#/components/schemas/SpellcheckSettingsDTO'
+        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
+        - type: object
+          required:
+            - skipIfWordInUserDictionary
+            - skipIfWordStartsWithCapitalLetter
+            - skipIfWordAppearsInSourceString
+            - skipIfWordValidInSourceLocale
+            - runSpellcheckForSubWords
+
+    AccountCheckTypeApplySettingsResponse:
+      title: SPELLCHECK
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/SpellcheckSettingsDTO'
+
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: SPELLCHECK
+      allOf:
+        - $ref: '#/components/schemas/SpellcheckSettingsDTO'
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/SpellcheckSettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - SPELLCHECK
+              description: check type code
+              example: "SPELLCHECK"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: SPELLCHECK
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - SPELLCHECK
+              description: check type code
+              example: "SPELLCHECK"
+            details:
+              type: object
+              properties:
+                word:
+                  type: string
+                  description: word
+                  example: "Sziaa"
+                suggestions:
+                  type: array
+                  items:
+                    type: string
+                  description: suggestions
+                  example: '["Szia", "Szita", "Szila", "Szia a", "Szilvia"]'
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+              description: position type code
+              example: "TARGET"
+
+  examples:
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "SPELLCHECK"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "skipIfWordInUserDictionary": true
+      "skipIfWordStartsWithCapitalLetter": false
+      "skipIfWordAppearsInSourceString": true
+      "skipIfWordValidInSourceLocale": false
+      "runSpellcheckForSubWords": false
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "SPELLCHECK"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "skipIfWordInUserDictionary": true
+      "skipIfWordStartsWithCapitalLetter": false
+      "skipIfWordAppearsInSourceString": true
+      "skipIfWordValidInSourceLocale": false
+      "runSpellcheckForSubWords": false
+
+    accounts_check_types_checkType_settings_example:
+      skipIfWordInUserDictionary: false
+      skipIfWordStartsWithCapitalLetter: true
+      skipIfWordAppearsInSourceString: false
+      skipIfWordValidInSourceLocale: true
+      runSpellcheckForSubWords: true
+
+    accounts_check_types_checkType_group_settings_example:
+      skipIfWordInUserDictionary: false
+      skipIfWordStartsWithCapitalLetter: true
+      skipIfWordAppearsInSourceString: false
+      skipIfWordValidInSourceLocale: true
+      runSpellcheckForSubWords: true
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "Le chien a mangé mes devoirs."
+                "translation": "The dog ate my homewrk."
+                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "stringUid": null
+              "mistakes":
+                - "checkTypeCode": "SPELLCHECK"
+                  "severityLevelCode": "MEDIUM"
+                  "positions":
+                    "from": 0
+                    "to": 5
+                  "details":
+                      "word": "homewrk"
+                      "suggestions":
+                        - "homework"
+                  "positionTypeCode": "TARGET"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "SPELLCHECK"
+      "name": "Spell check"
+      "description": "Spellcheck for translation"
+      "checkSubTypes": []

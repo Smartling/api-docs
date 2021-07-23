@@ -1,0 +1,233 @@
+definitions:
+  check_types_SEGMENT_COMPLETENESS_settings:
+    put:
+      description: >-
+        Apply segment completeness settings.
+      summary: Apply segment completeness settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySegmentCompletenessSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySegmentCompletenessSettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SEGMENT_COMPLETENESS/settings:
+
+  check_types_SEGMENT_COMPLETENESS_group_settings:
+    put:
+        description: >-
+          Apply segment completeness settings.
+        summary: Apply segment completeness settings
+        tags:
+          - Translation quality check
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        parameters:
+          - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+          - $ref: '../tqc_common.yaml#/definitions/pathParameters/groupUid'
+          - name: request
+            description: ''
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/AccountCheckTypeApplySegmentCompletenessSettingsRequest'
+
+        responses:
+          200:
+            description: OK
+            schema:
+              $ref: '#/definitions/AccountCheckTypeApplySegmentCompletenessSettingsResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SEGMENT_COMPLETENESS/groups/{groupUid}/settings:
+
+  account_check_types_SOUSEGMENT_COMPLETENESS_settings_effective:
+    get:
+      description: >-
+        Get checktype SEGMENT_COMPLETENESS settings for certain account.
+      summary: Get checktype SEGMENT_COMPLETENESS settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/SEGMENT_COMPLETENESS:
+
+  SegmentCompletenessSettingsDTO:
+    type: object
+    properties:
+      lowerLengthThreshold:
+        type: integer
+        description: Lower length threshould
+        example: 10
+      upperLengthThreshold:
+        type: integer
+        description: Upper length threshould
+        example: 20
+      minLengthThreshold:
+        type: integer
+        description: Minimal lenght threshould
+        example: 15
+
+  AccountCheckTypeApplySegmentCompletenessSettingsRequest:
+    allOf:
+      - $ref: '#/definitions/SegmentCompletenessSettingsDTO'
+      - $ref: '../tqc_common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+
+  AccountCheckTypeApplySegmentCompletenessSettingsResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/SegmentCompletenessSettingsDTO'
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
+      - $ref: '#/definitions/SegmentCompletenessSettingsDTO'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - SEGMENT_COMPLETENESS
+            description: check type code
+            example: "SEGMENT_COMPLETENESS"
+          subTypes:
+            type: array
+            items:
+              type: object
+              properties:
+                checkSubTypeCode:
+                  type: string
+                  enum:
+                    - TARGET_IS_EMPTY
+                    - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                    - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                  description: check subtype code
+                  example: "TARGET_IS_EMPTY"
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - SEGMENT_COMPLETENESS
+            description: check type code
+            example: "SEGMENT_COMPLETENESS"
+          details:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - TARGET_IS_EMPTY
+                  - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                  - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                description: word
+                example: "TARGET_IS_MUCH_SHORTER_THAN_SOURCE"
+          positionTypeCode:
+            type: string
+            enum:
+              - TARGET
+            description: position type code
+            example: "TARGET"
+
+#SEGMENT_COMPLETENESS
+#{
+#    "sourceLocaleId": "en-US",
+#    "targetLocaleId": "hu-HU",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "7191152182c69d9b72069ac1290fe24b",
+#            "originalString": "We are going to gym today",
+#            "translation": "Ma megyünk"
+#        }],
+#    "checkTypeCodes": [
+#        "SEGMENT_COMPLETENESS"
+#    ]
+#}
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "We are going to gym today",
+#                        "translation": "Ma megyünk",
+#                        "hashcode": "7191152182c69d9b72069ac1290fe24b",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "SEGMENT_COMPLETENESS",
+#                            "severityLevelCode": "MEDIUM",
+#                            "positions": [
+#                                {
+#                                    "from": 0,
+#                                    "to": 10
+#                                }
+#                            ],
+#                            "details": {
+#                                "type": "TARGET_IS_MUCH_SHORTER_THAN_SOURCE"
+#                            },
+#                            "positionTypeCode": "TARGET"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}

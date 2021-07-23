@@ -1,0 +1,211 @@
+components:
+  schemas:
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TAG_CONSISTENCY
+              description: check type code
+              example: "TAG_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - TAG_ADDED
+                      - TAG_DELETED
+                      - SPACES_AROUND_TAGS
+                      - TAG_ORDER_IS_CHANGED
+                    description: check subtype code
+                    example: "TAG_ADDED"
+
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: TAG_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TAG_CONSISTENCY
+              description: check type code
+              example: "TAG_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - TAG_ADDED
+                      - TAG_DELETED
+                      - SPACES_AROUND_TAGS
+                      - TAG_ORDER_IS_CHANGED
+                    description: check subtype code
+                    example: "TAG_ADDED"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: TAG_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TAG_CONSISTENCY
+              description: check type code
+              example: "TAG_CONSISTENCY"
+            details:
+              type: object
+              properties:
+                tag:
+                  type: string
+                  description: tag
+                  example: "</p>"
+                type:
+                  type: string
+                  enum:
+                    - TAG_ADDED
+                    - TAG_DELETED
+                    - SPACES_AROUND_TAGS
+                    - TAG_ORDER_IS_CHANGED
+                  example: "TAG_DELETED"
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+                - SOURCE
+              description: position type code
+              example: "SOURCE"
+
+  examples:
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TAG_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "TAG_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_ORDER_IS_CHANGED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "SPACES_AROUND_TAGS"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TAG_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "TAG_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_ORDER_IS_CHANGED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "SPACES_AROUND_TAGS"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TAG_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "TAG_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_ORDER_IS_CHANGED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "SPACES_AROUND_TAGS"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TAG_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "TAG_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "TAG_ORDER_IS_CHANGED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "SPACES_AROUND_TAGS"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "<p>Bonjour</p>"
+                "translation": "<p>Hello"
+                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
+              "mistakes":
+                - "checkTypeCode": "TAG_CONSISTENCY"
+                  "severityLevelCode": "MEDIUM"
+                  "positions":
+                    "from": 8
+                    "to": 12
+                  "details":
+                      "tag": "</p>"
+                      "type": "TAG_DELETED"
+                  "positionTypeCode": "SOURCE"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "TAG_CONSISTENCY"
+      "name": "Tag consistency"
+      "description": "Check that tags in the source are correctly transferred to the translation"
+      "checkSubTypes":
+        - "checkSubTypeCode": "TAG_ADDED"
+          "name": "Tag added"
+        - "checkSubTypeCode": "TAG_DELETED"
+          "name": "Tag deleted"
+        - "checkSubTypeCode": "SPACES_AROUND_TAGS"
+          "name": "Spaces around tags"
+        - "checkSubTypeCode": "TAG_ORDER_IS_CHANGED"
+          "name": "Tag order changed"

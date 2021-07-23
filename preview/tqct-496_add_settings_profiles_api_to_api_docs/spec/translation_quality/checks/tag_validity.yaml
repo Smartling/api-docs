@@ -1,0 +1,102 @@
+components:
+  schemas:
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TAG_VALIDITY
+              description: check type code
+              example: "TAG_VALIDITY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+                      - INVALID_TAG_NESTING
+                      - TAG_IS_CHANGED
+                    description: check subtype code
+                    example: "OPEN_CLOSED_TAG_ORDER_IS_CHANGED"
+
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: TAG_VALIDITY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TAG_VALIDITY
+              description: check type code
+              example: "TAG_VALIDITY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+                      - INVALID_TAG_NESTING
+                      - TAG_IS_CHANGED
+                    description: check subtype code
+                    example: "OPEN_CLOSED_TAG_ORDER_IS_CHANGED"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+
+  examples:
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "TAG_VALIDITY"
+      "name": "Tag validity"
+      "description": "Check that tags in the source are correctly transferred to the translation"
+      "checkSubTypes":
+        - "checkSubTypeCode": "OPEN_CLOSED_TAG_ORDER_IS_CHANGED"
+          "name": "Opening tag appears before closing tag"
+        - "checkSubTypeCode": "INVALID_TAG_NESTING"
+          "name": "Invalid tag nesting"
+        - "checkSubTypeCode": "TAG_IS_CHANGED"
+          "name": "Malformed HTML tag"
+
+#                  TAG_VALIDITY:
+#                    value:
+#                      "severityLevelCode": "HIGH"
+#                      "checkTypeCode": "TAG_VALIDITY"
+#                      "subTypes":
+#                        - "checkSubTypeCode": "OPEN_CLOSED_TAG_ORDER_IS_CHANGED"
+#                          "severityLevelCode": "HIGH"
+#                        - "checkSubTypeCode": "INVALID_TAG_NESTING"
+#                          "severityLevelCode": "HIGH"
+#                        - "checkSubTypeCode": "TAG_IS_CHANGED"
+#                          "severityLevelCode": "HIGH"
+#                      "localeSeverityLevels": []
+#                      "groups": []
+

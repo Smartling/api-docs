@@ -1,0 +1,272 @@
+components:
+  schemas:
+    AccountCheckTypeApplySettingsRequest:
+      title: NUMBER_CONSISTENCY
+      allOf:
+        - $ref: '#/components/schemas/responseFields/ignoreSign'
+
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: NUMBER_CONSISTENCY
+      allOf:
+        - $ref: '#/components/schemas/responseFields/ignoreSign'
+
+    responseFields:
+      ignoreSign:
+        type: object
+        properties:
+          ignoreSign:
+            type: boolean
+            description: Ignore sign.
+            example: true
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/responseFields/ignoreSign'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - NUMBER_CONSISTENCY
+              description: check type code
+              example: "NUMBER_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - NUMBER_ADDED
+                      - NUMBER_DELETED
+                      - NUMBER_INCORRECT_CONVERSION
+                    description: check subtype code
+                    example: "NUMBER_ADDED"
+
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: NUMBER_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/responseFields/ignoreSign'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - NUMBER_CONSISTENCY
+              description: check type code
+              example: "NUMBER_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - NUMBER_ADDED
+                      - NUMBER_DELETED
+                      - NUMBER_INCORRECT_CONVERSION
+                    description: check subtype code
+                    example: "NUMBER_ADDED"
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: NUMBER_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - NUMBER_CONSISTENCY
+              description: check type code
+              example: "NUMBER_CONSISTENCY"
+            details:
+              oneOf:
+                - type: object
+                  title: NUMBER_ADDED
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - NUMBER_ADDED
+                      example: "NUMBER_ADDED"
+                    number:
+                      type: string
+                      description: number
+                      example: "1000"
+                - type: object
+                  title: NUMBER_DELETED
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - NUMBER_DELETED
+                      example: "NUMBER_DELETED"
+                    number:
+                      type: string
+                      description: number
+                      example: "1000"
+                - type: object
+                  title: NUMBER_INCORRECT_CONVERSION
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - NUMBER_INCORRECT_CONVERSION
+                      example: "NUMBER_INCORRECT_CONVERSION"
+                    number:
+                      type: string
+                      description: number
+                      example: "1000,1"
+                    expectedFormat:
+                      type: string
+                      description: number expected format
+                      example: "1,000.10"
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+                - SOURCE
+              description: position type code
+              example: "SOURCE"
+
+  examples:
+
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "NUMBER_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "NUMBER_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_INCORRECT_CONVERSION"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups":
+        - "groupUid": "b0dd258b05ee"
+        - "groupUid": "a853df2cf8ac"
+      "ignoreSign": true
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "NUMBER_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "NUMBER_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_INCORRECT_CONVERSION"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups":
+        - "groupUid": "b0dd258b05ee"
+        - "groupUid": "a853df2cf8ac"
+      "ignoreSign": true
+
+    projects_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "NUMBER_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "NUMBER_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_INCORRECT_CONVERSION"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups":
+        - "groupUid": "b0dd258b05ee"
+        - "groupUid": "a853df2cf8ac"
+      "ignoreSign": true
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "NUMBER_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "NUMBER_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_ADDED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "NUMBER_INCORRECT_CONVERSION"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups":
+        - "groupUid": "b0dd258b05ee"
+        - "groupUid": "a853df2cf8ac"
+      "ignoreSign": true
+
+    accounts_check_types_checkType_settings_example:
+      ignoreSign: true
+
+    profiles_accounts_check_types_checkType_settings_example:
+      ignoreSign: true
+
+    accounts_check_types_checkType_group_settings_example:
+      ignoreSign: true
+
+    profiles_accounts_check_types_checkType_group_settings_example:
+      ignoreSign: true
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "Bonjour 1000"
+                "translation": "Hello 20"
+                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
+              "mistakes":
+                - "checkTypeCode": "NUMBER_CONSISTENCY"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    - "from": 6
+                      "to": 10
+                  "details":
+                    "type": "NUMBER_DELETED"
+                    "number": "1000"
+                  "positionTypeCode": "SOURCE"
+                - "checkTypeCode": "NUMBER_CONSISTENCY"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    "from": 5
+                    "to": 7
+                  "details":
+                    "type": "NUMBER_ADDED"
+                    "number": "20"
+                  "positionTypeCode": "TARGET"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "NUMBER_CONSISTENCY"
+      "name": "Number consistency"
+      "description": "Check that numbers in the source are correctly transferred to the translation"
+      "checkSubTypes":
+        - "checkSubTypeCode": "NUMBER_ADDED"
+          "name": "Number added"
+        - "checkSubTypeCode": "NUMBER_DELETED"
+          "name": "Number deleted"
+        - "checkSubTypeCode": "NUMBER_INCORRECT_CONVERSION"
+          "name": "Incorrect number format conversion"
+
+

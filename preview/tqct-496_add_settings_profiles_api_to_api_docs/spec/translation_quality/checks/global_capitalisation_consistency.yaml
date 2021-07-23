@@ -1,0 +1,128 @@
+components:
+  schemas:
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - GLOBAL_CAPITALISATION_CONSISTENCY
+              description: check type code
+              example: "GLOBAL_CAPITALISATION_CONSISTENCY"
+
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: GLOBAL_CAPITALISATION_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - GLOBAL_CAPITALISATION_CONSISTENCY
+              description: check type code
+              example: "GLOBAL_CAPITALISATION_CONSISTENCY"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: GLOBAL_CAPITALISATION_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - GLOBAL_CAPITALISATION_CONSISTENCY
+              description: check type code
+              example: "GLOBAL_CAPITALISATION_CONSISTENCY"
+            details:
+              type: object
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+              description: position type code
+              example: "TARGET"
+
+  examples:
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "GLOBAL_CAPITALISATION_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "GLOBAL_CAPITALISATION_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "GLOBAL_CAPITALISATION_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "GLOBAL_CAPITALISATION_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "ATTENTION"
+                "translation": "WARNINg"
+                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
+              "mistakes":
+                - "checkTypeCode": "GLOBAL_CAPITALISATION_CONSISTENCY"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    - "from": 0
+                      "to": 7
+                  "details": null
+                  "positionTypeCode": "TARGET"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "GLOBAL_CAPITALISATION_CONSISTENCY"
+      "name": "Global capitalization consistency"
+      "description": "If source or target is in all caps, check that capitalization matches"
+      "checkSubTypes": []

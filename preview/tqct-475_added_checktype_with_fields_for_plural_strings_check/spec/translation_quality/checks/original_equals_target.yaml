@@ -1,0 +1,149 @@
+components:
+  schemas:
+
+    OriginalEqualsTargetSettingsDTO:
+      type: object
+      properties:
+        mustHaveIdenticalTags:
+          type: boolean
+          description: Must have identical tags
+          example: false
+        mustHaveIdenticalCapitalization:
+          type: boolean
+          description: Must have identical capitalization
+          example: true
+
+    AccountCheckTypeApplySettingsRequest:
+      title: ORIGINAL_EQUALS_TARGET
+      allOf:
+        - $ref: '#/components/schemas/OriginalEqualsTargetSettingsDTO'
+        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
+        - type: object
+          required:
+            - mustHaveIdenticalTags
+            - mustHaveIdenticalCapitalization
+
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: ORIGINAL_EQUALS_TARGET
+      allOf:
+        - $ref: '#/components/schemas/OriginalEqualsTargetSettingsDTO'
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/OriginalEqualsTargetSettingsDTO'
+        - type: object
+          required:
+            - checkTypeCode
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - ORIGINAL_EQUALS_TARGET
+              description: check type code
+              example: "ORIGINAL_EQUALS_TARGET"
+          discriminator:
+            propertyName: checkTypeCode
+            mapping:
+              LEADING_TRAILING_SPACES: '#/components/schemas/response/LEADING_TRAILING_SPACES'
+              ORIGINAL_EQUALS_TARGET: '#/components/schemas/response/ORIGINAL_EQUALS_TARGET'
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: ORIGINAL_EQUALS_TARGET
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - ORIGINAL_EQUALS_TARGET
+              description: check type code
+              example: "ORIGINAL_EQUALS_TARGET"
+            details:
+              type: object
+              properties:
+                types:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - IDENTICAL_CAPITALIZATION
+                      - IDENTICAL_TAGS
+                    example: '["IDENTICAL_CAPITALIZATION", "IDENTICAL_TAGS"]'
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+              description: position type code
+              example: "TARGET"
+
+  examples:
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "ORIGINAL_EQUALS_TARGET"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "mustHaveIdenticalTags": true
+      "mustHaveIdenticalCapitalization": true
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "ORIGINAL_EQUALS_TARGET"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "mustHaveIdenticalTags": true
+      "mustHaveIdenticalCapitalization": true
+
+    accounts_check_types_checkType_settings_example:
+      mustHaveIdenticalTags: false
+      mustHaveIdenticalCapitalization: false
+
+    accounts_check_types_checkType_group_settings_example:
+      mustHaveIdenticalTags: false
+      mustHaveIdenticalCapitalization: false
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "hello"
+                "translation": "hello"
+                "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888"
+                "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
+              "mistakes":
+                - "checkTypeCode": "ORIGINAL_EQUALS_TARGET"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    "from": 0
+                    "to": 5
+                  "details":
+                    "types":
+                      - "IDENTICAL_CAPITALIZATION"
+                      - "IDENTICAL_TAGS"
+                  "positionTypeCode": "TARGET"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "ORIGINAL_EQUALS_TARGET"
+      "name": "Original string equals target string"
+      "description": "Check that original string equals target string"
+      "checkSubTypes": []
+

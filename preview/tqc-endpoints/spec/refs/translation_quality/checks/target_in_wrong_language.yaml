@@ -1,0 +1,219 @@
+definitions:
+  check_types_TARGET_IN_WRONG_LANGUAGE_settings:
+    put:
+      description: >-
+        Apply target in wrong language settings.
+      summary: Apply target in wrong language settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/SettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  minTextLengthLimit: 10
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_IN_WRONG_LANGUAGE/settings:
+
+  check_types_TARGET_IN_WRONG_LANGUAGE_groups_settings:
+    put:
+      description: >-
+        Apply target in wrong language group settings.
+      summary: Apply target in wrong language group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/SettingsResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/TARGET_IN_WRONG_LANGUAGE/groups/{groupUid}/settings:
+
+  account_check_types_TARGET_IN_WRONG_LANGUAGE_settings_effective:
+    get:
+      description: >-
+        Get checktype TARGET_IN_WRONG_LANGUAGE settings for certain account.
+      summary: Get checktype TARGET_IN_WRONG_LANGUAGE settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding account.
+        - name: targetLocaleId
+          in: query
+          required: false
+          type: string
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/TARGET_IN_WRONG_LANGUAGE:
+
+  SettingsRequest:
+    allOf:
+      - type: object
+        required:
+          - minTextLengthLimit
+      - $ref: '../common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - $ref: '#/definitions/responseFields/minTextLengthLimit'
+
+  SettingsResponse:
+    allOf:
+      - $ref: '../../common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            $ref: '#/definitions/responseFields/minTextLengthLimit'
+
+  responseFields:
+    minTextLengthLimit:
+      type: object
+      properties:
+        minTextLengthLimit:
+          type: integer
+          minimum: 0
+          description: 1Minimal text length limit.
+          example: 10
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - $ref: '#/definitions/responseFields/minTextLengthLimit'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - TARGET_IN_WRONG_LANGUAGE
+            description: check type code
+            example: "TARGET_IN_WRONG_LANGUAGE"
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - TARGET_IN_WRONG_LANGUAGE
+            description: check type code
+            example: "TARGET_IN_WRONG_LANGUAGE"
+          details:
+            type: object
+          positionTypeCode:
+            type: string
+            enum:
+              - TARGET
+            description: position type code
+            example: "TARGET"
+
+#TARGET_IN_WRONG_LANGUAGE
+#{
+#    "sourceLocaleId": "it-IT",
+#    "targetLocaleId": "hu-HU",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#            "originalString": "hello",
+#            "translation": "Antlia is a constellation in the southern celestial hemisphere. "
+#        }],
+#    "checkTypeCodes": [
+#        "TARGET_IN_WRONG_LANGUAGE"
+#    ]
+#}
+#
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "hello",
+#                        "translation": "Antlia is a constellation in the southern celestial hemisphere. ",
+#                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "TARGET_IN_WRONG_LANGUAGE",
+#                            "severityLevelCode": "LOW",
+#                            "positions": [
+#                                {
+#                                    "from": 0,
+#                                    "to": 64
+#                                }
+#                            ],
+#                            "details": null,
+#                            "positionTypeCode": "TARGET"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}

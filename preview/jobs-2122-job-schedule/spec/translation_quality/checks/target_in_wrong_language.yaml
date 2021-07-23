@@ -1,0 +1,121 @@
+components:
+  schemas:
+
+    AccountCheckTypeApplySettingsRequest:
+      title: TARGET_IN_WRONG_LANGUAGE
+      allOf:
+        - type: object
+          required:
+            - minTextLengthLimit
+        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
+        - $ref: '#/components/schemas/responseFields/minTextLengthLimit'
+
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: TARGET_IN_WRONG_LANGUAGE
+      allOf:
+        - $ref: '#/components/schemas/responseFields/minTextLengthLimit'
+
+    responseFields:
+      minTextLengthLimit:
+        type: object
+        properties:
+          minTextLengthLimit:
+            type: integer
+            minimum: 0
+            description: Minimal text length limit.
+            example: 10
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/responseFields/minTextLengthLimit'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TARGET_IN_WRONG_LANGUAGE
+              description: check type code
+              example: "TARGET_IN_WRONG_LANGUAGE"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: TARGET_IN_WRONG_LANGUAGE
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TARGET_IN_WRONG_LANGUAGE
+              description: check type code
+              example: "TARGET_IN_WRONG_LANGUAGE"
+            details:
+              type: object
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+              description: position type code
+              example: "TARGET"
+
+  examples:
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TARGET_IN_WRONG_LANGUAGE"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "minTextLengthLimit": 40
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TARGET_IN_WRONG_LANGUAGE"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "minTextLengthLimit": 40
+
+    accounts_check_types_checkType_settings_example:
+      minTextLengthLimit: 15
+
+    accounts_check_types_checkType_group_settings_example:
+      minTextLengthLimit: 15
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "Le chien a mangé mes devoirs."
+                "translation": "Der Hund hat meine Hausaufgaben gegessen."
+                "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888"
+                "stringUid": null
+              "mistakes":
+                - "checkTypeCode": "TARGET_IN_WRONG_LANGUAGE"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    "from": 0
+                    "to": 64
+                  "details": null
+                  "positionTypeCode": "TARGET"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "TARGET_IN_WRONG_LANGUAGE"
+      "name": "Target in the wrong language"
+      "description": "Check that translated string is in the target language"
+      "checkSubTypes": []
+

@@ -1,0 +1,154 @@
+components:
+  schemas:
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TRADEMARK_CONSISTENCY
+              description: check type code
+              example: "TRADEMARK_CONSISTENCY"
+
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: TRADEMARK_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TRADEMARK_CONSISTENCY
+              description: check type code
+              example: "TRADEMARK_CONSISTENCY"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: TRADEMARK_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TRADEMARK_CONSISTENCY
+              description: check type code
+              example: "TRADEMARK_CONSISTENCY"
+            details:
+              type: object
+              properties:
+                trademarkTypeCode:
+                  type: string
+                  enum:
+                    - SERVICE_MARK
+                    - COPYRIGHT
+                    - REGISTERED
+                    - TRADEMARK
+                  description: trademark type code
+                  example: "COPYRIGHT"
+            positionTypeCode:
+              type: string
+              enum:
+                - SOURCE
+              description: position type code
+              example: "SOURCE"
+
+  examples:
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TRADEMARK_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TRADEMARK_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TRADEMARK_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TRADEMARK_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "Bonjour ©"
+                "translation": "Hello"
+                "hashcode": "9091152182c69d9b72069ac1290fe2345"
+                "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
+              "mistakes":
+                - "checkTypeCode": "TRADEMARK_CONSISTENCY"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    "from": 6
+                    "to": 7
+                  "details":
+                    "trademarkTypeCode": "COPYRIGHT"
+                  "positionTypeCode": "SOURCE"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "TRADEMARK_CONSISTENCY"
+      "name": "Legal symbol consistency"
+      "description": "Check that legal symbols in the source like trademark and copyright are used in the translation"
+      "checkSubTypes": []
+
+    dictionary_checkType_TRADEMARK_CONSISTENCY_trademark_types_example:
+      response:
+        code: SUCCESS
+        data:
+          totalCount: 4
+          items:
+            - "name": "Service Mark"
+              "trademarkTypeCode": "SERVICE_MARK"
+            - "name": "Copyright"
+              "trademarkTypeCode": "COPYRIGHT"
+            - "name": "Registered"
+              "trademarkTypeCode": "REGISTERED"
+            - "name": "Trademark symbol"
+              "trademarkTypeCode": "TRADEMARK"

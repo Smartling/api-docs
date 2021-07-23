@@ -1,0 +1,121 @@
+components:
+  schemas:
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - PUNCTUATION_CONSISTENCY
+              description: check type code
+              example: "PUNCTUATION_CONSISTENCY"
+
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: PUNCTUATION_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - PUNCTUATION_CONSISTENCY
+              description: check type code
+              example: "PUNCTUATION_CONSISTENCY"
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: PUNCTUATION_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - PUNCTUATION_CONSISTENCY
+              description: check type code
+              example: "PUNCTUATION_CONSISTENCY"
+            details:
+              type: object
+            positionTypeCode:
+              type: string
+              enum:
+                - SOURCE
+              description: position type code
+              example: "SOURCE"
+
+  examples:
+
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    projects_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "Hello!"
+                "translation": "Привет. Как дела?"
+                "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888"
+                "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
+              "mistakes":
+                - "checkTypeCode": "PUNCTUATION_CONSISTENCY"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    "from": 5
+                    "to": 6
+                  "details":
+                    "punctuationMark": "!"
+                    "type": "PUNCTUATION_MARK_DELETED"
+                    "punctuationMarkType": "TERMINAL"
+                  "positionTypeCode": "SOURCE"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "PUNCTUATION_CONSISTENCY"
+      "name": "Punctuation consistency"
+      "description": "Check for punctuation consistency"
+      "checkSubTypes": []

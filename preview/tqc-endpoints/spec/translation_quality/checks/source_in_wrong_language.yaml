@@ -1,0 +1,219 @@
+definitions:
+  check_types_SOURCE_IN_WRONG_LANGUAGE_settings:
+    put:
+      description: >-
+        Apply source in wrong language settings.
+      summary: Apply source in wrong language settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySourceInWrongLanguageSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySourceInWrongLanguageSettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  minTextLengthLimit: 10
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SOURCE_IN_WRONG_LANGUAGE/settings:
+
+  check_types_SOURCE_IN_WRONG_LANGUAGE_group_settings:
+    put:
+      description: >-
+        Apply source in wrong language group settings.
+      summary: Apply source in wrong language group settings
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/pathParameters/groupUid'
+        - name: request
+          description: ''
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySourceInWrongLanguageSettingsRequest'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeApplySourceInWrongLanguageSettingsResponse'
+          examples:
+            application/json:
+              response:
+                code: SUCCESS
+                data:
+                  minTextLengthLimit: 10
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/SOURCE_IN_WRONG_LANGUAGE/groups/{groupUid}/settings:
+
+  account_check_types_SOURCE_IN_WRONG_LANGUAGE_settings_effective:
+    get:
+      description: >-
+        Get checktype SOURCE_IN_WRONG_LANGUAGE settings for certain account.
+      summary: Get checktype SOURCE_IN_WRONG_LANGUAGE settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/SOURCE_IN_WRONG_LANGUAGE:
+
+  SourceInWrongLanguageSettingsDTO:
+    type: object
+    properties:
+      minTextLengthLimit:
+        type: integer
+        minimum: 0
+        description: Minimal text length limit.
+        example: 10
+
+  AccountCheckTypeApplySourceInWrongLanguageSettingsRequest:
+    allOf:
+      - $ref: '#/definitions/SourceInWrongLanguageSettingsDTO'
+      - $ref: '../tqc_common.yaml#/definitions/requestBodyParameter/targetLocaleId'
+      - type: object
+        required:
+          - minTextLengthLimit
+
+  AccountCheckTypeApplySourceInWrongLanguageSettingsResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/SourceInWrongLanguageSettingsDTO'
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - $ref: '#/definitions/SourceInWrongLanguageSettingsDTO'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - SOURCE_IN_WRONG_LANGUAGE
+            description: check type code
+            example: "SOURCE_IN_WRONG_LANGUAGE"
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - SOURCE_IN_WRONG_LANGUAGE
+            description: check type code
+            example: "SOURCE_IN_WRONG_LANGUAGE"
+          details:
+            type: object
+          positionTypeCode:
+            type: string
+            enum:
+              - SOURCE
+            description: position type code
+            example: "SOURCE"
+
+#SOURCE_IN_WRONG_LANGUAGE
+#{
+#    "sourceLocaleId": "it-IT",
+#    "targetLocaleId": "hu-HU",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#            "originalString": "Antlia is a constellation in the southern celestial hemisphere.",
+#            "translation": "hello"
+#        }],
+#    "checkTypeCodes": [
+#        "SOURCE_IN_WRONG_LANGUAGE"
+#    ]
+#}
+#
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "Antlia is a constellation in the southern celestial hemisphere.",
+#                        "translation": "hello",
+#                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "SOURCE_IN_WRONG_LANGUAGE",
+#                            "severityLevelCode": "LOW",
+#                            "positions": [
+#                                {
+#                                    "from": 0,
+#                                    "to": 63
+#                                }
+#                            ],
+#                            "details": null,
+#                            "positionTypeCode": "SOURCE"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}
+

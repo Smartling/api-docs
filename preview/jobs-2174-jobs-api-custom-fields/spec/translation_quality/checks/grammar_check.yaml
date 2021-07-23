@@ -1,0 +1,115 @@
+components:
+  schemas:
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - GRAMMAR_CHECK
+              description: check type code
+              example: "GRAMMAR_CHECK"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: GRAMMAR_CHECK
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - GRAMMAR_CHECK
+              description: check type code
+              example: "GRAMMAR_CHECK"
+            details:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: text
+                  example: "play"
+                message:
+                  type: string
+                  description: message
+                  example: "Possible agreement error -- use past participle here: <suggestion>played</suggestion>."
+                description:
+                  type: string
+                  description: description
+                  example: "Had + verb present tense"
+                mistakeTypeCode:
+                  type: string
+                  description: mistake type code
+                  example: "Grammar"
+                suggestions:
+                  type: array
+                  items:
+                    type: string
+                    example: "played"
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+              description: position type code
+              example: "TARGET"
+
+  examples:
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "GRAMMAR_CHECK"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "GRAMMAR_CHECK"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "Le chien a mangé mes devoirs."
+                "translation": "The dog have ate my homework."
+                "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888"
+                "stringUid": null
+              "mistakes":
+                - "checkTypeCode": "GRAMMAR_CHECK"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    "from": 9
+                    "to": 13
+                  "details":
+                    "text": "ate"
+                    "message": "Possible agreement error"
+                    "description": "Agreement: 'have' + past/present tense"
+                    "mistakeTypeCode": "Grammar"
+                    "suggestions":
+                      - "eaten"
+                  "positionTypeCode": "TARGET"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "GRAMMAR_CHECK"
+      "name": "Grammar"
+      "description": "Check for grammar errors"
+      "checkSubTypes": []

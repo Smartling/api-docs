@@ -1,0 +1,151 @@
+components:
+
+  parameters:
+    batchUid:
+      description: A unique identifier for a batch.
+      in: path
+      name: batchUid
+      required: true
+      schema:
+        format: uid
+        type: string
+
+  schemas:
+    BatchStatus:
+      description: The status of the Batch
+      enum:
+        - DRAFT
+        - ADDING_FILES
+        - EXECUTING
+        - COMPLETED
+      type: string
+
+    BatchItemStatus:
+      description: The status of the BatchItem
+      enum:
+        - DRAFT
+        - UPLOADING
+        - UPLOAD_FAILED
+        - ATTACHING
+        - ATTACH_FAILED
+        - COMPLETED
+        - CANCELED
+      type: string
+
+    FileType:
+      type: string
+      description: A unique identifier for the file type.
+      enum:
+        - android
+        - ios
+        - gettext
+        - html
+        - java_properties
+        - xliff
+        - xml
+        - json
+        - docx
+        - pptx
+        - xlsx
+        - idml
+        - qt
+        - resx
+        - plain_text
+        - csv
+        - srt
+        - stringsdict
+        - xls
+        - doc
+        - ppt
+        - pres
+        - madcap
+        - yaml
+        - markdown
+
+    LocaleWorkflow:
+      description: Indicates which workflow to authorize for a given locale.
+      properties:
+        targetLocaleId:
+          description: >-
+            The locale identifier to use when indicating the locale to authorize
+            content for. If `targetLocaleId` is specified, then `workflowUid` is
+            required as well. Both can be omitted, and the default workflow for
+            that locale will be used.
+          type: string
+        workflowUid:
+          description: The UID of the workflow to authorize content into.
+          type: string
+      type: object
+
+    Batch:
+      description: >-
+        The Job Batch is a session for uploading multiple files into tms,
+        attaching them to a translationJob and authorizing this job.
+      properties:
+        batchUid:
+          description: A unique identifier for a batch.
+          format: uid
+          type: string
+        status:
+          $ref: '#/components/schemas/BatchStatus'
+        authorized:
+          description: The flag showing if authorizing job is requested for this Batch
+          type: boolean
+        translationJobUid:
+          description: The UID of the translationJob
+          format: uid
+          type: string
+        projectId:
+          description: The UID of the project
+          format: uid
+          type: string
+        createdDate:
+          description: The UTC value of the date the batch was created.
+          example: '2015-11-21T01:51:17.000Z'
+          format: date-time
+          type: string
+        modifiedDate:
+          description: The UTC value of the date the batch was modified.
+          example: '2015-11-21T01:51:17.000Z'
+          format: date-time
+          type: string
+        hasError:
+          description: Shows if any error occured while batch processing.
+          type: boolean
+      type: object
+    BatchItem:
+      description: Associates an uploaded file with particular Batch. BatchItem is handled
+      properties:
+        errors:
+          description: >-
+            A list of errors occured while uploading or attaching file linked to
+            this batchItem
+          type: string
+        fileUri:
+          description: Uri of the file linked to the Batch
+          type: string
+        status:
+          $ref: '#/components/schemas/BatchItemStatus'
+        targetLocales:
+          items:
+            $ref: '#/components/schemas/BatchItemLocale'
+          type: array
+        updatedDate:
+          description: The UTC value of the date the batch item was updated.
+          example: '2015-11-21T01:51:17.000Z'
+          format: date-time
+          type: string
+      type: object
+    BatchItemLocale:
+      description: A smartling locale which file should be authorized to
+      properties:
+        localeId:
+          description: Smartling locale identifier
+          type: string
+        stringsAdded:
+          description: Number of strings added to the translationJob from this file
+          type: integer
+        stringsSkipped:
+          description: Number of strings not added to the translationJob from this file
+          type: integer
+      type: object

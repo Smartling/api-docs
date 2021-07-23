@@ -1,0 +1,117 @@
+definitions:
+  account_check_types_GLOBAL_CAPITALISATION_CONSISTENCY_settings_effective:
+    get:
+      description: >-
+        Get checktype GLOBAL_CAPITALISATION_CONSISTENCY settings for certain account.
+      summary: Get checktype GLOBAL_CAPITALISATION_CONSISTENCY settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/GLOBAL_CAPITALISATION_CONSISTENCY:
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithoutSubTypesResponse'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - GLOBAL_CAPITALISATION_CONSISTENCY
+            description: check type code
+            example: "GLOBAL_CAPITALISATION_CONSISTENCY"
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - GLOBAL_CAPITALISATION_CONSISTENCY
+            description: check type code
+            example: "GLOBAL_CAPITALISATION_CONSISTENCY"
+          details:
+            type: object
+          positionTypeCode:
+            type: string
+            enum:
+              - TARGET
+            description: position type code
+            example: "TARGET"
+
+
+#GLOBAL_CAPITALISATION_CONSISTENCY
+#{
+#    "sourceLocaleId": "en-US",
+#    "targetLocaleId": "hu-HU",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#            "originalString": "We Are Going to gym now",
+#            "translation": "Most megyünk sds edzőtrembe"
+#        }],
+#    "checkTypeCodes": [
+#        "GLOBAL_CAPITALISATION_CONSISTENCY"
+#    ]
+#}
+#
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "WARNING",
+#                        "translation": "FIGYELEm",
+#                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "GLOBAL_CAPITALISATION_CONSISTENCY",
+#                            "severityLevelCode": "LOW",
+#                            "positions": [
+#                                {
+#                                    "from": 0,
+#                                    "to": 8
+#                                }
+#                            ],
+#                            "details": null,
+#                            "positionTypeCode": "TARGET"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}

@@ -1,0 +1,658 @@
+components:
+  parameters:
+    groupUidPathParameter:
+      name: groupUid
+      in: path
+      type: string
+      required: true
+      description: Unique identifier of corresponding group.
+
+    wordUidPathParameter:
+      name: wordUid
+      in: path
+      required: true
+      type: string
+      description: Word unique identifier.
+
+    checkTypeCodePathParameter:
+      name: checkTypeCode
+      in: path
+      required: true
+      schema:
+        type: string
+        $ref: '#/components/schemas/enum/checkTypeCodeEnum'
+      description: check type code
+
+    checkTypeCodeWithSettingsPathParameter:
+      name: checkTypeCode
+      in: path
+      required: true
+      schema:
+        type: string
+        $ref: '#/components/schemas/enum/checkTypeCodeWithSettingsEnum'
+      description: check type code
+
+    checkTypeCodeOnlyWithSubtypesPathParameter:
+      name: checkTypeCode
+      in: path
+      required: true
+      schema:
+        type: string
+        $ref: '#/components/schemas/enum/checkTypeCodeOnlyWithSubtypesEnum'
+      description: check type code
+
+    checkSubTypeCodePathParameter:
+      name: checkSubTypeCode
+      in: path
+      required: true
+      schema:
+        type: string
+        $ref: '#/components/schemas/enum/checkSubtypeEnum'
+      description: Check subtype code
+
+    targetLocaleIdPathParameter:
+      name: targetLocaleId
+      in: path
+      required: true
+      type: string
+      description: Smartling ID for the language you want to translate to.
+
+    targetLocaleIdQueryParameter:
+      name: targetLocaleId
+      in: query
+      required: true
+      type: string
+      description: Smartling ID for the language you want to translate to.
+
+    profileUidPathParameter:
+      name: profileUid
+      in: path
+      required: true
+      type: string
+      description: Unique identifier of corresponding profile.
+
+    copyProfileUidPathParameter:
+      name: profileUid
+      in: path
+      required: true
+      type: string
+      description: Unique identifier of the profile for copy creation.
+
+    nameMaskQueryParameter:
+      name: nameMask
+      in: query
+      required: false
+      type: string
+      description: name mask.
+      example: default
+
+    limitQueryParameter:
+      name: limit
+      in: query
+      required: false
+      type: integer
+      description: limit size.
+      example: 100
+
+    offsetQueryParameter:
+      name: offset
+      in: query
+      required: false
+      type: integer
+      description: offset number.
+      example: 1
+
+  requestBodies:
+
+    severityLevelCode:
+      type: object
+      properties:
+        severityLevelCode:
+          type: string
+          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          description: severity level code
+          example: "MEDIUM"
+
+    targetLocaleId:
+      type: object
+      properties:
+        targetLocaleId:
+          type: string
+          description: Smartling ID for the language you want to translate to.
+          example: "it-IT"
+
+    profileUid:
+      type: object
+      properties:
+        profileUid:
+          type: string
+          description: Unique identifier of corresponding profile.
+          example: "ce6d6b5dbc12"
+
+    profileName:
+      type: object
+      properties:
+        name:
+          type: string
+          description: profile name.
+          example: "default name"
+
+    checkTypeCode:
+      type: object
+      properties:
+        checkTypeCode:
+          type: string
+          $ref: '#/components/schemas/enum/checkTypeCodeEnum'
+          description: check type code
+          example: "LEADING_TRAILING_SPACES"
+
+  schemas:
+
+    groupUidResponse:
+      type: object
+      properties:
+        groupUid:
+          type: string
+          description: Unique identifier of corresponding group.
+
+    profileUidResponse:
+      type: object
+      properties:
+        profileUid:
+          type: string
+          description: Unique identifier of corresponding profile.
+          example: "ce6d6b5dbc12"
+
+    checkTypeCodeResponse:
+      type: object
+      properties:
+        checkTypeCode:
+          type: string
+          $ref: '#/components/schemas/enum/checkTypeCodeEnum'
+          description: check type code
+
+    profileResponse:
+      type: object
+      properties:
+        profileUid:
+          type: string
+          description: Unique identifier of the profile.
+          example: ce6d6b5dbc12
+        name:
+          type: string
+          description: profile name
+          example: default profile
+        createdByUserUid:
+          type: string
+          description: Unique identifier for the user who created the profile.
+          example: xas344dsd3
+        modifiedByUserUid:
+          type: string
+          description: Unique identifier for the user who modified the profile.
+          example: xas344dsd3
+        createdDate:
+          type: string
+          description: created date
+          example: "2018-07-02T13:39:27Z"
+        modifiedDate:
+          type: string
+          description: modified date
+          example: "2018-07-02T13:39:27Z"
+
+    checkSubTypeCodeResponse:
+      type: object
+      properties:
+        checkSubTypeCode:
+          type: string
+          $ref: '#/components/schemas/enum/checkSubtypeEnum'
+          description: check subtype code
+          example: "EMOJI_ADDED"
+        name:
+          type: string
+          description: check subtype name
+          example: "Emoji added"
+
+    matchMethodCodeResponse:
+      type: object
+      properties:
+        matchMethodCode:
+          type: string
+          enum:
+            - MATCH_BY_PERCENTAGE
+            - EXACT_MATCH
+          description: severity level code
+          example: "MATCH_BY_PERCENTAGE"
+
+    severityLevelCodeResponse:
+      type: object
+      properties:
+        severityLevelCode:
+          type: string
+          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          description: severity level code
+          example: "MEDIUM"
+
+    severityLevelCodeResponse1:
+      type: object
+      properties:
+        severityLevelCode:
+          type: string
+          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          description: severity level code
+          example: "MEDIUM"
+
+    trademarkTypeCodeResponse:
+      type: object
+      properties:
+        trademarkTypeCode:
+          type: string
+          enum:
+            - SERVICE_MARK
+            - COPYRIGHT
+            - REGISTERED
+            - TRADEMARK
+          description: trademark consistency type code
+          example: "SERVICE_MARK"
+
+    commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective:
+      allOf:
+        - $ref: '#/components/schemas/severityLevelCodeResponse'
+        - $ref: '#/components/schemas/emptySubTypesAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/localeSeverityLevelsAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/groupsAccountCheckTypeSettingsEffective'
+
+    commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective:
+      allOf:
+        - $ref: '#/components/schemas/severityLevelCodeResponse'
+        - $ref: '#/components/schemas/localeSeverityLevelsAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/groupsAccountCheckTypeSettingsEffective'
+
+    emptySubTypesAccountCheckTypeSettingsEffective:
+      type: object
+      properties:
+        subTypes:
+          type: array
+          items:
+            type: object
+            properties:
+              checkSubTypeCode:
+                type: string
+                description: check subtype code
+                example: ""
+
+    localeSeverityLevelsAccountCheckTypeSettingsEffective:
+      type: object
+      properties:
+        localeSeverityLevels:
+          type: array
+          items:
+            type: object
+            properties:
+              targetLocaleId:
+                type: string
+                description: Smartling locale identifier of the translation
+                example: "it-IT"
+              severityLevelCode:
+                type: string
+                $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+                description: severity level code
+                example: "MEDIUM"
+
+    groupsAccountCheckTypeSettingsEffective:
+      type: object
+      properties:
+        groups:
+          type: array
+          items:
+            type: object
+            properties:
+              groupUid:
+                type: string
+                description: unique identifier of group
+                example: "12dsd344ds"
+    stringUid:
+      type: object
+      properties:
+        stringUid:
+          type: string
+          description: it is string part unique identifier if string is splitted on several parts
+          example: ""
+
+    originalString:
+      type: object
+      properties:
+        originalString:
+          type: string
+          description: original string
+          example: "blacklist_term"
+
+    translation:
+      type: object
+      properties:
+        translation:
+          type: string
+          description: translation of the original string
+          example: "blacklist_term"
+
+    hashcode:
+      type: object
+      properties:
+        hashcode:
+          type: string
+          description: string hashcode
+          example: "7191152182c69d9b72069ac1290fe24b"
+
+    pluralFormGroupUid:
+      type: object
+      properties:
+        pluralFormGroupUid:
+          type: string
+          description: unique identifier of plural form
+          example: "7191152182c69d9b72069ac1290fe24b"
+
+    pluralForm:
+      type: object
+      properties:
+        pluralForm:
+          type: string
+          description: plural form
+          example: "ONE"
+
+    PositionsTqcCheckDTO:
+      type: object
+      properties:
+        positions:
+          type: array
+          items:
+            type: object
+            properties:
+              from:
+                type: integer
+                description: start position in the string
+              to:
+                type: integer
+                description: end position in the string
+
+    TqcCheckMistakeDTOs:
+      oneOf:
+        - $ref: 'checks/blacklisted_terms.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/global_capitalisation_consistency.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/grammar_check.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/insertable_consistency.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/leading_trailing_spaces.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/non_translatable_text.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/number_consistency.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/original_equals_target.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/repeated_word.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/segment_completeness.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/spellcheck.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/tag_consistency.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/target_length_limit.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/trademark_consistency.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/whitespaces.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/plurals_repetition.yaml#/components/schemas/TqcCheckMistakeDTO'
+
+    CheckTypeSettingBase:
+      type: object
+      required:
+        - checkTypeCode
+      discriminator:
+        propertyName: checkTypeCode
+        mapping:
+          LEADING_TRAILING_SPACES: '#/components/schemas/LEADING_TRAILING_SPACES'
+          ORIGINAL_EQUALS_TARGET: '#/components/schemas/ORIGINAL_EQUALS_TARGET'
+          WHITESPACES: '#/components/schemas/WHITESPACES'
+          SPELLCHECK: '#/components/schemas/SPELLCHECK'
+          TAG_CONSISTENCY: '#/components/schemas/TAG_CONSISTENCY'
+          TARGET_LENGTH_LIMIT: '#/components/schemas/TARGET_LENGTH_LIMIT'
+          NUMBER_CONSISTENCY: '#/components/schemas/NUMBER_CONSISTENCY'
+          REPEATED_WORD: '#/components/schemas/REPEATED_WORD'
+          TARGET_IN_WRONG_LANGUAGE: '#/components/schemas/TARGET_IN_WRONG_LANGUAGE'
+          SOURCE_IN_WRONG_LANGUAGE: '#/components/schemas/SOURCE_IN_WRONG_LANGUAGE'
+          SEGMENT_COMPLETENESS: '#/components/schemas/SEGMENT_COMPLETENESS'
+          NON_TRANSLATABLE_TEXT: '#/components/schemas/NON_TRANSLATABLE_TEXT'
+          EMOJI_CONSISTENCY: '#/components/schemas/EMOJI_CONSISTENCY'
+          INSERTABLE_CONSISTENCY: '#/components/schemas/INSERTABLE_CONSISTENCY'
+          TARGET_SOURCE_CONSISTENCY: '#/components/schemas/TARGET_SOURCE_CONSISTENCY'
+          BLACKLISTED_TERMS: '#/components/schemas/BLACKLISTED_TERMS'
+          GLOSSARY_COMPLIANCE: '#/components/schemas/GLOSSARY_COMPLIANCE'
+          TRADEMARK_CONSISTENCY: '#/components/schemas/TRADEMARK_CONSISTENCY'
+          GRAMMAR_CHECK: '#/components/schemas/GRAMMAR_CHECK'
+          GLOBAL_CAPITALISATION_CONSISTENCY: '#/components/schemas/GLOBAL_CAPITALISATION_CONSISTENCY'
+          PUNCTUATION_CONSISTENCY: '#/components/schemas/PUNCTUATION_CONSISTENCY'
+          PLURALS_REPETITION: '#/components/schemas/PLURALS_REPETITION'
+
+    ProjectCheckTypeEffectiveDTOAnyOf:
+      anyOf:
+        - $ref: 'checks/blacklisted_terms.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/ProjectCheckTypeEffectiveDTO'
+        - $ref: 'checks/grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/insertable_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/leading_trailing_spaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/non_translatable_text.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/number_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/repeated_word.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/tag_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_length_limit.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/trademark_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    AccountCheckTypeEffectiveDTOAnyOf:
+      anyOf:
+        - $ref: 'checks/blacklisted_terms.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/insertable_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/leading_trailing_spaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/non_translatable_text.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/number_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/repeated_word.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/tag_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_length_limit.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/trademark_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveDTOAnyOf:
+      anyOf:
+        - $ref: 'checks/blacklisted_terms.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/global_capitalisation_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/grammar_check.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/insertable_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/leading_trailing_spaces.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/non_translatable_text.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/number_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/original_equals_target.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/repeated_word.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/segment_completeness.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/spellcheck.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/tag_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_length_limit.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/trademark_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/whitespaces.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/plurals_repetition.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+
+    AccountCheckTypeApplyGroupSettingsDTOResponseOneOf:
+      $ref: '#/components/schemas/AccountCheckTypeApplySettingsDTOResponseOneOfCommon'
+
+    ProfilesAccountCheckTypeApplyGroupSettingsDTOResponseOneOf:
+      $ref: '#/components/schemas/ProfilesAccountCheckTypeApplySettingsDTOResponseOneOfCommon'
+
+    AccountCheckTypeApplySettingsDTOResponseOneOf:
+      $ref: '#/components/schemas/AccountCheckTypeApplySettingsDTOResponseOneOfCommon'
+
+    ProfilesAccountCheckTypeApplySettingsDTOResponseOneOf:
+      $ref: '#/components/schemas/ProfilesAccountCheckTypeApplySettingsDTOResponseOneOfCommon'
+
+    AccountCheckTypeApplySettingsDTOResponseOneOfCommon:
+      oneOf:
+        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/number_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+
+    ProfilesAccountCheckTypeApplySettingsDTOResponseOneOfCommon:
+      oneOf:
+        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/number_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/ProfilesAccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+
+    AccountCheckTypeApplySettingsRequestOneOf:
+      $ref: '#/components/schemas/AccountCheckTypeApplySettingsRequestOneOfCommon'
+
+    ProfilesAccountCheckTypeApplySettingsRequestOneOf:
+      $ref: '#/components/schemas/ProfilesAccountCheckTypeApplySettingsRequestOneOfCommon'
+
+    AccountCheckTypeApplyGroupSettingsRequestOneOf:
+      $ref: '#/components/schemas/AccountCheckTypeApplySettingsRequestOneOfCommon'
+
+    ProfilesAccountCheckTypeApplyGroupSettingsRequestOneOf:
+      $ref: '#/components/schemas/ProfilesAccountCheckTypeApplySettingsRequestOneOfCommon'
+
+    AccountCheckTypeApplySettingsRequestOneOfCommon:
+      oneOf:
+        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/number_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+
+    ProfilesAccountCheckTypeApplySettingsRequestOneOfCommon:
+      oneOf:
+        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/number_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/ProfilesAccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+
+    enum:
+      checkTypeCodeEnum:
+        enum:
+          - LEADING_TRAILING_SPACES
+          - ORIGINAL_EQUALS_TARGET
+          - WHITESPACES
+          - SPELLCHECK
+          - TAG_CONSISTENCY
+          - TARGET_LENGTH_LIMIT
+          - NUMBER_CONSISTENCY
+          - REPEATED_WORD
+          - TARGET_IN_WRONG_LANGUAGE
+          - SOURCE_IN_WRONG_LANGUAGE
+          - SEGMENT_COMPLETENESS
+          - NON_TRANSLATABLE_TEXT
+          - EMOJI_CONSISTENCY
+          - INSERTABLE_CONSISTENCY
+          - TARGET_SOURCE_CONSISTENCY
+          - BLACKLISTED_TERMS
+          - GLOSSARY_COMPLIANCE
+          - TRADEMARK_CONSISTENCY
+          - GRAMMAR_CHECK
+          - GLOBAL_CAPITALISATION_CONSISTENCY
+          - PUNCTUATION_CONSISTENCY
+          - PLURALS_REPETITION
+
+      checkSubtypeEnum:
+        enum:
+          - EMOJI_ADDED
+          - EMOJI_DELETED
+          - EMOJI_PRESENT
+          - INSERTABLE_ADDED
+          - INSERTABLE_DELETED
+          - PLACEABLE_ADDED
+          - PLACEABLE_DELETED
+          - SPACES_AROUND_PLACEABLE
+          - PLACEABLE_FORMAT
+          - NUMBER_ADDED
+          - NUMBER_DELETED
+          - NUMBER_INCORRECT_CONVERSION
+          - TARGET_IS_EMPTY
+          - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+          - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+          - TAG_ADDED
+          - TAG_DELETED
+          - SPACES_AROUND_TAGS
+          - TAG_ORDER_IS_CHANGED
+          - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+          - INVALID_TAG_NESTING
+          - TAG_IS_CHANGED
+          - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+          - SAME_TRANSLATION_DIFFERENT_SOURCES
+
+      severityLevelCodeEnum:
+        enum:
+          - DISABLED
+          - LOW
+          - MEDIUM
+          - HIGH
+
+      checkTypeCodeWithSettingsEnum:
+        enum:
+          - ORIGINAL_EQUALS_TARGET
+          - SPELLCHECK
+          - NUMBER_CONSISTENCY
+          - TARGET_IN_WRONG_LANGUAGE
+          - SOURCE_IN_WRONG_LANGUAGE
+          - SEGMENT_COMPLETENESS
+          - EMOJI_CONSISTENCY
+          - TARGET_SOURCE_CONSISTENCY
+          - GLOSSARY_COMPLIANCE
+
+      checkTypeCodeOnlyWithSubtypesEnum:
+        enum:
+          - TAG_CONSISTENCY
+          - NUMBER_CONSISTENCY
+          - SEGMENT_COMPLETENESS
+          - NON_TRANSLATABLE_TEXT
+          - EMOJI_CONSISTENCY
+          - INSERTABLE_CONSISTENCY
+          - TARGET_SOURCE_CONSISTENCY

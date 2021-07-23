@@ -1,0 +1,146 @@
+definitions:
+  account_check_types_TAG_CONSISTENCY_settings_effective:
+    get:
+      description: >-
+        Get checktype TAG_CONSISTENCY settings for certain account.
+      summary: Get checktype TAG_CONSISTENCY settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../api_common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../tqc_common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/TAG_CONSISTENCY:
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - TAG_CONSISTENCY
+            description: check type code
+            example: "TAG_CONSISTENCY"
+          subTypes:
+            type: array
+            items:
+              type: object
+              properties:
+                checkSubTypeCode:
+                  type: string
+                  enum:
+                    - TAG_ADDED
+                    - TAG_DELETED
+                    - SPACES_AROUND_TAGS
+                    - TAG_ORDER_IS_CHANGED
+                  description: check subtype code
+                  example: "TAG_ADDED"
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../api_common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../tqc_common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../tqc_common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - TAG_CONSISTENCY
+            description: check type code
+            example: "TAG_CONSISTENCY"
+          details:
+            type: object
+            properties:
+              tag:
+                type: string
+                description: tag
+                example: "</p>"
+              type:
+                type: string
+                enum:
+                  - TAG_ADDED
+                  - TAG_DELETED
+                  - SPACES_AROUND_TAGS
+                  - TAG_ORDER_IS_CHANGED
+                example: "TAG_DELETED"
+          positionTypeCode:
+            type: string
+            enum:
+              - SOURCE
+            description: position type code
+            example: "SOURCE"
+
+#TAG_CONSISTENCY
+#{
+#    "sourceLocaleId": "en-US",
+#    "targetLocaleId": "hu-HU",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#            "originalString": "<p>hello</p>",
+#            "translation": "<p>Szia"
+#        }],
+#    "checkTypeCodes": [
+#        "TAG_CONSISTENCY"
+#    ]
+#}
+#
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "<p>hello</p>",
+#                        "translation": "<p>Szia",
+#                        "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "TAG_CONSISTENCY",
+#                            "severityLevelCode": "MEDIUM",
+#                            "positions": [
+#                                {
+#                                    "from": 8,
+#                                    "to": 12
+#                                }
+#                            ],
+#                            "details": {
+#                                "tag": "</p>",
+#                                "type": "TAG_DELETED"
+#                            },
+#                            "positionTypeCode": "SOURCE"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}

@@ -1,0 +1,171 @@
+components:
+  schemas:
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - INSERTABLE_CONSISTENCY
+              description: check type code
+              example: "INSERTABLE_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - INSERTABLE_ADDED
+                      - INSERTABLE_DELETED
+                    description: check subtype code
+                    example: "INSERTABLE_ADDED"
+
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: INSERTABLE_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - INSERTABLE_CONSISTENCY
+              description: check type code
+              example: "INSERTABLE_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - INSERTABLE_ADDED
+                      - INSERTABLE_DELETED
+                    description: check subtype code
+                    example: "INSERTABLE_ADDED"
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: INSERTABLE_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - INSERTABLE_CONSISTENCY
+              description: check type code
+              example: "INSERTABLE_CONSISTENCY"
+            details:
+              type: object
+              properties:
+                insertable:
+                  type: string
+                  description: insertable
+                  example: "<br>"
+                insertableType:
+                  type: string
+                  description: insertable type
+                  example: "BR_TAG"
+                type:
+                  type: string
+                  enum:
+                    - INSERTABLE_ADDED
+                    - INSERTABLE_DELETED
+                  description: insertable
+                  example: "INSERTABLE_DELETED"
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+                - SOURCE
+              description: position type code
+              example: "SOURCE"
+
+  examples:
+
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "INSERTABLE_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "INSERTABLE_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "INSERTABLE_ADDED"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "INSERTABLE_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "INSERTABLE_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "INSERTABLE_ADDED"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "INSERTABLE_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "INSERTABLE_DELETED"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "INSERTABLE_ADDED"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "Bonjour <br>"
+                "translation": "Hello"
+                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
+              "mistakes":
+                - "checkTypeCode": "INSERTABLE_CONSISTENCY"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    - "from": 13
+                      "to": 17
+                  "details":
+                    "insertable": "<br>"
+                    "insertableType": "BR_TAG"
+                    "type": "INSERTABLE_DELETED"
+                  "positionTypeCode": "SOURCE"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "INSERTABLE_CONSISTENCY"
+      "name": "Insertable consistency"
+      "description": "Check that insertables in the source are correctly transferred to the translation"
+      "checkSubTypes":
+        - "checkSubTypeCode": "INSERTABLE_ADDED"
+          "name": "Insertable added"
+        - "checkSubTypeCode": "INSERTABLE_DELETED"
+          "name": "Insertable deleted"

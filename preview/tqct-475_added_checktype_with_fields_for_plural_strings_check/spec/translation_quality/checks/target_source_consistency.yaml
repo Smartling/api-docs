@@ -1,0 +1,171 @@
+components:
+  schemas:
+    SourceConsistencySettingsDTO:
+      type: object
+      properties:
+        ignoreTagsAndPlaceholders:
+          type: boolean
+          description: Ignore tags and placeholders.
+          example: true
+        ignoreCase:
+          type: boolean
+          description: Ignore case.
+          example: false
+
+    AccountCheckTypeApplySettingsRequest:
+      title: TARGET_SOURCE_CONSISTENCY
+      allOf:
+        - $ref: '#/components/schemas/SourceConsistencySettingsDTO'
+        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
+        - type: object
+          required:
+            - ignoreTagsAndPlaceholders
+            - ignoreCase
+
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: TARGET_SOURCE_CONSISTENCY
+      allOf:
+        - $ref: '#/components/schemas/SourceConsistencySettingsDTO'
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/SourceConsistencySettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TARGET_SOURCE_CONSISTENCY
+              description: check type code
+              example: "TARGET_SOURCE_CONSISTENCY"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                      - SAME_TRANSLATION_DIFFERENT_SOURCES
+                    description: check subtype code
+                    example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: TARGET_SOURCE_CONSISTENCY
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - TARGET_SOURCE_CONSISTENCY
+              description: check type code
+              example: "TARGET_SOURCE_CONSISTENCY"
+            details:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                    - SAME_TRANSLATION_DIFFERENT_SOURCES
+                  description: type
+                  example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+                originalString:
+                  type: string
+                  description: original string
+                  example: "I like to go to the mountains very much."
+                translation:
+                  type: string
+                  description: translation
+                  example: "Ich möchte an den Strand gehen."
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+              description: position type code
+              example: "TARGET"
+
+  examples:
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TARGET_SOURCE_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "SAME_TRANSLATION_DIFFERENT_SOURCES"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+      "ignoreTagsAndPlaceholders": true
+      "ignoreCase": true
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "TARGET_SOURCE_CONSISTENCY"
+      "subTypes":
+        - "checkSubTypeCode": "SAME_TRANSLATION_DIFFERENT_SOURCES"
+          "severityLevelCode": "LOW"
+        - "checkSubTypeCode": "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+          "severityLevelCode": "LOW"
+      "localeSeverityLevels": []
+      "groups": []
+      "ignoreTagsAndPlaceholders": true
+      "ignoreCase": true
+
+    accounts_check_types_checkType_settings_example:
+      ignoreTagsAndPlaceholders: true
+      ignoreCase: true
+
+    accounts_check_types_checkType_group_settings_example:
+      ignoreTagsAndPlaceholders: true
+      ignoreCase: true
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "Le chien a mangé mes devoirs."
+                "translation": "The dog have ate my homework."
+                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
+              "mistakes":
+                - "checkTypeCode": "TARGET_SOURCE_CONSISTENCY"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    "from": 0
+                    "to": 27
+                  "details":
+                    "type": "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+                    "originalString": "Le chien a mangé mes devoirs."
+                    "translation": "The dog have ate my homework."
+                  "positionTypeCode": "TARGET"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "TARGET_SOURCE_CONSISTENCY"
+      "name": "Target/Source consistency"
+      "description": "Check for inconsistent translations"
+      "checkSubTypes":
+        - "checkSubTypeCode": "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+          "name": "Same source string is translated differently"
+        - "checkSubTypeCode": "SAME_TRANSLATION_DIFFERENT_SOURCES"
+          "name": "Same translation is used for different sources"

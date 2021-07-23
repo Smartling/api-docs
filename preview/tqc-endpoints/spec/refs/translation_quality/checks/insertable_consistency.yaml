@@ -1,0 +1,148 @@
+definitions:
+  account_check_types_INSERTABLE_CONSISTENCY_settings_effective:
+    get:
+      description: >-
+        Get checktype INSERTABLE_CONSISTENCY settings for certain account.
+      summary: Get checktype INSERTABLE_CONSISTENCY settings for certain account
+      tags:
+        - Translation quality check
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../../common.yaml#/definitions/pathParameters/accountUid'
+        - $ref: '../common.yaml#/definitions/requestQueryParameter/targetLocaleId'
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCheckTypeEffectiveResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/INSERTABLE_CONSISTENCY:
+
+  AccountCheckTypeEffectiveDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/accountCheckTypeSettingsEffectiveResponse/commonWithCustomSubTypesResponse'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - INSERTABLE_CONSISTENCY
+            description: check type code
+            example: "INSERTABLE_CONSISTENCY"
+          subTypes:
+            type: array
+            items:
+              type: object
+              properties:
+                checkSubTypeCode:
+                  type: string
+                  enum:
+                    - INSERTABLE_ADDED
+                    - INSERTABLE_DELETED
+                  description: check subtype code
+                  example: "INSERTABLE_ADDED"
+
+  AccountCheckTypeEffectiveResponse:
+    allOf:
+      - $ref: '../../common.yaml#/definitions/SuccessResponse'
+      - type: object
+        properties:
+          data:
+            allOf:
+              - $ref: '#/definitions/AccountCheckTypeEffectiveDTO'
+
+  TqcCheckMistakeDTO:
+    allOf:
+      - $ref: '../common.yaml#/definitions/responseObjects/severityLevelCodeResponse'
+      - $ref: '../common.yaml#/definitions/TqcCheckDTO/positions'
+      - type: object
+        properties:
+          checkTypeCode:
+            type: string
+            enum:
+              - INSERTABLE_CONSISTENCY
+            description: check type code
+            example: "INSERTABLE_CONSISTENCY"
+          details:
+            type: object
+            properties:
+              insertable:
+                type: string
+                description: insertable
+                example: "<br>"
+              insertableType:
+                type: string
+                description: insertable type
+                example: "BR_TAG"
+              type:
+                type: string
+                enum:
+                  - INSERTABLE_ADDED
+                  - INSERTABLE_DELETED
+                description: insertable
+                example: "INSERTABLE_DELETED"
+          positionTypeCode:
+            type: string
+            enum:
+              - SOURCE
+            description: position type code
+            example: "SOURCE"
+
+#
+#INSERTABLE_CONSISTENCY
+#{
+#    "sourceLocaleId": "en-US",
+#    "targetLocaleId": "hu-HU",
+#    "skipSuggestions": false,
+#    "excludePlaceholderWithinTag": true,
+#        "strings": [{
+#            "hashcode": "7191152182c69d9b72069ac1290fe24b",
+#            "originalString": "We are going <br> to gym today",
+#            "translation": "Ma edzőterembe megyünk"
+#        }],
+#    "checkTypeCodes": [
+#        "INSERTABLE_CONSISTENCY"
+#    ]
+#}
+#{
+#    "response": {
+#        "code": "SUCCESS",
+#        "data": {
+#            "results": [
+#                {
+#                    "string": {
+#                        "originalString": "We are going <br> to gym today",
+#                        "translation": "Ma edzőterembe megyünk",
+#                        "hashcode": "7191152182c69d9b72069ac1290fe24b",
+#                        "stringUid": null
+#                    },
+#                    "mistakes": [
+#                        {
+#                            "checkTypeCode": "INSERTABLE_CONSISTENCY",
+#                            "severityLevelCode": "LOW",
+#                            "positions": [
+#                                {
+#                                    "from": 13,
+#                                    "to": 17
+#                                }
+#                            ],
+#                            "details": {
+#                                "insertable": "<br>",
+#                                "insertableType": "BR_TAG",
+#                                "type": "INSERTABLE_DELETED"
+#                            },
+#                            "positionTypeCode": "SOURCE"
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+#}

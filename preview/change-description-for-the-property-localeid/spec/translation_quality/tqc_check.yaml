@@ -1,0 +1,124 @@
+x-paths:
+  tqc_check:
+    post:
+      description: >-
+        Check string translation quality.
+      summary: Check string translation quality
+      tags:
+        - Translation quality checks
+      operationId: runStringTranslationQualityCheck
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/TqcCheckRequest'
+            example:
+              $ref: './examples.yaml#/components/examples/tqc_check_request_body_example'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TqcCheckResponse'
+              examples:
+                $ref: './examples.yaml#/components/examples/tqc_check_response_example'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTagJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/projects/$smartlingProjectId/check
+
+components:
+  schemas:
+
+    TqcCheckRequest:
+      allOf:
+        - $ref: './tqc_common.yaml#/components/requestBodies/targetLocaleId'
+        - $ref: '../api_common.yaml#/components/requestBodies/sourceLocaleId'
+        - type: object
+          properties:
+            skipSuggestions:
+              type: boolean
+              description: skip suggestions
+              example: false
+            strings:
+              type: array
+              items:
+                allOf:
+                  - $ref: '../api_common.yaml#/components/requestBodies/hashcode'
+                  - $ref: './tqc_common.yaml#/components/schemas/stringUid'
+                  - $ref: './tqc_common.yaml#/components/schemas/originalString'
+                  - $ref: './tqc_common.yaml#/components/schemas/translation'
+                  - $ref: './tqc_common.yaml#/components/schemas/pluralFormGroupUid'
+                  - $ref: './tqc_common.yaml#/components/schemas/pluralForm'
+            useDefaultSettings:
+              type: boolean
+              description: use default settings
+              example: false
+            checkTypeCodes:
+              minItems: 1
+              maxItems: 100
+              type: array
+              items:
+                allOf:
+                  - $ref: './tqc_common.yaml#/components/requestBodies/checkTypeCode'
+
+    TqcCheckResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    results:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          string:
+                            type: object
+                            properties:
+                              stringUid:
+                                type: string
+                                description: it is string part unique identifier if string is splitted on several parts
+                                example: ""
+                              originalString:
+                                type: string
+                                description: original string
+                                example: "blacklist_term"
+                              translation:
+                                type: string
+                                description: translation of the original string
+                                example: "blacklist_term"
+                              hashcode:
+                                type: string
+                                description: string hashcode
+                                example: "7191152182c69d9b72069ac1290fe24b"
+                              pluralFormGroupUid:
+                                type: string
+                                description: unique identifier of plural form
+                                example: "7191152182c69d9b72069ac1290fe24b"
+                              pluralForm:
+                                type: string
+                                description: plural form
+                                example: "FEW"
+                          mistakes:
+                            type: array
+                            items:
+                              $ref: 'tqc_common.yaml#/components/schemas/TqcCheckMistakeDTOs'

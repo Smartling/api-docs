@@ -1,0 +1,170 @@
+components:
+  schemas:
+
+    SourceInWrongLanguageSettingsDTO:
+      type: object
+      properties:
+        minTextLengthLimit:
+          type: integer
+          minimum: 0
+          description: Minimal text length limit.
+          example: 10
+
+    AccountCheckTypeApplySettingsRequest:
+      title: SOURCE_IN_WRONG_LANGUAGE
+      allOf:
+        - $ref: '#/components/schemas/SourceInWrongLanguageSettingsDTO'
+        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
+        - type: object
+          required:
+            - minTextLengthLimit
+
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: SOURCE_IN_WRONG_LANGUAGE
+      allOf:
+        - $ref: '#/components/schemas/SourceInWrongLanguageSettingsDTO'
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/SourceInWrongLanguageSettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - SOURCE_IN_WRONG_LANGUAGE
+              description: check type code
+              example: "SOURCE_IN_WRONG_LANGUAGE"
+
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: SOURCE_IN_WRONG_LANGUAGE
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/SourceInWrongLanguageSettingsDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - SOURCE_IN_WRONG_LANGUAGE
+              description: check type code
+              example: "SOURCE_IN_WRONG_LANGUAGE"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: SOURCE_IN_WRONG_LANGUAGE
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - SOURCE_IN_WRONG_LANGUAGE
+              description: check type code
+              example: "SOURCE_IN_WRONG_LANGUAGE"
+            details:
+              type: object
+            positionTypeCode:
+              type: string
+              enum:
+                - SOURCE
+              description: position type code
+              example: "SOURCE"
+
+  examples:
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "SOURCE_IN_WRONG_LANGUAGE"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "minTextLengthLimit": 40
+
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "SOURCE_IN_WRONG_LANGUAGE"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "minTextLengthLimit": 40
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "SOURCE_IN_WRONG_LANGUAGE"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "minTextLengthLimit": 40
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "SOURCE_IN_WRONG_LANGUAGE"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "minTextLengthLimit": 40
+
+    accounts_check_types_checkType_settings_example:
+      minTextLengthLimit: 10
+
+    profiles_accounts_check_types_checkType_settings_example:
+      minTextLengthLimit: 10
+
+    accounts_check_types_checkType_group_settings_example:
+      minTextLengthLimit: 10
+
+    profiles_accounts_check_types_checkType_group_settings_example:
+      minTextLengthLimit: 10
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "Der Hund hat meine Hausaufgaben gegessen."
+                "translation": "The dog ate my homework."
+                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
+              "mistakes":
+                - "checkTypeCode": "SOURCE_IN_WRONG_LANGUAGE"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    "from": 0
+                    "to": 63
+                  "details": null
+                  "positionTypeCode": "SOURCE"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "SOURCE_IN_WRONG_LANGUAGE"
+      "name": "Source in the wrong language"
+      "description": "Check that source string is in the source language"
+      "checkSubTypes": []
+

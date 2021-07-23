@@ -1,0 +1,143 @@
+components:
+  schemas:
+
+    AccountCheckTypeEffectiveDTO:
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - NON_TRANSLATABLE_TEXT
+              description: check type code
+              example: "NON_TRANSLATABLE_TEXT"
+            subTypes:
+              type: array
+              items:
+                type: object
+                properties:
+                  checkSubTypeCode:
+                    type: string
+                    enum:
+                      - PLACEABLE_ADDED
+                      - PLACEABLE_DELETED
+                      - SPACES_AROUND_PLACEABLE
+                      - PLACEABLE_FORMAT
+                    description: check subtype code
+                    example: "PLACEABLE_ADDED"
+
+    AccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '../tqc_common.yaml#/components/schemas/CheckTypeSettingBase'
+                - $ref: '#/components/schemas/AccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: NON_TRANSLATABLE_TEXT
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - NON_TRANSLATABLE_TEXT
+              description: check type code
+              example: "NON_TRANSLATABLE_TEXT"
+            details:
+              type: object
+              properties:
+                placeable:
+                  type: string
+                  description: placeable
+                  example: "{0}"
+                type:
+                  type: string
+                  enum:
+                    - PLACEABLE_ADDED
+                    - PLACEABLE_DELETED
+                    - SPACES_AROUND_PLACEABLE
+                    - PLACEABLE_FORMAT
+                  description: type
+                  example: "PLACEABLE_DELETED"
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+                - SOURCE
+              description: position type code
+              example: "SOURCE"
+
+  examples:
+
+    accounts_account_check_types_settings_effective_example:
+      "severityLevelCode": "MEDIUM"
+      "checkTypeCode": "NON_TRANSLATABLE_TEXT"
+      "subTypes":
+        - "checkSubTypeCode": "PLACEABLE_DELETED"
+          "severityLevelCode": "MEDIUM"
+        - "checkSubTypeCode": "SPACES_AROUND_PLACEABLE"
+          "severityLevelCode": "MEDIUM"
+        - "checkSubTypeCode": "PLACEABLE_ADDED"
+          "severityLevelCode": "MEDIUM"
+        - "checkSubTypeCode": "PLACEABLE_FORMAT"
+          "severityLevelCode": "MEDIUM"
+      "localeSeverityLevels": []
+      "groups": []
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "MEDIUM"
+      "checkTypeCode": "NON_TRANSLATABLE_TEXT"
+      "subTypes":
+        - "checkSubTypeCode": "PLACEABLE_DELETED"
+          "severityLevelCode": "MEDIUM"
+        - "checkSubTypeCode": "SPACES_AROUND_PLACEABLE"
+          "severityLevelCode": "MEDIUM"
+        - "checkSubTypeCode": "PLACEABLE_ADDED"
+          "severityLevelCode": "MEDIUM"
+        - "checkSubTypeCode": "PLACEABLE_FORMAT"
+          "severityLevelCode": "MEDIUM"
+      "localeSeverityLevels": []
+      "groups": []
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "Bonjour {0}"
+                "translation": "Hello"
+                "hashcode": "7191152182c69d9b72069ac1290fe24b"
+                "stringUid": null
+              "mistakes":
+                - "checkTypeCode": "NON_TRANSLATABLE_TEXT"
+                  "severityLevelCode": "MEDIUM"
+                  "positions":
+                    - "from": 6
+                      "to": 9
+                  "details":
+                    "placeable": "{0}"
+                    "type": "PLACEABLE_DELETED"
+                  "positionTypeCode": "SOURCE"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "NON_TRANSLATABLE_TEXT"
+      "name": "Placeholder"
+      "description": "Check that placeables in the source are correctly transferred to the translation"
+      "checkSubTypes":
+        - "checkSubTypeCode": "PLACEABLE_ADDED"
+          "name": "Placeholder added"
+        - "checkSubTypeCode": "PLACEABLE_DELETED"
+          "name": "Placeholder deleted"
+        - "checkSubTypeCode": "SPACES_AROUND_PLACEABLE"
+          "name": "Incorrect spacing around placeholders"
+        - "checkSubTypeCode": "PLACEABLE_FORMAT"
+          "name": "Incorrect placeholder format"
+
