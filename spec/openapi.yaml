@@ -6220,6 +6220,9 @@ paths:
                         - fieldUid: 3rrwchzmjf27
                           fieldName: Adaptation Required
                           fieldValue: 'true'
+                        issues:
+                          sourceIssuesCount: 3
+                          translationIssuesCount: 4
         400:
           description: Validation error during job creation.
           content:
@@ -6860,6 +6863,10 @@ paths:
                         - ru-RU
                         translationJobUid: jhcgalvnb6za
                         priority: 4
+                        referenceNumber: myReferenceNumber1
+                        issues:
+                          sourceIssuesCount: 3
+                          translationIssuesCount: 4
                         customFields:
                         - fieldUid: rbrbn69wa1pa
                           fieldName: Department
@@ -6956,6 +6963,7 @@ paths:
                           fieldValue: 'true'
                         translationJobUid: jhcgalvnb6za
                         priority: 45
+
         400:
           description: Validation error on updating a job
           content:
@@ -7825,6 +7833,13 @@ paths:
                         progress:
                           percentComplete: 50
                           totalWordCount: 32
+                        summaryReport:
+                          - stringCount: 1
+                            wordCount: 4
+                            workflowStepName: Translation
+                          - stringCount: 2
+                            wordCount: 8
+                            workflowStepName: Edit
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -12286,6 +12301,8 @@ components:
                     translationJobUid:
                       description: The unique identifier created for the job.
                       type: string
+                    issues:
+                      $ref: '#/components/schemas/IssuesCount'
                   type: object
               type: object
     JobFiledAddError423Response:
@@ -13709,6 +13726,10 @@ components:
             translationJobUid:
               description: The unique identifier of the job.
               type: string
+            referenceNumber:
+              description: Customer specific number/identifier for the job.
+              example: CustomerReferenceNum1
+              type: string
           type: object
       type: object
     LocaleApiItem:
@@ -13935,19 +13956,16 @@ components:
               type: object
     ProgressInfoResponse:
       properties:
-        data:
-          properties:
-            percentComplete:
-              description: 'The percent of group (locale/file/job) completeness, 0 - 100.'
-              example: 52
-              type: number
-            totalWordCount:
-              description: >-
-                The total number of words within that particular group
-                (locale/file/job).
-              example: 192
-              type: number
-          type: object
+        percentComplete:
+          description: 'The percent of group (locale/file/job) completeness, 0 - 100.'
+          example: 52
+          type: number
+        totalWordCount:
+          description: >-
+            The total number of words within that particular group
+            (locale/file/job).
+          example: 192
+          type: number
       type: object
     ProgressResponse:
       properties:
@@ -13963,6 +13981,10 @@ components:
                       type: array
                     progress:
                       $ref: '#/components/schemas/ProgressInfoResponse'
+                    summaryReport:
+                      items:
+                        $ref: '#/components/schemas/WorkflowStepClassWordCount'
+                      type: array
                   type: object
               required:
                 - data
@@ -14309,6 +14331,12 @@ components:
                     translationJobUid:
                       description: The unique identifier for the job.
                       type: string
+                    referenceNumber:
+                      description: Customer specific number/identifier for the job.
+                      example: CustomerReferenceNum1
+                      type: string
+                    issues:
+                      $ref: '#/components/schemas/IssuesCount'
                   type: object
               type: object
     SourceFile:
@@ -14524,6 +14552,15 @@ components:
           type: string
       required:
         - tag
+      type: object
+    IssuesCount:
+      properties:
+        sourceIssuesCount:
+          description: Source inssues count.
+          type: integer
+        translationIssuesCount:
+          description: Translation inssues count.
+          type: integer
       type: object
     TermData:
       properties:
@@ -15304,6 +15341,18 @@ components:
         workflowStepUid:
           description: The uid of the workflow step.
           type: string
+      type: object
+    WorkflowStepClassWordCount:
+      properties:
+        workflowStepType:
+          description: The type of the step.
+          type: string
+        stringCount:
+          description: The total number of strings within step type.
+          type: number
+        wordCount:
+          description: The total number of words within step type.
+          type: number
       type: object
 
     UserInfoApiItem:
