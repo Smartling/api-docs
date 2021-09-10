@@ -6220,6 +6220,9 @@ paths:
                         - fieldUid: 3rrwchzmjf27
                           fieldName: Adaptation Required
                           fieldValue: 'true'
+                        issues:
+                          sourceIssuesCount: 3
+                          translationIssuesCount: 4
         400:
           description: Validation error during job creation.
           content:
@@ -6860,6 +6863,10 @@ paths:
                         - ru-RU
                         translationJobUid: jhcgalvnb6za
                         priority: 4
+                        referenceNumber: myReferenceNumber1
+                        issues:
+                          sourceIssuesCount: 3
+                          translationIssuesCount: 4
                         customFields:
                         - fieldUid: rbrbn69wa1pa
                           fieldName: Department
@@ -6956,6 +6963,7 @@ paths:
                           fieldValue: 'true'
                         translationJobUid: jhcgalvnb6za
                         priority: 45
+
         400:
           description: Validation error on updating a job
           content:
@@ -7720,6 +7728,13 @@ paths:
                         progress:
                           percentComplete: 50
                           totalWordCount: 32
+                        summaryReport:
+                          - stringCount: 1
+                            wordCount: 4
+                            workflowStepName: Translation
+                          - stringCount: 2
+                            wordCount: 8
+                            workflowStepName: Edit
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -7825,6 +7840,13 @@ paths:
                         progress:
                           percentComplete: 50
                           totalWordCount: 32
+                        summaryReport:
+                          - stringCount: 1
+                            wordCount: 4
+                            workflowStepName: Translation
+                          - stringCount: 2
+                            wordCount: 8
+                            workflowStepName: Edit
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -12286,6 +12308,8 @@ components:
                     translationJobUid:
                       description: The unique identifier created for the job.
                       type: string
+                    issues:
+                      $ref: '#/components/schemas/IssuesCount'
                   type: object
               type: object
     JobFiledAddError423Response:
@@ -13598,56 +13622,53 @@ components:
       type: object
     AccountListJobsResponseItem:
       properties:
-        data:
-          properties:
-            createdDate:
-              description: The UTC value of the date the job was created.
-              example: '2015-11-21T01:51:17.000Z'
-              format: date-time
-              type: string
-            description:
-              description: The description of the job.
-              type: string
-            dueDate:
-              description: The UTC value of the due date for the job.
-              example: '2015-11-21T01:51:17.000Z'
-              format: date-time
-              type: string
-            jobName:
-              description: The name of the job.
-              type: string
-            jobNumber:
-              description: The account level unique number of the job. Consist of unique short prefix and sequence number.
-              example: SMTL-123
-              type: string
-            jobStatus:
-              description: The status of the job
-              example: >-
-                DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED |
-                CANCELLED | CLOSED | DELETED
-              type: string
-            priority:
-              description: Priority order in account. Strats from 1 and can be null.
-              example: 2
-              type: integer
-            projectId:
-              description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-              example: fd7244365
-              type: string
-            referenceNumber:
-              description: Customer specific number/identifier for the job.
-              example: CustomerReferenceNum1
-              type: string
-            targetLocaleIds:
-              description: The array of localeIds for the job.
-              items:
-                example: de-DE
-                type: string
-              type: array
-            translationJobUid:
-              description: The unique identifier of the job.
-              type: string
-          type: object
+        createdDate:
+          description: The UTC value of the date the job was created.
+          example: '2015-11-21T01:51:17.000Z'
+          format: date-time
+          type: string
+        description:
+          description: The description of the job.
+          type: string
+        dueDate:
+          description: The UTC value of the due date for the job.
+          example: '2015-11-21T01:51:17.000Z'
+          format: date-time
+          type: string
+        jobName:
+          description: The name of the job.
+          type: string
+        jobNumber:
+          description: The account level unique number of the job. Consist of unique short prefix and sequence number.
+          example: SMTL-123
+          type: string
+        jobStatus:
+          description: The status of the job
+          example: >-
+            DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED |
+            CANCELLED | CLOSED | DELETED
+          type: string
+        priority:
+          description: Priority order in account. Strats from 1 and can be null.
+          example: 2
+          type: integer
+        projectId:
+          description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          example: fd7244365
+          type: string
+        referenceNumber:
+          description: Customer specific number/identifier for the job.
+          example: CustomerReferenceNum1
+          type: string
+        targetLocaleIds:
+          description: The array of localeIds for the job.
+          items:
+            example: de-DE
+            type: string
+          type: array
+        translationJobUid:
+          description: The unique identifier of the job.
+          type: string
       type: object
     ListJobsResponse:
       properties:
@@ -13672,44 +13693,45 @@ components:
       type: object
     ListJobsResponseItem:
       properties:
-        data:
-          properties:
-            createdDate:
-              description: The UTC value of the date the job was created.
-              example: '2015-11-21T01:51:17.000Z'
-              format: date-time
-              type: string
-            description:
-              description: The description of the job.
-              type: string
-            dueDate:
-              description: The UTC value of the due date for the job.
-              example: '2015-11-21T01:51:17.000Z'
-              format: date-time
-              type: string
-            jobName:
-              description: The name of the job.
-              type: string
-            jobNumber:
-              description: The account level unique number of the job. Consist of unique short prefix and sequence number.
-              example: SMTL-123
-              type: string
-            jobStatus:
-              description: The status of the job
-              example: >-
-                DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED |
-                CANCELLED | CLOSED
-              type: string
-            targetLocaleIds:
-              description: The array of localeIds for the job.
-              items:
-                example: de-DE
-                type: string
-              type: array
-            translationJobUid:
-              description: The unique identifier of the job.
-              type: string
-          type: object
+        createdDate:
+          description: The UTC value of the date the job was created.
+          example: '2015-11-21T01:51:17.000Z'
+          format: date-time
+          type: string
+        description:
+          description: The description of the job.
+          type: string
+        dueDate:
+          description: The UTC value of the due date for the job.
+          example: '2015-11-21T01:51:17.000Z'
+          format: date-time
+          type: string
+        jobName:
+          description: The name of the job.
+          type: string
+        jobNumber:
+          description: The account level unique number of the job. Consist of unique short prefix and sequence number.
+          example: SMTL-123
+          type: string
+        jobStatus:
+          description: The status of the job
+          example: >-
+            DRAFT | AWAITING_AUTHORIZATION | IN_PROGRESS | COMPLETED |
+            CANCELLED | CLOSED
+          type: string
+        targetLocaleIds:
+          description: The array of localeIds for the job.
+          items:
+            example: de-DE
+            type: string
+          type: array
+        translationJobUid:
+          description: The unique identifier of the job.
+          type: string
+        referenceNumber:
+          description: Customer specific number/identifier for the job.
+          example: CustomerReferenceNum1
+          type: string
       type: object
     LocaleApiItem:
       example:
@@ -13935,19 +13957,16 @@ components:
               type: object
     ProgressInfoResponse:
       properties:
-        data:
-          properties:
-            percentComplete:
-              description: 'The percent of group (locale/file/job) completeness, 0 - 100.'
-              example: 52
-              type: number
-            totalWordCount:
-              description: >-
-                The total number of words within that particular group
-                (locale/file/job).
-              example: 192
-              type: number
-          type: object
+        percentComplete:
+          description: 'The percent of group (locale/file/job) completeness, 0 - 100.'
+          example: 52
+          type: number
+        totalWordCount:
+          description: >-
+            The total number of words within that particular group
+            (locale/file/job).
+          example: 192
+          type: number
       type: object
     ProgressResponse:
       properties:
@@ -13963,6 +13982,10 @@ components:
                       type: array
                     progress:
                       $ref: '#/components/schemas/ProgressInfoResponse'
+                    summaryReport:
+                      items:
+                        $ref: '#/components/schemas/WorkflowStepClassWordCount'
+                      type: array
                   type: object
               required:
                 - data
@@ -14309,6 +14332,12 @@ components:
                     translationJobUid:
                       description: The unique identifier for the job.
                       type: string
+                    referenceNumber:
+                      description: Customer specific number/identifier for the job.
+                      example: CustomerReferenceNum1
+                      type: string
+                    issues:
+                      $ref: '#/components/schemas/IssuesCount'
                   type: object
               type: object
     SourceFile:
@@ -14524,6 +14553,15 @@ components:
           type: string
       required:
         - tag
+      type: object
+    IssuesCount:
+      properties:
+        sourceIssuesCount:
+          description: Source inssues count.
+          type: integer
+        translationIssuesCount:
+          description: Translation inssues count.
+          type: integer
       type: object
     TermData:
       properties:
@@ -15304,6 +15342,18 @@ components:
         workflowStepUid:
           description: The uid of the workflow step.
           type: string
+      type: object
+    WorkflowStepClassWordCount:
+      properties:
+        workflowStepType:
+          description: The type of the step.
+          type: string
+        stringCount:
+          description: The total number of strings within step type.
+          type: number
+        wordCount:
+          description: The total number of words within step type.
+          type: number
       type: object
 
     UserInfoApiItem:
