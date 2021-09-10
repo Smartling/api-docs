@@ -603,7 +603,50 @@ x-paths:
             -H "Content-Type: application/json" -d "$smartlingIssuesFilterJSON"
             https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountUid/issues/list
 
-
+  count_account_issues:
+    post:
+      summary: Count account issues
+      description: >-
+        Returns a count of issues matching specified filter options. You can
+        filter based on the date issues were created, target languages, strings,
+        issue types, states, issue numbers, project ids, job unique ids, issues not associated with strings in a job, issue assignee,
+        and which user opened the issue. All parameters are optional.
+      tags:
+        - Issues
+      operationId: getAccountIssuesCount
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCountRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        count: 2
+              schema:
+                $ref: '#/components/schemas/IssuesCountResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssuesFilterJSON"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountUid/issues/count
 components:
   schemas:
     SuccessResponse:
@@ -1111,6 +1154,10 @@ components:
           description: User identifier who is assigned to issue.
           example: 661801f19693
           type: string
+        hasComments:
+          description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
+          example: true
+          type: boolean
         issueNumbers:
           example:
             - 10
@@ -1390,6 +1437,10 @@ components:
           description: User identifier who is assigned to issue
           example: 661801f19693
           type: string
+        hasComments:
+          description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
+          example: true
+          type: boolean
         issueNumbers:
           example:
             - 10
@@ -1538,6 +1589,10 @@ components:
           description: User identifier who is assigned to issue.
           example: 661801f19693
           type: string
+        hasComments:
+          description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
+          example: true
+          type: boolean
         issueNumbers:
           example:
             - 10
@@ -1628,6 +1683,141 @@ components:
                       - assigneeUserUid
                     type: string
                 type: object
+              type: array
+          type: object
+      type: object
+    AccountCountRequest:
+      properties:
+        projectIds:
+          example:
+            - c711467bs
+          items:
+            description: Optional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
+            type: string
+          description: UOptional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
+          type: array
+        createdDateBefore:
+          description: Filter issues which created before this date
+          type: string
+        createdDateAfter:
+          description: Filter issues which created after this date
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        resolvedDateBefore:
+          description: Filter issues which resolved before this date
+          example: '2015-12-23T18:14:09Z'
+          type: string
+        resolvedDateAfter:
+          description: Filter issues which resolved after this date
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        answered:
+          description: Issue flag "answered"
+          example: true
+          type: boolean
+        reopened:
+          description: Issue flag "reopened".
+          example: true
+          type: boolean
+        issueSeverityLevelCodes:
+          items:
+            description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
+            enum:
+              - LOW
+              - MEDIUM
+              - HIGH
+            type: string
+          type: array
+        issueStateCodes:
+          items:
+            description: '[Issue State identifier](#operation/getAllIssuesStates)'
+            enum:
+              - OPENED
+              - RESOLVED
+            type: string
+          type: array
+        issueSubTypeCodes:
+          items:
+            description: Issue SubType identifier
+            enum:
+              - CLARIFICATION
+              - MISSPELLING
+              - POOR_TRANSLATION
+              - DOES_NOT_FIT_SPACE
+              - PLACEHOLDER_ISSUE
+              - REVIEW_TRANSLATION
+              - CUSTOM
+              - MT_ERROR
+            type: string
+          type: array
+        issueTypeCodes:
+          items:
+            description: '[Issue Type identifier](#operation/getIssueTypesByAccount)'
+            enum:
+              - SOURCE
+              - TRANSLATION
+            type: string
+          type: array
+        reportedByUserUid:
+          description: User identifier who created issue
+          example: 661801f19693
+          type: string
+        assigneeUserUid:
+          description: User identifier who is assigned to issue
+          example: 661801f19693
+          type: string
+        hasComments:
+          description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
+          example: true
+          type: boolean
+        issueNumbers:
+          example:
+            - 10
+            - 11
+            - 12
+          items:
+            description: Issue Number identifier.
+            type: integer
+          maxItems: 1000
+          type: array
+        jobFilter:
+          properties:
+            jobUids:
+              example:
+                - uhtkye5amtiz
+                - h9blewayxsz9
+              items:
+                description: Job identifier.
+                type: string
+              maxItems: 1000
+              type: array
+            presence:
+              description: What kind of issues have to be presented
+              enum:
+                - HAS_ANY
+                - HAS_NOTHING
+              type: string
+          type: object
+        stringFilter:
+          properties:
+            hashcodes:
+              example:
+                - afe47cdaffe0c0226506919c291d9c1a
+                - afe37cdaffe0c0226508919c291d9c1a
+                - afe47cdaffe0c02265406919c291d2c1a
+              items:
+                description: >-
+                  Unique identifier for a string in Smartling. Used by the
+                  Issues API to attach an issue to a string. You can get the
+                  hashcode for a string via String API.
+                type: string
+              type: array
+            localeIds:
+              example:
+                - ru-RU
+              items:
+                description: An identifying code for a target language in Smartling.
+                type: string
               type: array
           type: object
       type: object

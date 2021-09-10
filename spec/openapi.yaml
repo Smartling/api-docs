@@ -4,8 +4,7 @@ info:
     email: support@smartling.com
   description: >
     Before you begin using the Smartling APIs, we recommend going through our
-    [Getting Started](https://help.smartling.com/hc/en-us/sections/360001644894)
-    section.
+    [Developer documentation](https://help.smartling.com/hc/en-us/categories/1260801686149).
   termsOfService: 'https://www.smartling.com/about/terms-and-conditions/'
   title: Smartling REST API Reference
   version: 2.0.0
@@ -21,7 +20,7 @@ externalDocs:
 tags:
   - name: Authentication
     description: |-
-      Smartling uses OAuth2 for [authentication](https://help.smartling.com/hc/en-us/articles/360007789914).
+      Smartling uses OAuth2 for [authentication](https://help.smartling.com/hc/en-us/articles/1260805176849).
       To access the Smartling APIs, you'll first need to authenticate with your
       user identifier and user secret. An access token is returned that can be
       attached to the header of any API request. A refresh token is also returned.
@@ -88,8 +87,8 @@ tags:
       Projects API will allow you to programmatically find and use the projects
       within your account.
 
-      You may wish to reference the [Overview of Smartling
-      APIs](https://help.smartling.com/hc/en-us/articles/360007811673) article
+      You may wish to reference the [Key Concepts for
+      Developers](https://help.smartling.com/hc/en-us/articles/1260805481390) article
       to better understand how content is organized within Smartling.
 
   - name: Locales
@@ -134,7 +133,7 @@ tags:
     description: |-
       A Smartling project (such as a mobile, web, files, or connector project)
       may contain one or more
-      [jobs](https://help.smartling.com/hc/en-us/articles/360007790014). You may
+      [jobs](https://help.smartling.com/hc/en-us/articles/1260805481390). You may
       have multiple projects, each containing multiple jobs. Each job contains
       strings, consisting of words or phrases.
 
@@ -246,7 +245,7 @@ tags:
 
   - name: Context
     description: |-
-      [Visual context](https://help.smartling.com/hc/en-us/categories/360000736674)
+      [Visual context](https://help.smartling.com/hc/en-us/articles/360057484273)
       helps Translators make linguistic, layout, and spacing decisions based on
       where strings appear in your mobile or desktop application. The Context
       API supports uploading various forms of context (images and HTML), and
@@ -325,6 +324,18 @@ tags:
       platform and specify additional filtering criteria to narrow down data
       returned by the reports.
 
+  - name: Attachments
+    description: |-
+      The Attachments API allows for file attachment download and checking linked attachments for an entity.
+      Attachment entities can be from three domains: strings, jobs or issues.
+      Each entity is referenced by an entity UID. These UIDs have a specific form for each of the domains.
+      - jobs: `<jobUid>`
+      - issues: `<accountUid>-<issueUid>` or `<accountUid>-<issueUid>-<commentUid>`
+      - strings: `<projectUid>:<stringHashcode>`
+
+      **Attachments API Usage Limitations**:
+      * Maximum attachment size is 500MB.
+
   - name: Translation quality checks
     description: The translation quality check service is an API endpoint at which you can check the quality of your translations.
 
@@ -382,7 +393,7 @@ paths:
       tags:
       - Authentication
       description: >-
-        A [renewed access token](https://help.smartling.com/hc/en-us/articles/360007789914) that
+        A [renewed access token](https://help.smartling.com/hc/en-us/articles/1260805176849) that
         can be attached to the header of any API request.
       summary: Refresh access token
       operationId: refreshAccessToken
@@ -781,7 +792,7 @@ paths:
         The list of available locales within Smartling.
 
         To find out the `localedID` for a specific project, refer to [Get project
-        details](https://api-reference.smartling.com/#tag/Account-and-Projects%2Fpaths%2F~1projects-api~1v2~1projects~1%7BprojectId%7D%2Fget).
+        details](/#operation/getProjectDetails).
       operationId: getAvailableLocalesList
 
       parameters:
@@ -2408,22 +2419,23 @@ paths:
     post:
       summary: Upload new context
       description: |-
-        Uploads a file or web link that can be linked to translations and shown
-        to linguists as visual context for the strings they're working on.
+        [Visual Context](https://help.smartling.com/hc/en-us/articles/360057484273-Overview-of-Visual-Context) provides a visual representation of the source content to Translators and Editors as
+        they are performing their work, and is a very effective way to ensure high-quality translations. Visual
+        Context is displayed in the Smartling CAT Tool - the environment in which translations are performed.
 
-        The following context types are supported:
+        The following context types are supported via the Smartling API:
 
         - **HTML**: HTML files or files with content type text/html
         - **IMAGE**: Image files
-        - **VIDEO**: Public link to a video, such as:
-          - YouTube link
-          - Vimeo link
-          - Link to an .mp4 file
+        - **VIDEO**:
+          - Video file
+          - Link to video, such as:
+            - YouTube link
+            - Vimeo link
+            - Direct link to an .mp4 file
 
         Context type is not specified directly, but rather, inferred via
         analyzing the request body.
-
-        **Note**: If you are uploading **IMAGE** files, you will need to [run Automatic Context Matching](https://api-reference.smartling.com/#tag/Context/paths/~1context-api~1v2~1projects~1{projectId}~1contexts~1{contextUid}~1match~1async/post) after you upload new context. You can skip this step if you upload HTML files for context. 
 
         This endpoint accepts *multipart/form-data* request body.
       tags:
@@ -2443,30 +2455,34 @@ paths:
           multipart/form-data:
             schema:
               properties:
+                name:
+                  description: |
+                    Context name. Overwrites the `content`'s file name if specified.
+                    Parameter meanings for different context types:
+
+                    |Context Type|Meaning|
+                    |----------|--------|
+                    | `HTML` | Context URL or file name. If a valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If the file name is used, the context file should have the `<base />` tag specified with the valid URL to resolve all relative links to resources. In all other cases, links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
+                    | `IMAGE` | Image file name. |
+                    | `VIDEO` | Link to a publicly available video in case `content` field is empty. The parameter is required for this particular case. Otherwise, video file name. |
+                  type: string
                 content:
                   type: string
                   format: binary
                   description: |-
                     The context file to upload.
 
-                    If specified, it should be one of the supported content types:
-                     - `image/\*`
+                    If specified, it should be one of the supported content types(user should insert content type instead of the *. E.g. image/jpeg.):
+                     - `image/*`
                      - `text/html`
+                     - `video/*`
 
-                    Maximum file upload size is `20MB`.
+                    Maximum file upload size is:
+                     - `20MB` – for HTML and image files.
+                     - `500MB` – for video files.
 
-                    **Note**: Should be omitted for video context.
-                name:
-                  description: |
-                    Context name. Will override context file name if specified.
-                    Parameter meanings for different context types:
-
-                    |Context Type|Meaning|
-                    |----------|--------|
-                    | `HTML` | Context URL or file name. If a valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If the file name is used, the context file should have the `<base />` tag specified with the valid URL to resolve all relative links to resources. In all other cases, links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
-                    | `IMAGE` | Image file name defaults to context file name if not specified. |
-                    | `VIDEO` | Publicly available link to video. **Required** for this context type. |
-                  type: string
+                    **Note**: Exclude this parameter if you choose to upload a
+                    video context pointing to external MP4 file, youtube or vimeo.
               type: object
       responses:
         '200':
@@ -2509,6 +2525,16 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
+
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken"
+          -F "content=@context1.png;type=image/png"
+          -F "name=context1.png"
+          "https://api.smartling.com/context-api/v2/projects/$smartlingProjectId/contexts"
+
+          
     get:
       summary: List contexts for the project
       description: |
@@ -2792,6 +2818,96 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  /context-api/v2/projects/{projectId}/contexts/{contextUid}/match/async:
+    post:
+      summary: Run automatic context matching
+      description: |-
+        Automatically matches context against strings in the project and creates corresponding bindings.
+        Optionally, you can restrict matching to only a set of strings that you specify to ensure that no unwanted
+        bindings are created.
+
+        The following endpoint does not support video contexts pointing to Youtube or Vimeo videos.
+
+        Optical Character Recognition (OCR) is used for `IMAGE` and `VIDEO` contexts, while `HTML` context uses an approximate string matching algorithm.
+
+        This is a convenient method provided to save time and complexity in your integration.
+        Although that our OCR functionality is advanced, it cannot match 100% of strings. If you need complete context coverage,
+        use either [Create string to context bindings](/#operation/createStringToContextBindings) endpoint to bind
+        strings manually or check your image contexts in the Smartling Dashboard after
+        running this request to fill in any blanks. Note that OCR quality may be lower if you are using an unusual or
+        script-like font.
+
+        Applying this operation to a video context, keep in mind the original context will be removed
+        and image contexts will be created instead for each frame that has one matched string at least.
+        A string can't be bound to multiple frames simultaneously.
+      tags:
+        - Context
+      operationId: runAutomaticContextMatching
+
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - description: Unique identifier of a context
+          in: path
+          name: contextUid
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchParams'
+        description: |-
+          To ensure context is mapped to the correct string, `stringHashcodes` or `contentFileUri` must be specified.
+          If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+          <br/>
+          If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
+      responses:
+        202:
+          description: ACCEPTED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncMatchResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        matchId: ffd90ec4-5ca8-4720-8ecf-15dce3404823
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: wrong_parameters
+                          message: >-
+                            Check request parameters, error message - 'Context
+                            with Uid=cb081827-2daa-4611-915c-4d207829be27
+                            doesn't exist', ref id:
+                            '11f8b832-8154-4e6e-a196-a69a88009736'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
   /context-api/v2/projects/{projectId}/contexts/upload-and-match-async:
     post:
       summary: Upload new context and run automatic context matching
@@ -2800,11 +2916,16 @@ paths:
         - [Upload new context](/#operation/uploadNewVisualContext)
         - [Run automatic context matching](/#operation/runAutomaticContextMatching)
 
-        But only the following context types are supported:
+        The following context types are supported via the Smartling API:
 
         - **HTML**: HTML files or files with content type text/html
-        - **VIDEO**: Public link to a video, such as:
-          - Link to an .mp4 file
+        - **IMAGE**: Image files
+        - **VIDEO**:
+          - Video file
+          - Link to video, such as:
+            - YouTube link
+            - Vimeo link
+            - Direct link to an .mp4 file
 
         Strings to match are retrieved from the project specified by the `projectId` and
         can be filtered further by the optional `matchParams` parameter.
@@ -2851,30 +2972,36 @@ paths:
           multipart/form-data:
             schema:
               properties:
+                name:
+                  description: |
+                    Context name. Will overwrites the `content`'s file name if specified.
+                    Parameter meanings for different context types:
+
+                    |Context Type|Meaning|
+                    |----------|--------|
+                    | `HTML` | Context URL or file name. If a valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If the file name is used, the context file should have the `<base />` tag specified with the valid URL to resolve all relative links to resources. In all other cases, links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
+                    | `IMAGE` | Image file name. |
+                    | `VIDEO` | Link to a publicly available video in case `content` field is empty. The parameter is required for this particular case. Otherwise, video file name. |
+                  type: string
+                matchParams:
+                  $ref: '#/components/schemas/MatchParams'
                 content:
                   type: string
                   format: binary
                   description: |-
                     The context file to upload.
 
-                    If specified, it should be one of the supported content types:
+                    If specified, it should be one of the supported content types(user should insert content type instead of the *. E.g. image/jpeg.):
+                     - `image/*`
                      - `text/html`
+                     - `video/*`
 
-                    Maximum file upload size is `20MB`.
+                    Maximum file upload size is:
+                     - `20MB` – for HTML and image files.
+                     - `500MB` – for video files.
 
-                    **Note**: Should be omitted for video context.
-                name:
-                  description: |-
-                    Context name. Will override context file name if specified.
-                    Parameter meanings for different context types:
-
-                    |Context Type|Meaning|
-                    |----------|--------|
-                    | `HTML` | Context URL or file name. If a valid URL is used, all relative links to resources within the context file will be resolved based on this URL. If the file name is used, the context file should have the `<base />` tag specified with the valid URL to resolve all relative links to resources. In all other cases, links to resources will not be resolved and the context might not show correctly. Defaults to context file name if not specified. |
-                    | `VIDEO` | Publicly available link to video. **Required** for this context type. |
-                  type: string
-                matchParams:
-                  $ref: '#/components/schemas/MatchParams'
+                    **Note**: Exclude this parameter if you choose to upload a
+                    video context pointing to external MP4 file, youtube or vimeo.
               type: object
               required:
                 - content
@@ -2911,100 +3038,6 @@ paths:
                             Check request parameters, error message - 'Content
                             stream is required for this context.', ref id:
                             'af4706d9-c5c1-40aa-93e4-1ec3498c1f05'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /context-api/v2/projects/{projectId}/contexts/{contextUid}/match/async:
-    post:
-      summary: Run automatic context matching
-      description: |-
-        Automatically matches context against strings in the project and creates corresponding bindings.
-        Optionally, you can restrict matching to only a set of strings that you specify to ensure that no unwanted
-        bindings are created.
-
-        The following context types are supported:
-
-        - **HTML**: HTML files or files with content type text/html
-        - **IMAGE**: Image files
-        - **VIDEO**: Public link to a video, such as:
-          - Link to an .mp4 file
-
-        Optical Character Recognition (OCR) is used for `IMAGE` and `VIDEO` contexts, while `HTML` context uses an approximate string matching algorithm.
-
-        This is a convenient method provided to save time and complexity in your integration.
-        Despite that our OCR functionality is advanced, it cannot match 100% of strings. If you need complete context coverage,
-        use either [Create string to context bindings](/#operation/createStringToContextBindings) endpoint to bind
-        strings manually or check your image contexts in the Smartling Dashboard after
-        running this request to fill in any blanks. Be mindful of OCR quality may be lower if you are using an unusual or
-        script-like font.
-
-        Applying this operation to a video context, keep in mind the original context will be removed
-        and image contexts will be created instead for each frame that has one matched string at least.
-        A string can't be bound to multiple frames simultaneously.
-      tags:
-      - Context
-      operationId: runAutomaticContextMatching
-
-      parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
-      - description: Unique identifier of a context
-        in: path
-        name: contextUid
-        required: true
-        schema:
-          format: uuid
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MatchParams'
-        description: |-
-          If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
-          <br/>
-          If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
-      responses:
-        202:
-          description: ACCEPTED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AsyncMatchResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        matchId: ffd90ec4-5ca8-4720-8ecf-15dce3404823
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                      - key: wrong_parameters
-                        message: >-
-                          Check request parameters, error message - 'Context
-                          with Uid=cb081827-2daa-4611-915c-4d207829be27
-                          doesn't exist', ref id:
-                          '11f8b832-8154-4e6e-a196-a69a88009736'
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
         429:
@@ -3086,200 +3119,6 @@ paths:
                       errors:
                       - key: not_found
                         message: Match not found
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /context-api/v2/projects/{projectId}/bindings/{bindingUid}:
-    delete:
-      summary: Remove binding of a string to a context
-      description: |-
-        Deletes a context binding.
-        The context referenced by the binding will no longer be displayed for the referenced string in the CAT tool.
-      tags:
-      - Context
-      operationId: deleteStringToContextBinding
-
-      parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
-      - description: Unique identifier for the binding to be deleted.
-        in: path
-        name: bindingUid
-        required: true
-        schema:
-          format: uuid
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                - response
-                properties:
-                  response:
-                    $ref: '#/components/schemas/SuccessResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        404:
-          description: Not found response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: NOT_FOUND_ERROR
-                      errors:
-                      - key: not_found_error
-                        message: Binding not found
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /context-api/v2/projects/{projectId}/contexts/{contextUid}/bindings:
-    get:
-      summary: Return all strings bindings for context
-      description: |-
-        Returns all bindings that reference the given context.
-        Results are not paginated.
-      tags:
-      - Context
-      operationId: getStringToContextBindingsByContext
-
-      parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
-      - description: Unique identifier of a context
-        in: path
-        name: contextUid
-        required: true
-        schema:
-          format: uuid
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BindingsResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                        - bindingUid: d6414f8c-4gdf-4415-9a69-f8e7902ca9ec
-                          contextUid: 25137b65-e075-4341-8362-14b1a3e558f5
-                          coordinates:
-                            bottom: 400
-                            left: 50
-                            right: 400
-                            top: 50
-                          stringHashcode: bd603147d945h3ec74d6874422ebe4e0
-                        totalCount: 1
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        404:
-          description: Context not found error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: NOT_FOUND_ERROR
-                      errors:
-                      - key: not_found_error
-                        message: >-
-                          Context not found, ref id:
-                          'ffd90ec4-5ca8-4720-8ecf-15dce3404823'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /context-api/v2/projects/{projectId}/strings/{stringHashcode}/bindings:
-    get:
-      summary: Get bindings for string
-      description: Returns all bindings that reference a given string.
-      tags:
-      - Context
-      operationId: getStringToContextBindingsByString
-
-      parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
-      - description: Hashcode for the string to get bindings for.
-        in: path
-        name: stringHashcode
-        required: true
-        schema:
-          format: hash
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BindingsResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                        - bindingUid: d6414f8c-4gdf-4415-9a69-f8e7902ca9ec
-                          contextUid: 25137b65-e075-4341-8362-14b1a3e558f5
-                          coordinates:
-                            bottom: 400
-                            left: 50
-                            right: 400
-                            top: 50
-                          stringHashcode: bd603147d945h3ec74d6874422ebe4e0
-                        totalCount: 1
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
         429:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
@@ -3420,6 +3259,127 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  /context-api/v2/projects/{projectId}/bindings/list:
+    post:
+      summary: List string to context bindings
+      description: |-
+        Returns a paginated list of bindings according to specified parameters.
+
+        Response is limited to *5000* items, to retrieve all items the request
+        should be repeated with **offset** parameter specified.
+      tags:
+        - Context
+      operationId: getBindings
+
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - description: |-
+            If your original request returns an *offset* value, the set of results is incomplete.
+            Run the request again, with the given offset value to see more results.
+            When offset is null, there are no more results to return.
+          in: query
+          name: offset
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchBindingsRequest'
+        description: Search bindings parameters. Only on of them should be specified.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BindingListResponse'
+          description: OK
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: wrong_parameters
+                          message: >-
+                            Please, limit number of bindings to no more than 150
+                            in one request
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /context-api/v2/projects/{projectId}/bindings/remove:
+    post:
+      summary: Delete string to context bindings
+      description: |-
+        Delete bindings for specified parameters.
+
+      tags:
+        - Context
+      operationId: deleteBindings
+
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteBatchBindingsRequest'
+        description: Bindings delete parameter. Only on of them should be specified.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+          description: OK
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: wrong_parameters
+                          message: >-
+                            Please, limit number of bindings to no more than 150
+                            in one request
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
 #
 # Issues API endpoints
 #
@@ -3468,6 +3428,9 @@ paths:
   /issues-api/v2/accounts/{accountUid}/issues/list:
     $ref: './spec/issues/issues_common.yaml#/x-paths/find_account_issues'
 
+  /issues-api/v2/accounts/{accountUid}/issues/count:
+    $ref: './spec/issues/issues_common.yaml#/x-paths/count_account_issues'
+
   /issues-api/v2/accounts/{accountUid}/watchers:
     $ref: './spec/issues/issue_watchers.yaml#/x-paths/issue_watchers'
 
@@ -3485,6 +3448,9 @@ paths:
 
   /issues-api/v2/accounts/{accountUid}/issue-types/{issueType}/sub-types/{issueSubTypeCode}:
     $ref: './spec/issues/account_issue_sub_types.yaml#/x-paths/issue_sub_type'
+
+  /issues-api/v2/accounts/{accountUid}/issue-types/{issueType}/sub-types/{issueSubTypeCode}/state:
+    $ref: './spec/issues/account_issue_sub_types.yaml#/x-paths/issue_sub_type_state'
 
   /issues-api/v2/accounts/{accountUid}/webhook:
     $ref: './spec/issues/webhooks/settings.yaml#/x-paths/setup_webhook'
@@ -3530,7 +3496,7 @@ paths:
 
         If you set up a POST callback for the string, you can automatically
         receive the translation for a string as soon as it is complete. See
-        [Callbacks](https://help.smartling.com/hc/en-us/articles/360007829194)
+        [Callbacks](https://help.smartling.com/hc/en-us/articles/1260805504109)
         for more details.
       tags:
       - Strings
@@ -4912,7 +4878,7 @@ paths:
         Creates a new glossary in your account from an uploaded Excel
         spreadsheet. The format of the spreadsheet is important. See
         [Import Glossary](https://help.smartling.com/hc/en-us/articles/115003144633) and
-        [Glossary Spreadsheet Format](https://help.smartling.com/hc/article_attachments/360002278634/Glossary%20Import%20Template.xlsx).
+        [Glossary Spreadsheet Format](https://help.smartling.com/hc/article_attachments/360043100054/Glossary_Import_Template.xlsx).
       tags:
       - Glossaries
       operationId: importGlossary
@@ -4942,7 +4908,7 @@ paths:
                 importFile:
                   type: string
                   format: binary
-                  description: 'File containing the glossary you wish to import. See [Glossary Spreadsheet Format](https://help.smartling.com/hc/article_attachments/360002278634/Glossary%20Import%20Template.xlsx) for details.'
+                  description: 'File containing the glossary you wish to import. See [Glossary Spreadsheet Format](https://help.smartling.com/hc/article_attachments/360043100054/Glossary_Import_Template.xlsx) for details.'
               required:
                 - name
                 - sourceLocaleId
@@ -5099,9 +5065,840 @@ paths:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
 #
+# Estimates API endpoints
+#
+  '/estimates-api/v2/projects/{projectId}/jobs/{translationJobUid}/reports/fuzzy':
+    get:
+      summary: Get List of Job Fuzzy Estimate Reports
+      description: List fuzzy estimate reports.
+      tags:
+        - Estimates
+      operationId: getJobFuzzyEstimateReports
+
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: translationJobUid
+          description: A unique translation job identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportStatus
+          description: Status of report.
+          in: query
+          required: false
+          schema:
+            enum:
+              - NOT_FOUND
+              - PENDING
+              - PROCESSING
+              - COMPLETED
+              - FAILED
+              - TIMEOUT
+            type: string
+        - name: contentCoverage
+          description: Specifies level of content coverage report should have.
+          in: query
+          required: false
+          schema:
+            enum:
+              - FULL
+              - PARTIAL
+            type: string
+        - name: creatorUserUids
+          description: Array of report creator uids.
+          in: query
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - name: translationJobSchemaContents
+          description: if report was generated for the job,.
+          in: query
+          required: false
+          schema:
+            items:
+              enum:
+                - TRANSLATION
+                - ALL_CONTENT
+                - CLAIMING
+                - UNAUTHORIZED
+              type: string
+            type: array
+        - name: tags
+          description: Search is done via or logic, i.e. if a report has any of the given tags, it will be returned.
+          in: query
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - name: createdFrom
+          description: Date filter for report.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: createdTo
+          description: Date filter for report.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: Paging parameter. The number of reports to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: offset
+          description: Paging parameter. The index of the repor to start with.
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobReportResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 4
+                        items:
+                          - reportUid: f84491fc
+                            schemaType: siteLocales
+                            reportType: FUZZY
+                            schema: '{"schema":"siteLocales","projectId":"fd7244365"}'
+                            reportStatus: PROCESSING
+                            totalStrings: 27828
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation: null
+                            localeEstimates: null
+                            tags: null
+                            warnings:
+                              - No rates specified for 'fr-FR' locale.
+                            errors:
+                              - >-
+                                Report generation failed. Rates of account defined in different
+                                currencies: USD, JPY. Only one should be used per account. Please
+                                fix this and re-run estimation.
+                          - reportUid: 0ec805d4
+                            schemaType: job
+                            reportType: COST
+                            schema: '{"schema":"job","jobUid":"e2f3dcac30cc"}'
+                            reportStatus: COMPLETED
+                            totalStrings: 3200
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - bbbbb456566
+                            warnings: null
+                            errors: null
+                          - reportUid: 702cdae5
+                            schemaType: listView
+                            schema: >-
+                              {"schema":"listView","projectId":"fd7244365","localeList":["hy-AM"],"stringState":"IN_TRANSLATION","stringIds":["5086f27e4a123ac0e573b7d45240b674","9d67960622910cb2e6ab0525fb8ec747","816a4bf2e30577ea2cfcb2eec231e50e"],"workflowStepIds":["19565","120859","120860","19567","19571","19570","19569","57497","65867","57499","61329","67758","67760","109463","109465","136550","110388","136548","136549"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 2
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                            localeEstimates: null
+                            tags: null
+                            warnings: null
+                            errors: null
+                          - reportUid: 8532918d
+                            schemaType: unauthorized
+                            schema: >-
+                              {"schema":"unauthorized","projectId":"fd7244365","localeList":["hy-AM","zh-TW","nl-BE","pt-BR","ru-RU","uk-UA","cy-GB"],"stringState":"AWAITING_APPROVAL","stringIds":["975d88fd8c9290c8356364b91f88af02","33eb5a93062cb5981168533500668a49","a781299a67d7bd57511a14cffce40257","afdf1b5d0aa538184cd67372c0acc7c2","302d3f85228cd41d2267c7505dafb9e5"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 700
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - new label
+                            warnings: null
+                            errors: null
+    post:
+      summary: Generate Fuzzy Estimate Report for the Job
+      description: This is simplified version of API to generate fuzzy reports. It creates further request to FES composing proper schema string based on input information. forced flag in this case is sent with false value being set.
+      tags:
+        - Estimates
+      operationId: generateJobFuzzyEstimateReports
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: translationJobUid
+          description: A unique translation job identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobFuzzyReportRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobGenericReportResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        reportUid: f84491fc
+                        reportType: FUZZY
+                        reportStatus: PENDING
+
+  '/estimates-api/v2/projects/{projectId}/jobs/{translationJobUid}/reports/cost':
+    get:
+      summary: Get List of Job Cost Estimate Reports
+      description: List cost estimate reports.
+      tags:
+        - Estimates
+      operationId: getJobCostEstimateReports
+
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: translationJobUid
+          description: A unique translation job identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportStatus
+          description: Status of report.
+          in: query
+          required: false
+          schema:
+            enum:
+              - NOT_FOUND
+              - PENDING
+              - PROCESSING
+              - COMPLETED
+              - FAILED
+              - TIMEOUT
+            type: string
+        - name: contentCoverage
+          description: Specifies level of content coverage report should have.
+          in: query
+          required: false
+          schema:
+            enum:
+              - FULL
+              - PARTIAL
+            type: string
+        - name: creatorUserUids
+          description: Array of report creator uids.
+          in: query
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - name: translationJobSchemaContents
+          description: if report was generated for the job,.
+          in: query
+          required: false
+          schema:
+            items:
+              enum:
+                - TRANSLATION
+                - ALL_CONTENT
+                - CLAIMING
+                - UNAUTHORIZED
+              type: string
+            type: array
+        - name: tags
+          description: Search is done via or logic, i.e. if a report has any of the given tags, it will be returned.
+          in: query
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - name: createdFrom
+          description: Date filter for report.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: createdTo
+          description: Date filter for report.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: Paging parameter. The number of reports to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: offset
+          description: Paging parameter. The index of the repor to start with.
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobReportResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 4
+                        items:
+                          - reportUid: f84491fc
+                            schemaType: siteLocales
+                            reportType: FUZZY
+                            schema: '{"schema":"siteLocales","projectId":"fd7244365"}'
+                            reportStatus: PROCESSING
+                            totalStrings: 27828
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation: null
+                            localeEstimates: null
+                            tags: null
+                            warnings:
+                              - No rates specified for 'fr-FR' locale.
+                            errors:
+                              - >-
+                                Report generation failed. Rates of account defined in different
+                                currencies: USD, JPY. Only one should be used per account. Please
+                                fix this and re-run estimation.
+                          - reportUid: 0ec805d4
+                            schemaType: job
+                            reportType: COST
+                            schema: '{"schema":"job","jobUid":"e2f3dcac30cc"}'
+                            reportStatus: COMPLETED
+                            totalStrings: 3200
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - bbbbb456566
+                            warnings: null
+                            errors: null
+                          - reportUid: 702cdae5
+                            schemaType: listView
+                            schema: >-
+                              {"schema":"listView","projectId":"fd7244365","localeList":["hy-AM"],"stringState":"IN_TRANSLATION","stringIds":["5086f27e4a123ac0e573b7d45240b674","9d67960622910cb2e6ab0525fb8ec747","816a4bf2e30577ea2cfcb2eec231e50e"],"workflowStepIds":["19565","120859","120860","19567","19571","19570","19569","57497","65867","57499","61329","67758","67760","109463","109465","136550","110388","136548","136549"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 2
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                            localeEstimates: null
+                            tags: null
+                            warnings: null
+                            errors: null
+                          - reportUid: 8532918d
+                            schemaType: unauthorized
+                            schema: >-
+                              {"schema":"unauthorized","projectId":"fd7244365","localeList":["hy-AM","zh-TW","nl-BE","pt-BR","ru-RU","uk-UA","cy-GB"],"stringState":"AWAITING_APPROVAL","stringIds":["975d88fd8c9290c8356364b91f88af02","33eb5a93062cb5981168533500668a49","a781299a67d7bd57511a14cffce40257","afdf1b5d0aa538184cd67372c0acc7c2","302d3f85228cd41d2267c7505dafb9e5"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 700
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - new label
+                            warnings: null
+                            errors: null
+    post:
+      summary: Generate Cost Estimate Report for the Job
+      description: This is simplified version of API to generate cost reports. It creates further request to FES composing proper schema string based on input information. forced flag in this case is sent with false value being set.
+      tags:
+        - Estimates
+      operationId: generateJobCostEstimateReports
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: translationJobUid
+          description: A unique translation job identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobCostReportRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobGenericReportResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        reportUid: f84491fc
+                        reportType: FUZZY
+                        reportStatus: PENDING
+  '/estimates-api/v2/projects/{projectId}/reports/{reportUid}/status':
+    get:
+      summary: Get Estimate Report Status
+      tags:
+        - Estimates
+      operationId: getJobEstimateReportStatus
+
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportUid
+          description: A unique report identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportStatus
+          description: Status of report.
+          in: query
+          required: false
+          schema:
+            enum:
+              - NOT_FOUND
+              - PENDING
+              - PROCESSING
+              - COMPLETED
+              - FAILED
+              - TIMEOUT
+            type: string
+        - name: reportType
+          description: Report type.
+          in: query
+          required: false
+          schema:
+            enum:
+              - FUZZY
+              - COST
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobReportStatusResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        reportUid: f84491fc
+                        reportStatus: PROCESSING
+                        totalStrings: 27828
+                        percentComplete: 18
+                        reportType: FUZZY
+                        createdDate: '2016-03-21T15:00:48Z'
+  '/estimates-api/v2/projects/{projectId}/reports/{reportUid}':
+    get:
+      summary: Get Estimate Report
+      tags:
+        - Estimates
+      operationId: getJobEstimateReport
+
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportUid
+          description: A unique report identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportStatus
+          description: Status of report.
+          in: query
+          required: false
+          schema:
+            enum:
+              - NOT_FOUND
+              - PENDING
+              - PROCESSING
+              - COMPLETED
+              - FAILED
+              - TIMEOUT
+            type: string
+        - name: reportType
+          description: Report type.
+          in: query
+          required: false
+          schema:
+            enum:
+              - FUZZY
+              - COST
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobReportResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 4
+                        items:
+                          - reportUid: f84491fc
+                            schemaType: siteLocales
+                            reportType: FUZZY
+                            schema: '{"schema":"siteLocales","projectId":"fd7244365"}'
+                            reportStatus: PROCESSING
+                            totalStrings: 27828
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation: null
+                            localeEstimates: null
+                            tags: null
+                            warnings:
+                              - No rates specified for 'fr-FR' locale.
+                            errors:
+                              - >-
+                                Report generation failed. Rates of account defined in different
+                                currencies: USD, JPY. Only one should be used per account. Please
+                                fix this and re-run estimation.
+                          - reportUid: 0ec805d4
+                            schemaType: job
+                            reportType: COST
+                            schema: '{"schema":"job","jobUid":"e2f3dcac30cc"}'
+                            reportStatus: COMPLETED
+                            totalStrings: 3200
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - bbbbb456566
+                            warnings: null
+                            errors: null
+                          - reportUid: 702cdae5
+                            schemaType: listView
+                            schema: >-
+                              {"schema":"listView","projectId":"fd7244365","localeList":["hy-AM"],"stringState":"IN_TRANSLATION","stringIds":["5086f27e4a123ac0e573b7d45240b674","9d67960622910cb2e6ab0525fb8ec747","816a4bf2e30577ea2cfcb2eec231e50e"],"workflowStepIds":["19565","120859","120860","19567","19571","19570","19569","57497","65867","57499","61329","67758","67760","109463","109465","136550","110388","136548","136549"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 2
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                            localeEstimates: null
+                            tags: null
+                            warnings: null
+                            errors: null
+                          - reportUid: 8532918d
+                            schemaType: unauthorized
+                            schema: >-
+                              {"schema":"unauthorized","projectId":"fd7244365","localeList":["hy-AM","zh-TW","nl-BE","pt-BR","ru-RU","uk-UA","cy-GB"],"stringState":"AWAITING_APPROVAL","stringIds":["975d88fd8c9290c8356364b91f88af02","33eb5a93062cb5981168533500668a49","a781299a67d7bd57511a14cffce40257","afdf1b5d0aa538184cd67372c0acc7c2","302d3f85228cd41d2267c7505dafb9e5"]}
+                            reportStatus: COMPLETED
+                            reportType: COST
+                            totalStrings: 700
+                            projectId: fd7244365
+                            creatorUserUid: 58870b8ee965
+                            creatorUserRole: ROLE_ACCOUNT_OWNER
+                            contentCoverage: FULL
+                            creatorAgencyUid: ''
+                            createdDate: '2016-03-21T15:00:48Z'
+                            totalWordCount: 3634
+                            totalWeightedWordCount: 3614
+                            priceInformation:
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: USD
+                              - priceMin: 999.35
+                                priceMax: 1090.2
+                                currencyCode: EUR
+                            localeEstimates: null
+                            tags:
+                              - new label
+                            warnings: null
+                            errors: null
+    delete:
+          summary: Delete Estimation Report
+          description: The report is only "soft"-deleted, i.e. it remains persisted in the DB, but is marked as "not enabled"
+          tags:
+            - Estimates
+          operationId: deleteJobEstimateReport
+
+          parameters:
+            - name: projectId
+              description: A unique project identifier.
+              in: path
+              required: true
+              schema:
+                type: string
+            - name: reportUid
+              description: A unique report identifier.
+              in: path
+              required: true
+              schema:
+                type: string
+          responses:
+            200:
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/EmptyResponse'
+                  examples:
+                    response:
+                      value:
+                        response:
+                          code: SUCCESS
+                          data: null
+  '/estimates-api/v2/projects/{projectId}/reports/{reportUid}/tags':
+    put:
+      summary: Modify Tags of Estimation Report
+      description: The new set of tags completely replaces the old ones.
+      tags:
+        - Estimates
+      operationId: modifyJobEstimateReportTags
+
+      parameters:
+        - name: projectId
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportUid
+          description: A unique report identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyJobReportTagsRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateJobReportTagsResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        tags:
+                          - AdminJob
+                          - NEWTAG1
+                          - NEWTAG2
+  '/estimates-api/v2/projects/{projectUid}/reports/{reportUid}/download':
+    get:
+      summary: Export Estimation Report as CSV
+      tags:
+        - Estimates
+      operationId: exportJobEstimationReport
+
+      parameters:
+        - name: projectUid
+          description: A unique project identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reportUid
+          description: A unique report identifier.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: format
+          description: for now, only csv is supported.
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+
+#
 # Jobs API endpoints
 #
-  '/jobs-api/v3/account/{accountUid}/jobs':
+  '/jobs-api/v3/accounts/{accountUid}/jobs':
     get:
       summary: List jobs within an account
       description: List / search the jobs within an account.
@@ -6502,17 +7299,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error423Response'
+                $ref: '#/components/schemas/JobFiledAddError423Response'
               examples:
                 response:
                   value:
                     response:
-                      code: RESOURCE_LOCKED
+                      code: VALIDATION_ERROR
                       errors:
-                        key: resource.locked
-                        message: >-
-                          The file is currently being processed and will be
-                          available in a few minutes.
+                        - key: null
+                          message: >-
+                            The file is currently being processed and will be
+                            available in a few minutes.
+                          details: null
         429:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
@@ -6704,16 +7502,17 @@ paths:
         required: true
         schema:
           type: string
-      - description: >-
-          Default to true. When a new locale is being added to a job, by
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddLocaleJobRequest'
+        description: >-
+          `syncContent` is default to true. When a new locale is being added to a job, by
           default all content in the job will be added to the job for the new
           locale. If set to false, then no content will be added to the job,
           and only a locale placeholder will be added to the job.
-        in: query
-        name: syncContent
-        required: false
-        schema:
-          type: string
+        required: true
       responses:
         200:
           description: OK
@@ -8627,7 +9426,7 @@ paths:
                   description: >
                     This is only for accounts created after July 31st, 2015.
                     Define a custom
-                    [namespace](https://developer.smartling.com/v2.0/docs/string-sharing-namespaces)
+                    [namespace](https://help.smartling.com/hc/en-us/articles/360008143833)
                     for the file.
 
 
@@ -8660,7 +9459,7 @@ paths:
                   description: >
                     Provides custom parser configuration for supported file
                     types. See [Supported File
-                    Types](https://developer.smartling.com/docs/supported-file-types)
+                    Types](https://help.smartling.com/hc/en-us/articles/360007998893)
                     for more details.
                   type: string
                 callbackUrl:
@@ -9406,47 +10205,120 @@ paths:
               type: string
             type: array
         - description: >
+            Optional comma-separated list of fields names to be returned by the endpoint. If this parameter
+            is not set then the list of fields returned is defined by `include...` parameters.
+
+
+            Both `fields` and `include...` parameters are not allowed at the same time.
+
+
+            The supported list of fields names is:
+
+              - accountUid
+
+              - accountName
+
+              - projectId
+
+              - projectName
+
+              - targetLocaleId
+
+              - targetLocale
+
+              - jobUid
+
+              - jobName
+
+              - jobReferenceNumber
+
+              - translationResourceUid
+
+              - translationResourceName
+
+              - agencyUid
+
+              - agencyName
+
+              - workflowStepType
+
+              - workflowStepUid
+
+              - workflowStepName
+
+              - fuzzyProfileName
+
+              - fuzzyTier
+
+              - wordCount
+
+              - weightedWordCount
+          in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+        - description: >
             Optional parameter to specify whether the report should group word
             count by translation resource name.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeTranslationResource
           required: false
+          deprecated: true
           schema:
             default: true
             type: boolean
         - description: >
-            Optional parameter to specify whether the report should group word
-            count by translation job name.
+            Optional parameter to specify whether the report should group word count by translation job name.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeJob
           required: false
+          deprecated: true
           schema:
             default: true
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
             count by translation job and include reference number in the response.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeJobReferenceNumber
           required: false
+          deprecated: true
           schema:
             default: false
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
             count by fuzzy match profile and tier.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeFuzzyMatchProfile
           required: false
+          deprecated: true
           schema:
             default: true
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
             count by workflow step uid and name.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeWorkflowStep
           required: false
+          deprecated: true
           schema:
             default: false
             type: boolean
@@ -9455,8 +10327,8 @@ paths:
           name: limit
           required: false
           schema:
-            default: 5000
-            maximum: 5000
+            default: 10000
+            maximum: 10000
             minimum: 0
             type: integer
       responses:
@@ -9595,47 +10467,120 @@ paths:
               type: string
             type: array
         - description: >
+            Optional comma-separated list of fields names to be returned by the endpoint. If this parameter
+            is not set then the list of fields returned is defined by `include...` parameters.
+
+
+            Both `fields` and `include...` parameters are not allowed at the same time.
+
+
+            The supported list of fields names is:
+
+              - accountUid
+
+              - accountName
+
+              - projectId
+
+              - projectName
+
+              - targetLocaleId
+
+              - targetLocale
+
+              - jobUid
+
+              - jobName
+
+              - jobReferenceNumber
+
+              - translationResourceUid
+
+              - translationResourceName
+
+              - agencyUid
+
+              - agencyName
+
+              - workflowStepType
+
+              - workflowStepUid
+
+              - workflowStepName
+
+              - fuzzyProfileName
+
+              - fuzzyTier
+
+              - wordCount
+
+              - weightedWordCount
+          in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+        - description: >
             Optional parameter to specify whether the report should group word
             count by translation resource name.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeTranslationResource
           required: false
+          deprecated: true
           schema:
             default: true
             type: boolean
         - description: >
-            Optional parameter to specify whether the report should group word
-            count by translation job name.
+            Optional parameter to specify whether the report should group word count by translation job name.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeJob
           required: false
+          deprecated: true
           schema:
             default: true
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
-            count by translation job and include job reference number in the response.
+            count by translation job and include reference number in the response.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeJobReferenceNumber
           required: false
+          deprecated: true
           schema:
             default: false
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
             count by fuzzy match profile and tier.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeFuzzyMatchProfile
           required: false
+          deprecated: true
           schema:
             default: true
             type: boolean
         - description: >
             Optional parameter to specify whether the report should group word
             count by workflow step uid and name.
+
+
+            Deprecated, use parameter `fields` instead.
           in: query
           name: includeWorkflowStep
           required: false
+          deprecated: true
           schema:
             default: false
             type: boolean
@@ -9756,6 +10701,130 @@ paths:
 
   /translation-quality-api/v2/accounts/{accountUid}/projects/{projectId}/check:
     $ref: './spec/translation_quality/tqc_check.yaml#/x-paths/tqc_check'
+
+#
+# Attachments API
+#
+  '/attachments-api/v2/accounts/{accountUid}/{type}/attachments/{attachmentUid}':
+    get:
+      summary: Download binary attachment
+      description: |-
+        Download attachment file
+      tags:
+      - Attachments
+      operationId: downloadAttachment
+
+      parameters:
+      - name: accountUid
+        in: path
+        required: true
+        description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        schema:
+          format: uuid
+          type: string
+      - name: type
+        in: path
+        required: true
+        description: Attachment type
+        schema:
+          enum:
+          - jobs
+          - strings
+          - issues
+          type: string
+      - name: attachmentUid
+        in: path
+        required: true
+        description: Attachment unique identifier.
+        schema:
+          format: uuid
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  '/attachments-api/v2/accounts/{accountUid}/{type}/{entityUid}':
+    get:
+      summary: Get list of linked attachments
+      description: List of linked attachments with entity
+      tags:
+      - Attachments
+      operationId: listAttachment
+
+      parameters:
+      - name: accountUid
+        in: path
+        required: true
+        description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        schema:
+          format: uuid
+          type: string
+      - name: type
+        in: path
+        required: true
+        description: Attachment type
+        schema:
+          enum:
+          - jobs
+          - strings
+          - issues
+          type: string
+      - name: entityUid
+        in: path
+        required: true
+        description: Entity uid
+        schema:
+          format: uuid
+          type: string
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentListEntityResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 2
+                        items:
+                          - attachmentUid: '1e2f4378324e'
+                            name: 'my-attachment'
+                            description: 'meta-for-my-attachment'
+                            createdDate: '2018-03-30T12:58:22Z'
+                            createdByUserUid: '5789003e276a'
+                            canDelete: false
+                          - attachmentUid: '198eafe96267'
+                            name: 'my-attachment'
+                            description: 'meta-for-my-attachment'
+                            createdDate: '2018-03-30T12:58:22Z'
+                            createdByUserUid: '5789003e276a'
+                            canDelete: true
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
 
 components:
   requestBodies:
@@ -10160,6 +11229,55 @@ components:
         - termUids
         - authorization
       type: object
+
+    AttachmentListEntityResponse:
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      description: attachemnts
+                      items:
+                        $ref: '#/components/schemas/AttachmentResponseItem'
+                      type: array
+                    totalCount:
+                      description: total number of attachemnts
+                      type: integer
+                  type: object
+              required:
+                - data
+              type: object
+      required:
+        - response
+      type: object
+
+    AttachmentResponseItem:
+      properties:
+        attachmentJobUid:
+          description: The unique identifier of the attachment.
+          format: uid
+          type: string
+        name:
+          description: The name of the attachemnt.
+          type: string
+        description:
+          description: The description of the attachment.
+          type: string
+        createdDate:
+          description: The UTC value of the date the attachemnt was uploaded.
+          example: '2018-03-30T12:58:22Z'
+          format: date-time
+          type: string
+        createdByUserUid:
+          description: The unique identifier of user whom upload attachment
+          format: uid
+          example: c297ff10f584
+          type: string
+      type: object
+
     BatchStatus:
       description: The status of the Batch
       enum:
@@ -10553,6 +11671,78 @@ components:
                     - items
                   type: object
               type: object
+    BatchBindingsRequest:
+      properties:
+        batchBindingsRequest:
+          description: Parameters for bindings search
+          properties:
+            stringHashcodes:
+              description: List of the hashcodes for the strings to get bindings for.
+              items:
+                type: string
+              type: array
+            contentFileUri:
+              description: Content file name to get bindings for.
+              type: string
+            contextUid:
+              description: ContextUID to get bindings for.
+              format: uuid
+              type: string
+            bindingUids:
+              description: List of unique binding identifiers.
+              items:
+                type: string
+              type: array
+          type: object
+      type: object
+    DeleteBatchBindingsRequest:
+      properties:
+        batchBindingsRequest:
+          description: Parameters for bindings search
+          properties:
+            stringHashcodes:
+              description: List of the hashcodes for the strings to delete bindings for.
+              items:
+                type: string
+              type: array
+            contentFileUri:
+              description: Content file name to delete bindings for.
+              type: string
+            contextUid:
+              description: ContextUID to delete bindings for.
+              format: uuid
+              type: string
+            bindingUids:
+              description: Unique binding identifier to delete.
+              items:
+                type: string
+              type: array
+          type: object
+      type: object
+    BindingListResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/Binding'
+                      type: array
+                    offset:
+                      description: >-
+                        Result set is partial, if not empty. To retreive everything,
+                        request should be repeated with offset value.
+                      type: string
+                  required:
+                    - items
+                  type: object
+              type: object
     CancelJobRequest:
       description: The payload to use when cancelling a job.
       properties:
@@ -10793,6 +11983,49 @@ components:
           items:
             $ref: '#/components/schemas/CustomFieldBasicRequest'
           description: Custom fields assigned to the project which job is created in. Validation on custom fields is done in scope of that request.
+      type: object
+    CreateJobFuzzyReportRequest:
+      description: The payload to use when generating a job fuzzy report.
+      properties:
+        contentType:
+          enum:
+            - JOB_CONTENT_TRANSLATION
+            - JOB_CONTENT_ALL_CONTENT
+            - JOB_CONTENT_CLAIMING
+            - JOB_CONTENT_UNAUTHORIZED
+          type: string
+        tags:
+          example: ["tag1", "tag2"]
+          type: array
+          items:
+            type: string
+      type: object
+    CreateJobCostReportRequest:
+      description: The payload to use when generating a job cost report.
+      properties:
+        contentType:
+          enum:
+            - JOB_CONTENT_TRANSLATION
+            - JOB_CONTENT_ALL_CONTENT
+            - JOB_CONTENT_CLAIMING
+            - JOB_CONTENT_UNAUTHORIZED
+          type: string
+        tags:
+          example: ["tag1", "tag2"]
+          type: array
+          items:
+            type: string
+        localeWorkflows:
+          type: array
+          items:
+            type: object
+            properties:
+              targetLocaleId:
+                type: string
+              workflowUid:
+                type: string
+        fuzzyProfileUid:
+          type: string
       type: object
     CustomFieldBasicRequest:
       type: object
@@ -11070,6 +12303,27 @@ components:
                       type: string
                   type: object
               type: object
+    JobFiledAddError423Response:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - VALIDATION_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+      type: object
     EmptyResponse:
       type: object
       required:
@@ -11229,6 +12483,172 @@ components:
       required:
         - response
       type: object
+    EstimateJobReportResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - GENERAL_ERROR
+                - MAINTENANCE_MODE_ERROR
+              type: string
+            data:
+              items:
+                $ref: '#/components/schemas/EstimateJobReport'
+              type: array
+          required:
+            - code
+            - data
+          type: object
+      required:
+        - response
+      type: object
+    EstimateJobReport:
+      type: object
+      properties:
+        reportUid:
+          type: string
+        schemaType:
+          type: string
+        reportType:
+          type: string
+        schema:
+          type: string
+        reportStatus:
+          type: string
+        totalStrings:
+          type: integer
+        projectId:
+          type: string
+        creatorUserUid:
+          type: string
+        creatorUserRole:
+          type: string
+        contentCoverage:
+          type: string
+        creatorAgencyUid:
+          type: string
+        createdDate:
+          type: string
+          format: 'YYYY-MM-DDThh:mm:ssZ'
+        totalWordCount:
+          type: string
+        totalWeightedWordCount:
+          type: integer
+        priceInformation:
+          type: string
+        localeEstimates:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+    EstimateJobGenericReportResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - GENERAL_ERROR
+                - MAINTENANCE_MODE_ERROR
+              type: string
+            data:
+              items:
+                $ref: '#/components/schemas/EstimateJobGenericReport'
+              type: array
+          required:
+            - code
+            - data
+          type: object
+      required:
+        - response
+      type: object
+    EstimateJobGenericReport:
+      type: object
+      properties:
+        reportUid:
+          type: string
+        reportType:
+          type: string
+        reportStatus:
+          type: string
+    EstimateJobReportStatusResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - GENERAL_ERROR
+                - MAINTENANCE_MODE_ERROR
+              type: string
+            data:
+              $ref: '#/components/schemas/EstimateJobReportStatus'
+              type: object
+          required:
+            - code
+            - data
+          type: object
+      required:
+        - response
+      type: object
+    EstimateJobReportStatus:
+      type: object
+      properties:
+        reportUid:
+          type: string
+        reportType:
+          type: string
+        reportStatus:
+          type: string
+        totalStrings:
+          type: integer
+        percentComplete:
+          type: integer
+        createdDate:
+          type: string
+          format: 'YYYY-MM-DDThh:mm:ssZ'
+    EstimateJobReportTagsResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - GENERAL_ERROR
+                - MAINTENANCE_MODE_ERROR
+              type: string
+            data:
+              $ref: '#/components/schemas/EstimateJobReportTags'
+              type: object
+          required:
+            - code
+            - data
+          type: object
+      required:
+        - response
+      type: object
+    EstimateJobReportTags:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: string
     FileType:
       type: string
       description: A unique identifier for the file type.
@@ -12050,89 +13470,83 @@ components:
           example: ngahq6dgh4ed
     CreateCustomField:
       properties:
-        data:
-          properties:
-            type:
-              description: custom field type.
-              example: SHORT_TEXT | LONG_TEXT | SELECTBOX | CHECKBOX
-              type: string
-            fieldName:
-              description: custom field name.
-              example: field-name
-              type: boolean
-            enabled:
-              description: is custom field enabled.
-              example: true
-              type: boolean
-            required:
-              description: is custom field required during job creation.
-              example: true
-              type: boolean
-            searchable:
-              description: can search be performed by the custom field.
-              example: true
-              type: boolean
-            displayToTranslators:
-              description: is displayed to translators.
-              example: true
-              type: boolean
-            options:
-              items:
-                example:
-                  - option1
-                  - option2
-                type: string
-              type: array
-            defaultValue:
-              description: default value for custom field.
-              example: default field value
-              type: string
-            description:
-              description: custom field description.
-              example: Custom field example
-              type: string
-          type: object
+        type:
+          description: custom field type.
+          example: SHORT_TEXT | LONG_TEXT | SELECTBOX | CHECKBOX
+          type: string
+        fieldName:
+          description: custom field name.
+          example: field-name
+          type: boolean
+        enabled:
+          description: is custom field enabled.
+          example: true
+          type: boolean
+        required:
+          description: is custom field required during job creation.
+          example: true
+          type: boolean
+        searchable:
+          description: can search be performed by the custom field.
+          example: true
+          type: boolean
+        displayToTranslators:
+          description: is displayed to translators.
+          example: true
+          type: boolean
+        options:
+          items:
+            example:
+              - option1
+              - option2
+            type: string
+          type: array
+        defaultValue:
+          description: default value for custom field.
+          example: default field value
+          type: string
+        description:
+          description: custom field description.
+          example: Custom field example
+          type: string
       type: object
     UpdateCustomField:
       properties:
-        data:
-          properties:
-            fieldName:
-              description: custom field name.
-              example: field-name
-              type: boolean
-            enabled:
-              description: is custom field enabled.
-              example: true
-              type: boolean
-            required:
-              description: is custom field required during job creation.
-              example: true
-              type: boolean
-            searchable:
-              description: can search be performed by the custom field.
-              example: true
-              type: boolean
-            displayToTranslators:
-              description: is displayed to translators.
-              example: true
-              type: boolean
-            options:
-              items:
-                example:
-                  - option1
-                  - option2
-                type: string
-              type: array
-            defaultValue:
-              description: default value for custom field.
-              example: default field value
-              type: string
-            description:
-              description: custom field description.
-              example: Custom field example
-              type: string
-          type: object
+        fieldName:
+          description: custom field name.
+          example: field-name
+          type: boolean
+        enabled:
+          description: is custom field enabled.
+          example: true
+          type: boolean
+        required:
+          description: is custom field required during job creation.
+          example: true
+          type: boolean
+        searchable:
+          description: can search be performed by the custom field.
+          example: true
+          type: boolean
+        displayToTranslators:
+          description: is displayed to translators.
+          example: true
+          type: boolean
+        options:
+          items:
+            example:
+              - option1
+              - option2
+            type: string
+          type: array
+        defaultValue:
+          description: default value for custom field.
+          example: default field value
+          type: string
+        description:
+          description: custom field description.
+          example: Custom field example
+          type: string
       type: object
     ListFilesResponse:
       properties:
@@ -12442,6 +13856,15 @@ components:
             "overrideContextOlderThanDays" old.
           minimum: 1
           type: integer
+    ModifyJobReportTagsRequest:
+      description: The payload to modify job estimation report tags.
+      properties:
+        tags:
+          example: ["tag1", "tag2"]
+          type: array
+          items:
+            type: string
+      type: object
     NullDataJobResponse:
       type: object
       required:
@@ -12728,6 +14151,18 @@ components:
         fileUri:
           description: The URI of the file that is to be removed from the job.
           type: string
+      type: object
+    AddLocaleJobRequest:
+      description: The payload to use when add a locale to a job.
+      properties:
+        syncContent:
+          description: >-
+            When a new locale is being added to a job, by
+            default all content in the job will be added to the job for the new
+            locale. If set to false, then no content will be added to the job,
+            and only a locale placeholder will be added to the job.
+          type: boolean
+          default: true
       type: object
     JobScheduleEditCommand:
       description: The payload to use modifying translation job schedule.
