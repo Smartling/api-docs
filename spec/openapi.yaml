@@ -2534,7 +2534,7 @@ paths:
           -F "name=context1.png"
           "https://api.smartling.com/context-api/v2/projects/$smartlingProjectId/contexts"
 
-          
+
     get:
       summary: List contexts for the project
       description: |
@@ -9928,11 +9928,11 @@ paths:
          1. It additionally gets `batchUid` as a path parameter.
          2. It doesn't relay `localeIdsToAuthorize` to Files Api, therefore the file stays unauthorized. Instead, `localeIdsToAuthorize` are saved just for this batch session and are used when a file is being attached to a job.
 
-        Upload is only possible if the file was declared in the CreateBatchRequest or added with REGISTER_FILE action
+        Upload is only possible if the file was declared in the `Create Batch` request or added with `REGISTER_FILE` action.
         When the first file is uploaded to the new batch, the batch status changes
         to `ADDING_FILES`. Adds original source content to a Job batch in Smartling.
 
-        The curl example provided will upload your Java properties file directly
+        The provided curl example will upload your Java properties file directly
         to a Smartling project, identified by the `projectId`, and attaches it
         to a Job linked to `batchUid`. The response is returned right after the
         content of a file is accepted by the Files API. After that, the Batch
@@ -9940,8 +9940,15 @@ paths:
         all strings are ingested, and the file is then attached to the Job which
         is linked to the batch for locales, described in `localeIdsToAuthorize`.
 
+
         Endpoint returns response as soon as a file is uploaded to job batches server.
         File is uploaded to FILE API asynchronously.
+
+
+        **Common issues**:
+
+        * Each uploaded file must have `fileUri` already registered with the batch. An example, you created a batch with the single file `test1.xml`. If you will try to upload `test2.xml` then you will get an error. But you can always use `REGISTER_FILE` action.
+        * A file with the same `fileUri` must be upload only once per batch. Even if you want to authorized it to two or more locales. An example, you have file `test1.xml` that should be authorized for `es` and `de`. If you will try to upload it twice (`fileUri=test1.xml` + `localeIdsToAuthorize[]=es` and `fileUri=test1.xml` + `localeIdsToAuthorize[]=de`) then you will get an error. The second upload will be rejected and file will be authorized only for `es` locale. You must always pass all desired locales with the fileUri (`fileUri=test1.xml` + `localeIdsToAuthorize[]=es,de`) .
       tags:
         - Job Batches V2
       operationId: uploadFileToJobBatchV2
