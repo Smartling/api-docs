@@ -331,6 +331,11 @@ components:
 
     receiveWebhookResponse:
       type: object
+      required:
+        - response
+      properties:
+        response:
+          $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
 
     webhooks:
       issueCreatedRequest:
@@ -496,6 +501,23 @@ components:
               - $ref: '#/components/requestBodies/watcher/created'
               - $ref: '#/components/requestBodies/watcher/modified'
               - $ref: '#/components/requestBodies/watcher/enabled'
+            type: object
+        type: object
+      issueDescriptionChanged:
+        title: 'Issue description changed'
+        properties:
+          type:
+            description: Event type code
+            type: String
+            example: 'issue.descriptionChanged'
+            enum:
+              - 'issue.descriptionChanged'
+          data:
+            allOf:
+              - $ref: '#/components/requestBodies/accountUid'
+              - $ref: '#/components/requestBodies/projectId'
+              - $ref: '#/components/requestBodies/issueUid'
+              - $ref: '#/components/requestBodies/issueText'
             type: object
         type: object
 
