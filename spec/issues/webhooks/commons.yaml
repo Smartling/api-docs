@@ -90,6 +90,14 @@ components:
             description: >-
               Issue text.
             example: "Some text"
+      localeId:
+        type: object
+        properties:
+          localeId:
+            type: String
+            description: >-
+              An identifying code for a language in Smartling.
+            example: "es-ES"
       issueStateCode:
         type: object
         properties:
@@ -518,6 +526,59 @@ components:
               - $ref: '#/components/requestBodies/projectId'
               - $ref: '#/components/requestBodies/issueUid'
               - $ref: '#/components/requestBodies/issueText'
+            type: object
+        type: object
+      issueTypeChanged:
+        title: 'Issue type changed'
+        properties:
+          type:
+            description: Event type code
+            type: String
+            example: 'issue.typeChanged'
+            enum:
+              - 'issue.typeChanged'
+          data:
+            allOf:
+              - $ref: '#/components/requestBodies/accountUid'
+              - $ref: '#/components/requestBodies/projectId'
+              - $ref: '#/components/requestBodies/issueUid'
+              - $ref: '#/components/requestBodies/issueTypeCode'
+              - $ref: '#/components/requestBodies/issueSubTypeCode'
+              - $ref: '#/components/requestBodies/localeId'
+            type: object
+        type: object
+      issueSubTypeChanged:
+        title: 'Issue subtype changed'
+        properties:
+          type:
+            description: Event type code
+            type: String
+            example: 'issue.subTypeChanged'
+            enum:
+              - 'issue.subTypeChanged'
+          data:
+            allOf:
+              - $ref: '#/components/requestBodies/accountUid'
+              - $ref: '#/components/requestBodies/projectId'
+              - $ref: '#/components/requestBodies/issueUid'
+              - $ref: '#/components/requestBodies/issueSubTypeCode'
+            type: object
+        type: object
+      issueLocaleChanged:
+        title: 'Issue locale changed'
+        properties:
+          type:
+            description: Event type code
+            type: String
+            example: 'issue.localeChanged'
+            enum:
+              - 'issue.localeChanged'
+          data:
+            allOf:
+              - $ref: '#/components/requestBodies/accountUid'
+              - $ref: '#/components/requestBodies/projectId'
+              - $ref: '#/components/requestBodies/issueUid'
+              - $ref: '#/components/requestBodies/localeId'
             type: object
         type: object
 
