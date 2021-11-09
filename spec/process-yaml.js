@@ -4,7 +4,7 @@ const { Resolver }  = require('@stoplight/json-ref-resolver');
 const { join } = require('@stoplight/path')
 
 try {
-    const myFunction = async (sourceFilePath, destinationFilePath, baseFilePath) => {
+    const makeResultForCertainFileFunction = async (sourceFilePath, destinationFilePath, baseFilePath) => {
         // Get document, or throw exception on error
         console.log("-----------------------------------------------------------");
         console.log("process sourceFilePath=" + sourceFilePath);
@@ -38,15 +38,15 @@ try {
         console.log("-----------------------------------------------------------");
     }
 
-    const myFunction1 = async() => {
-        await myFunction("./spec/translation_quality/dictionaries.yaml", "./spec/translation_quality/dictionaries_result.yaml", "./spec/translation_quality");
-        await myFunction("./spec/translation_quality/profiles.yaml", "./spec/translation_quality/profiles_result.yaml", "./spec/translation_quality");
-        await myFunction("./spec/translation_quality/checks/accounts.yaml", "./spec/translation_quality/checks/accounts_result.yaml", "./spec/translation_quality/checks");
-        await myFunction("./spec/translation_quality/check_type_severity_level.yaml", "./spec/translation_quality/check_type_severity_level_result.yaml", "./spec/translation_quality");
-        await myFunction("./spec/translation_quality/account_settings.yaml", "./spec/translation_quality/account_settings_result.yaml", "./spec/translation_quality");
-        await myFunction("./spec/translation_quality/tqc_check.yaml", "./spec/translation_quality/tqc_check_result.yaml", "./spec/translation_quality");
+    const makeResultFunction = async() => {
+        await makeResultForCertainFileFunction("./spec/translation_quality/dictionaries.yaml", "./spec/translation_quality/dictionaries_result.yaml", "./spec/translation_quality");
+        await makeResultForCertainFileFunction("./spec/translation_quality/profiles.yaml", "./spec/translation_quality/profiles_result.yaml", "./spec/translation_quality");
+        await makeResultForCertainFileFunction("./spec/translation_quality/checks/accounts.yaml", "./spec/translation_quality/checks/accounts_result.yaml", "./spec/translation_quality/checks");
+        await makeResultForCertainFileFunction("./spec/translation_quality/check_type_severity_level.yaml", "./spec/translation_quality/check_type_severity_level_result.yaml", "./spec/translation_quality");
+        await makeResultForCertainFileFunction("./spec/translation_quality/account_settings.yaml", "./spec/translation_quality/account_settings_result.yaml", "./spec/translation_quality");
+        await makeResultForCertainFileFunction("./spec/translation_quality/tqc_check.yaml", "./spec/translation_quality/tqc_check_result.yaml", "./spec/translation_quality");
     }
-    myFunction1();
+    makeResultFunction();
 
 } catch (e) {
     console.log(e);
