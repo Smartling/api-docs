@@ -1,6 +1,6 @@
 const yaml = require('js-yaml');
 const fs = require('fs');
-const { Resolver }  = require('@stoplight/json-ref-resolver');
+const { Resolver } = require('@stoplight/json-ref-resolver');
 const { join } = require('@stoplight/path')
 
 try {
@@ -31,7 +31,7 @@ try {
         console.log("-----------------------------------------------------------");
         console.log(resolved);
         console.log("before resolved.result");
-        var destinationJson = {"x-paths": resolved.result}
+        let destinationJson = {"x-paths": resolved.result}
         fs.writeFileSync(destinationFilePath, yaml.dump(destinationJson));
         console.log("after resolved.result");
         console.log("processed sourceFilePath=" + sourceFilePath);
