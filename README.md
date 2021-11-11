@@ -21,11 +21,11 @@
     + Run `npm install`
 
 ### Usage
-
-1. Run `npm start`
-2. Checkout console output to see where local server is started. You can use all [links](#links) (except `preview`) by replacing https://smartling.github.io/api-docs/ with url from the message: `Server started <url>`
-3. Make changes using your favorite editor or `swagger-editor` (look for URL in console output)
-4. All changes are immediately propagated to your local server, moreover all documentation pages will be automagically refreshed in a browser after each change
+1. If you make changes for TQC endpoint description run `npm run process-yaml`
+2. Run `npm start`
+3. Checkout console output to see where local server is started. You can use all [links](#links) (except `preview`) by replacing https://smartling.github.io/api-docs/ with url from the message: `Server started <url>`
+4. Make changes using your favorite editor or `swagger-editor` (look for URL in console output)
+5. All changes are immediately propagated to your local server, moreover all documentation pages will be automagically refreshed in a browser after each change
 **TIP:** you can open `swagger-editor`, documentation and `swagger-ui` in parallel
-5. Once you finish with the changes you can run tests using: `npm test`
-6. Share your changes with the rest of the world by pushing to GitHub :smile:
+6. Once you finish with the changes you can run tests using: `npm test`
+7. Share your changes with the rest of the world by pushing to GitHub :smile:
