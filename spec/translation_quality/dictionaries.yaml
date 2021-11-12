@@ -232,6 +232,32 @@ x-paths:
           source: |
             curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId/$wordUid
 
+
+  dictionary_regex_check_rule_types:
+    get:
+      description: >-
+        Get regex quality check rule types that are available.
+      summary: Get regex quality check rule types
+      tags:
+        - Translation quality checks
+      operationId: getRegexQualityCheckRuleTypes
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DictionaryRegexCheckRuleTypesResponse'
+              example:
+                $ref: '#/components/examples/regex_check_rule_types_example'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/REGEX_CHECK/rule-types
 components:
   schemas:
 
@@ -368,6 +394,32 @@ components:
                                 description: trademark consistency type name
                                 example: "Service Mark"
 
+    DictionaryRegexCheckRuleTypesResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: './tqc_common.yaml#/components/schemas/regexCheckRuleTypeCodeResponse'
+                          - type: object
+                            properties:
+                              name:
+                                type: string
+                                description: rule type name
+                                example: "Forbidden Regex found in the target"
+
   ################################
 
     CurrentUserSettingsDictionaryForLocaleRequest:
@@ -449,3 +501,15 @@ components:
               "name": "Medium Severity"
             - "severityLevelCode": "HIGH"
               "name": "High Severity"
+    regex_check_rule_types_example:
+      response:
+        code: SUCCESS
+        data:
+          totalCount: 3
+          items:
+            - "ruleTypeCode": "FORBIDDEN"
+              "name": "Forbidden Regex found in the target"
+            - "ruleTypeCode": "MISSING"
+              "name": "Regex missing in the target"
+            - "ruleTypeCode": "COUNT_MISMATCH"
+              "name": "Count of regex matches differ between source and target"

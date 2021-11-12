@@ -1,0 +1,247 @@
+x-paths:
+  profiles_regex_check_type_rules:
+    post:
+      description: Create a regex check type settings rule.
+      summary: Create a regex check type settings rule
+      tags:
+        - Translation quality checks
+      operationId: createTQCRegexRule
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - &ref_1
+          name: accountUid
+          in: path
+          type: string
+          required: true
+          description: >-
+            The account’s unique identifier. This can be found in the Smartling
+            Dashboard under Account Settings > API.
+        - &ref_2
+          name: profileUid
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of corresponding profile.
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: &ref_5
+              allOf:
+                - &ref_0
+                  type: object
+                  properties:
+                    ruleName:
+                      type: string
+                      description: Rule name
+                      example: ruleName
+                    severityLevelCode:
+                      enum:
+                        - DISABLED
+                        - LOW
+                        - MEDIUM
+                        - HIGH
+                    ruleTypeCode:
+                      enum:
+                        - FORBIDDEN
+                        - MISSING
+                        - COUNT_MISMATCH
+                    flavorCode:
+                      enum:
+                        - DOT_NET
+                    originalPattern:
+                      type: string
+                      description: Original pattern
+                      example: '@mail'
+                    translationPattern:
+                      type: string
+                      description: Translation pattern
+                      example: '@gmail'
+                    caseInsensitive:
+                      type: boolean
+                      description: Enable case insensitive search
+                      example: true
+                    description:
+                      type: string
+                      description: Rule description
+                      example: rule description
+                    warningMessage:
+                      type: string
+                      description: message for warning on cat tool
+                      example: ' test warning message'
+                  required:
+                    - ruleName
+                    - severityLevelCode
+                    - ruleTypeCode
+                    - flavorCode
+                    - originalPattern
+                    - translationPattern
+                    - caseInsensitive
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: &ref_3
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - &ref_6
+                        type: object
+                        required:
+                          - code
+                        properties:
+                          code:
+                            type: string
+                            enum:
+                              - SUCCESS
+                            description: >-
+                              Indicates whether the response was successful or
+                              what error has occurred.
+                      - type: object
+                        properties:
+                          data:
+                            allOf:
+                              - type: object
+                                properties:
+                                  ruleUid:
+                                    type: string
+                                    description: >-
+                                      Unique identifier of corresponding check
+                                      rule
+                                    example: ce6d6b5dbc12
+                              - *ref_0
+                              - type: object
+                                properties:
+                                  groups:
+                                    type: array
+                                    items:
+                                      allOf:
+                                        - type: object
+                                          properties:
+                                            groupUid:
+                                              type: string
+                                              description: >-
+                                                Smartling rule group identifier of the
+                                                translation
+                                              example: ce6d6b5dbc12
+                                            ruleUid:
+                                              type: string
+                                              description: >-
+                                                Smartling rule identifier of the
+                                                translation
+                                              example: ce6d6b5dbcs2
+                                            targetLocaleIds:
+                                              description: The list of target locales.
+                                              example:
+                                                - ru-RU
+                                              items:
+                                                type: string
+                                              type: array
+                                            severityLevelCode:
+                                              enum:
+                                                - DISABLED
+                                                - LOW
+                                                - MEDIUM
+                                                - HIGH
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules
+  profiles_regex_check_type_rule:
+    get:
+      description: Get a regex check type settings rule.
+      summary: Get a regex check type settings rule
+      tags:
+        - Translation quality checks
+      operationId: getTQCRegexRule
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - &ref_4
+          name: ruleUid
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of corresponding check rule.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_3
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid
+    put:
+      description: Update a regex check type settings rule.
+      summary: Update a regex check type settings rule
+      tags:
+        - Translation quality checks
+      operationId: updateTQCRegexRule
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - *ref_4
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: *ref_5
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_3
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid
+    delete:
+      description: Delete a regex check type settings rule.
+      summary: Delete a check type settings rule
+      tags:
+        - Translation quality checks
+      operationId: deleteTQCRegexRule
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - *ref_4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_6
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid

@@ -581,6 +581,25 @@ x-paths:
                                                 - PLURALS_REPETITION
                                               description: check type code
                                               example: PLURALS_REPETITION
+                                    - title: REGEX_CHECK
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - REGEX_CHECK
+                                              description: check type code
+                                              example: REGEX_CHECK
+                                            rules:
+                                              type: array
+                                              items:
+                                                $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
               example:
                 response:
                   code: SUCCESS
@@ -782,6 +801,34 @@ x-paths:
                         subTypes: []
                         localeSeverityLevels: []
                         groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: REGEX_CHECK
+                        subTypes: []
+                        groups: []
+                        rules:
+                          - ruleUid: 2d83ea74c848
+                            severityLevelCode: LOW
+                            ruleName: ruleName1
+                            ruleTypeCode: FORBIDDEN
+                            flavorCode: DOT_NET
+                            originalPattern: '@mail'
+                            translationPattern: '@gmail'
+                            description: ruleName1 description
+                            caseInsensitive: true
+                            warningMessage: test warning
+                            groups: []
+                          - ruleUid: ac3069e2fd30
+                            severityLevelCode: MEDIUM
+                            ruleName: ruleName2
+                            ruleTypeCode: MISSING
+                            flavorCode: DOT_NET
+                            originalPattern: '@/d'
+                            translationPattern: '@/d'
+                            description: ruleName2 description
+                            caseInsensitive: true
+                            warningMessage: test warning
+                            groups: []
       x-code-samples:
         - lang: curl
           source: >
@@ -827,6 +874,7 @@ x-paths:
               - GLOBAL_CAPITALISATION_CONSISTENCY
               - PUNCTUATION_CONSISTENCY
               - PLURALS_REPETITION
+              - REGEX_CHECK
           description: '[check type code](#operation/getTranslationQualityCheckTypes)'
       responses:
         '200':
@@ -1374,6 +1422,106 @@ x-paths:
                                               - PLURALS_REPETITION
                                             description: check type code
                                             example: PLURALS_REPETITION
+                                  - title: REGEX_CHECK
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - REGEX_CHECK
+                                            description: check type code
+                                            example: REGEX_CHECK
+                                          rules:
+                                            type: array
+                                            items:
+                                              allOf:
+                                                - type: object
+                                                  properties:
+                                                    ruleUid:
+                                                      type: string
+                                                      description: >-
+                                                        Unique identifier of corresponding check
+                                                        rule
+                                                      example: ce6d6b5dbc12
+                                                - type: object
+                                                  properties:
+                                                    ruleName:
+                                                      type: string
+                                                      description: Rule name
+                                                      example: ruleName
+                                                    severityLevelCode:
+                                                      enum:
+                                                        - DISABLED
+                                                        - LOW
+                                                        - MEDIUM
+                                                        - HIGH
+                                                    ruleTypeCode:
+                                                      enum:
+                                                        - FORBIDDEN
+                                                        - MISSING
+                                                        - COUNT_MISMATCH
+                                                    flavorCode:
+                                                      enum:
+                                                        - DOT_NET
+                                                    originalPattern:
+                                                      type: string
+                                                      description: Original pattern
+                                                      example: '@mail'
+                                                    translationPattern:
+                                                      type: string
+                                                      description: Translation pattern
+                                                      example: '@gmail'
+                                                    caseInsensitive:
+                                                      type: boolean
+                                                      description: Enable case insensitive search
+                                                      example: true
+                                                    description:
+                                                      type: string
+                                                      description: Rule description
+                                                      example: rule description
+                                                    warningMessage:
+                                                      type: string
+                                                      description: message for warning on cat tool
+                                                      example: ' test warning message'
+                                                  required:
+                                                    - ruleName
+                                                    - severityLevelCode
+                                                    - ruleTypeCode
+                                                    - flavorCode
+                                                    - originalPattern
+                                                    - translationPattern
+                                                    - caseInsensitive
+                                                - type: object
+                                                  properties:
+                                                    groups:
+                                                      type: array
+                                                      items:
+                                                        allOf:
+                                                          - type: object
+                                                            properties:
+                                                              groupUid:
+                                                                type: string
+                                                                description: >-
+                                                                  Smartling rule group identifier of the
+                                                                  translation
+                                                                example: ce6d6b5dbc12
+                                                              ruleUid:
+                                                                type: string
+                                                                description: >-
+                                                                  Smartling rule identifier of the
+                                                                  translation
+                                                                example: ce6d6b5dbcs2
+                                                              targetLocaleIds:
+                                                                description: The list of target locales.
+                                                                example:
+                                                                  - ru-RU
+                                                                items:
+                                                                  type: string
+                                                                type: array
+                                                              severityLevelCode: *ref_3
               examples:
                 ORIGINAL_EQUALS_TARGET:
                   value:
@@ -1606,6 +1754,25 @@ x-paths:
                     subTypes: []
                     localeSeverityLevels: []
                     groups: []
+                REGEX_CHECK:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: REGEX_CHECK
+                    subTypes: []
+                    groups: []
+                    rules:
+                      - ruleUid: 2d83ea74c848
+                        severityLevelCode: LOW
+                        ruleName: ruleName1
+                        ruleTypeCode: FORBIDDEN
+                        flavorCode: DOT_NET
+                        originalPattern: '@mail'
+                        translationPattern: '@gmail'
+                        description: ruleName1 description
+                        caseInsensitive: true
+                        warningMessage: test warning
+                        groups: []
       x-code-samples:
         - lang: curl
           source: >
@@ -2366,6 +2533,23 @@ x-paths:
                                                 - PLURALS_REPETITION
                                               description: check type code
                                               example: PLURALS_REPETITION
+                                    - title: REGEX_CHECK
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - REGEX_CHECK
+                                              description: check type code
+                                              example: REGEX_CHECK
+                                            rules:
+                                              type: array
+                                              items:
+                                                $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
               example:
                 response:
                   code: SUCCESS
@@ -2545,6 +2729,22 @@ x-paths:
                         subTypes: []
                         localeSeverityLevels: []
                         groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: REGEX_CHECK
+                        subTypes: []
+                        groups: []
+                        rules:
+                          - ruleUid: 2d83ea74c848
+                            severityLevelCode: LOW
+                            ruleName: ruleName1
+                            ruleTypeCode: FORBIDDEN
+                            flavorCode: DOT_NET
+                            originalPattern: '@mail'
+                            translationPattern: '@gmail'
+                            description: ruleName1 description
+                            caseInsensitive: true
+                            warningMessage: test warning
+                            groups: []
       x-code-samples:
         - lang: curl
           source: >
