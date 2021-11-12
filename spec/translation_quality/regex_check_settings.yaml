@@ -138,7 +138,7 @@ x-paths:
       summary: Create regex check type rule group
       tags:
         - Translation quality checks
-      operationId: createTQCGroupRegexRule
+      operationId: createTQCRegexRuleGroup
       consumes:
         - application/json
       produces:
@@ -184,7 +184,7 @@ x-paths:
       summary: Get a regex check type rule groups
       tags:
         - Translation quality checks
-      operationId: getTQCGroupRegexRule
+      operationId: getTQCRegexRuleGroups
       consumes:
         - application/json
       produces:
@@ -206,6 +206,78 @@ x-paths:
           - lang: curl
             source: |
               curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups
+
+
+
+  profiles_regex_check_type_rule_group:
+    get:
+      description: >-
+        Get a regex check type rule group.
+      summary: Get a regex check type rule group
+      tags:
+        - Translation quality checks
+      operationId: getTQCRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleGroupResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid
+
+
+
+
+    delete:
+      description: >-
+        Delete a regex check type rule group.
+      summary: Delete a regex check type rule group
+      tags:
+        - Translation quality checks
+      operationId: deleteTQCRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid
 
 
 components:
