@@ -131,6 +131,83 @@ x-paths:
           source: |
             curl -X DELETE -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid
 
+  profiles_regex_check_type_rule_groups:
+    post:
+      description: >-
+        Create regex check type rule group
+      summary: Create regex check type rule group
+      tags:
+        - Translation quality checks
+      operationId: createTQCGroupRegexRule
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                targetLocaleIds:
+                  description: >-
+                    List of target locale IDs.
+                  example:
+                    - "ru-RU"
+
+                  items:
+                    type: string
+                  type: array
+              required:
+                - targetLocaleIds
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleGroupResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups
+
+
+    get:
+      description: >-
+        Get a regex check type rule groups.
+      summary: Get a regex check type rule groups
+      tags:
+        - Translation quality checks
+      operationId: getTQCGroupRegexRule
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleGroupsResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups
+
+
 components:
   schemas:
 
@@ -148,3 +225,35 @@ components:
               properties:
                 data:
                   $ref: './tqc_common.yaml#/components/schemas/regexRuleWithRuleUid'
+
+    TQCRegexRuleGroupResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: './tqc_common.yaml#/components/schemas/regexRuleGroupModel'
+
+    TQCRegexRuleGroupsResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                      example: 1
+                    items:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: './tqc_common.yaml#/components/schemas/regexRuleGroupModel'
