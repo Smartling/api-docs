@@ -701,8 +701,8 @@ x-paths:
             https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId/$wordUid
   dictionary_regex_check_rule_types:
     get:
-      description: Get regex quality check rule types that are available.
-      summary: Get regex quality check rule types
+      description: Get custom quality check rule types that are available.
+      summary: Get custom quality check rule types
       tags:
         - Translation quality checks
       operationId: getRegexQualityCheckRuleTypes
@@ -763,3 +763,62 @@ x-paths:
           source: >
             curl -H "Authorization: Bearer $smartlingToken"
             https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/REGEX_CHECK/rule-types
+  dictionary_regex_check_flavors:
+    get:
+      description: Get custom quality check flavors that are available.
+      summary: Get custom quality check flavors
+      tags:
+        - Translation quality checks
+      operationId: getRegexQualityCheckFlavors
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_1
+                      - type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              totalCount:
+                                type: integer
+                                description: Total element count
+                              items:
+                                type: array
+                                items:
+                                  allOf:
+                                    - type: object
+                                      properties:
+                                        flavorCode:
+                                          enum:
+                                            - JAVA
+                                            - DOT_NET
+                                    - type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                          description: flavor name
+                                          example: Java
+              example:
+                response:
+                  code: SUCCESS
+                  data:
+                    totalCount: 2
+                    items:
+                      - flavorCode: JAVA
+                        name: Java
+                      - flavorCode: DOT_NET
+                        name: .NET
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/REGEX_CHECK/flavors

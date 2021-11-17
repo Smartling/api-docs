@@ -236,8 +236,8 @@ x-paths:
   dictionary_regex_check_rule_types:
     get:
       description: >-
-        Get regex quality check rule types that are available.
-      summary: Get regex quality check rule types
+        Get custom quality check rule types that are available.
+      summary: Get custom quality check rule types
       tags:
         - Translation quality checks
       operationId: getRegexQualityCheckRuleTypes
@@ -258,6 +258,33 @@ x-paths:
         - lang: curl
           source: |
             curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/REGEX_CHECK/rule-types
+
+  dictionary_regex_check_flavors:
+    get:
+      description: >-
+        Get custom quality check flavors that are available.
+      summary: Get custom quality check flavors
+      tags:
+        - Translation quality checks
+      operationId: getRegexQualityCheckFlavors
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DictionaryRegexCheckFlavorsResponse'
+              example:
+                $ref: '#/components/examples/regex_check_flavors_example'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/REGEX_CHECK/flavors
+
 components:
   schemas:
 
@@ -419,6 +446,31 @@ components:
                                 type: string
                                 description: rule type name
                                 example: "Forbidden Regex found in the target"
+    DictionaryRegexCheckFlavorsResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                    items:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: './tqc_common.yaml#/components/schemas/regexCheckFlavorCodeResponse'
+                          - type: object
+                            properties:
+                              name:
+                                type: string
+                                description: flavor name
+                                example: "Java"
 
   ################################
 
@@ -513,3 +565,13 @@ components:
               "name": "Regex missing in the target"
             - "ruleTypeCode": "COUNT_MISMATCH"
               "name": "Count of regex matches differ between source and target"
+    regex_check_flavors_example:
+      response:
+        code: SUCCESS
+        data:
+          totalCount: 2
+          items:
+            - "flavorCode": "JAVA"
+              "name": "Java"
+            - "flavorCode": "DOT_NET"
+              "name": ".NET"
