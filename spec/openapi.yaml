@@ -2741,6 +2741,52 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  '/context-api/v2/projects/{projectId}/contexts/remove/async':
+    post:
+      summary: Delete the contexts
+      description: |-
+        Submits async operation to delete the contexts metadata and the content. 
+        All linked context resources (e.g. CSS, images, and fonts) will also eventually be cleaned up if no other context has them linked.
+        As well, bindings of these contexts to strings are removed, and strings are marked as having no context.
+      tags:
+      - Context
+      operationId: deleteVisualContextsAsync
+      parameters:
+      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          format: uuid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteContextsRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncProcessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: ffd90ec4-5ca8-4720-8ecf-15dce3404823
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
   /context-api/v2/projects/{projectId}/contexts/{contextUid}/content:
     get:
       summary: Download context file content
@@ -2882,7 +2928,7 @@ paths:
                     response:
                       code: SUCCESS
                       data:
-                        matchId: ffd90ec4-5ca8-4720-8ecf-15dce3404823
+                        processUid: ffd90ec4-5ca8-4720-8ecf-15dce3404823
         400:
           description: Validation error
           content:
@@ -3019,7 +3065,7 @@ paths:
                     response:
                       code: SUCCESS
                       data:
-                        matchId: ffd90ec4-5ca8-4720-8ecf-15dce3404823
+                        processUid: ffd90ec4-5ca8-4720-8ecf-15dce3404823
         '400':
           description: Validation error
           content:
@@ -3123,6 +3169,83 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
+          
+  '/context-api/v2/projects/{projectId}/processes/{processUid}':
+      get:
+        summary: Retrieve asynchronous process results
+        description: |-
+          Check the status of the async request and get the results once the request is completed
+        tags:
+        - Context
+        operationId: getAsyncProcessResults
+        parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - description: >-
+            Identifier of the process obtained when running asynchronous request.
+          in: path
+          name: processUid
+          required: true
+          schema:
+            format: uuid
+            type: string
+        responses:
+          200:
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AsyncProcessResultResponse'
+                examples:
+                  response:
+                    value:
+                      response:
+                        code: SUCCESS
+                        data:
+                          bindings:
+                          - anchors:
+                            - '11'
+                            - custom.anchor
+                            bindingUid: a9308883-30c7-4832-a023-6c3b10f6f9b1
+                            contextUid: 428bf090-60fa-473d-ac07-4a551aa06c47
+                            stringHashcode: 374825f7d147fb5700f23b2b22d6660d
+                          - anchors:
+                            - '12'
+                            bindingUid: a9308883-30c7-4832-a023-6c3b10f6f9b1
+                            contextUid: 428bf090-60fa-473d-ac07-4a551aa06c47
+                            stringHashcode: 374825f7d147fb5700f23b2b22d6660d
+                          createdDate: '2017-05-05T19:06:22Z'
+                          matchId: a9308883-30c7-4832-a023-6c3b10f6f9b1
+                          modifiedDate: '2017-05-05T19:06:22Z'
+                          contextId: 428bf090-60fa-473d-ac07-4a551aa06c47
+                          status: COMPLETED
+          400:
+            $ref: '#/components/responses/Error400ResponseDefinition'
+          401:
+            $ref: '#/components/responses/Error401ResponseDefinition'
+          404:
+            description: Process request expired or does not exist
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error404Response'
+                examples:
+                  response:
+                    value:
+                      response:
+                        code: NOT_FOUND_ERROR
+                        errors:
+                        - key: not_found
+                          message: Async process not found
+          429:
+            $ref: '#/components/responses/Error429ResponseDefinition'
+          500:
+            $ref: '#/components/responses/Error500ResponseDefinition'
 
   /context-api/v2/projects/{projectId}/bindings:
     post:
@@ -11071,6 +11194,24 @@ components:
             - ACCEPTED
           type: string
       type: object
+    AsyncProcessResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: Code of the completed operation.
+              enum:
+                - SUCCESS
+              type: string
+            data:
+              properties:
+                processUid:
+                  description: Identifier of the started async process.
+                  format: uuid
+                  type: string
+              type: object
+          type: object
+      type: object
     AsyncMatchResponse:
       properties:
         response:
@@ -11091,6 +11232,49 @@ components:
               type: object
           type: object
       type: object
+
+    AsyncProcessResultResponse:
+      properties:
+        response:
+          properties:
+            state:
+              description: State of the completed operation.
+              enum:
+                - COMPLETED
+                - IN_PROGRESS
+                - FAILED
+              type: string
+            createdDate:
+              format: date-time
+              type: string
+            modifiedDate:
+              format: date-time
+              type: string
+            type:
+              enum:
+                - MATCH_CONTEXT
+                - DELETE_CONTEXTS
+              type: string
+            result:
+              description: result if the response is COMPLETED. The content of the field is depends on "type" field
+              oneOf:
+                - $ref: '#/components/schemas/MatchAsyncResult'
+          type: object
+      type: object
+
+    MatchAsyncResult:
+      properties:
+        bindings:
+          items:
+            $ref: '#/components/schemas/Binding'
+          type: array
+        contextUid:
+          description: Unique identifier for the context.
+          type: string
+        checkedStringsCount:
+          type: integer
+      type: object
+
     AsyncMatchStatsResponse:
       properties:
         response:
@@ -13878,6 +14062,14 @@ components:
             "overrideContextOlderThanDays" old.
           minimum: 1
           type: integer
+    DeleteContextsRequest:
+      properties:
+        contextUids:
+          description: List of contexts UIDs to delete
+          type: array
+          items:
+            type: string
+      type: object
     ModifyJobReportTagsRequest:
       description: The payload to modify job estimation report tags.
       properties:
