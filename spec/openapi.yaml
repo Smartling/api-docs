@@ -3174,7 +3174,7 @@ paths:
       get:
         summary: Retrieve asynchronous process results
         description: |-
-          Check the status of the async request and get the results once the request is completed
+          Check the status of the async process and get the results once the process is completed
         tags:
         - Context
         operationId: getAsyncProcessResults
@@ -3186,8 +3186,7 @@ paths:
           schema:
             format: uuid
             type: string
-        - description: >-
-            Identifier of the process obtained when running asynchronous request.
+        - description: Identifier of the process obtained when running asynchronous request.
           in: path
           name: processUid
           required: true
@@ -11237,8 +11236,8 @@ components:
       properties:
         response:
           properties:
-            state:
-              description: State of the completed operation.
+            processState:
+              description: State of the completed process.
               enum:
                 - COMPLETED
                 - IN_PROGRESS
@@ -11250,7 +11249,7 @@ components:
             modifiedDate:
               format: date-time
               type: string
-            type:
+            processType:
               enum:
                 - MATCH_CONTEXT
                 - DELETE_CONTEXTS
@@ -11259,6 +11258,7 @@ components:
               description: result if the response is COMPLETED. The content of the field is depends on "type" field
               oneOf:
                 - $ref: '#/components/schemas/MatchAsyncResult'
+                - $ref: '#/components/schemas/DeleteContextsAsyncResult'
           type: object
       type: object
 
@@ -11274,6 +11274,11 @@ components:
         checkedStringsCount:
           type: integer
       type: object
+
+    DeleteContextsAsyncResult:
+          properties:
+            
+          type: object
 
     AsyncMatchStatsResponse:
       properties:
