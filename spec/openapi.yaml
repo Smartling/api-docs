@@ -2677,7 +2677,7 @@ paths:
     delete:
       summary: Delete the context
       description: |-
-        Removes the context metadata and the content.
+        Deletes the context metadata and the content.
         All linked context resources (e.g. CSS, images, and fonts) will also eventually be cleaned up if no other context has them linked.
         As well, bindings of this context to strings are removed, and strings are marked as having no context.
       tags:
@@ -2736,6 +2736,52 @@ paths:
                       - key: not_found_error
                         message: >-
                           Context not found, ref id: 'ffd90ec4-5ca8-4720-8ecf-15dce3404823'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  '/context-api/v2/projects/{projectId}/contexts/remove/async':
+    post:
+      summary: Delete contexts
+      description: |-
+        Initiates an asynchronous process to delete the contexts. 
+        All linked context resources (e.g. CSS, images, and fonts) will also eventually be cleaned up if no other context has them linked.
+        As well, bindings of these contexts to strings are removed, and strings are marked as having no context.
+      tags:
+      - Context
+      operationId: deleteVisualContextsAsync
+      parameters:
+      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          format: uuid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteContextsRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncProcessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: ffd90ec4-5ca8-4720-8ecf-15dce3404823
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
         429:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
@@ -2882,7 +2928,7 @@ paths:
                     response:
                       code: SUCCESS
                       data:
-                        matchId: ffd90ec4-5ca8-4720-8ecf-15dce3404823
+                        processUid: ffd90ec4-5ca8-4720-8ecf-15dce3404823
         400:
           description: Validation error
           content:
@@ -3019,7 +3065,7 @@ paths:
                     response:
                       code: SUCCESS
                       data:
-                        matchId: ffd90ec4-5ca8-4720-8ecf-15dce3404823
+                        processUid: ffd90ec4-5ca8-4720-8ecf-15dce3404823
         '400':
           description: Validation error
           content:
@@ -3051,10 +3097,11 @@ paths:
       description: |-
         Check the status of the match request and get results once the match is completed.
         When the match has been completed, any newly created bindings are also returned in the response.
+        This endpoint is deprecated and will be deleted. We recommend to use `Retrieve asynchronous process results` endpoint
+      deprecated: true
       tags:
       - Context
       operationId: getAsyncContextMatchResults
-
       parameters:
       - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
         in: path
@@ -3123,6 +3170,82 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
+          
+  '/context-api/v2/projects/{projectId}/processes/{processUid}':
+      get:
+        summary: Retrieve asynchronous process results
+        description: |-
+          Check the status of the asynchronous process and get the results once the process is completed
+        tags:
+        - Context
+        operationId: getAsyncProcessResults
+        parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - description: Identifier of the asynchronous process obtained when running asynchronous request.
+          in: path
+          name: processUid
+          required: true
+          schema:
+            format: uuid
+            type: string
+        responses:
+          200:
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AsyncProcessResultResponse'
+                examples:
+                  response:
+                    value:
+                      response:
+                        code: SUCCESS
+                        data:
+                          bindings:
+                          - anchors:
+                            - '11'
+                            - custom.anchor
+                            bindingUid: a9308883-30c7-4832-a023-6c3b10f6f9b1
+                            contextUid: 428bf090-60fa-473d-ac07-4a551aa06c47
+                            stringHashcode: 374825f7d147fb5700f23b2b22d6660d
+                          - anchors:
+                            - '12'
+                            bindingUid: a9308883-30c7-4832-a023-6c3b10f6f9b1
+                            contextUid: 428bf090-60fa-473d-ac07-4a551aa06c47
+                            stringHashcode: 374825f7d147fb5700f23b2b22d6660d
+                          createdDate: '2017-05-05T19:06:22Z'
+                          matchId: a9308883-30c7-4832-a023-6c3b10f6f9b1
+                          modifiedDate: '2017-05-05T19:06:22Z'
+                          contextId: 428bf090-60fa-473d-ac07-4a551aa06c47
+                          status: COMPLETED
+          400:
+            $ref: '#/components/responses/Error400ResponseDefinition'
+          401:
+            $ref: '#/components/responses/Error401ResponseDefinition'
+          404:
+            description: Process request expired or does not exist
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error404Response'
+                examples:
+                  response:
+                    value:
+                      response:
+                        code: NOT_FOUND_ERROR
+                        errors:
+                        - key: not_found
+                          message: Asynchronous process not found
+          429:
+            $ref: '#/components/responses/Error429ResponseDefinition'
+          500:
+            $ref: '#/components/responses/Error500ResponseDefinition'
 
   /context-api/v2/projects/{projectId}/bindings:
     post:
@@ -3164,6 +3287,7 @@ paths:
         ```
 
         For `HTML` context, each binding may have the `selector` element with `anchors` array, specifying the enclosing the string HTML elements with the corresponding value of the `data-sl-anchor` attribute.
+        Each `anchor` value can have up to 20 characters and consist of the following characters: `0-9` (more preferably), `A-Z`, `a-z`, `.-_`.
         If not specified, binding will still be created with the empty `anchors` array, effectively making it not anchored to a particular element and thus invisible in CAT Tool:
         ```JSON
         {
@@ -3172,14 +3296,14 @@ paths:
                "contextUid": "25137b65-e075-4341-8362-14b1a3e558f5",
                "stringHashcode": "bd603147d945h3ec74d6874422ebe4e0",
                "selector": {
-                  "anchors": ["custom.anchor", "11", 44"]
+                  "anchors": ["11", "22", "aa-33"]
                }
             }
           ]
         }
         ```
 
-        For `VIDEO` context, each binding mave the `timecode` data, specifying the start and end time of the string appearance in the video:
+        For `VIDEO` context, each binding has the `timecode` data, specifying the start and end time of the string appearance in the video:
         ```JSON
         {
           "bindings": [
@@ -10666,6 +10790,12 @@ paths:
   /translation-quality-api/v2/dictionary/check-types/TRADEMARK_CONSISTENCY/trademark-types:
     $ref: './spec/translation_quality/dictionaries_result.yaml#/x-paths/dictionary_checkType_TRADEMARK_CONSISTENCY_trademark_types'
 
+  /translation-quality-api/v2/dictionary/check-types/REGEX_CHECK/rule-types:
+    $ref: './spec/translation_quality/dictionaries_result.yaml#/x-paths/dictionary_regex_check_rule_types'
+
+  /translation-quality-api/v2/dictionary/check-types/REGEX_CHECK/flavors:
+    $ref: './spec/translation_quality/dictionaries_result.yaml#/x-paths/dictionary_regex_check_flavors'
+
   /translation-quality-api/v2/users/current/settings/dictionaries/{localeId}:
     $ref: './spec/translation_quality/dictionaries_result.yaml#/x-paths/users_current_settings_dictionaries_locale'
 
@@ -10722,6 +10852,30 @@ paths:
 
   /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/groups/{groupUid}/severity-level:
     $ref: './spec/translation_quality/check_type_severity_level_result.yaml#/x-paths/profiles_check_type_group_severity_level'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rules'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/severity-level:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_severity_level'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_groups'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups/{groupUid}:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_group'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups/{groupUid}/locales:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_group_locales'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups/{groupUid}/locales/{targetLocaleId}:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_group_locale'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups/{groupUid}/severity-level:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_group_severity_level'
 
   /translation-quality-api/v2/projects/{projectId}/locales/{localeId}/check-types/:
     $ref: './spec/translation_quality/checks/accounts_result.yaml#/x-paths/get_project_check_types_settings'
@@ -11051,7 +11205,7 @@ components:
           description: >-
             (Optional), default is false. A string for a locale can only be in
             one job. If the string identified in the request is already in a job
-            for a locale then it won't be added. However, `moveEnalbed=true` can
+            for a locale then it won't be added. However, `moveEnabled=true` can
             be specified, and in this case, the string will be moved into the
             specified job.
           type: boolean
@@ -11073,6 +11227,24 @@ components:
             - ACCEPTED
           type: string
       type: object
+    AsyncProcessResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: Code of the completed operation.
+              enum:
+                - SUCCESS
+              type: string
+            data:
+              properties:
+                processUid:
+                  description: Identifier of the started asynchronous process.
+                  format: uuid
+                  type: string
+              type: object
+          type: object
+      type: object
     AsyncMatchResponse:
       properties:
         response:
@@ -11084,15 +11256,73 @@ components:
               type: string
             data:
               properties:
+                processUid:
+                  description: >-
+                    Identifier of the started asynchronous process. Should be
+                    specified for getting matching stats.
+                  format: uuid
+                  type: string
                 matchId:
                   description: >-
                     Identifier of the started match operation. Should be
-                    specified for getting matching stats.
+                    specified for getting matching stats. Deprecated, use `processUid` property
                   format: uuid
+                  deprecated: true
                   type: string
               type: object
           type: object
       type: object
+
+    AsyncProcessResultResponse:
+      properties:
+        response:
+          properties:
+            processState:
+              description: State of the completed process.
+              enum:
+                - COMPLETED
+                - IN_PROGRESS
+                - FAILED
+              type: string
+            createdDate:
+              format: date-time
+              type: string
+            modifiedDate:
+              format: date-time
+              type: string
+            errorMessage:
+              type: string
+            processType:
+              enum:
+                - MATCH_CONTEXT
+                - DELETE_CONTEXTS
+              type: string
+            result:
+              description: result if the response is COMPLETED. The content of the field is depends on `type` field
+              oneOf:
+                - $ref: '#/components/schemas/MatchAsyncResult'
+                - $ref: '#/components/schemas/DeleteContextsAsyncResult'
+          type: object
+      type: object
+
+    MatchAsyncResult:
+      properties:
+        bindings:
+          items:
+            $ref: '#/components/schemas/Binding'
+          type: array
+        contextUid:
+          description: Unique identifier for the context.
+          type: string
+        checkedStringsCount:
+          type: integer
+      type: object
+
+    DeleteContextsAsyncResult:
+      description: Empty object
+      properties: {}
+      type: object
+
     AsyncMatchStatsResponse:
       properties:
         response:
@@ -13880,6 +14110,14 @@ components:
             "overrideContextOlderThanDays" old.
           minimum: 1
           type: integer
+    DeleteContextsRequest:
+      properties:
+        contextUids:
+          description: List of contexts UIDs to delete
+          type: array
+          items:
+            type: string
+      type: object
     ModifyJobReportTagsRequest:
       description: The payload to modify job estimation report tags.
       properties:
