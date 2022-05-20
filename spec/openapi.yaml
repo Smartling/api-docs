@@ -2892,8 +2892,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MatchParams'
         description: |-
-          To ensure context is mapped to the correct string, `stringHashcodes` or `contentFileUri` must be specified.
-          If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+          To ensure context is mapped to the correct string, `stringHashcodes`, `contentFileUri` or `translationJobUids` must be specified.
+          If none of `stringHashcodes`, `contentFileUri`, `translationJobUids` are specified, **all strings from the project** will be included in the match.
           <br/>
           If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
       responses:
@@ -12747,7 +12747,7 @@ components:
       description: |-
         *Uncollapse this block to get the detailed description of `matchParams`.*
         <br/><br/>
-        If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+        If none of `stringHashcodes`, `contentFileUri`, `translationJobUids` are specified, **all strings from the project** will be included in the match.
         <br/>
         If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
       properties:
@@ -12757,7 +12757,7 @@ components:
             <br/>
             Example: `"contentFileUri": "example.properties"`
             <br/>
-            Can't be used along with the `stringHashcodes` parameter.
+            Can't be used along with the `stringHashcodes` or `translationJobUids` parameter.
           type: string
         stringHashcodes:
           description: >-
@@ -12765,11 +12765,22 @@ components:
             <br/>
             Example: `"stringHashcodes": ["hashcode1", "hashcode2"]`
             <br/>
-            Can't be used along with the `contentFileUri` parameter.
+            Can't be used along with the `contentFileUri` or `translationJobUids` parameter.
           items:
             format: hash
             type: string
           type: array
+        translationJobUids:
+          description: >-
+            A translation job UID to perform matching with the context. Only one UID can be specified:
+            <br/>
+            Example: `"translationJobUids": ["translationJobUid"]`
+            <br/>
+            Can't be used along with the `contentFileUri` or `stringHashcodes` parameter.
+          items:
+            format: hash
+            type: string
+          type: array          
         overrideContextOlderThanDays:
           description: >-
             Specifies whether to override context for strings that were already
