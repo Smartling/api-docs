@@ -1,14 +1,13 @@
 pipeline {
     agent {
         docker {
-            image 'node:lts-bullseye-slim'
+            image 'node:lts-bullseye'
             args '-p 3000:3000'
         }
     }
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'apt-get update && apt-get install git -yq'
                 sh 'npm install'
             }
         }
