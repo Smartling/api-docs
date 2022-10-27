@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'node:lts-bullseye'
+            image 'node:lts-bullseye' // node 18 lts & debian 11 based image with git clie
             args '-p 3000:3000'
         }
     }
@@ -11,17 +11,9 @@ pipeline {
                 sh 'npm install'
             }
         }
-        stage('Build & Deploy') {
-            when {
-                branch 'master'
-            }
-            steps {
-                sh 'echo "MASTER?"'
-                sh 'env'
-            }
-        }
         stage('Branch Build & Deploy') {
             environment {
+                // 'data team jenkins' credentials
                 GH_TOKEN = credentials('b7544320-e084-4912-a1c5-b330585aa8ee')
             }
             when {
@@ -30,8 +22,15 @@ pipeline {
                 }
             }
             steps {
-                sh 'env'
                 sh 'npm run deploy-branch'
+            }
+        }
+        stage('Build & Deploy') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh 'npm run deploy'
             }
         }
     }
