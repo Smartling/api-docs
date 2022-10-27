@@ -23,12 +23,11 @@ pipeline {
         stage('Branch Build & Deploy') {
             when {
                 expression {
-                    return env.BRANCH_NAME != 'master';
+                    return env.BRANCH_NAME != 'master' && env.BRANCH_NAME != 'gh-pages';
                 }
             }
             steps {
-                sh 'echo "BRANCH?"'
-                sh 'env'
+                sh 'npm run deploy-branch'
             }
         }
     }
