@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
+                sh 'apt-get update && apt-get install git -yq'
                 sh 'npm install'
             }
         }
