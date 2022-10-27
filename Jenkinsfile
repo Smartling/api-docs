@@ -6,21 +6,30 @@ pipeline {
         }
     }
     stages {
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
                 sh 'npm install'
             }
         }
-
-        if (env.BRANCH_NAME == 'master') {
-            stage 'Deploy to prod'
-            sh 'echo "MASTER?"'
-            sh 'env'
-
-        } else {
-            stage 'Deploy branch'
-            sh 'echo "BRANCH?"'
-            sh 'env'
+        stage('Build & Deploy') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh 'echo "MASTER?"'
+                sh 'env'
+            }
+        }
+        stage('Branch Build & Deploy') {
+            when {
+                expression {
+                    return env.BRANCH_NAME != 'master';
+                }
+            }
+            steps {
+                sh 'echo "BRANCH?"'
+                sh 'env'
+            }
         }
     }
 }
