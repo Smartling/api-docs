@@ -5,9 +5,6 @@ pipeline {
             args '-p 3000:3000'
         }
     }
-    environment {
-        GH_TOKEN = credentials('data team jenkins')
-    }
     stages {
         stage('Install Dependencies') {
             steps {
@@ -24,6 +21,9 @@ pipeline {
             }
         }
         stage('Branch Build & Deploy') {
+            environment {
+                GH_TOKEN = credentials('b7544320-e084-4912-a1c5-b330585aa8ee')
+            }
             when {
                 expression {
                     return env.BRANCH_NAME != 'master' && env.BRANCH_NAME != 'gh-pages';
