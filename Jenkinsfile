@@ -11,5 +11,16 @@ pipeline {
                 sh 'npm install'
             }
         }
+
+        if (env.BRANCH_NAME == 'master') {
+            stage 'Deploy to prod'
+            sh 'echo "MASTER?"'
+            sh 'env'
+
+        } else {
+            stage 'Deploy branch'
+            sh 'echo "BRANCH?"'
+            sh 'env'
+        }
     }
 }
