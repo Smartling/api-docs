@@ -5,6 +5,9 @@ pipeline {
             args '-p 3000:3000'
         }
     }
+    environment {
+        GH_TOKEN  = credentials('semantic')
+    }
     stages {
         stage('Install Dependencies') {
             steps {
@@ -27,6 +30,7 @@ pipeline {
                 }
             }
             steps {
+                sh 'env'
                 sh 'npm run deploy-branch'
             }
         }
