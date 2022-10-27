@@ -6,7 +6,7 @@ pipeline {
         }
     }
     environment {
-        GH_TOKEN  = credentials('semantic')
+        GH_TOKEN = env.('data team jenkins')
     }
     stages {
         stage('Install Dependencies') {
