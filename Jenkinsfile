@@ -7,11 +7,17 @@ pipeline {
     }
     stages {
         stage('Install Dependencies') {
+            when {
+                expression {
+                    // skip gh-pages branch builds
+                    return env.BRANCH_NAME != 'gh-pages';
+                }
+            }
             steps {
                 sh 'npm install'
             }
         }
-        stage('Branch Build & Deploy') {
+        stage('Build & Deploy Branch') {
             environment {
                 // 'data team jenkins' credentials
                 GH_TOKEN = credentials('b7544320-e084-4912-a1c5-b330585aa8ee')
@@ -25,7 +31,11 @@ pipeline {
                 sh 'npm run deploy-branch'
             }
         }
-        stage('Build & Deploy') {
+        stage('Build & Deploy Main') {
+            environment {
+                // 'data team jenkins' credentials
+                GH_TOKEN = credentials('b7544320-e084-4912-a1c5-b330585aa8ee')
+            }
             when {
                 branch 'master'
             }
