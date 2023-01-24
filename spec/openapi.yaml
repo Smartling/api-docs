@@ -129,6 +129,10 @@ tags:
       * [XML](https://help.smartling.com/hc/en-us/articles/360008000893)
       * [YAML](https://help.smartling.com/hc/en-us/articles/360007894934)
 
+  - name: Machine Translation (MT)
+    description: |-
+      Machine Translation (MT) is a cost-effective way of translating content at a rapid speed. Traditionally, MT has been a mechanical, rule-based substitution of words in a source language to a target, but advances in deep learning and machine learning have yielded more advanced, high-quality translation performance.
+
   - name: Jobs
     description: |-
       A Smartling project (such as a mobile, web, files, or connector project)
@@ -4836,6 +4840,59 @@ paths:
             application/octet-stream:
               schema:
                 type: string
+
+#
+# MT Router API
+#
+  /mt-router-api/v2/accounts/{accountUid}/smartling-mt:
+    post:
+      summary: Translate using preconfigure MT Profile
+      description: Translate using preconfigure MT Profile.
+      tags:
+        - Machine Translation (MT)
+      operationId: translateForAccount
+      parameters:
+        - name: accountUid
+          description: A unique account identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MTTranslateRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MTTranslateResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - key: key-from-request
+                          - mtUid: uuif23sd
+                          - translationText: Translated text
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/mt-router-api/v2/accounts/{accountUid}/smartling-mt
 
 #
 # Jobs API endpoints
@@ -11642,7 +11699,6 @@ components:
               type: string
             data:
               $ref: '#/components/schemas/EstimateJobReportStatus'
-              type: object
           required:
             - code
             - data
@@ -11679,7 +11735,6 @@ components:
               type: string
             data:
               $ref: '#/components/schemas/EstimateJobReportTags'
-              type: object
           required:
             - code
             - data
@@ -12298,6 +12353,86 @@ components:
               type: object
       required:
         - response
+      type: object
+
+    MTTranslateRequest:
+      type: object
+      properties:
+        sourceLocaleId:
+          type: string
+          description: Locale ID of the original text
+          example: en-US
+          required: true
+        targetLocaleId:
+          type: string
+          description: Locale ID of the requested translation
+          example: de-DE
+          required: true
+        items:
+          items:
+            $ref: '#/components/schemas/MTTranslateItemRequest'
+          type: array
+          maxItems: 1000
+    MTTranslateItemRequest:
+      properties:
+        key:
+          description: A unique identifier to match results in the response
+          example: 'my-key-1'
+          type: string
+          required: true
+          maxLength: 255
+        sourceText:
+          description: The text to translate
+          example: Text to translate
+          type: string
+          required: true
+          maxLength: 64kb
+      type: object
+    MTTranslateResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/MTTranslateItemResponse'
+                      type: array
+                  required:
+                    - items
+                  type: object
+              type: object
+    MTTranslateItemResponse:
+      properties:
+        key:
+          description: A unique identifier from the request
+          example: 'my-key-1'
+          type: string
+          required: true
+        translationText:
+          description: Translated text. Empty if error is present
+          example: 'Text zum Übersetzen'
+          type: string
+        error:
+          type: object
+          properties:
+            key:
+              type: string
+              description: Error key of the error
+              example: PROVIDER_UNAUTHORIZED
+            code:
+              type: string
+              description: Error code of the error
+              example: invalid.credentials
+            message:
+              type: string
+              description: Error code detailed message
+              example: Invalid API Key.
       type: object
     JobLocalesCompletionDate:
       properties:
