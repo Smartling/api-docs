@@ -12359,32 +12359,34 @@ components:
           type: string
           description: Locale ID of the original text
           example: en-US
-          required: true
         targetLocaleId:
           type: string
           description: Locale ID of the requested translation
           example: de-DE
-          required: true
         items:
           items:
             $ref: '#/components/schemas/MTTranslateItemRequest'
           type: array
           maxItems: 1000
-        type: object
+      required:
+        - sourceLocaleId
+        - targetLocaleId
+      type: object
     MTTranslateItemRequest:
       properties:
         key:
           description: A unique identifier to match results in the response
           example: 'my-key-1'
           type: string
-          required: true
           maxLength: 255
         sourceText:
           description: The text to translate
           example: Text to translate
           type: string
-          required: true
           maxLength: 64kb
+      required:
+        - key
+        - sourceText
       type: object
     MTTranslateResponse:
       type: object
@@ -12411,7 +12413,6 @@ components:
           description: A unique identifier from the request
           example: 'my-key-1'
           type: string
-          required: true
         translationText:
           description: Translated text. Empty if error is present
           example: 'Text zum Übersetzen'
@@ -12431,6 +12432,8 @@ components:
               type: string
               description: Error code detailed message
               example: Invalid API Key.
+      required:
+        - key
       type: object
     JobLocalesCompletionDate:
       properties:
