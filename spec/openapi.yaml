@@ -935,51 +935,6 @@ paths:
                     Example: `/myproject/i18n/ui.properties`
                 fileType:
                   $ref: '#/components/schemas/FileType'
-                authorize:
-                  type: boolean
-                  default: false
-                  description: |
-                    Determines whether content in the file is authorized
-                    (available for translation) in all locales upon submitting
-                    the file via the Smartling Dashboard. An error message will
-                    be returned if there are insufficient translation funds and
-                    authorized is set to `true`. If a string has been completely
-                    excluded for translation from all languages, or excluded
-                    from translation for a specific language, `authorize` will
-                    NOT authorize it.
-
-                    To specify a limited list of locales to authorize, use the
-                    `localeIdsToAuthorize[]` parameter.
-
-                      Value | Description
-                      ----- | -----------
-                      true  |  Content will be available for translation in all locales upon upload.
-                      false |  Content will be added to the "Awaiting Authorization" queue upon upload.
-                'localeIdsToAuthorize[]':
-                  description: |
-                    This value, if set, authorizes strings for translation into
-                    specific locales. Use the `project/locale/list` call to get
-                    the list of locales for the project, or view them in the
-                    dashboard on the API settings page. Use multiple the
-                    `localeIdsToAuthorize` parameter pairs to authorize more
-                    than one locale. You can add languages by uploading the file
-                    again and indicating the language to authorize with
-                    `localeIdsToAuthorize` or all languages with `authorize`, or
-                    in the dashboard using the "Show Partially Authorized"
-                    filter option from the Awaiting Authorization list.
-
-                    If the string has been completely excluded for translation
-                    from all languages, or excluded from translation for a
-                    specific language, `localesIdsToAuthorize` will NOT
-                    authorize it.
-
-                    **Note**: Do not set the `authorize` parameter to `true` if
-                    you want to specify individual locales to authorize.
-                    Submitting an upload with both of these parameters set will
-                    result in a validation error.
-                  items:
-                    type: string
-                  type: array
                 smartling.namespace:
                   type: string
                   description: |
