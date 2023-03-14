@@ -311,7 +311,7 @@ tags:
 
   - name: Attachments
     description: |-
-      The Attachments API allows for file attachment download and checking linked attachments for an entity.
+      The Attachments API allows for file attachment upload, download and checking linked attachments for an entity.
       Attachment entities can be from three domains: strings, jobs or issues.
       Each entity is referenced by an entity UID. These UIDs have a specific form for each of the domains.
       - jobs: `<jobUid>`
@@ -9838,6 +9838,85 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  '/attachments-api/v2/accounts/{accountUid}/{type}/attachments':
+    post:
+      summary: Upload binary attachment
+      description: |-
+        Upload attachment file
+      tags:
+        - Attachments
+      operationId: uploadAttachment
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            format: uuid
+            type: string
+        - name: type
+          in: path
+          required: true
+          description: Attachment type
+          schema:
+            enum:
+              - jobs
+              - strings
+              - issues
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  required: true
+                  type: string
+                  format: binary
+                  description: The attachment file contents to upload.
+                name:
+                  required: true
+                  type: string
+                  description:
+                    Functional name of the file uploaded. This is not a unique identifier.
+                entityUids:
+                  required: false
+                  type: array
+                  items:
+                    type: string
+                  description: (Optional) The list of entity uids attachment will be linked with (max 100).
+                  maxItems: 100
+                description:
+                  required: false
+                  type: string
+                  description: (Optional) Description of uploaded binary file.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAttachmentResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        attachmentUid: '1e2f4378324e'
+                        name: 'my-attachment'
+                        description: 'meta-for-my-attachment'
+                        createdDate: '2018-03-30T12:58:22Z'
+                        createdByUserUid: '5789003e276a'
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
 components:
   requestBodies:
     TagsWithStrings:
@@ -10344,6 +10423,42 @@ components:
           format: uid
           example: c297ff10f584
           type: string
+      type: object
+
+    CreateAttachmentResponse:
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    attachmentUid:
+                      description: The unique identifier of the attachment.
+                      format: uid
+                      type: string
+                    name:
+                      description: The name of the attachment.
+                      type: string
+                    description:
+                      description: The description of the attachment.
+                      type: string
+                    createdDate:
+                      description: The UTC value of the date the attachment was uploaded.
+                      example: '2018-03-30T12:58:22Z'
+                      format: date-time
+                      type: string
+                    createdByUserUid:
+                      description: The unique identifier of user whom upload attachment.
+                      format: uid
+                      example: c297ff10f584
+                      type: string
+                  type: object
+              required:
+                - data
+              type: object
+      required:
+        - response
       type: object
 
     BatchStatus:
