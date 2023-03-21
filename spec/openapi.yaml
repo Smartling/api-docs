@@ -129,6 +129,10 @@ tags:
       * [XML](https://help.smartling.com/hc/en-us/articles/360008000893)
       * [YAML](https://help.smartling.com/hc/en-us/articles/360007894934)
 
+  - name: Machine Translation (MT)
+    description: |-
+      The Smartling platform offers state-of-the-art [Machine Translation capabilities](https://www.smartling.com/software/neural-machine-translation-hub/) through its synchronous account-level Machine Translation API. This API enables seamless translation of content without the need for it to be processed through Smartling Workflows. The API offers access to all MT Profiles, including the highly efficient MT Autoselect feature, providing unparalleled flexibility and control over your translation needs.
+
   - name: Jobs
     description: |-
       A Smartling project (such as a mobile, web, files, or connector project)
@@ -270,25 +274,6 @@ tags:
       an issue, commenting on an issue, requesting detailed information, as well
       as creating reports on issues and comments.
 
-  - name: Glossaries
-    description: |-
-      The Glossaries API allows you to create and edit glossaries in a Smartling
-      account, and populate it with glossary terms. You can also download your
-      glossaries as CSV or TBX files and import Excel spreadsheets to create new
-      glossaries.
-
-      **Glossaries API Usage Limitations**:
-      * Maximum request size is 10MB.
-      * Maximum file upload size is 10MB.
-      * Maximum HTTP header size is 128KB.
-      * For requests that use pagination, maximum page size is 5000 elements.
-      * For requests that return entities by their UIDs, maximum is 100 elements.
-
-      Rate limits:
-
-      * Maximum 5 concurrent requests.
-      * Maximum rate is 200 requests per 15-second window frame.
-
   - name: Strings
     description: |-
       A string is a piece of translation. Based on the source content, strings
@@ -326,7 +311,7 @@ tags:
 
   - name: Attachments
     description: |-
-      The Attachments API allows for file attachment download and checking linked attachments for an entity.
+      The Attachments API allows for file attachment upload, download and checking linked attachments for an entity.
       Attachment entities can be from three domains: strings, jobs or issues.
       Each entity is referenced by an entity UID. These UIDs have a specific form for each of the domains.
       - jobs: `<jobUid>`
@@ -950,51 +935,6 @@ paths:
                     Example: `/myproject/i18n/ui.properties`
                 fileType:
                   $ref: '#/components/schemas/FileType'
-                authorize:
-                  type: boolean
-                  default: false
-                  description: |
-                    Determines whether content in the file is authorized
-                    (available for translation) in all locales upon submitting
-                    the file via the Smartling Dashboard. An error message will
-                    be returned if there are insufficient translation funds and
-                    authorized is set to `true`. If a string has been completely
-                    excluded for translation from all languages, or excluded
-                    from translation for a specific language, `authorize` will
-                    NOT authorize it.
-
-                    To specify a limited list of locales to authorize, use the
-                    `localeIdsToAuthorize[]` parameter.
-
-                      Value | Description
-                      ----- | -----------
-                      true  |  Content will be available for translation in all locales upon upload.
-                      false |  Content will be added to the "Awaiting Authorization" queue upon upload.
-                'localeIdsToAuthorize[]':
-                  description: |
-                    This value, if set, authorizes strings for translation into
-                    specific locales. Use the `project/locale/list` call to get
-                    the list of locales for the project, or view them in the
-                    dashboard on the API settings page. Use multiple the
-                    `localeIdsToAuthorize` parameter pairs to authorize more
-                    than one locale. You can add languages by uploading the file
-                    again and indicating the language to authorize with
-                    `localeIdsToAuthorize` or all languages with `authorize`, or
-                    in the dashboard using the "Show Partially Authorized"
-                    filter option from the Awaiting Authorization list.
-
-                    If the string has been completely excluded for translation
-                    from all languages, or excluded from translation for a
-                    specific language, `localesIdsToAuthorize` will NOT
-                    authorize it.
-
-                    **Note**: Do not set the `authorize` parameter to `true` if
-                    you want to specify individual locales to authorize.
-                    Submitting an upload with both of these parameters set will
-                    result in a validation error.
-                  items:
-                    type: string
-                  type: array
                 smartling.namespace:
                   type: string
                   description: |
@@ -2472,7 +2412,7 @@ paths:
                   description: |-
                     The context file to upload.
 
-                    If specified, it should be one of the supported content types(user should insert content type instead of the *. E.g. image/jpeg.):
+                    It should be one of the supported content types(user should insert content type instead of the *. E.g. image/jpeg.):
                      - `image/*`
                      - `text/html`
                      - `video/*`
@@ -2677,7 +2617,7 @@ paths:
     delete:
       summary: Delete the context
       description: |-
-        Removes the context metadata and the content.
+        Deletes the context metadata and the content.
         All linked context resources (e.g. CSS, images, and fonts) will also eventually be cleaned up if no other context has them linked.
         As well, bindings of this context to strings are removed, and strings are marked as having no context.
       tags:
@@ -2736,6 +2676,52 @@ paths:
                       - key: not_found_error
                         message: >-
                           Context not found, ref id: 'ffd90ec4-5ca8-4720-8ecf-15dce3404823'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  '/context-api/v2/projects/{projectId}/contexts/remove/async':
+    post:
+      summary: Delete contexts
+      description: |-
+        Initiates an asynchronous process to delete the contexts.
+        All linked context resources (e.g. CSS, images, and fonts) will also eventually be cleaned up if no other context has them linked.
+        As well, bindings of these contexts to strings are removed, and strings are marked as having no context.
+      tags:
+      - Context
+      operationId: deleteVisualContextsAsync
+      parameters:
+      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          format: uuid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteContextsRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncProcessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: ffd90ec4-5ca8-4720-8ecf-15dce3404823
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
         429:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
@@ -2865,8 +2851,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MatchParams'
         description: |-
-          To ensure context is mapped to the correct string, `stringHashcodes` or `contentFileUri` must be specified.
-          If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+          To ensure context is mapped to the correct string, `stringHashcodes`, `contentFileUri` or `translationJobUids` must be specified.
+          If none of `stringHashcodes`, `contentFileUri`, `translationJobUids` are specified, **all strings from the project** will be included in the match.
           <br/>
           If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
       responses:
@@ -2882,7 +2868,7 @@ paths:
                     response:
                       code: SUCCESS
                       data:
-                        matchId: ffd90ec4-5ca8-4720-8ecf-15dce3404823
+                        processUid: ffd90ec4-5ca8-4720-8ecf-15dce3404823
         400:
           description: Validation error
           content:
@@ -2991,7 +2977,7 @@ paths:
                   description: |-
                     The context file to upload.
 
-                    If specified, it should be one of the supported content types(user should insert content type instead of the *. E.g. image/jpeg.):
+                    It should be one of the supported content types(user should insert content type instead of the *. E.g. image/jpeg.):
                      - `image/*`
                      - `text/html`
                      - `video/*`
@@ -3019,7 +3005,7 @@ paths:
                     response:
                       code: SUCCESS
                       data:
-                        matchId: ffd90ec4-5ca8-4720-8ecf-15dce3404823
+                        processUid: ffd90ec4-5ca8-4720-8ecf-15dce3404823
         '400':
           description: Validation error
           content:
@@ -3051,10 +3037,11 @@ paths:
       description: |-
         Check the status of the match request and get results once the match is completed.
         When the match has been completed, any newly created bindings are also returned in the response.
+        This endpoint is deprecated and will be deleted. We recommend to use `Retrieve asynchronous process results` endpoint
+      deprecated: true
       tags:
       - Context
       operationId: getAsyncContextMatchResults
-
       parameters:
       - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
         in: path
@@ -3099,7 +3086,7 @@ paths:
                           stringHashcode: 374825f7d147fb5700f23b2b22d6660d
                         createdDate: '2017-05-05T19:06:22Z'
                         matchId: a9308883-30c7-4832-a023-6c3b10f6f9b1
-                        modifiedData: '2017-05-05T19:06:22Z'
+                        modifiedDate: '2017-05-05T19:06:22Z'
                         status: COMPLETED
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
@@ -3124,6 +3111,88 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  '/context-api/v2/projects/{projectId}/processes/{processUid}':
+      get:
+        summary: Retrieve asynchronous process results
+        description: |-
+          Check the status of the asynchronous process and get the results once the process is completed
+        tags:
+        - Context
+        operationId: getAsyncProcessResults
+        parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - description: Identifier of the asynchronous process obtained when running asynchronous request.
+          in: path
+          name: processUid
+          required: true
+          schema:
+            format: uuid
+            type: string
+        responses:
+          200:
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AsyncProcessResultResponse'
+                examples:
+                  response:
+                    value:
+                      response:
+                        code: SUCCESS
+                        data:
+                          processUid: 00000000-0000-0000-0000-000000000000
+                          processState: COMPLETED
+                          processType: MATCH_CONTEXT
+                          createdDate: '2021-01-01T12:00:00Z'
+                          modifiedDate: '2021-01-01T12:30:00Z'
+                          result:
+                            contextUid: 11111111-1111-1111-1111-111111111111
+                            checkedStringsCount: 50
+                            bindings:
+                            - bindingUid: 22222222-2222-2222-2222-222222222222
+                              contextUid: 11111111-1111-1111-1111-111111111111
+                              stringHashcode: 4444444444444444444444444444444a
+                              coordinates:
+                                top: 461
+                                left: 432
+                                height: 28
+                                width: 90
+                            - bindingUid: 33333333-3333-3333-3333-333333333333
+                              contextUid: 11111111-1111-1111-1111-111111111111
+                              stringHashcode: 5555555555555555555555555555555b
+                              anchors:
+                              - '123'
+                              - 'custom.anchor'
+          400:
+            $ref: '#/components/responses/Error400ResponseDefinition'
+          401:
+            $ref: '#/components/responses/Error401ResponseDefinition'
+          404:
+            description: Process request expired or does not exist
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error404Response'
+                examples:
+                  response:
+                    value:
+                      response:
+                        code: NOT_FOUND_ERROR
+                        errors:
+                        - key: not_found
+                          message: Asynchronous process not found
+          429:
+            $ref: '#/components/responses/Error429ResponseDefinition'
+          500:
+            $ref: '#/components/responses/Error500ResponseDefinition'
+
   /context-api/v2/projects/{projectId}/bindings:
     post:
       summary: Create string to context bindings
@@ -3131,7 +3200,6 @@ paths:
         Link context files with the strings they contain.
 
         The binding tells Smartling to show Translators which context images for which strings.
-        A maximum of `150` bindings can be created per request.
 
         A basic bindings request should contain an object with a `bindings` JSON array, with at least one element (binding) featuring `contextUid` and `stringHashcode` properties:
         ```JSON
@@ -3164,6 +3232,7 @@ paths:
         ```
 
         For `HTML` context, each binding may have the `selector` element with `anchors` array, specifying the enclosing the string HTML elements with the corresponding value of the `data-sl-anchor` attribute.
+        Each `anchor` value can have up to 20 characters and consist of the following characters: `0-9` (more preferably), `A-Z`, `a-z`, `.-_`.
         If not specified, binding will still be created with the empty `anchors` array, effectively making it not anchored to a particular element and thus invisible in CAT Tool:
         ```JSON
         {
@@ -3172,14 +3241,14 @@ paths:
                "contextUid": "25137b65-e075-4341-8362-14b1a3e558f5",
                "stringHashcode": "bd603147d945h3ec74d6874422ebe4e0",
                "selector": {
-                  "anchors": ["custom.anchor", "11", 44"]
+                  "anchors": ["11", "22", "aa-33"]
                }
             }
           ]
         }
         ```
 
-        For `VIDEO` context, each binding mave the `timecode` data, specifying the start and end time of the string appearance in the video:
+        For `VIDEO` context, each binding has the `timecode` data, specifying the start and end time of the string appearance in the video:
         ```JSON
         {
           "bindings": [
@@ -3424,6 +3493,9 @@ paths:
 
   /issues-api/v2/projects/{projectId}/issues/{issueUid}/severity-level:
     $ref: './spec/issues/issues_common.yaml#/x-paths/issue_severity_level'
+
+  /issues-api/v2/projects/{projectId}/issues/{issueUid}/change-type:
+    $ref: './spec/issues/issues_common.yaml#/x-paths/issue_change_type'
 
   /issues-api/v2/projects/{projectId}/issues/{issueUid}/comments:
     $ref: './spec/issues/issue_comments.yaml#/x-paths/issue_comments'
@@ -3894,1189 +3966,6 @@ paths:
           https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/translations
 
 #
-# Glossary API endpoints
-#
-  '/glossary-api/v2/accounts/{accountUid}/glossaries':
-    get:
-      summary: List glossaries for account
-      description: >-
-        Returns a list of all glossaries in an account. Optional filters for
-        glossary name and UID can be added.
-      tags:
-      - Glossaries
-      operationId: getGlossariesList
-
-      parameters:
-      - in: path
-        name: accountUid
-        required: true
-        description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        schema:
-          type: string
-      - description: Filter for glossary name in LIKE manner (case-insensitive).
-        in: query
-        name: name
-        schema:
-          type: string
-      - description: >-
-          Filter for glossary UID in IN manner (may contain up to 100 UIDs
-          separated by comma e.g., glossaryUids=1234,4567)
-        in: query
-        name: glossaryUids
-        schema:
-          items:
-            type: string
-          type: array
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GlossaryListResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                        - createdByUserUid: ah27fhq8
-                          createdDate: '2015-11-21T01:51:17Z'
-                          description: some desc
-                          glossaryUid: 50d9dab5-6b8b-11e5-ba24-127b00b163a3
-                          name: Another document tester-Glossary
-                          sourceLocaleId: en-US
-                        - createdByUserUid: ah27fhq8
-                          createdDate: '2015-11-21T01:51:17Z'
-                          description: some desc
-                          glossaryUid: 50e5c8d3-6b8b-11e5-ba24-127b00b163a3
-                          name: BizDocs test Max's project-Glossary
-                          sourceLocaleId: en-US
-                        totalCount: 2
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-    post:
-      summary: Create glossary
-      description: Creates a new glossary in an account.
-      tags:
-      - Glossaries
-      operationId: addGlossary
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateGlossary'
-        required: true
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GlossaryResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        createdByUserUid: ah27fhq8
-                        createdDate: '2015-11-21T01:51:17Z'
-                        description: Description of a Glossary
-                        glossaryUid: 50d9dab5-6b8b-11e5-ba24-127b00b163a3
-                        name: Another document tester-Glossary
-                        sourceLocaleId: en-US
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}:
-    get:
-      summary: Get glossary details
-      description: >-
-        Gets the name, description, locale, and creation information for a
-        glossary.
-      tags:
-      - Glossaries
-      operationId: getGlossaryDetails
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of a glossary.
-        in: path
-        name: glossaryUid
-        required: true
-        schema:
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GlossaryResponse'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-    put:
-      summary: Edit glossary
-      description: >-
-        Edits the name, description or source locale of a glossary. This will
-        completely replace the name, description, and source locale of the
-        target glossary. If you do not provide a field, or leave it blank, any
-        existing information will be deleted.
-      tags:
-      - Glossaries
-      operationId: updateGlossaryDetails
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of the glossary.
-        in: path
-        name: glossaryUid
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateGlossary'
-        required: true
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GlossaryResponse'
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-    delete:
-      summary: Delete glossary
-      description: >-
-        Deletes a glossary.
-
-
-        **Note:** If a glossary has been assigned to a
-        Linguistic Package, you will not be able to delete it. Linguistic
-        Packages are managed in the Smartling Dashboard.
-      tags:
-      - Glossaries
-      operationId: deleteGlossary
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of the glossary.
-        in: path
-        name: glossaryUid
-        required: true
-        schema:
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                - response
-                properties:
-                  response:
-                    $ref: '#/components/schemas/SuccessResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms:
-    get:
-      summary: Find terms in glossary
-      description: >-
-        Returns terms from a glossary. Only the source term is included in this
-        response.
-      tags:
-      - Glossaries
-      operationId: getGlossaryTerms
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of glossary.
-        in: path
-        name: glossaryUid
-        required: true
-        schema:
-          type: string
-      - description: Filter for term text in LIKE manner (case-insensitive).
-        in: query
-        name: termText
-        schema:
-          type: string
-      - description: Pagination portion size.
-        in: query
-        name: limit
-        schema:
-          type: integer
-      - description: Pagination offset value.
-        in: query
-        name: offset
-        schema:
-          type: integer
-      - description: >-
-          Sorting instructions. This represents a field to sort by, with
-          direction separated by a comma (i.e. sort=termText,desc). We support
-          sorting by all fields.
-        in: query
-        name: sort
-        schema:
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SourceTermListResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                        - antonyms: ''
-                          caseSensitive: false
-                          createdDate: '2015-12-30T12:43:12Z'
-                          definition: ''
-                          deprecated: false
-                          doNotTranslate: false
-                          exactMatch: false
-                          modifiedDate: '2015-12-30T12:43:12Z'
-                          notes: ''
-                          partOfSpeechCode: UNSPECIFIED
-                          seo: false
-                          synonyms: ''
-                          termText: cold calls
-                          termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b537
-                          variations: ''
-                        - antonyms: ''
-                          caseSensitive: true
-                          createdDate: '2015-12-30T12:43:12Z'
-                          definition: My definition
-                          deprecated: false
-                          doNotTranslate: false
-                          exactMatch: false
-                          modifiedDate: '2015-12-30T12:43:12Z'
-                          notes: My notes
-                          partOfSpeechCode: VERB
-                          seo: false
-                          synonyms: ''
-                          termText: cold call
-                          termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b538
-                          variations: ''
-                        totalCount: 2
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-    post:
-      summary: Create glossary term
-      description: >-
-        Creates a new glossary term. The only required parameter is `termText`.
-        See our Glossary documentation for details on each term parameter. You
-        can only add one translation object in this request. To add additional
-        translations, use Edit Glossary term.
-      tags:
-      - Glossaries
-      operationId: addSingleGlossaryTerm
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of the glossary.
-        in: path
-        name: glossaryUid
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTerm'
-        required: true
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TranslatedTermResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        antonyms: ''
-                        caseSensitive: false
-                        definition: ''
-                        doNotTranslate: false
-                        exactMatch: false
-                        notes: ''
-                        partOfSpeechCode: VERB
-                        seo: false
-                        synonyms: ''
-                        termText: cold call
-                        translation:
-                          localeId: fr-CA
-                          lockTranslation: false
-                          notes: some notes from user
-                          submittedForTranslation: true
-                          translatedTerm: cold call french ca
-                          translatorUserUid: 58870b8e965
-                        variations: ''
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/batch:
-    post:
-      summary: Add glossary terms in bulk
-      description: >-
-        Creates new glossary terms. Validation for the endpoint works in atomic
-        fashion - all terms either pass validation (and will be created), or
-        none of them will be. Translation section is optional.
-      tags:
-      - Glossaries
-      operationId: addGlossaryTermsBatch
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of the glossary.
-        in: path
-        name: glossaryUid
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              items:
-                $ref: '#/components/schemas/CreateTerm'
-              type: array
-        required: true
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TranslatedTermResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                        - antonyms: ''
-                          caseSensitive: false
-                          definition: ''
-                          doNotTranslate: false
-                          exactMatch: false
-                          notes: ''
-                          partOfSpeechCode: UNSPECIFIED
-                          seo: false
-                          synonyms: ''
-                          termText: term 22
-                          variations: ''
-                        - antonyms: ''
-                          caseSensitive: false
-                          definition: ''
-                          doNotTranslate: false
-                          exactMatch: false
-                          notes: ''
-                          partOfSpeechCode: UNSPECIFIED
-                          seo: false
-                          synonyms: ''
-                          termText: term 33
-                          translation:
-                            localeId: fr-CA
-                            lockTranslation: false
-                            notes: some notes from user
-                            submittedForTranslation: false
-                            translatedTerm: term 33 french ca
-                            translatorUserUid: 58870b8ee965
-                          variations: ''
-                        totalCount: 2
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/locales/{localeId}/terms:
-    get:
-      summary: Find translations of terms
-      description: >-
-        Searches translations of glossary terms across all glossaries in the
-        account. The response contains a list of original glossary terms and
-        translations.
-      tags:
-      - Glossaries
-      operationId: getGlossaryTermsTranslationsByGlossary
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of glossary.
-        in: path
-        name: glossaryUid
-        required: true
-        schema:
-          type: string
-      - description: A valid Smartling Locale ID.
-        in: path
-        name: localeId
-        required: true
-        schema:
-          type: string
-      - description: >-
-          UIDs of specific terms to be retrieved (validation allows no more
-          than 100 in a single request).
-        in: query
-        name: termUids
-        schema:
-          items:
-            type: string
-          type: array
-      - description: Filter for the term text in LIKE manner (case-insensitive).
-        in: query
-        name: termText
-        schema:
-          type: string
-      - description: >-
-          Flag to filter out terms by criteria of presence of translation. Ff
-          not specified, it is not taken into account.
-        in: query
-        name: translated
-        schema:
-          type: boolean
-      - description: Pagination portion size.
-        in: query
-        name: limit
-        schema:
-          type: integer
-      - description: Pagination offset value.
-        in: query
-        name: offset
-        schema:
-          type: integer
-      - description: >-
-          Sorting instructions. This represents the field to sort by, and the
-          direction is separated by a comma (i.e. sort=termText,desc). We
-          support sorting by all fields.
-        in: query
-        name: sort
-        schema:
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TranslatedTermResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                        - antonyms: ''
-                          caseSensitive: false
-                          createdDate: '2015-12-30T12:43:12Z'
-                          definition: ''
-                          deprecated: false
-                          doNotTranslate: false
-                          exactMatch: false
-                          modifiedDate: '2015-12-30T12:43:12Z'
-                          notes: ''
-                          partOfSpeechCode: UNSPECIFIED
-                          seo: false
-                          synonyms: ''
-                          termText: cold calls
-                          termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b537
-                          translation:
-                            createdDate: '2015-12-30T12:43:12Z'
-                            localeId: fr-CA
-                            lockTranslation: false
-                            modifiedDate: '2015-12-30T12:43:12Z'
-                            notes: ''
-                            submittedForTranslation: true
-                            translatedTerm: cold calls in french ca
-                            translatorUserUid: 58870b8ee964
-                          variations: ''
-                        - antonyms: ''
-                          caseSensitive: false
-                          createdDate: '2015-12-30T12:43:12Z'
-                          definition: ''
-                          deprecated: false
-                          doNotTranslate: false
-                          exactMatch: false
-                          modifiedDate: '2015-12-30T12:43:12Z'
-                          notes: ''
-                          partOfSpeechCode: ADJECTIVE
-                          seo: false
-                          synonyms: ''
-                          termText: cold call
-                          termUid: e390a4d6-aef2-11e5-b159-0ad0c2f6b538
-                          translation:
-                            createdDate: '2015-12-30T12:43:12Z'
-                            localeId: fr-CA
-                            lockTranslation: false
-                            modifiedDate: '2015-12-30T12:43:12Z'
-                            notes: ''
-                            submittedForTranslation: false
-                            translatedTerm: cold call french ca
-                            translatorUserUid: 58870b8ee966
-                          variations: ''
-                        totalCount: 2
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /glossary-api/v2/accounts/{accountUid}/locales/{localeId}/terms:
-    get:
-      summary: Find translations of terms across all glossaries
-      description: >-
-        Searches translations of glossary terms across all glossaries in the
-        account.
-
-
-        The response contains a list of original glossary terms and
-        translations. There is a glossary UID for each term, in order to show to
-        which glossary it belongs.
-      tags:
-      - Glossaries
-      operationId: getGlossaryTermsTranslationsByAccount
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - description: A valid Smartling Locale ID.
-        in: path
-        name: localeId
-        required: true
-        schema:
-          type: string
-      - description: >-
-          UIDs of specific terms to be retrieved (validation allows no more
-          than 100 in single request).
-        in: query
-        name: termUids
-        schema:
-          items:
-            type: string
-          type: array
-      - description: Filter for the term text in LIKE manner (case-insensitive).
-        in: query
-        name: termText
-        schema:
-          type: string
-      - description: >-
-          Flag to filter out terms by criteria of presence of translation. Ff
-          not specified, it is not taken into account.
-        in: query
-        name: translated
-        schema:
-          type: boolean
-      - description: Pagination portion size.
-        in: query
-        name: limit
-        schema:
-          type: integer
-      - description: Pagination offset value.
-        in: query
-        name: offset
-        schema:
-          type: integer
-      - description: >-
-          Sorting instructions. Represents field to sort by and direction
-          separated by comma (i.e. sort=termText,desc). We support sorting by
-          all fields.
-        in: query
-        name: sort
-        schema:
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TermWithGlossaryUidListResponse'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        items:
-                        - antonyms: ''
-                          caseSensitive: true
-                          createdByUserUid: kjakjf82v
-                          createdDate: '2015-10-19T15:48:34Z'
-                          definition: ''
-                          deprecated: false
-                          doNotTranslate: false
-                          exactMatch: false
-                          glossaryUid: bdf416ee-98ff-11e5-b159-0ad0c2f6b537
-                          modifiedDate: '2015-11-09T15:33:19Z'
-                          notes: ''
-                          partOfSpeechCode: VERB
-                          seo: true
-                          synonyms: ''
-                          termText: arabian architecture
-                          termUid: 6b3e1e8c-eb40-4c32-a9f7-024e407b0b30
-                          translation:
-                            createdDate: '2015-10-21T11:08:01Z'
-                            localeId: fr-FR
-                            lockTranslation: false
-                            modifiedDate: '2015-10-27T13:09:56Z'
-                            notes: ''
-                            submittedForTranslation: false
-                            translatedTerm: arabian architecture in french
-                          variations: ''
-                        - antonyms: ''
-                          caseSensitive: false
-                          createdByUserUid: kjakjf82v
-                          createdDate: '2015-12-02T14:19:15Z'
-                          definition: ''
-                          deprecated: false
-                          doNotTranslate: false
-                          exactMatch: false
-                          glossaryUid: bbf416ee-98ff-11e5-b159-0ad0c2f6b537
-                          modifiedDate: '2015-12-02T14:19:15Z'
-                          notes: ''
-                          partOfSpeechCode: ADJECTIVE
-                          seo: false
-                          synonyms: ''
-                          termText: summer time
-                          termUid: aaf416ee-98ff-11e5-b159-0ad0c2f6b537
-                          translation:
-                            createdDate: '2015-12-02T14:28:00Z'
-                            localeId: fr-FR
-                            lockTranslation: false
-                            modifiedDate: '2015-12-02T14:28:00Z'
-                            notes: ''
-                            submittedForTranslation: false
-                            translatedTerm: summer time french 22
-                          variations: ''
-                        totalCount: 2
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/terms/{termUid}:
-    put:
-      summary: Edit glossary term
-      description: >-
-        Edits the details of a glossary term. With the exception of the
-        translation object, you must provide all desired
-
-        fields every time you edit the term. If you do not provide a field or
-        leave it blank, any existing value for
-
-        that field will be deleted. To add translations for multiple locales,
-        make a separate request for each locale.
-
-        Keep all fields except for the translation object identical in each
-        request.
-      tags:
-      - Glossaries
-      operationId: updateGlossaryTerm
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of the glossary.
-        in: path
-        name: glossaryUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of a specific glossary term.
-        in: path
-        name: termUid
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateTerm'
-        required: true
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TranslatedTermResponse'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-    delete:
-      summary: Delete glossary term
-      description: Delete a glossary term. This will remove the term and all translations.
-      tags:
-      - Glossaries
-      operationId: deleteGlossaryTerm
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of a glossary.
-        in: path
-        name: glossaryUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of a specific glossary term.
-        in: path
-        name: termUid
-        required: true
-        schema:
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                - response
-                properties:
-                  response:
-                    $ref: '#/components/schemas/SuccessResponse'
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /glossary-api/v2/projects/{projectUid}/glossaries/{glossaryUid}/terms/authorization:
-    put:
-      summary: Authorize terms for translation
-      description: >-
-        Sends selected terms for translation via specified workflows to chosen
-        target locales.
-      tags:
-      - Glossaries
-      operationId: authorizeGlossaryTermForTranslation
-
-      parameters:
-      - description: Unique identifier for the corresponding project.
-        in: path
-        name: projectUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of a glossary.
-        in: path
-        name: glossaryUid
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthorizeTerms'
-        required: true
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                - response
-                properties:
-                  response:
-                    $ref: '#/components/schemas/SuccessResponse'
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /glossary-api/v2/accounts/{accountUid}/glossaries/{glossaryUid}/download:
-    get:
-      summary: Download glossary
-      description: 'Downloads a glossary as a CSV, TBX, or XLSX (Open Excel) file.'
-      tags:
-      - Glossaries
-      operationId: downloadGlossary
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - description: Unique identifier of glossary.
-        in: path
-        name: glossaryUid
-        required: true
-        schema:
-          type: string
-      - description: Format that is used for glossary export.
-        in: query
-        name: format
-        required: true
-        schema:
-          enum:
-          - csv
-          - tbx
-          - xlsx
-          type: string
-      - description: Comma-separated list of locales for which to return translations.
-        in: query
-        name: localeIds
-        schema:
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: string
-                format: binary
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  '/glossary-api/v2/accounts/{accountUid}/import-jobs':
-    post:
-      summary: Import glossary from Excel file
-      description: >-
-        Creates a new glossary in your account from an uploaded Excel
-        spreadsheet. The format of the spreadsheet is important. See
-        [Import Glossary](https://help.smartling.com/hc/en-us/articles/115003144633) and
-        [Glossary Spreadsheet Format](https://help.smartling.com/hc/article_attachments/360043100054/Glossary_Import_Template.xlsx).
-      tags:
-      - Glossaries
-      operationId: importGlossary
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: A name for the glossary. This name must be unique. Attempting to use a name already in use in the account will return an error.
-                sourceLocaleId:
-                  type: string
-                  description: Source locale for the glossary.
-                description:
-                  type: string
-                  description: Description for the glossary.
-                importFile:
-                  type: string
-                  format: binary
-                  description: 'File containing the glossary you wish to import. See [Glossary Spreadsheet Format](https://help.smartling.com/hc/article_attachments/360043100054/Glossary_Import_Template.xlsx) for details.'
-              required:
-                - name
-                - sourceLocaleId
-                - description
-                - importFile
-        required: true
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GlossaryImportJob'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        accountUid: b76d6285
-                        createdByUserUid: 58870b8ee965
-                        createdDate: '2016-03-21T15:00:48Z'
-                        fileName: ExampleImportGlossary2.xlsx
-                        glossary:
-                          accountUid: 8a196313
-                          createdByUserUid: 58870b8ee965
-                          createdDate: '2016-05-18T12:04:38Z'
-                          description: test desc
-                          glossaryUid: 5c8d2aa8-e254-4ab3-8eb3-3b96b24f8609
-                          name: Import keysight test
-                          sourceLocaleId: en
-                        glossaryImportJobStatus: PENDING
-                        glossaryImportJobUid: 78d93dde-5e3d-4beb-8171-415f82ca2c7b
-                        localesNumber: 20
-                        modifiedDate: '2016-03-21T15:00:48Z'
-                        termsNumber: 10
-                        termsProcessed: 0
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /glossary-api/v2/accounts/{accountUid}/import-jobs/{glossaryImportJobUid}:
-    get:
-      summary: Status of glossary import
-      description: Checks the status of a glossary import.
-      tags:
-      - Glossaries
-      operationId: getGlossaryImportStatus
-
-      parameters:
-      - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: accountUid
-        required: true
-        schema:
-          type: string
-      - in: path
-        name: glossaryImportJobUid
-        required: true
-        schema:
-          type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GlossaryImportJob'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        accountUid: b76d6285
-                        createdByUserUid: 58870b8ee965
-                        createdDate: '2016-03-21T15:00:48Z'
-                        fileName: ExampleImportGlossary2.xlsx
-                        glossary:
-                          accountUid: 8a196313
-                          createdByUserUid: 58870b8ee965
-                          createdDate: '2016-05-18T12:04:38Z'
-                          description: test desc
-                          glossaryUid: 5c8d2aa8-e254-4ab3-8eb3-3b96b24f8609
-                          name: Import keysight test
-                          sourceLocaleId: en
-                        glossaryImportJobStatus: PENDING
-                        glossaryImportJobUid: 78d93dde-5e3d-4beb-8171-415f82ca2c7b
-                        localesNumber: 20
-                        modifiedDate: '2016-03-21T15:00:48Z'
-                        termsNumber: 10
-                        termsProcessed: 0
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-  /glossary-api/v2/dictionary/parts-of-speech:
-    get:
-      summary: List parts of speech
-      description: Order is fixed and consistent throughout the calls.
-      tags:
-      - Glossaries
-      operationId: getGlossaryPartsOfSpeech
-
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PartsOfSpeechList'
-              examples:
-                response:
-                  value:
-                    code: SUCCESS
-                    data:
-                      items:
-                      - description: Noun
-                        partOfSpeechCode: NOUN
-                      - description: Verb
-                        partOfSpeechCode: VERB
-                      - description: Adjective
-                        partOfSpeechCode: ADJECTIVE
-                      - description: Adverb
-                        partOfSpeechCode: ADVERB
-                      - description: Pronoun
-                        partOfSpeechCode: PRONOUN
-                      - description: Preposition
-                        partOfSpeechCode: PREPOSITION
-                      - description: Interjection
-                        partOfSpeechCode: INTERJECTION
-                      - description: Conjunction
-                        partOfSpeechCode: CONJUNCTION
-                      - description: Unspecified
-                        partOfSpeechCode: UNSPECIFIED
-                      totalCount: 9
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-#
 # Estimates API endpoints
 #
   '/estimates-api/v2/projects/{projectId}/jobs/{translationJobUid}/reports/fuzzy':
@@ -5289,7 +4178,7 @@ paths:
                             errors: null
     post:
       summary: Generate Fuzzy Estimate Report for the Job
-      description: This is simplified version of API to generate fuzzy reports. It creates further request to FES composing proper schema string based on input information. forced flag in this case is sent with false value being set.
+      description: Generate Fuzzy report for the Job.
       tags:
         - Estimates
       operationId: generateJobFuzzyEstimateReports
@@ -5540,7 +4429,7 @@ paths:
                             errors: null
     post:
       summary: Generate Cost Estimate Report for the Job
-      description: This is simplified version of API to generate cost reports. It creates further request to FES composing proper schema string based on input information. forced flag in this case is sent with false value being set.
+      description: Generate Cost Estimate Report for the Job
       tags:
         - Estimates
       operationId: generateJobCostEstimateReports
@@ -5797,7 +4686,7 @@ paths:
                             errors: null
     delete:
           summary: Delete Estimation Report
-          description: The report is only "soft"-deleted, i.e. it remains persisted in the DB, but is marked as "not enabled"
+          description: Delete estimate report.
           tags:
             - Estimates
           operationId: deleteJobEstimateReport
@@ -5906,6 +4795,58 @@ paths:
             application/octet-stream:
               schema:
                 type: string
+
+#
+# MT Router API
+#
+  /mt-router-api/v2/accounts/{accountUid}/smartling-mt:
+    post:
+      summary: Machine Translation (MT) using preconfigured MT Profile
+      description: Machine Translation (MT) using preconfigured MT Profile.
+      tags:
+        - Machine Translation (MT)
+      operationId: translateForAccount
+      parameters:
+        - name: accountUid
+          description: A unique account identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MTTranslateRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MTTranslateResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - key: key-from-request
+                            translationText: Translated text
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/mt-router-api/v2/accounts/{accountUid}/smartling-mt
 
 #
 # Jobs API endpoints
@@ -6219,9 +5160,11 @@ paths:
                         createdDate: '2015-11-21T11:51:17Z'
                         description: my job description
                         dueDate: '2015-11-21T11:51:17Z'
-                        firstCompletedDate: '2015-11-21T11:51:17Z'
                         jobStatus: IN_PROGRESS
+                        firstCompletedDate: '2015-11-21T11:51:17Z'
+                        firstAuthorizedDate: '2015-01-21T11:51:17Z'
                         lastCompletedDate: '2015-11-21T11:51:17Z'
+                        lastAuthorizedDate: '2015-12-21T11:51:17Z'
                         modifiedByUserUid: userUid321abc
                         modifiedDate: '2015-11-21T11:51:17Z'
                         referenceNumber: myReferenceNumber1
@@ -6865,6 +5808,10 @@ paths:
                         jobName: 'test job (Cancelled 2017/11/04 12:01:28)'
                         jobStatus: CANCELLED
                         jobNumber: SMTL-123
+                        firstCompletedDate: '2015-11-21T11:51:17Z'
+                        firstAuthorizedDate: '2015-01-21T11:51:17Z'
+                        lastCompletedDate: '2015-11-21T11:51:17Z'
+                        lastAuthorizedDate: '2015-12-21T11:51:17Z'
                         modifiedByUserUid: 598d89cce43a
                         modifiedDate: '2017-11-04T12:01:28Z'
                         sourceFiles:
@@ -6958,6 +5905,10 @@ paths:
                         jobName: Test Job
                         jobNumber: SMTL-123
                         jobStatus: AWAITING_AUTHORIZATION
+                        firstCompletedDate: '2015-11-21T11:51:17Z'
+                        firstAuthorizedDate: '2015-01-21T11:51:17Z'
+                        lastCompletedDate: '2015-11-21T11:51:17Z'
+                        lastAuthorizedDate: '2015-12-21T11:51:17Z'
                         modifiedByUserUid: 598d89cce43a
                         modifiedDate: '2017-11-04T12:01:28Z'
                         sourceFiles:
@@ -7209,10 +6160,11 @@ paths:
     post:
       summary: Add file to job
       description: >
-        This adds a file to a job. By default, the file will be added for all
-        locales of the job, but you can change this by specifying
-        `targetLocaleId`s for the job you wish to add the file into.
-
+        This adds all non-published strings from a file to a job.
+        By default, the file will be added for all locales of the job,
+        but you can change this by specifying `targetLocaleId`s for the
+        job you wish to add the file into.
+        
 
         **Validation rules:**
 
@@ -10363,6 +9315,8 @@ paths:
               - wordCount
 
               - weightedWordCount
+            
+              - characterCount. Please note: the column shows correct data since 2022-10-01.
           in: query
           name: fields
           required: false
@@ -10472,6 +9426,7 @@ paths:
                           translationResourceUid: da57302e
                           weightedWordCount: 4
                           wordCount: 20
+                          characterCount: 101
                           workflowStepType: Translation
                           workflowStepUid: lk3gh7zr20ao
                           workflowStepName: Translation
@@ -10492,6 +9447,7 @@ paths:
                           translationResourceUid: 5eb90a14
                           weightedWordCount: 20
                           wordCount: 20
+                          characterCount: 101
                           workflowStepType: Edit
                           workflowStepUid: ac7ac1bd15bf
                           workflowStepName: Edit
@@ -10625,6 +9581,8 @@ paths:
               - wordCount
 
               - weightedWordCount
+            
+              - characterCount. Please note: the column shows correct data since 2022-10-01.
           in: query
           name: fields
           required: false
@@ -10706,10 +9664,10 @@ paths:
                   value: >-
                     Account,Project,Job Uid,Job,Translation Resource,Agency Uid,Agency,
                     Target Language,Workflow Step,Workflow Step Uid,Workflow Step Name,
-                    Fuzzy Profile,Fuzzy Breakdown,Word Count,Weighted Words
+                    Fuzzy Profile,Fuzzy Breakdown,Word Count,Weighted Words,Character Count
                     Test Account,Test Project,f12ad8e9,Translation Job,Translator 1,
                     Test Agency 1 Uid, Test Agency 1,Spanish (Spain),Translation,123abc456def,
-                    Translation,Default,85 - 94.9%,1,1
+                    Translation,Default,85 - 94.9%,1,1,1
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -10733,6 +9691,12 @@ paths:
 
   /translation-quality-api/v2/dictionary/check-types/TRADEMARK_CONSISTENCY/trademark-types:
     $ref: './spec/translation_quality/dictionaries_result.yaml#/x-paths/dictionary_checkType_TRADEMARK_CONSISTENCY_trademark_types'
+
+  /translation-quality-api/v2/dictionary/check-types/REGEX_CHECK/rule-types:
+    $ref: './spec/translation_quality/dictionaries_result.yaml#/x-paths/dictionary_regex_check_rule_types'
+
+  /translation-quality-api/v2/dictionary/check-types/REGEX_CHECK/flavors:
+    $ref: './spec/translation_quality/dictionaries_result.yaml#/x-paths/dictionary_regex_check_flavors'
 
   /translation-quality-api/v2/users/current/settings/dictionaries/{localeId}:
     $ref: './spec/translation_quality/dictionaries_result.yaml#/x-paths/users_current_settings_dictionaries_locale'
@@ -10790,6 +9754,30 @@ paths:
 
   /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/groups/{groupUid}/severity-level:
     $ref: './spec/translation_quality/check_type_severity_level_result.yaml#/x-paths/profiles_check_type_group_severity_level'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rules'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/severity-level:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_severity_level'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_groups'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups/{groupUid}:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_group'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups/{groupUid}/locales:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_group_locales'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups/{groupUid}/locales/{targetLocaleId}:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_group_locale'
+
+  /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups/{groupUid}/severity-level:
+    $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_group_severity_level'
 
   /translation-quality-api/v2/projects/{projectId}/locales/{localeId}/check-types/:
     $ref: './spec/translation_quality/checks/accounts_result.yaml#/x-paths/get_project_check_types_settings'
@@ -10921,6 +9909,85 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  '/attachments-api/v2/accounts/{accountUid}/{type}/attachments':
+    post:
+      summary: Upload binary attachment
+      description: |-
+        Upload attachment file
+      tags:
+        - Attachments
+      operationId: uploadAttachment
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            format: uuid
+            type: string
+        - name: type
+          in: path
+          required: true
+          description: Attachment type
+          schema:
+            enum:
+              - jobs
+              - strings
+              - issues
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  required: true
+                  type: string
+                  format: binary
+                  description: The attachment file contents to upload.
+                name:
+                  required: true
+                  type: string
+                  description:
+                    Functional name of the file uploaded. This is not a unique identifier.
+                entityUids:
+                  required: false
+                  type: array
+                  items:
+                    type: string
+                  description: (Optional) The list of entity uids attachment will be linked with (max 100).
+                  maxItems: 100
+                description:
+                  required: false
+                  type: string
+                  description: (Optional) Description of uploaded binary file.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAttachmentResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        attachmentUid: '1e2f4378324e'
+                        name: 'my-attachment'
+                        description: 'meta-for-my-attachment'
+                        createdDate: '2018-03-30T12:58:22Z'
+                        createdByUserUid: '5789003e276a'
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
 components:
   requestBodies:
     TagsWithStrings:
@@ -10992,6 +10059,8 @@ components:
       $ref: './spec/translation_quality/checks/punctuation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     PLURALS_REPETITION:
       $ref: './spec/translation_quality/checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+    OPEN_ISSUES:
+      $ref: './spec/translation_quality/checks/open_issues.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     AccountAPIListProjectItem:
       example:
@@ -11119,7 +10188,7 @@ components:
           description: >-
             (Optional), default is false. A string for a locale can only be in
             one job. If the string identified in the request is already in a job
-            for a locale then it won't be added. However, `moveEnalbed=true` can
+            for a locale then it won't be added. However, `moveEnabled=true` can
             be specified, and in this case, the string will be moved into the
             specified job.
           type: boolean
@@ -11141,6 +10210,24 @@ components:
             - ACCEPTED
           type: string
       type: object
+    AsyncProcessResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: Code of the completed operation.
+              enum:
+                - SUCCESS
+              type: string
+            data:
+              properties:
+                processUid:
+                  description: Identifier of the started asynchronous process.
+                  format: uuid
+                  type: string
+              type: object
+          type: object
+      type: object
     AsyncMatchResponse:
       properties:
         response:
@@ -11152,15 +10239,73 @@ components:
               type: string
             data:
               properties:
+                processUid:
+                  description: >-
+                    Identifier of the started asynchronous process. Should be
+                    specified for getting matching stats.
+                  format: uuid
+                  type: string
                 matchId:
                   description: >-
                     Identifier of the started match operation. Should be
-                    specified for getting matching stats.
+                    specified for getting matching stats. Deprecated, use `processUid` property
                   format: uuid
+                  deprecated: true
                   type: string
               type: object
           type: object
       type: object
+
+    AsyncProcessResultResponse:
+      properties:
+        response:
+          properties:
+            processState:
+              description: State of the completed process.
+              enum:
+                - COMPLETED
+                - IN_PROGRESS
+                - FAILED
+              type: string
+            createdDate:
+              format: date-time
+              type: string
+            modifiedDate:
+              format: date-time
+              type: string
+            errorMessage:
+              type: string
+            processType:
+              enum:
+                - MATCH_CONTEXT
+                - DELETE_CONTEXTS
+              type: string
+            result:
+              description: result if the response is COMPLETED. The content of the field is depends on `type` field
+              oneOf:
+                - $ref: '#/components/schemas/MatchAsyncResult'
+                - $ref: '#/components/schemas/DeleteContextsAsyncResult'
+          type: object
+      type: object
+
+    MatchAsyncResult:
+      properties:
+        bindings:
+          items:
+            $ref: '#/components/schemas/Binding'
+          type: array
+        contextUid:
+          description: Unique identifier for the context.
+          type: string
+        checkedStringsCount:
+          type: integer
+      type: object
+
+    DeleteContextsAsyncResult:
+      description: Empty object
+      properties: {}
+      type: object
+
     AsyncMatchStatsResponse:
       properties:
         response:
@@ -11302,28 +10447,6 @@ components:
             $ref: '#/components/schemas/AuthorizeJobItemRequest'
           type: array
       type: object
-    AuthorizeTerms:
-      properties:
-        authorization:
-          properties:
-            localeWorkflows:
-              description: Locale workflows
-              items:
-                $ref: '#/components/schemas/LocaleWorkflow'
-              type: array
-          required:
-            - localeWorkflows
-          type: object
-        termUids:
-          description: Unique identifiers of glossary terms
-          items:
-            example: 65c62a7c-6b8b-11e5-ba24-127b00b163a3
-            type: string
-          type: array
-      required:
-        - termUids
-        - authorization
-      type: object
 
     AttachmentListEntityResponse:
       properties:
@@ -11371,6 +10494,42 @@ components:
           format: uid
           example: c297ff10f584
           type: string
+      type: object
+
+    CreateAttachmentResponse:
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    attachmentUid:
+                      description: The unique identifier of the attachment.
+                      format: uid
+                      type: string
+                    name:
+                      description: The name of the attachment.
+                      type: string
+                    description:
+                      description: The description of the attachment.
+                      type: string
+                    createdDate:
+                      description: The UTC value of the date the attachment was uploaded.
+                      example: '2018-03-30T12:58:22Z'
+                      format: date-time
+                      type: string
+                    createdByUserUid:
+                      description: The unique identifier of user whom upload attachment.
+                      format: uid
+                      example: c297ff10f584
+                      type: string
+                  type: object
+              required:
+                - data
+              type: object
+      required:
+        - response
       type: object
 
     BatchStatus:
@@ -11718,7 +10877,7 @@ components:
     BindingsRequest:
       properties:
         bindings:
-          description: Array of string-to-context bindings
+          description: List of strings-to-context bindings. List size is limited to 150 items.
           items:
             description: Binding request
             properties:
@@ -12010,23 +11169,6 @@ components:
                     - created
                   type: object
               type: object
-    CreateGlossary:
-      properties:
-        description:
-          example: some desc
-          type: string
-        name:
-          example: Some test glossary
-          type: string
-        sourceLocaleId:
-          description: A valid Smartling Locale ID
-          example: en-US
-          type: string
-      required:
-        - name
-        - description
-        - sourceLocaleId
-      type: object
     CreateJobRequest:
       description: The payload to use when creating a job.
       properties:
@@ -12081,11 +11223,12 @@ components:
       properties:
         contentType:
           enum:
-            - JOB_CONTENT_TRANSLATION
-            - JOB_CONTENT_ALL_CONTENT
-            - JOB_CONTENT_CLAIMING
-            - JOB_CONTENT_UNAUTHORIZED
+            - TRANSLATION
+            - ALL_CONTENT
+            - CLAIMING
+            - UNAUTHORIZED
           type: string
+          default: ALL_CONTENT
         tags:
           example: ["tag1", "tag2"]
           type: array
@@ -12097,11 +11240,12 @@ components:
       properties:
         contentType:
           enum:
-            - JOB_CONTENT_TRANSLATION
-            - JOB_CONTENT_ALL_CONTENT
-            - JOB_CONTENT_CLAIMING
-            - JOB_CONTENT_UNAUTHORIZED
+            - TRANSLATION
+            - ALL_CONTENT
+            - CLAIMING
+            - UNAUTHORIZED
           type: string
+          default: ALL_CONTENT
         tags:
           example: ["tag1", "tag2"]
           type: array
@@ -12240,10 +11384,6 @@ components:
                       type: string
                   type: object
               type: object
-    CreateTerm:
-      allOf:
-        - $ref: '#/components/schemas/TermData'
-      type: object
     CreatedString:
       description: Information on the created or updated string
       properties:
@@ -12335,6 +11475,11 @@ components:
                       example: '2015-11-21T01:51:17.000Z'
                       format: date-time
                       type: string
+                    firstAuthorizedDate:
+                      description: The UTC value of when the job was first authorized.
+                      example: '2015-01-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
                     jobName:
                       description: The name of the job.
                       type: string
@@ -12363,6 +11508,11 @@ components:
                     lastCompletedDate:
                       description: The UTC value of when the job was last completed.
                       example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    lastAuthorizedDate:
+                      description: The UTC value of when the job was last authorized.
+                      example: '2015-12-21T01:51:17.000Z'
                       format: date-time
                       type: string
                     modifiedByUserUid:
@@ -12691,7 +11841,6 @@ components:
               type: string
             data:
               $ref: '#/components/schemas/EstimateJobReportStatus'
-              type: object
           required:
             - code
             - data
@@ -12728,7 +11877,6 @@ components:
               type: string
             data:
               $ref: '#/components/schemas/EstimateJobReportTags'
-              type: object
           required:
             - code
             - data
@@ -13369,84 +12517,46 @@ components:
       required:
         - response
       type: object
-    Glossary:
+    MTTranslateRequest:
       properties:
-        createdByUserUid:
-          description: Unique identifier for the glossary creator
-          example: ah27fhq8
-          type: string
-        createdDate:
-          description: Glossary created date
-          example: '2015-11-21T01:51:17Z'
-          format: date-time
-          type: string
-        description:
-          description: Description of a Glossary.
-          example: Description of a Glossary
-          type: string
-        glossaryUid:
-          description: Unique identifier for the glossary.
-          example: 50d9dab5-6b8b-11e5-ba24-127b00b163a3
-          type: string
-        name:
-          description: Glossary name
-          example: Another document tester-Glossary
-          type: string
         sourceLocaleId:
-          description: Glossary source locale
+          type: string
+          description: Locale ID of the original text
           example: en-US
+        targetLocaleId:
           type: string
+          description: Locale ID of the requested translation
+          example: de-DE
+        items:
+          items:
+            $ref: '#/components/schemas/MTTranslateItemRequest'
+          type: array
+          maxItems: 1000
       required:
-        - glossaryUid
-        - name
         - sourceLocaleId
+        - targetLocaleId
+        - items
       type: object
-    GlossaryImportJob:
+    MTTranslateItemRequest:
       properties:
-        accountUid:
-          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        key:
+          description: A unique identifier to match results in the response
+          example: 'my-key-1'
           type: string
-        createdByUserUid:
-          description: Unique identifier of creator user.
+          maxLength: 255
+        sourceText:
+          description: The text to translate
+          example: Text to translate
           type: string
-        createdDate:
-          description: Created date.
-          type: string
-        fileName:
-          description: File name.
-          type: string
-        glossary:
-          $ref: '#/components/schemas/Glossary'
-        glossaryImportJobStatus:
-          description: Status of glossary import jobs.
-          enum:
-            - PENDING
-            - IN_PROGRESS
-            - SUCCESSFUL
-            - FAILED
-          type: string
-        glossaryImportJobUid:
-          description: >-
-            Unique identifier that corresponds to a single glossary import
-            session.
-          type: string
-        localesNumber:
-          description: Number of locales.
-          format: int32
-          type: integer
-        modifiedDate:
-          description: Modified date.
-          type: string
-        termsNumber:
-          description: Number of terms in the import file.
-          format: int32
-          type: integer
-        termsProcessed:
-          description: Number of processed terms.
-          format: int32
-          type: integer
+          maxLength: 64kb
+      required:
+        - key
+        - sourceText
       type: object
-    GlossaryListResponse:
+    MTTranslateResponse:
+      type: object
+      required:
+        - response
       properties:
         response:
           allOf:
@@ -13455,33 +12565,40 @@ components:
                 data:
                   properties:
                     items:
-                      description: Glossaries
                       items:
-                        $ref: '#/components/schemas/Glossary'
+                        $ref: '#/components/schemas/MTTranslateItemResponse'
                       type: array
-                    totalCount:
-                      description: Amount of returned glossaries
-                      type: number
+                  required:
+                    - items
                   type: object
-              required:
-                - data
               type: object
-      required:
-        - response
-      type: object
-    GlossaryResponse:
+    MTTranslateItemResponse:
       properties:
-        response:
-          allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/Glossary'
-              required:
-                - data
-              type: object
+        key:
+          description: A unique identifier from the request
+          example: 'my-key-1'
+          type: string
+        translationText:
+          description: Translated text. Empty if error is present
+          example: 'Text zum Übersetzen'
+          type: string
+        error:
+          type: object
+          properties:
+            key:
+              type: string
+              description: Error key of the error
+              example: PROVIDER_UNAUTHORIZED
+            code:
+              type: string
+              description: Error code of the error
+              example: invalid.credentials
+            message:
+              type: string
+              description: Error code detailed message
+              example: Invalid API Key.
       required:
-        - response
+        - key
       type: object
     JobLocalesCompletionDate:
       properties:
@@ -13939,7 +13056,7 @@ components:
       description: |-
         *Uncollapse this block to get the detailed description of `matchParams`.*
         <br/><br/>
-        If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+        If none of `stringHashcodes`, `contentFileUri`, `translationJobUids` are specified, **all strings from the project** will be included in the match.
         <br/>
         If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
       properties:
@@ -13949,7 +13066,7 @@ components:
             <br/>
             Example: `"contentFileUri": "example.properties"`
             <br/>
-            Can't be used along with the `stringHashcodes` parameter.
+            Can't be used along with the `stringHashcodes` or `translationJobUids` parameter.
           type: string
         stringHashcodes:
           description: >-
@@ -13957,7 +13074,18 @@ components:
             <br/>
             Example: `"stringHashcodes": ["hashcode1", "hashcode2"]`
             <br/>
-            Can't be used along with the `contentFileUri` parameter.
+            Can't be used along with the `contentFileUri` or `translationJobUids` parameter.
+          items:
+            format: hash
+            type: string
+          type: array
+        translationJobUids:
+          description: >-
+            A translation job UID to perform matching with the context. Only one UID can be specified:
+            <br/>
+            Example: `"translationJobUids": ["translationJobUid"]`
+            <br/>
+            Can't be used along with the `contentFileUri` or `stringHashcodes` parameter.
           items:
             format: hash
             type: string
@@ -13969,6 +13097,14 @@ components:
             "overrideContextOlderThanDays" old.
           minimum: 1
           type: integer
+    DeleteContextsRequest:
+      properties:
+        contextUids:
+          description: List of contexts UIDs to delete. List size is limited to 100 items.
+          type: array
+          items:
+            type: string
+      type: object
     ModifyJobReportTagsRequest:
       description: The payload to modify job estimation report tags.
       properties:
@@ -13993,43 +13129,6 @@ components:
                       type: object
                   type: object
               type: object
-    PartsOfSpeech:
-      properties:
-        description:
-          description: Description
-          example: Adjective
-          type: string
-        partOfSpeechCode:
-          description: Part of speech
-          example: ADJECTIVE
-          type: string
-      required:
-        - partOfSpeechCode
-      type: object
-
-    PartsOfSpeechList:
-      type: object
-      properties:
-        response:
-          allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
-            - properties:
-                data:
-                  properties:
-                    items:
-                      description: Parts of speech
-                      items:
-                        $ref: '#/components/schemas/PartsOfSpeech'
-                      type: array
-                    totalCount:
-                      description: Total count
-                      type: number
-                  type: object
-              required:
-                - data
-              type: object
-      required:
-        - response
     ProcessCheckJobResponse:
       type: object
       required:
@@ -14400,6 +13499,11 @@ components:
                       example: '2015-11-21T01:51:17.000Z'
                       format: date-time
                       type: string
+                    firstAuthorizedDate:
+                      description: The UTC value of when the job was first authorized.
+                      example: '2015-01-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
                     jobName:
                       description: The name of the job.
                       type: string
@@ -14416,6 +13520,11 @@ components:
                     lastCompletedDate:
                       description: The UTC value of when the job was last completed.
                       example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    lastAuthorizedDate:
+                      description: The UTC value of when the job was last authorized.
+                      example: '2015-12-21T01:51:17.000Z'
                       format: date-time
                       type: string
                     modifiedByUserUid:
@@ -14457,46 +13566,6 @@ components:
               description: File uri
               type: string
           type: object
-      type: object
-    SourceTerm:
-      allOf:
-        - $ref: '#/components/schemas/TermData'
-        - properties:
-            createdDate:
-              description: Created date
-              format: date-time
-              type: string
-            modifiedDate:
-              description: Modified date
-              format: date-time
-              type: string
-            termUid:
-              description: Unique identifier of a specific glossary term.
-              example: e390a4d6-aef2-11e5-b159-0ad0c2f6b537
-              type: string
-          type: object
-    SourceTermListResponse:
-      properties:
-        response:
-          allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
-            - properties:
-                data:
-                  properties:
-                    items:
-                      description: Source terms
-                      items:
-                        $ref: '#/components/schemas/SourceTerm'
-                      type: array
-                    totalCount:
-                      description: Total count
-                      type: number
-                  type: object
-              required:
-                - data
-              type: object
-      required:
-        - response
       type: object
     StringCountWordCountResponse:
       properties:
@@ -14701,118 +13770,6 @@ components:
           description: Translation inssues count.
           type: integer
       type: object
-    TermData:
-      properties:
-        antonyms:
-          description: Glossary term antonyms.
-          type: string
-        caseSensitive:
-          description: Matching of this glossarry term should be case sensitive.
-          type: boolean
-        definition:
-          description: Glossary term definition.
-          type: string
-        doNotTranslate:
-          description: An indicator to users that the term is not translatable.
-          type: boolean
-        exactMatch:
-          description: Should be matched exactly.
-          type: boolean
-        notes:
-          description: Notes
-          type: string
-        partOfSpeechCode:
-          description: Glossary term part of speech.
-          example: UNSPECIFIED
-          type: string
-        seo:
-          description: >-
-            An indicator to users whether the term is for search engine
-            optimziation.
-          type: boolean
-        synonyms:
-          description: Glossary term synonyms.
-          type: string
-        termText:
-          description: Glossary term text.
-          example: cold calls
-          type: string
-        variations:
-          description: Glossary term variations.
-          type: string
-      required:
-        - termText
-      type: object
-    TermTranslation:
-      allOf:
-        - $ref: '#/components/schemas/TermTranslationData'
-        - properties:
-            createdDate:
-              description: Created date
-              format: date-time
-              type: string
-            modifiedDate:
-              description: Modified date
-              format: date-time
-              type: string
-            translatorUserUid:
-              description: Unique identifier of translator user.
-              type: string
-          type: object
-    TermTranslationData:
-      properties:
-        localeId:
-          description: A valid Smartling Locale ID.
-          example: fr-CA
-          type: string
-        lockTranslation:
-          description: It is an indicator that shows if the translation is editable.
-          type: boolean
-        notes:
-          description: Notes
-          type: string
-        translatedTerm:
-          description: Translated term
-          example: cold calls in french ca
-          type: string
-      required:
-        - localeId
-        - translatedTerm
-      type: object
-    TermWithGlossaryUid:
-      allOf:
-        - $ref: '#/components/schemas/TranslatedTerm'
-        - properties:
-            createdByUserUid:
-              description: Unique identifier of creator user
-              type: string
-            glossaryUid:
-              description: Unique identifier for the glossary
-              type: string
-          type: object
-    TermWithGlossaryUidListResponse:
-      properties:
-        response:
-          allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
-            - properties:
-                data:
-                  properties:
-                    items:
-                      description: Terms with glossary uids
-                      items:
-                        $ref: '#/components/schemas/TermWithGlossaryUid'
-                      type: array
-                    totalCount:
-                      description: Total count
-                      type: number
-                  type: object
-              required:
-                - data
-              type: object
-      required:
-        - response
-      type: object
     Timecode:
       description: >-
         Number of seconds for the period of time that a string appears in a
@@ -14824,27 +13781,6 @@ components:
         startTime:
           format: int64
           type: integer
-      type: object
-    TranslatedTerm:
-      allOf:
-        - $ref: '#/components/schemas/SourceTerm'
-        - properties:
-            translation:
-              $ref: '#/components/schemas/TermTranslation'
-          type: object
-    TranslatedTermResponse:
-      properties:
-        response:
-          allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/TranslatedTerm'
-              required:
-                - data
-              type: object
-      required:
-        - response
       type: object
     Translation:
       description: Information on a translation
@@ -14921,9 +13857,6 @@ components:
                       type: number
                   type: object
               type: object
-    UpdateGlossary:
-      allOf:
-        - $ref: '#/components/schemas/CreateGlossary'
     UpdateJobRequest:
       description: The payload to use when updating a job.
       properties:
@@ -14956,10 +13889,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CustomFieldBasicRequest'
-      type: object
-    UpdateTerm:
-      allOf:
-        - $ref: '#/components/schemas/TermData'
       type: object
     VendorsAPIJobsListAgencyItem:
       properties:
@@ -15425,6 +14354,11 @@ components:
                           wordCount:
                             description: >-
                               The number of words processed by a translation
+                              resource
+                            type: integer
+                          characterCount:
+                            description: >-
+                              The number of characters processed by a translation
                               resource
                             type: integer
                           workflowStepType:

@@ -423,6 +423,54 @@ x-paths:
             "Content-Type: application/json" -d "$smartlingSeverityLevelJSON"
             https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/severity-level
 
+  issue_change_type:
+    put:
+      summary: Update issue attribute (issue type)
+      description: Update issue attribute (issue type) (SOURCE / TRANSLATION)
+      tags:
+        - Issues
+      operationId: updateIssueType
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueChangedTypeRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        issueTypeCode: TRANSLATION
+                        issueSubTypeCode: POOR_TRANSLATION
+                        localeId: ru-RU
+              schema:
+                $ref: '#/components/schemas/IssueChangedTypeResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingSeverityLevelJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/change-type
 
   find_project_issues:
     post:
@@ -1016,6 +1064,73 @@ components:
                     answered:
                       description: Issue flag "aswered"
                       type: boolean
+                  type: object
+              type: object
+    IssueChangedTypeRequest:
+      properties:
+        issueTypeCode:
+          description: >-
+            [Identifies the issue type](#operation/getIssueTypesByAccount). issueTypeCode is either `SOURCE` or
+            `TRANSLATION`. Each have their own set of ```issueSubType``` values.
+          enum:
+            - SOURCE
+            - TRANSLATION
+          type: string
+        issueSubTypeCode:
+          description: >-
+            For issueTypeCode=SOURCE - CLARIFICATION | MISSPELLING, For
+            issueTypeCode=TRANSLATION - POOR_TRANSLATION | DOES_NOT_FIT_SPACE |
+            PLACEHOLDER_ISSUE | REVIEW_TRANSLATION | MT_ERROR
+          enum:
+            - CLARIFICATION
+            - MISSPELLING
+            - POOR_TRANSLATION
+            - DOES_NOT_FIT_SPACE
+            - PLACEHOLDER_ISSUE
+            - REVIEW_TRANSLATION
+            - CUSTOM
+            - MT_ERROR
+          type: string
+        localeId:
+          description: An identifying code for a target language in Smartling.
+          example: ru-RU
+          type: string
+      required:
+        - issueTypeCode
+        - issueSubTypeCode
+      type: object
+    IssueChangedTypeResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    issueTypeCode:
+                      description: '[Issue Type identifier](#operation/getIssueTypesByAccount)'
+                      enum:
+                        - SOURCE
+                        - TRANSLATION
+                      type: string
+                    issueSubTypeCode:
+                      description: Issue SubType identifier
+                      enum:
+                        - CLARIFICATION
+                        - MISSPELLING
+                        - POOR_TRANSLATION
+                        - DOES_NOT_FIT_SPACE
+                        - PLACEHOLDER_ISSUE
+                        - REVIEW_TRANSLATION
+                        - CUSTOM
+                        - MT_ERROR
+                      type: string
+                    localeId:
+                      description: An identifying code for a target language in Smartling.
+                      type: string
                   type: object
               type: object
     IssueAssigneeRequest:

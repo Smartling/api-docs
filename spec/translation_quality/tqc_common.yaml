@@ -102,6 +102,13 @@ components:
       description: offset number.
       example: 1
 
+    regexRuleUidPathParameter:
+      name: ruleUid
+      in: path
+      required: true
+      type: string
+      description: Unique identifier of corresponding check rule.
+
   requestBodies:
 
     severityLevelCode:
@@ -163,6 +170,121 @@ components:
         groupUid:
           type: string
           description: Unique identifier of corresponding group.
+
+    regexRuleGroupModel:
+      type: object
+      properties:
+        groupUid:
+          type: string
+          description: Smartling rule group identifier of the translation
+          example: "ce6d6b5dbc12"
+        ruleUid:
+          type: string
+          description: Smartling rule identifier of the translation
+          example: "ce6d6b5dbcs2"
+        targetLocaleIds:
+          description: The list of target locales.
+          example:
+            - "ru-RU"
+          items:
+            type: string
+          type: array
+        severityLevelCode:
+          type: string
+          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          description: severity level code
+          example: "MEDIUM"
+
+    regexRuleModel:
+      type: object
+      properties:
+        ruleName:
+          type: string
+          description: Rule name
+          example: "ruleName"
+        severityLevelCode:
+          type: string
+          $ref: '#/components/schemas/enum/severityLevelCodeEnumCopyForRequest'
+          description: '[Severity level code](#operation/getTranslationQualityCheckSeverityLevels)'
+          example: "MEDIUM"
+        ruleTypeCode:
+          type: string
+          $ref: '#/components/schemas/enum/ruleTypeCodeEnumCopyForRequest'
+          description: '[Rule type code](#operation/getRegexQualityCheckRuleTypes)'
+          example: "FORBIDDEN"
+        flavorCode:
+          type: string
+          $ref: '#/components/schemas/enum/flavorCodeEnum'
+          description: Flavor code
+          example: "JAVA"
+        originalPattern:
+          type: string
+          description: Regular expression to evaluate against the source string.
+          example: "@mail"
+        translationPattern:
+          type: string
+          description: Regular expression to evaluate against the translation.
+          example: "@gmail"
+        caseInsensitive:
+          type: boolean
+          description: Enable case insensitive search
+          example: true
+        multiLine:
+          type: boolean
+          description: Enables multine search. If true then search will span newlines in a string. Users can use ^ and $ characters with special meaning for beginning of line and end of line match.
+          example: true
+        description:
+          type: string
+          description: Human readable description of the role; shown in the the dashboard UI.
+          example: "rule description"
+        warningMessage:
+          type: string
+          description: Human readable warning message appended to the standard message that is shown in the CAT tool when the check fails.
+          example: " test warning message"
+      required:
+        - ruleName
+        - severityLevelCode
+        - ruleTypeCode
+        - flavorCode
+        - originalPattern
+        - translationPattern
+        - caseInsensitive
+        - multiLine
+
+    regexRuleWithRuleUid:
+      allOf:
+        - type: object
+          properties:
+            ruleUid:
+              type: string
+              description: Unique identifier of corresponding check rule
+              example: ce6d6b5dbc12
+        - $ref: '#/components/schemas/regexRuleModel'
+        - type: object
+          properties:
+            groups:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/regexRuleGroupModel'
+
+    regexCheckRuleTypeCodeResponse:
+      type: object
+      properties:
+        ruleTypeCode:
+          type: string
+          $ref: '#/components/schemas/enum/ruleTypeCodeEnum'
+          description: rule type code
+          example: "FORBIDDEN"
+
+    regexCheckFlavorCodeResponse:
+      type: object
+      properties:
+        flavorCode:
+          type: string
+          $ref: '#/components/schemas/enum/flavorCodeEnum'
+          description: flavor code
+          example: "JAVA"
 
     profileUidResponse:
       type: object
@@ -407,6 +529,8 @@ components:
         - $ref: 'checks/whitespaces.yaml#/components/schemas/TqcCheckMistakeDTO'
         - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/TqcCheckMistakeDTO'
         - $ref: 'checks/plurals_repetition.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/regex_check.yaml#/components/schemas/TqcCheckMistakeDTO'
+        - $ref: 'checks/open_issues.yaml#/components/schemas/TqcCheckMistakeDTO'
 
     CheckTypeSettingBase:
       type: object
@@ -437,6 +561,8 @@ components:
           GLOBAL_CAPITALISATION_CONSISTENCY: '#/components/schemas/GLOBAL_CAPITALISATION_CONSISTENCY'
           PUNCTUATION_CONSISTENCY: '#/components/schemas/PUNCTUATION_CONSISTENCY'
           PLURALS_REPETITION: '#/components/schemas/PLURALS_REPETITION'
+          REGEX_CHECK: '#/components/schemas/REGEX_CHECK'
+          OPEN_ISSUES: '#/components/schemas/OPEN_ISSUES'
 
     ProjectCheckTypeEffectiveDTOAnyOf:
       anyOf:
@@ -462,6 +588,8 @@ components:
         - $ref: 'checks/whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
         - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
         - $ref: 'checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/regex_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     AccountCheckTypeEffectiveDTOAnyOf:
       anyOf:
@@ -487,6 +615,8 @@ components:
         - $ref: 'checks/whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
         - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
         - $ref: 'checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/regex_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     ProfilesAccountCheckTypeEffectiveDTOAnyOf:
       anyOf:
@@ -512,6 +642,8 @@ components:
         - $ref: 'checks/whitespaces.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
         - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
         - $ref: 'checks/plurals_repetition.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/regex_check.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/open_issues.yaml#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
 
     AccountCheckTypeApplyGroupSettingsDTOResponseOneOf:
       $ref: '#/components/schemas/AccountCheckTypeApplySettingsDTOResponseOneOfCommon'
@@ -536,6 +668,7 @@ components:
         - $ref: 'checks/glossary_compliance.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
 
     ProfilesAccountCheckTypeApplySettingsDTOResponseOneOfCommon:
       oneOf:
@@ -548,6 +681,7 @@ components:
         - $ref: 'checks/glossary_compliance.yaml#/components/schemas/ProfilesAccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
+        - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
 
     AccountCheckTypeApplySettingsRequestOneOf:
       $ref: '#/components/schemas/AccountCheckTypeApplySettingsRequestOneOfCommon'
@@ -572,6 +706,7 @@ components:
         - $ref: 'checks/glossary_compliance.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
         - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
         - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
 
     ProfilesAccountCheckTypeApplySettingsRequestOneOfCommon:
       oneOf:
@@ -584,6 +719,7 @@ components:
         - $ref: 'checks/glossary_compliance.yaml#/components/schemas/ProfilesAccountCheckTypeApplySettingsRequest'
         - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
         - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
+        - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
 
     enum:
       checkTypeCodeEnum:
@@ -610,6 +746,8 @@ components:
           - GLOBAL_CAPITALISATION_CONSISTENCY
           - PUNCTUATION_CONSISTENCY
           - PLURALS_REPETITION
+          - REGEX_CHECK
+          - OPEN_ISSUES
 
       checkSubtypeEnum:
         enum:
@@ -663,6 +801,7 @@ components:
           - EMOJI_CONSISTENCY
           - TARGET_SOURCE_CONSISTENCY
           - GLOSSARY_COMPLIANCE
+          - OPEN_ISSUES
 
       checkTypeCodeOnlyWithSubtypesEnum:
         enum:
@@ -673,3 +812,20 @@ components:
           - EMOJI_CONSISTENCY
           - INSERTABLE_CONSISTENCY
           - TARGET_SOURCE_CONSISTENCY
+
+      ruleTypeCodeEnum:
+        enum:
+          - FORBIDDEN
+          - MISSING
+          - COUNT_MISMATCH
+
+      ruleTypeCodeEnumCopyForRequest:
+        enum:
+          - FORBIDDEN
+          - MISSING
+          - COUNT_MISMATCH
+
+      flavorCodeEnum:
+        enum:
+          - JAVA
+          - DOT_NET

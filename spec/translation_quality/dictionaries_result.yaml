@@ -70,6 +70,8 @@ x-paths:
                                             - GLOBAL_CAPITALISATION_CONSISTENCY
                                             - PUNCTUATION_CONSISTENCY
                                             - PLURALS_REPETITION
+                                            - REGEX_CHECK
+                                            - OPEN_ISSUES
                                     - type: object
                                       properties:
                                         name:
@@ -123,7 +125,7 @@ x-paths:
                 response:
                   code: SUCCESS
                   data:
-                    totalCount: 24
+                    totalCount: 25
                     items:
                       - checkTypeCode: LEADING_TRAILING_SPACES
                         name: Leading/trailing spaces
@@ -162,7 +164,7 @@ x-paths:
                       - checkTypeCode: TARGET_LENGTH_LIMIT
                         name: Target length limit
                         description: >-
-                          Check that the translation is within the character
+                          Check that the translation is within the length
                           limit
                         checkSubTypes: []
                       - checkTypeCode: NUMBER_CONSISTENCY
@@ -283,6 +285,17 @@ x-paths:
                           that is required for the target language. Does not
                           apply to languages that only require one plural form
                           (Chinese, Japanese, etc.).
+                        checkSubTypes: []
+                      - checkTypeCode: REGEX_CHECK
+                        name: Custom Quality Checks
+                        description: >-
+                          Custom quality checks that have been created by users.
+                          Click "new" button to add new ones or "edit" to modify
+                          existing.
+                        checkSubTypes: []
+                      - checkTypeCode: OPEN_ISSUES
+                        name: Open Issues
+                        description: Check that strings do not have open issues
                         checkSubTypes: []
       x-code-samples:
         - lang: curl
@@ -691,3 +704,126 @@ x-paths:
             curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H
             "Content-Type: application/json"
             https://api.smartling.com/translation-quality-api/v2/users/current/settings/dictionaries/$smartlingLocaleId/$wordUid
+  dictionary_regex_check_rule_types:
+    get:
+      description: Get custom quality check rule types that are available.
+      summary: Get custom quality check rule types
+      tags:
+        - Translation quality checks
+      operationId: getRegexQualityCheckRuleTypes
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_1
+                      - type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              totalCount:
+                                type: integer
+                                description: Total element count
+                              items:
+                                type: array
+                                items:
+                                  allOf:
+                                    - type: object
+                                      properties:
+                                        ruleTypeCode:
+                                          enum:
+                                            - FORBIDDEN
+                                            - MISSING
+                                            - COUNT_MISMATCH
+                                    - type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                          description: rule type name
+                                          example: Forbidden Regex found in the target
+              example:
+                response:
+                  code: SUCCESS
+                  data:
+                    totalCount: 3
+                    items:
+                      - ruleTypeCode: FORBIDDEN
+                        name: Forbidden Regex found in the target
+                      - ruleTypeCode: MISSING
+                        name: Regex missing in the target
+                      - ruleTypeCode: COUNT_MISMATCH
+                        name: >-
+                          Count of regex matches differ between source and
+                          target
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/REGEX_CHECK/rule-types
+  dictionary_regex_check_flavors:
+    get:
+      description: Get custom quality check flavors that are available.
+      summary: Get custom quality check flavors
+      tags:
+        - Translation quality checks
+      operationId: getRegexQualityCheckFlavors
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_1
+                      - type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              totalCount:
+                                type: integer
+                                description: Total element count
+                              items:
+                                type: array
+                                items:
+                                  allOf:
+                                    - type: object
+                                      properties:
+                                        flavorCode:
+                                          enum:
+                                            - JAVA
+                                            - DOT_NET
+                                    - type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                          description: flavor name
+                                          example: Java
+              example:
+                response:
+                  code: SUCCESS
+                  data:
+                    totalCount: 2
+                    items:
+                      - flavorCode: JAVA
+                        name: Java
+                      - flavorCode: DOT_NET
+                        name: .NET
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/translation-quality-api/v2/dictionary/check-types/REGEX_CHECK/flavors

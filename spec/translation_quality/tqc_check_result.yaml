@@ -136,6 +136,8 @@ x-paths:
                                       - GLOBAL_CAPITALISATION_CONSISTENCY
                                       - PUNCTUATION_CONSISTENCY
                                       - PLURALS_REPETITION
+                                      - REGEX_CHECK
+                                      - OPEN_ISSUES
                           description: >-
                             [check type
                             codes](#operation/getTranslationQualityCheckTypes)
@@ -1026,6 +1028,60 @@ x-paths:
                                                       - TARGET
                                                     description: position type code
                                                     example: TARGET
+                                          - title: REGEX_CHECK
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - REGEX_CHECK
+                                                    description: check type code
+                                                    example: REGEX_CHECK
+                                                  details:
+                                                    - ref: >-
+                                                        ../tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: OPEN_ISSUES
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - OPEN_ISSUES
+                                                    description: check type code
+                                                    example: OPEN_ISSUES
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      sourceIssuesCount:
+                                                        type: integer
+                                                        description: text
+                                                        example: 2
+                                                      translationIssuesCount:
+                                                        type: integer
+                                                        description: message
+                                                        example: 3
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
               examples:
                 BLACKLISTED_TERMS:
                   value:
@@ -1564,6 +1620,62 @@ x-paths:
                                   repeatedPluralForms:
                                     - MANY
                                     - FEW
+                                positionTypeCode: TARGET
+                REGEX_CHECK:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: test@gmail
+                              translation: test@mail
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: REGEX_CHECK
+                                severityLevelCode: LOW
+                                positions:
+                                  - from: 5
+                                    to: 10
+                                details:
+                                  ruleUid: 30606c59ee92
+                                  severityLevelCode: LOW
+                                  ruleName: name1
+                                  ruleTypeCode: FORBIDDEN
+                                  flavorCode: JAVA
+                                  originalPattern: '@f1'
+                                  translationPattern: '@f1'
+                                  description: name1 description
+                                  caseInsensitive: true
+                                  multiLine: false
+                                  warningMessage: test warning
+                                positionTypeCode: TARGET
+                                ignored: false
+                OPEN_ISSUES:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: hello
+                              translation: hello
+                              hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: OPEN_ISSUES
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 0
+                                  to: 5
+                                details:
+                                  sourceIssuesCount: 5
+                                  translationIssuesCount: 3
                                 positionTypeCode: TARGET
       x-code-samples:
         - lang: curl
