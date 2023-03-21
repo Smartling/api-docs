@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-var util = require('gulp-util');
 var gulpConnect = require('gulp-connect');
 var connect = require('connect');
 var cors = require('cors');
@@ -7,6 +6,9 @@ var path = require('path');
 var exec = require('child_process').exec;
 var portfinder = require('portfinder');
 var swaggerRepo = require('swagger-repo');
+var log = require('fancy-log');
+var colors = require('ansi-colors');
+
 
 var DIST_DIR = 'web_deploy';
 
@@ -15,7 +17,7 @@ gulp.task('edit', function(done) {
     var app = connect();
     app.use(swaggerRepo.swaggerEditorMiddleware());
     app.listen(port);
-    util.log(util.colors.green('swagger-editor started http://localhost:' + port));
+    log(colors.green('swagger-editor started http://localhost:' + port));
   });
   done();
 });

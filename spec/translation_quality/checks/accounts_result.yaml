@@ -600,11 +600,38 @@ x-paths:
                                               items:
                                                 $ref: >-
                                                   ../tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
+                                    - title: OPEN_ISSUES
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - &ref_20
+                                          type: object
+                                          properties:
+                                            sourceIssuesMustBeResolved:
+                                              type: boolean
+                                              description: All source issues must be resolved
+                                              example: false
+                                            translationIssuesMustBeResolved:
+                                              type: boolean
+                                              description: All translation issues must be resolved
+                                              example: true
+                                        - type: object
+                                          required:
+                                            - checkTypeCode
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - OPEN_ISSUES
+                                              description: check type code
+                                              example: OPEN_ISSUES
               example:
                 response:
                   code: SUCCESS
                   data:
-                    totalCount: 24
+                    totalCount: 25
                     items:
                       - profileUid: ce6d6b5dbc12
                         severityLevelCode: LOW
@@ -816,6 +843,7 @@ x-paths:
                             translationPattern: '@gmail'
                             description: ruleName1 description
                             caseInsensitive: true
+                            multiLine: false
                             warningMessage: test warning
                             groups: []
                           - ruleUid: ac3069e2fd30
@@ -827,8 +855,17 @@ x-paths:
                             translationPattern: '@/d'
                             description: ruleName2 description
                             caseInsensitive: true
+                            multiLine: false
                             warningMessage: test warning
                             groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: OPEN_ISSUES
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        sourceIssuesMustBeResolved: true
+                        translationIssuesMustBeResolved: true
       x-code-samples:
         - lang: curl
           source: >
@@ -875,6 +912,7 @@ x-paths:
               - PUNCTUATION_CONSISTENCY
               - PLURALS_REPETITION
               - REGEX_CHECK
+              - OPEN_ISSUES
           description: '[check type code](#operation/getTranslationQualityCheckTypes)'
       responses:
         '200':
@@ -1483,6 +1521,15 @@ x-paths:
                                                       type: boolean
                                                       description: Enable case insensitive search
                                                       example: true
+                                                    multiLine:
+                                                      type: boolean
+                                                      description: >-
+                                                        Enables multine search. If true then
+                                                        search will span newlines in a string.
+                                                        Users can use ^ and $ characters with
+                                                        special meaning for beginning of line
+                                                        and end of line match.
+                                                      example: true
                                                     description:
                                                       type: string
                                                       description: >-
@@ -1504,6 +1551,7 @@ x-paths:
                                                     - originalPattern
                                                     - translationPattern
                                                     - caseInsensitive
+                                                    - multiLine
                                                 - type: object
                                                   properties:
                                                     groups:
@@ -1532,6 +1580,30 @@ x-paths:
                                                                   type: string
                                                                 type: array
                                                               severityLevelCode: *ref_3
+                                  - title: OPEN_ISSUES
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          sourceIssuesMustBeResolved:
+                                            type: boolean
+                                            description: All source issues must be resolved
+                                            example: false
+                                          translationIssuesMustBeResolved:
+                                            type: boolean
+                                            description: All translation issues must be resolved
+                                            example: true
+                                      - type: object
+                                        required:
+                                          - checkTypeCode
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - OPEN_ISSUES
+                                            description: check type code
+                                            example: OPEN_ISSUES
               examples:
                 ORIGINAL_EQUALS_TARGET:
                   value:
@@ -1781,8 +1853,19 @@ x-paths:
                         translationPattern: '@gmail'
                         description: ruleName1 description
                         caseInsensitive: true
+                        multiLine: false
                         warningMessage: test warning
                         groups: []
+                OPEN_ISSUES:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: OPEN_ISSUES
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                    sourceIssuesMustBeResolved: true
+                    translationIssuesMustBeResolved: true
       x-code-samples:
         - lang: curl
           source: >
@@ -1803,7 +1886,7 @@ x-paths:
       parameters:
         - *ref_0
         - *ref_1
-        - &ref_21
+        - &ref_22
           name: checkTypeCode
           in: path
           required: true
@@ -1818,6 +1901,7 @@ x-paths:
               - EMOJI_CONSISTENCY
               - TARGET_SOURCE_CONSISTENCY
               - GLOSSARY_COMPLIANCE
+              - OPEN_ISSUES
           description: '[check type code](#operation/getTranslationQualityCheckTypes)'
       requestBody:
         description: ''
@@ -1829,20 +1913,20 @@ x-paths:
                 - title: EMOJI_CONSISTENCY
                   allOf:
                     - *ref_10
-                    - &ref_22
+                    - &ref_23
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_23
+                    - &ref_24
                       type: object
                       required:
                         - noEmojisAllowedInTarget
                 - title: SPELLCHECK
                   allOf:
                     - *ref_11
-                    - &ref_24
+                    - &ref_25
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_25
+                    - &ref_26
                       type: object
                       required:
                         - skipIfWordInUserDictionary
@@ -1853,42 +1937,42 @@ x-paths:
                 - title: SOURCE_IN_WRONG_LANGUAGE
                   allOf:
                     - *ref_12
-                    - &ref_26
+                    - &ref_27
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_27
+                    - &ref_28
                       type: object
                       required:
                         - minTextLengthLimit
                 - title: TARGET_IN_WRONG_LANGUAGE
                   allOf:
-                    - &ref_28
+                    - &ref_29
                       type: object
                       required:
                         - minTextLengthLimit
-                    - &ref_29
+                    - &ref_30
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
                     - *ref_13
-                - &ref_30
+                - &ref_31
                   title: NUMBER_CONSISTENCY
                   allOf:
                     - *ref_14
                 - title: TARGET_SOURCE_CONSISTENCY
                   allOf:
                     - *ref_15
-                    - &ref_31
+                    - &ref_32
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_32
+                    - &ref_33
                       type: object
                       required:
                         - ignoreTagsAndPlaceholders
                         - ignoreCase
-                - &ref_33
+                - &ref_34
                   title: GLOSSARY_COMPLIANCE
                   allOf:
-                    - &ref_20
+                    - &ref_21
                       allOf:
                         - *ref_16
                         - *ref_17
@@ -1899,10 +1983,10 @@ x-paths:
                 - title: ORIGINAL_EQUALS_TARGET
                   allOf:
                     - *ref_18
-                    - &ref_34
+                    - &ref_35
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_35
+                    - &ref_36
                       type: object
                       required:
                         - mustHaveIdenticalTags
@@ -1910,9 +1994,17 @@ x-paths:
                 - title: SEGMENT_COMPLETENESS
                   allOf:
                     - *ref_19
-                    - &ref_36
+                    - &ref_37
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
+                - &ref_38
+                  title: OPEN_ISSUES
+                  allOf:
+                    - *ref_20
+                    - type: object
+                      required:
+                        - sourceIssuesMustBeResolved
+                        - translationIssuesMustBeResolved
       responses:
         '200':
           description: OK
@@ -1926,7 +2018,7 @@ x-paths:
                       - *ref_2
                       - type: object
                         properties:
-                          data: &ref_37
+                          data: &ref_39
                             oneOf:
                               - title: EMOJI_CONSISTENCY
                                 allOf:
@@ -1948,13 +2040,16 @@ x-paths:
                                   - *ref_15
                               - title: GLOSSARY_COMPLIANCE
                                 allOf:
-                                  - *ref_20
+                                  - *ref_21
                               - title: ORIGINAL_EQUALS_TARGET
                                 allOf:
                                   - *ref_18
                               - title: SEGMENT_COMPLETENESS
                                 allOf:
                                   - *ref_19
+                              - title: OPEN_ISSUES
+                                allOf:
+                                  - *ref_20
               examples:
                 EMOJI_CONSISTENCY:
                   value:
@@ -1993,6 +2088,10 @@ x-paths:
                     lowerLengthThreshold: 10
                     upperLengthThreshold: 20
                     minLengthThreshold: 15
+                OPEN_ISSUES:
+                  value:
+                    sourceIssuesMustBeResolved: true
+                    translationIssuesMustBeResolved: true
       x-code-samples:
         - lang: curl
           source: >
@@ -2013,7 +2112,7 @@ x-paths:
       parameters:
         - *ref_0
         - *ref_1
-        - *ref_21
+        - *ref_22
         - name: groupUid
           in: path
           type: string
@@ -2029,39 +2128,40 @@ x-paths:
                 - title: EMOJI_CONSISTENCY
                   allOf:
                     - *ref_10
-                    - *ref_22
                     - *ref_23
+                    - *ref_24
                 - title: SPELLCHECK
                   allOf:
                     - *ref_11
-                    - *ref_24
                     - *ref_25
+                    - *ref_26
                 - title: SOURCE_IN_WRONG_LANGUAGE
                   allOf:
                     - *ref_12
-                    - *ref_26
                     - *ref_27
+                    - *ref_28
                 - title: TARGET_IN_WRONG_LANGUAGE
                   allOf:
-                    - *ref_28
                     - *ref_29
+                    - *ref_30
                     - *ref_13
-                - *ref_30
+                - *ref_31
                 - title: TARGET_SOURCE_CONSISTENCY
                   allOf:
                     - *ref_15
-                    - *ref_31
                     - *ref_32
-                - *ref_33
+                    - *ref_33
+                - *ref_34
                 - title: ORIGINAL_EQUALS_TARGET
                   allOf:
                     - *ref_18
-                    - *ref_34
                     - *ref_35
+                    - *ref_36
                 - title: SEGMENT_COMPLETENESS
                   allOf:
                     - *ref_19
-                    - *ref_36
+                    - *ref_37
+                - *ref_38
       responses:
         '200':
           description: OK
@@ -2075,7 +2175,7 @@ x-paths:
                       - *ref_2
                       - type: object
                         properties:
-                          data: *ref_37
+                          data: *ref_39
               examples:
                 EMOJI_CONSISTENCY:
                   value:
@@ -2114,6 +2214,10 @@ x-paths:
                     lowerLengthThreshold: 10
                     upperLengthThreshold: 20
                     minLengthThreshold: 15
+                OPEN_ISSUES:
+                  value:
+                    sourceIssuesMustBeResolved: true
+                    translationIssuesMustBeResolved: true
       x-code-samples:
         - lang: curl
           source: >
@@ -2560,6 +2664,21 @@ x-paths:
                                               items:
                                                 $ref: >-
                                                   ../tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
+                                    - title: OPEN_ISSUES
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - *ref_20
+                                        - type: object
+                                          required:
+                                            - checkTypeCode
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - OPEN_ISSUES
+                                              description: check type code
+                                              example: OPEN_ISSUES
               example:
                 response:
                   code: SUCCESS
@@ -2753,8 +2872,16 @@ x-paths:
                             translationPattern: '@gmail'
                             description: ruleName1 description
                             caseInsensitive: true
+                            multiLine: false
                             warningMessage: test warning
                             groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: OPEN_ISSUES
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        sourceIssuesMustBeResolved: true
+                        translationIssuesMustBeResolved: true
       x-code-samples:
         - lang: curl
           source: >

@@ -129,6 +129,10 @@ tags:
       * [XML](https://help.smartling.com/hc/en-us/articles/360008000893)
       * [YAML](https://help.smartling.com/hc/en-us/articles/360007894934)
 
+  - name: Machine Translation (MT)
+    description: |-
+      The Smartling platform offers state-of-the-art [Machine Translation capabilities](https://www.smartling.com/software/neural-machine-translation-hub/) through its synchronous account-level Machine Translation API. This API enables seamless translation of content without the need for it to be processed through Smartling Workflows. The API offers access to all MT Profiles, including the highly efficient MT Autoselect feature, providing unparalleled flexibility and control over your translation needs.
+
   - name: Jobs
     description: |-
       A Smartling project (such as a mobile, web, files, or connector project)
@@ -307,7 +311,7 @@ tags:
 
   - name: Attachments
     description: |-
-      The Attachments API allows for file attachment download and checking linked attachments for an entity.
+      The Attachments API allows for file attachment upload, download and checking linked attachments for an entity.
       Attachment entities can be from three domains: strings, jobs or issues.
       Each entity is referenced by an entity UID. These UIDs have a specific form for each of the domains.
       - jobs: `<jobUid>`
@@ -937,51 +941,6 @@ paths:
                     Example: `/myproject/i18n/ui.properties`
                 fileType:
                   $ref: '#/components/schemas/FileType'
-                authorize:
-                  type: boolean
-                  default: false
-                  description: |
-                    Determines whether content in the file is authorized
-                    (available for translation) in all locales upon submitting
-                    the file via the Smartling Dashboard. An error message will
-                    be returned if there are insufficient translation funds and
-                    authorized is set to `true`. If a string has been completely
-                    excluded for translation from all languages, or excluded
-                    from translation for a specific language, `authorize` will
-                    NOT authorize it.
-
-                    To specify a limited list of locales to authorize, use the
-                    `localeIdsToAuthorize[]` parameter.
-
-                      Value | Description
-                      ----- | -----------
-                      true  |  Content will be available for translation in all locales upon upload.
-                      false |  Content will be added to the "Awaiting Authorization" queue upon upload.
-                'localeIdsToAuthorize[]':
-                  description: |
-                    This value, if set, authorizes strings for translation into
-                    specific locales. Use the `project/locale/list` call to get
-                    the list of locales for the project, or view them in the
-                    dashboard on the API settings page. Use multiple the
-                    `localeIdsToAuthorize` parameter pairs to authorize more
-                    than one locale. You can add languages by uploading the file
-                    again and indicating the language to authorize with
-                    `localeIdsToAuthorize` or all languages with `authorize`, or
-                    in the dashboard using the "Show Partially Authorized"
-                    filter option from the Awaiting Authorization list.
-
-                    If the string has been completely excluded for translation
-                    from all languages, or excluded from translation for a
-                    specific language, `localesIdsToAuthorize` will NOT
-                    authorize it.
-
-                    **Note**: Do not set the `authorize` parameter to `true` if
-                    you want to specify individual locales to authorize.
-                    Submitting an upload with both of these parameters set will
-                    result in a validation error.
-                  items:
-                    type: string
-                  type: array
                 smartling.namespace:
                   type: string
                   description: |
@@ -2898,8 +2857,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MatchParams'
         description: |-
-          To ensure context is mapped to the correct string, `stringHashcodes` or `contentFileUri` must be specified.
-          If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+          To ensure context is mapped to the correct string, `stringHashcodes`, `contentFileUri` or `translationJobUids` must be specified.
+          If none of `stringHashcodes`, `contentFileUri`, `translationJobUids` are specified, **all strings from the project** will be included in the match.
           <br/>
           If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
       responses:
@@ -3133,7 +3092,7 @@ paths:
                           stringHashcode: 374825f7d147fb5700f23b2b22d6660d
                         createdDate: '2017-05-05T19:06:22Z'
                         matchId: a9308883-30c7-4832-a023-6c3b10f6f9b1
-                        modifiedData: '2017-05-05T19:06:22Z'
+                        modifiedDate: '2017-05-05T19:06:22Z'
                         status: COMPLETED
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
@@ -3194,23 +3153,29 @@ paths:
                       response:
                         code: SUCCESS
                         data:
-                          bindings:
-                          - anchors:
-                            - '11'
-                            - custom.anchor
-                            bindingUid: a9308883-30c7-4832-a023-6c3b10f6f9b1
-                            contextUid: 428bf090-60fa-473d-ac07-4a551aa06c47
-                            stringHashcode: 374825f7d147fb5700f23b2b22d6660d
-                          - anchors:
-                            - '12'
-                            bindingUid: a9308883-30c7-4832-a023-6c3b10f6f9b1
-                            contextUid: 428bf090-60fa-473d-ac07-4a551aa06c47
-                            stringHashcode: 374825f7d147fb5700f23b2b22d6660d
-                          createdDate: '2017-05-05T19:06:22Z'
-                          matchId: a9308883-30c7-4832-a023-6c3b10f6f9b1
-                          modifiedDate: '2017-05-05T19:06:22Z'
-                          contextId: 428bf090-60fa-473d-ac07-4a551aa06c47
-                          status: COMPLETED
+                          processUid: 00000000-0000-0000-0000-000000000000
+                          processState: COMPLETED
+                          processType: MATCH_CONTEXT
+                          createdDate: '2021-01-01T12:00:00Z'
+                          modifiedDate: '2021-01-01T12:30:00Z'
+                          result:
+                            contextUid: 11111111-1111-1111-1111-111111111111
+                            checkedStringsCount: 50
+                            bindings:
+                            - bindingUid: 22222222-2222-2222-2222-222222222222
+                              contextUid: 11111111-1111-1111-1111-111111111111
+                              stringHashcode: 4444444444444444444444444444444a
+                              coordinates:
+                                top: 461
+                                left: 432
+                                height: 28
+                                width: 90
+                            - bindingUid: 33333333-3333-3333-3333-333333333333
+                              contextUid: 11111111-1111-1111-1111-111111111111
+                              stringHashcode: 5555555555555555555555555555555b
+                              anchors:
+                              - '123'
+                              - 'custom.anchor'
           400:
             $ref: '#/components/responses/Error400ResponseDefinition'
           401:
@@ -3241,7 +3206,6 @@ paths:
         Link context files with the strings they contain.
 
         The binding tells Smartling to show Translators which context images for which strings.
-        A maximum of `150` bindings can be created per request.
 
         A basic bindings request should contain an object with a `bindings` JSON array, with at least one element (binding) featuring `contextUid` and `stringHashcode` properties:
         ```JSON
@@ -4220,7 +4184,7 @@ paths:
                             errors: null
     post:
       summary: Generate Fuzzy Estimate Report for the Job
-      description: This is simplified version of API to generate fuzzy reports. It creates further request to FES composing proper schema string based on input information. forced flag in this case is sent with false value being set.
+      description: Generate Fuzzy report for the Job.
       tags:
         - Estimates
       operationId: generateJobFuzzyEstimateReports
@@ -4471,7 +4435,7 @@ paths:
                             errors: null
     post:
       summary: Generate Cost Estimate Report for the Job
-      description: This is simplified version of API to generate cost reports. It creates further request to FES composing proper schema string based on input information. forced flag in this case is sent with false value being set.
+      description: Generate Cost Estimate Report for the Job
       tags:
         - Estimates
       operationId: generateJobCostEstimateReports
@@ -4728,7 +4692,7 @@ paths:
                             errors: null
     delete:
           summary: Delete Estimation Report
-          description: The report is only "soft"-deleted, i.e. it remains persisted in the DB, but is marked as "not enabled"
+          description: Delete estimate report.
           tags:
             - Estimates
           operationId: deleteJobEstimateReport
@@ -4837,6 +4801,58 @@ paths:
             application/octet-stream:
               schema:
                 type: string
+
+#
+# MT Router API
+#
+  /mt-router-api/v2/accounts/{accountUid}/smartling-mt:
+    post:
+      summary: Machine Translation (MT) using preconfigured MT Profile
+      description: Machine Translation (MT) using preconfigured MT Profile.
+      tags:
+        - Machine Translation (MT)
+      operationId: translateForAccount
+      parameters:
+        - name: accountUid
+          description: A unique account identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MTTranslateRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MTTranslateResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - key: key-from-request
+                            translationText: Translated text
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/mt-router-api/v2/accounts/{accountUid}/smartling-mt
 
 #
 # Jobs API endpoints
@@ -5150,9 +5166,11 @@ paths:
                         createdDate: '2015-11-21T11:51:17Z'
                         description: my job description
                         dueDate: '2015-11-21T11:51:17Z'
-                        firstCompletedDate: '2015-11-21T11:51:17Z'
                         jobStatus: IN_PROGRESS
+                        firstCompletedDate: '2015-11-21T11:51:17Z'
+                        firstAuthorizedDate: '2015-01-21T11:51:17Z'
                         lastCompletedDate: '2015-11-21T11:51:17Z'
+                        lastAuthorizedDate: '2015-12-21T11:51:17Z'
                         modifiedByUserUid: userUid321abc
                         modifiedDate: '2015-11-21T11:51:17Z'
                         referenceNumber: myReferenceNumber1
@@ -5796,6 +5814,10 @@ paths:
                         jobName: 'test job (Cancelled 2017/11/04 12:01:28)'
                         jobStatus: CANCELLED
                         jobNumber: SMTL-123
+                        firstCompletedDate: '2015-11-21T11:51:17Z'
+                        firstAuthorizedDate: '2015-01-21T11:51:17Z'
+                        lastCompletedDate: '2015-11-21T11:51:17Z'
+                        lastAuthorizedDate: '2015-12-21T11:51:17Z'
                         modifiedByUserUid: 598d89cce43a
                         modifiedDate: '2017-11-04T12:01:28Z'
                         sourceFiles:
@@ -5889,6 +5911,10 @@ paths:
                         jobName: Test Job
                         jobNumber: SMTL-123
                         jobStatus: AWAITING_AUTHORIZATION
+                        firstCompletedDate: '2015-11-21T11:51:17Z'
+                        firstAuthorizedDate: '2015-01-21T11:51:17Z'
+                        lastCompletedDate: '2015-11-21T11:51:17Z'
+                        lastAuthorizedDate: '2015-12-21T11:51:17Z'
                         modifiedByUserUid: 598d89cce43a
                         modifiedDate: '2017-11-04T12:01:28Z'
                         sourceFiles:
@@ -6140,10 +6166,11 @@ paths:
     post:
       summary: Add file to job
       description: >
-        This adds a file to a job. By default, the file will be added for all
-        locales of the job, but you can change this by specifying
-        `targetLocaleId`s for the job you wish to add the file into.
-
+        This adds all non-published strings from a file to a job.
+        By default, the file will be added for all locales of the job,
+        but you can change this by specifying `targetLocaleId`s for the
+        job you wish to add the file into.
+        
 
         **Validation rules:**
 
@@ -9223,6 +9250,8 @@ paths:
               - wordCount
 
               - weightedWordCount
+            
+              - characterCount. Please note: the column shows correct data since 2022-10-01.
           in: query
           name: fields
           required: false
@@ -9332,6 +9361,7 @@ paths:
                           translationResourceUid: da57302e
                           weightedWordCount: 4
                           wordCount: 20
+                          characterCount: 101
                           workflowStepType: Translation
                           workflowStepUid: lk3gh7zr20ao
                           workflowStepName: Translation
@@ -9352,6 +9382,7 @@ paths:
                           translationResourceUid: 5eb90a14
                           weightedWordCount: 20
                           wordCount: 20
+                          characterCount: 101
                           workflowStepType: Edit
                           workflowStepUid: ac7ac1bd15bf
                           workflowStepName: Edit
@@ -9485,6 +9516,8 @@ paths:
               - wordCount
 
               - weightedWordCount
+            
+              - characterCount. Please note: the column shows correct data since 2022-10-01.
           in: query
           name: fields
           required: false
@@ -9566,10 +9599,10 @@ paths:
                   value: >-
                     Account,Project,Job Uid,Job,Translation Resource,Agency Uid,Agency,
                     Target Language,Workflow Step,Workflow Step Uid,Workflow Step Name,
-                    Fuzzy Profile,Fuzzy Breakdown,Word Count,Weighted Words
+                    Fuzzy Profile,Fuzzy Breakdown,Word Count,Weighted Words,Character Count
                     Test Account,Test Project,f12ad8e9,Translation Job,Translator 1,
                     Test Agency 1 Uid, Test Agency 1,Spanish (Spain),Translation,123abc456def,
-                    Translation,Default,85 - 94.9%,1,1
+                    Translation,Default,85 - 94.9%,1,1,1
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -9811,6 +9844,85 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  '/attachments-api/v2/accounts/{accountUid}/{type}/attachments':
+    post:
+      summary: Upload binary attachment
+      description: |-
+        Upload attachment file
+      tags:
+        - Attachments
+      operationId: uploadAttachment
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            format: uuid
+            type: string
+        - name: type
+          in: path
+          required: true
+          description: Attachment type
+          schema:
+            enum:
+              - jobs
+              - strings
+              - issues
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  required: true
+                  type: string
+                  format: binary
+                  description: The attachment file contents to upload.
+                name:
+                  required: true
+                  type: string
+                  description:
+                    Functional name of the file uploaded. This is not a unique identifier.
+                entityUids:
+                  required: false
+                  type: array
+                  items:
+                    type: string
+                  description: (Optional) The list of entity uids attachment will be linked with (max 100).
+                  maxItems: 100
+                description:
+                  required: false
+                  type: string
+                  description: (Optional) Description of uploaded binary file.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAttachmentResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        attachmentUid: '1e2f4378324e'
+                        name: 'my-attachment'
+                        description: 'meta-for-my-attachment'
+                        createdDate: '2018-03-30T12:58:22Z'
+                        createdByUserUid: '5789003e276a'
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
 components:
   requestBodies:
     TagsWithStrings:
@@ -9882,6 +9994,8 @@ components:
       $ref: './spec/translation_quality/checks/punctuation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
     PLURALS_REPETITION:
       $ref: './spec/translation_quality/checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+    OPEN_ISSUES:
+      $ref: './spec/translation_quality/checks/open_issues.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
 
     AccountAPIListProjectItem:
       example:
@@ -10317,6 +10431,42 @@ components:
           type: string
       type: object
 
+    CreateAttachmentResponse:
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    attachmentUid:
+                      description: The unique identifier of the attachment.
+                      format: uid
+                      type: string
+                    name:
+                      description: The name of the attachment.
+                      type: string
+                    description:
+                      description: The description of the attachment.
+                      type: string
+                    createdDate:
+                      description: The UTC value of the date the attachment was uploaded.
+                      example: '2018-03-30T12:58:22Z'
+                      format: date-time
+                      type: string
+                    createdByUserUid:
+                      description: The unique identifier of user whom upload attachment.
+                      format: uid
+                      example: c297ff10f584
+                      type: string
+                  type: object
+              required:
+                - data
+              type: object
+      required:
+        - response
+      type: object
+
     BatchStatus:
       description: The status of the Batch
       enum:
@@ -10662,7 +10812,7 @@ components:
     BindingsRequest:
       properties:
         bindings:
-          description: Array of string-to-context bindings
+          description: List of strings-to-context bindings. List size is limited to 150 items.
           items:
             description: Binding request
             properties:
@@ -11008,11 +11158,12 @@ components:
       properties:
         contentType:
           enum:
-            - JOB_CONTENT_TRANSLATION
-            - JOB_CONTENT_ALL_CONTENT
-            - JOB_CONTENT_CLAIMING
-            - JOB_CONTENT_UNAUTHORIZED
+            - TRANSLATION
+            - ALL_CONTENT
+            - CLAIMING
+            - UNAUTHORIZED
           type: string
+          default: ALL_CONTENT
         tags:
           example: ["tag1", "tag2"]
           type: array
@@ -11024,11 +11175,12 @@ components:
       properties:
         contentType:
           enum:
-            - JOB_CONTENT_TRANSLATION
-            - JOB_CONTENT_ALL_CONTENT
-            - JOB_CONTENT_CLAIMING
-            - JOB_CONTENT_UNAUTHORIZED
+            - TRANSLATION
+            - ALL_CONTENT
+            - CLAIMING
+            - UNAUTHORIZED
           type: string
+          default: ALL_CONTENT
         tags:
           example: ["tag1", "tag2"]
           type: array
@@ -11258,6 +11410,11 @@ components:
                       example: '2015-11-21T01:51:17.000Z'
                       format: date-time
                       type: string
+                    firstAuthorizedDate:
+                      description: The UTC value of when the job was first authorized.
+                      example: '2015-01-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
                     jobName:
                       description: The name of the job.
                       type: string
@@ -11286,6 +11443,11 @@ components:
                     lastCompletedDate:
                       description: The UTC value of when the job was last completed.
                       example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    lastAuthorizedDate:
+                      description: The UTC value of when the job was last authorized.
+                      example: '2015-12-21T01:51:17.000Z'
                       format: date-time
                       type: string
                     modifiedByUserUid:
@@ -11614,7 +11776,6 @@ components:
               type: string
             data:
               $ref: '#/components/schemas/EstimateJobReportStatus'
-              type: object
           required:
             - code
             - data
@@ -11651,7 +11812,6 @@ components:
               type: string
             data:
               $ref: '#/components/schemas/EstimateJobReportTags'
-              type: object
           required:
             - code
             - data
@@ -12271,6 +12431,89 @@ components:
       required:
         - response
       type: object
+    MTTranslateRequest:
+      properties:
+        sourceLocaleId:
+          type: string
+          description: Locale ID of the original text
+          example: en-US
+        targetLocaleId:
+          type: string
+          description: Locale ID of the requested translation
+          example: de-DE
+        items:
+          items:
+            $ref: '#/components/schemas/MTTranslateItemRequest'
+          type: array
+          maxItems: 1000
+      required:
+        - sourceLocaleId
+        - targetLocaleId
+        - items
+      type: object
+    MTTranslateItemRequest:
+      properties:
+        key:
+          description: A unique identifier to match results in the response
+          example: 'my-key-1'
+          type: string
+          maxLength: 255
+        sourceText:
+          description: The text to translate
+          example: Text to translate
+          type: string
+          maxLength: 64kb
+      required:
+        - key
+        - sourceText
+      type: object
+    MTTranslateResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/MTTranslateItemResponse'
+                      type: array
+                  required:
+                    - items
+                  type: object
+              type: object
+    MTTranslateItemResponse:
+      properties:
+        key:
+          description: A unique identifier from the request
+          example: 'my-key-1'
+          type: string
+        translationText:
+          description: Translated text. Empty if error is present
+          example: 'Text zum Übersetzen'
+          type: string
+        error:
+          type: object
+          properties:
+            key:
+              type: string
+              description: Error key of the error
+              example: PROVIDER_UNAUTHORIZED
+            code:
+              type: string
+              description: Error code of the error
+              example: invalid.credentials
+            message:
+              type: string
+              description: Error code detailed message
+              example: Invalid API Key.
+      required:
+        - key
+      type: object
     JobLocalesCompletionDate:
       properties:
         data:
@@ -12727,7 +12970,7 @@ components:
       description: |-
         *Uncollapse this block to get the detailed description of `matchParams`.*
         <br/><br/>
-        If both `stringHashcodes` and `contentFileUri` are not specified, **all strings from the project** will be included in the match.
+        If none of `stringHashcodes`, `contentFileUri`, `translationJobUids` are specified, **all strings from the project** will be included in the match.
         <br/>
         If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
       properties:
@@ -12737,7 +12980,7 @@ components:
             <br/>
             Example: `"contentFileUri": "example.properties"`
             <br/>
-            Can't be used along with the `stringHashcodes` parameter.
+            Can't be used along with the `stringHashcodes` or `translationJobUids` parameter.
           type: string
         stringHashcodes:
           description: >-
@@ -12745,7 +12988,18 @@ components:
             <br/>
             Example: `"stringHashcodes": ["hashcode1", "hashcode2"]`
             <br/>
-            Can't be used along with the `contentFileUri` parameter.
+            Can't be used along with the `contentFileUri` or `translationJobUids` parameter.
+          items:
+            format: hash
+            type: string
+          type: array
+        translationJobUids:
+          description: >-
+            A translation job UID to perform matching with the context. Only one UID can be specified:
+            <br/>
+            Example: `"translationJobUids": ["translationJobUid"]`
+            <br/>
+            Can't be used along with the `contentFileUri` or `stringHashcodes` parameter.
           items:
             format: hash
             type: string
@@ -12760,7 +13014,7 @@ components:
     DeleteContextsRequest:
       properties:
         contextUids:
-          description: List of contexts UIDs to delete
+          description: List of contexts UIDs to delete. List size is limited to 100 items.
           type: array
           items:
             type: string
@@ -13159,6 +13413,11 @@ components:
                       example: '2015-11-21T01:51:17.000Z'
                       format: date-time
                       type: string
+                    firstAuthorizedDate:
+                      description: The UTC value of when the job was first authorized.
+                      example: '2015-01-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
                     jobName:
                       description: The name of the job.
                       type: string
@@ -13175,6 +13434,11 @@ components:
                     lastCompletedDate:
                       description: The UTC value of when the job was last completed.
                       example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    lastAuthorizedDate:
+                      description: The UTC value of when the job was last authorized.
+                      example: '2015-12-21T01:51:17.000Z'
                       format: date-time
                       type: string
                     modifiedByUserUid:
@@ -13992,6 +14256,11 @@ components:
                           wordCount:
                             description: >-
                               The number of words processed by a translation
+                              resource
+                            type: integer
+                          characterCount:
+                            description: >-
+                              The number of characters processed by a translation
                               resource
                             type: integer
                           workflowStepType:
