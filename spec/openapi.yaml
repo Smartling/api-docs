@@ -129,6 +129,10 @@ tags:
       * [XML](https://help.smartling.com/hc/en-us/articles/360008000893)
       * [YAML](https://help.smartling.com/hc/en-us/articles/360007894934)
 
+  - name: Machine Translation (MT)
+    description: |-
+      The Smartling platform offers state-of-the-art [Machine Translation capabilities](https://www.smartling.com/software/neural-machine-translation-hub/) through its synchronous account-level Machine Translation API. This API enables seamless translation of content without the need for it to be processed through Smartling Workflows. The API offers access to all MT Profiles, including the highly efficient MT Autoselect feature, providing unparalleled flexibility and control over your translation needs.
+
   - name: Jobs
     description: |-
       A Smartling project (such as a mobile, web, files, or connector project)
@@ -307,7 +311,7 @@ tags:
 
   - name: Attachments
     description: |-
-      The Attachments API allows for file attachment download and checking linked attachments for an entity.
+      The Attachments API allows for file attachment upload, download and checking linked attachments for an entity.
       Attachment entities can be from three domains: strings, jobs or issues.
       Each entity is referenced by an entity UID. These UIDs have a specific form for each of the domains.
       - jobs: `<jobUid>`
@@ -931,51 +935,6 @@ paths:
                     Example: `/myproject/i18n/ui.properties`
                 fileType:
                   $ref: '#/components/schemas/FileType'
-                authorize:
-                  type: boolean
-                  default: false
-                  description: |
-                    Determines whether content in the file is authorized
-                    (available for translation) in all locales upon submitting
-                    the file via the Smartling Dashboard. An error message will
-                    be returned if there are insufficient translation funds and
-                    authorized is set to `true`. If a string has been completely
-                    excluded for translation from all languages, or excluded
-                    from translation for a specific language, `authorize` will
-                    NOT authorize it.
-
-                    To specify a limited list of locales to authorize, use the
-                    `localeIdsToAuthorize[]` parameter.
-
-                      Value | Description
-                      ----- | -----------
-                      true  |  Content will be available for translation in all locales upon upload.
-                      false |  Content will be added to the "Awaiting Authorization" queue upon upload.
-                'localeIdsToAuthorize[]':
-                  description: |
-                    This value, if set, authorizes strings for translation into
-                    specific locales. Use the `project/locale/list` call to get
-                    the list of locales for the project, or view them in the
-                    dashboard on the API settings page. Use multiple the
-                    `localeIdsToAuthorize` parameter pairs to authorize more
-                    than one locale. You can add languages by uploading the file
-                    again and indicating the language to authorize with
-                    `localeIdsToAuthorize` or all languages with `authorize`, or
-                    in the dashboard using the "Show Partially Authorized"
-                    filter option from the Awaiting Authorization list.
-
-                    If the string has been completely excluded for translation
-                    from all languages, or excluded from translation for a
-                    specific language, `localesIdsToAuthorize` will NOT
-                    authorize it.
-
-                    **Note**: Do not set the `authorize` parameter to `true` if
-                    you want to specify individual locales to authorize.
-                    Submitting an upload with both of these parameters set will
-                    result in a validation error.
-                  items:
-                    type: string
-                  type: array
                 smartling.namespace:
                   type: string
                   description: |
@@ -4219,7 +4178,7 @@ paths:
                             errors: null
     post:
       summary: Generate Fuzzy Estimate Report for the Job
-      description: This is simplified version of API to generate fuzzy reports. It creates further request to FES composing proper schema string based on input information. forced flag in this case is sent with false value being set.
+      description: Generate Fuzzy report for the Job.
       tags:
         - Estimates
       operationId: generateJobFuzzyEstimateReports
@@ -4470,7 +4429,7 @@ paths:
                             errors: null
     post:
       summary: Generate Cost Estimate Report for the Job
-      description: This is simplified version of API to generate cost reports. It creates further request to FES composing proper schema string based on input information. forced flag in this case is sent with false value being set.
+      description: Generate Cost Estimate Report for the Job
       tags:
         - Estimates
       operationId: generateJobCostEstimateReports
@@ -4727,7 +4686,7 @@ paths:
                             errors: null
     delete:
           summary: Delete Estimation Report
-          description: The report is only "soft"-deleted, i.e. it remains persisted in the DB, but is marked as "not enabled"
+          description: Delete estimate report.
           tags:
             - Estimates
           operationId: deleteJobEstimateReport
@@ -4836,6 +4795,58 @@ paths:
             application/octet-stream:
               schema:
                 type: string
+
+#
+# MT Router API
+#
+  /mt-router-api/v2/accounts/{accountUid}/smartling-mt:
+    post:
+      summary: Machine Translation (MT) using preconfigured MT Profile
+      description: Machine Translation (MT) using preconfigured MT Profile.
+      tags:
+        - Machine Translation (MT)
+      operationId: translateForAccount
+      parameters:
+        - name: accountUid
+          description: A unique account identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MTTranslateRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MTTranslateResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - key: key-from-request
+                            translationText: Translated text
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/mt-router-api/v2/accounts/{accountUid}/smartling-mt
 
 #
 # Jobs API endpoints
@@ -9827,6 +9838,85 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  '/attachments-api/v2/accounts/{accountUid}/{type}/attachments':
+    post:
+      summary: Upload binary attachment
+      description: |-
+        Upload attachment file
+      tags:
+        - Attachments
+      operationId: uploadAttachment
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            format: uuid
+            type: string
+        - name: type
+          in: path
+          required: true
+          description: Attachment type
+          schema:
+            enum:
+              - jobs
+              - strings
+              - issues
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  required: true
+                  type: string
+                  format: binary
+                  description: The attachment file contents to upload.
+                name:
+                  required: true
+                  type: string
+                  description:
+                    Functional name of the file uploaded. This is not a unique identifier.
+                entityUids:
+                  required: false
+                  type: array
+                  items:
+                    type: string
+                  description: (Optional) The list of entity uids attachment will be linked with (max 100).
+                  maxItems: 100
+                description:
+                  required: false
+                  type: string
+                  description: (Optional) Description of uploaded binary file.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAttachmentResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        attachmentUid: '1e2f4378324e'
+                        name: 'my-attachment'
+                        description: 'meta-for-my-attachment'
+                        createdDate: '2018-03-30T12:58:22Z'
+                        createdByUserUid: '5789003e276a'
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
 components:
   requestBodies:
     TagsWithStrings:
@@ -10333,6 +10423,42 @@ components:
           format: uid
           example: c297ff10f584
           type: string
+      type: object
+
+    CreateAttachmentResponse:
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    attachmentUid:
+                      description: The unique identifier of the attachment.
+                      format: uid
+                      type: string
+                    name:
+                      description: The name of the attachment.
+                      type: string
+                    description:
+                      description: The description of the attachment.
+                      type: string
+                    createdDate:
+                      description: The UTC value of the date the attachment was uploaded.
+                      example: '2018-03-30T12:58:22Z'
+                      format: date-time
+                      type: string
+                    createdByUserUid:
+                      description: The unique identifier of user whom upload attachment.
+                      format: uid
+                      example: c297ff10f584
+                      type: string
+                  type: object
+              required:
+                - data
+              type: object
+      required:
+        - response
       type: object
 
     BatchStatus:
@@ -11026,11 +11152,12 @@ components:
       properties:
         contentType:
           enum:
-            - JOB_CONTENT_TRANSLATION
-            - JOB_CONTENT_ALL_CONTENT
-            - JOB_CONTENT_CLAIMING
-            - JOB_CONTENT_UNAUTHORIZED
+            - TRANSLATION
+            - ALL_CONTENT
+            - CLAIMING
+            - UNAUTHORIZED
           type: string
+          default: ALL_CONTENT
         tags:
           example: ["tag1", "tag2"]
           type: array
@@ -11042,11 +11169,12 @@ components:
       properties:
         contentType:
           enum:
-            - JOB_CONTENT_TRANSLATION
-            - JOB_CONTENT_ALL_CONTENT
-            - JOB_CONTENT_CLAIMING
-            - JOB_CONTENT_UNAUTHORIZED
+            - TRANSLATION
+            - ALL_CONTENT
+            - CLAIMING
+            - UNAUTHORIZED
           type: string
+          default: ALL_CONTENT
         tags:
           example: ["tag1", "tag2"]
           type: array
@@ -11642,7 +11770,6 @@ components:
               type: string
             data:
               $ref: '#/components/schemas/EstimateJobReportStatus'
-              type: object
           required:
             - code
             - data
@@ -11679,7 +11806,6 @@ components:
               type: string
             data:
               $ref: '#/components/schemas/EstimateJobReportTags'
-              type: object
           required:
             - code
             - data
@@ -12298,6 +12424,89 @@ components:
               type: object
       required:
         - response
+      type: object
+    MTTranslateRequest:
+      properties:
+        sourceLocaleId:
+          type: string
+          description: Locale ID of the original text
+          example: en-US
+        targetLocaleId:
+          type: string
+          description: Locale ID of the requested translation
+          example: de-DE
+        items:
+          items:
+            $ref: '#/components/schemas/MTTranslateItemRequest'
+          type: array
+          maxItems: 1000
+      required:
+        - sourceLocaleId
+        - targetLocaleId
+        - items
+      type: object
+    MTTranslateItemRequest:
+      properties:
+        key:
+          description: A unique identifier to match results in the response
+          example: 'my-key-1'
+          type: string
+          maxLength: 255
+        sourceText:
+          description: The text to translate
+          example: Text to translate
+          type: string
+          maxLength: 64kb
+      required:
+        - key
+        - sourceText
+      type: object
+    MTTranslateResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/MTTranslateItemResponse'
+                      type: array
+                  required:
+                    - items
+                  type: object
+              type: object
+    MTTranslateItemResponse:
+      properties:
+        key:
+          description: A unique identifier from the request
+          example: 'my-key-1'
+          type: string
+        translationText:
+          description: Translated text. Empty if error is present
+          example: 'Text zum Übersetzen'
+          type: string
+        error:
+          type: object
+          properties:
+            key:
+              type: string
+              description: Error key of the error
+              example: PROVIDER_UNAUTHORIZED
+            code:
+              type: string
+              description: Error code of the error
+              example: invalid.credentials
+            message:
+              type: string
+              description: Error code detailed message
+              example: Invalid API Key.
+      required:
+        - key
       type: object
     JobLocalesCompletionDate:
       properties:
