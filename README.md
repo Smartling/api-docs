@@ -1,5 +1,5 @@
 # Smartling REST OpenAPI Specification
-[![Build Status](https://travis-ci.com/Smartling/api-docs.svg?branch=master)](https://travis-ci.com/Smartling/api-docs)
+[![Build Status](http://jenkins.data.dev.smartling.net/job/api-docs/)](http://jenkins.data.dev.smartling.net/job/api-docs/)
 
 ## Links
 
@@ -11,7 +11,7 @@
 - Preview spec version for branch `<branch>`: https://api-reference.smartling.com/preview/<branch>
   (Note: use lower case name in the url for the branch)
   
-**Warning:** All above links are updated only after Travis CI finishes deployment
+**Warning:** All above links are updated only after Jenkins finishes deployment
 
 ## Working on specification
 ### Install
