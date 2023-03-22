@@ -1,5 +1,5 @@
 # Smartling REST OpenAPI Specification
-[![Build Status](https://travis-ci.com/Smartling/api-docs.svg?branch=master)](https://travis-ci.com/Smartling/api-docs)
+[![Build Status](http://jenkins.data.dev.smartling.net/job/api-docs/)](http://jenkins.data.dev.smartling.net/job/api-docs/)
 
 ## Links
 
@@ -11,7 +11,7 @@
 - Preview spec version for branch `<branch>`: https://api-reference.smartling.com/preview/<branch>
   (Note: use lower case name in the url for the branch)
   
-**Warning:** All above links are updated only after Travis CI finishes deployment
+**Warning:** All above links are updated only after Jenkins finishes deployment
 
 ## Working on specification
 ### Install
@@ -29,3 +29,32 @@
 **TIP:** you can open `swagger-editor`, documentation and `swagger-ui` in parallel
 6. Once you finish with the changes you can run tests using: `npm test`
 7. Share your changes with the rest of the world by pushing to GitHub :smile:
+
+### Stale reviews for branches and PR
+Our current build procedure doesn't clean up old review files for the previous branches and pull requests. As the result
+we may have dozens or hundreds of preview folders for those obsolete branches.
+
+Here is the sequence of instructions to clean up all previews.
+
+1. Switch for `gh-pages` git branch with all published content.
+
+   `git checkout gh-pages`
+
+
+2. Delete all previews.
+
+   `rm -rf ./preview/*`
+
+
+3. Commit the changes
+
+   `git commit -am "Clean up contents of branch and pull requests previews"`
+
+
+4. Push the changes
+
+   `git push`
+
+**NOTE:** these commands will delete all preview branches and pull requests. If some of the reviews are still needed
+then one has to manually rerun build for those branches/PRs.
+
