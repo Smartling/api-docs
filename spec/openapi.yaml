@@ -789,6 +789,12 @@ paths:
           items:
             type: string
           type: array
+      - description: Fetch only supported locales. Otherwise fetch all locales. Default value is "true".
+        in: query
+        name: supportedOnly
+        required: false
+        schema:
+          type: boolean
       responses:
         '200':
           description: OK
@@ -7333,6 +7339,77 @@ paths:
 #
 # Tags API
 #
+  /tags-api/v2/accounts/{accountUid}/tags:
+    post:
+      summary: List tags within a account
+      description: List / search tags within an account.
+      tags:
+        - Tags
+      operationId: getTagsListByAccount
+
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                projectIds:
+                  items:
+                    description: Optional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
+                    type: string
+                  maxItems: 1000
+                  type: array
+                  example: ["12ddasds5", "dsde3e3f4"]
+                  description: Optional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
+                tagMask:
+                  description: Search filter. Will return tags with partial match and is case insensitive.
+                  type: string
+                limit:
+                  default: 1500
+                  description: The limit on the number of tags returned.
+                  example: 30
+                  maximum: 1500
+                  minimum: 1
+                  type: integer
+                offset:
+                  default: 0
+                  description: The offset to use when searching for tags.
+                  example: 30
+                  minimum: 0
+                  type: integer
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAccountTagsResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - projectId: 123jlkj8c
+                            tag: StringTag
+                          - projectId: hjhjkh44f
+                            tag: AnotherTag
+                        totalCount: 2
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/tags-api/v2/accounts/$smartlingAccountUid/tags
+
   /tags-api/v2/projects/{projectId}/tags:
     get:
       summary: List tags within a project
@@ -12395,6 +12472,27 @@ components:
       required:
         - response
       type: object
+    GetAccountTagsResponse:
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/AccountTagInfo'
+                      type: array
+                    totalCount:
+                      type: number
+                  type: object
+              required:
+                - data
+              type: object
+      required:
+        - response
+      type: object
     GetStringsTagsResponse:
       properties:
         response:
@@ -13657,6 +13755,18 @@ components:
       required:
         - tag
       type: object
+    AccountTagInfo:
+      properties:
+        projectId:
+          description: Project identifier
+          example: ewr33dssd
+          type: string
+        tag:
+          description: Tag text
+          example: SomeTag
+          type: string
+      required:
+        - tag
     IssuesCount:
       properties:
         sourceIssuesCount:
