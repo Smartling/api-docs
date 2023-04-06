@@ -4,9 +4,9 @@ x-paths:
     post:
       summary: Detect file language
       description: >-
-        Trigger detection of source language of earlier uploaded file
+        Request source language detection for an existing file.
       tags:
-        - File Machine Translation
+        - File Translations
       operationId: detectFileSourceLanguage
       produces:
         - application/json
@@ -58,13 +58,12 @@ x-paths:
 
   language_detection_status:
     get:
-      summary: Language detection progress
+      summary: Get language detection progress
       description: |-
-        Fetch language detection progress/result.
-        
-        Result of language detection is propagated to response as soon as state changes to COMPLETED     
+        Get progress for an ongoing source language detection action.
+        Result of language detection is propagated to response as soon as state changes to COMPLETED.
       tags:
-        - File Machine Translation
+        - File Translations
       operationId: getLanguageDetectionStatus
       produces:
         - application/json
@@ -139,7 +138,7 @@ components:
                     state:
                       $ref: '#/components/schemas/LanguageDetectionState'
                     error:
-                      $ref: './fts_common.yaml#/components/schemas/FTSError'
+                      $ref: './fts_common.yaml#/components/schemas/Error'
                     detectedSourceLanguages:
                       type: array
                       items:
@@ -158,9 +157,9 @@ components:
       description: |-
         | State | Description |
         |---------------|-------------|
-        | **QUEUED** | Language detection is in progress.|
-        | **FAILED** | Language detection has failed.|
-        | **COMPLETED** | Language detection has completed.|
+        | **QUEUED** | Language detection in progress.|
+        | **FAILED** | Language detection failed.|
+        | **COMPLETED** | Language detection complete.|
       enum:
         - QUEUED
         - FAILED

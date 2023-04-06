@@ -2,11 +2,11 @@ x-paths:
 
   mt_action:
     post:
-      summary: File MT
+      summary: Translate file
       description: >-
         Perform translation for a previously uploaded file given a source locale and a set of target locales.
       tags:
-        - File Machine Translation
+        - File Translations
       operationId: mtFile
       consumes:
         - application/json
@@ -66,12 +66,12 @@ x-paths:
 
   mt_status:
     get:
-      summary: Progress file MT
+      summary: Get translation progress
       description: |-
-        Get progress on the triggered file MT action. MT progress is reported on a per locale basis,
-        but response also contains overall state of the processing.        
+        Get progress for an ongoing file translation action. Progress is reported on a per locale basis,
+        but will also include an aggregate state for all locales.
       tags:
-        - File Machine Translation
+        - File Translations
       operationId: getMtProgress
       produces:
         - application/json
@@ -129,12 +129,12 @@ x-paths:
 
   mt_cancel:
     post:
-      summary: Cancel file MT
+      summary: Cancel file translation
       description: |-
-        Cancel ongoing file translation. Can be invoked at any point of time.
-        If triggered when file is already fully translated/ already cancelled - has no effect.
+        Cancel an ongoing file translation at any point during the translation process.
+        If file translation is complete or has already been cancelled, calling this endpoint will have no effect.
       tags:
-        - File Machine Translation
+        - File Translations
       operationId: cancelMt
       produces:
         - application/json
@@ -171,9 +171,9 @@ x-paths:
 
   mt_get_translated_file_for_locale:
     get:
-      summary: Download MT file (single locale)
+      summary: Download translated file (single locale)
       description: |-
-        Download translated via MT file for specific locale. 
+        Download translated file for a specific locale. 
         The download is allowed only if translation to the requested locale has been fully completed.
         
         It is important to check the HTTP response status code. If Smartling
@@ -192,7 +192,7 @@ x-paths:
         **Note:** for GETTEXT files we're going to return file extension as .po
         even if during the initial file upload it was uploaded with .pot file extension.
       tags:
-        - File Machine Translation
+        - File Translations
       operationId: downloadMTFile
       parameters:
         - name: localeId
@@ -242,11 +242,11 @@ x-paths:
 
   mt_get_translated_files:
     get:
-      summary: Download all MT file (all locales)
+      summary: Download translated files (all locales)
       description: |
-        Download a ZIP archive with all MT for the requested file.
+        Download a ZIP archive of translated files for all requested locales.
 
-        Unlike the "Download MT file" endpoint, you get a ZIP archive
+        Unlike the "Download translated file (single locale)" endpoint, you get a ZIP archive
         with all translations of a specific file.
 
         It is important to check the HTTP response status code. If Smartling
@@ -262,11 +262,11 @@ x-paths:
         request to determine the character encoding.
         
         Zip archive can only be downloaded if translation to all locales
-        has completed(overall state has to be in COMPLETED or CANCELLED states)
+        has completed (overall state has to be in COMPLETED or CANCELLED states)
         and if there is at least one locale which has COMPLETED state.
         
       tags:
-        - File Machine Translation
+        - File Translations
       operationId: downloadAllMTFilesInZip
       parameters:
         - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
@@ -346,7 +346,7 @@ components:
                       type: integer
                       description: Amount of strings requested for translation
                     error:
-                      $ref: './fts_common.yaml#/components/schemas/FTSError'
+                      $ref: './fts_common.yaml#/components/schemas/Error'
                     localeProcessStatuses:
                       type: object
                       properties:
@@ -359,7 +359,7 @@ components:
                           type: integer
                           description: Amount of strings translated for the locale
                         error:
-                          $ref: './fts_common.yaml#/components/schemas/FTSError'
+                          $ref: './fts_common.yaml#/components/schemas/Error'
                   type: object
 
               type: object    
@@ -368,11 +368,11 @@ components:
       description: |-
         | State | Description |
         |---------------|-------------|
-        | **QUEUED** | MT for the file has been queued, but the processing has not yet started.|
-        | **PROCESSING** | MT for the file is already in progress.|
-        | **FAILED** | File MT has failed.|
-        | **CANCELED** | File MT has been cancelled by user.|
-        | **COMPLETED** | File mt has been completed.|
+        | **QUEUED** | Translation request queued.|
+        | **PROCESSING** | Translation in progress.|
+        | **FAILED** | Translation failed.|
+        | **CANCELED** | Translation cancelled by user.|
+        | **COMPLETED** | Translation complete.|
       enum:
         - QUEUED
         - PROCESSING
