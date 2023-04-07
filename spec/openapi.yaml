@@ -5823,6 +5823,7 @@ paths:
                         sourceFiles:
                         - name: admin.properties
                           uri: admin.properties
+                          fileUid: 5b0f5c5c4c
                         targetLocaleIds:
                         - uk-UA
                         - ru-RU
@@ -5920,6 +5921,7 @@ paths:
                         sourceFiles:
                         - name: admin.properties
                           uri: admin.properties
+                          fileUid: 5b0f5c5c4c
                         targetLocaleIds:
                         - uk-UA
                         - ru-RU
@@ -6437,7 +6439,15 @@ paths:
                       data:
                         items:
                         - uri: /file/app1.properties
+                          fileUid: 1234g67h90
+                          localeIds:
+                            - en-US
+                            - fr-FR
                         - uri: /file/app2.properties
+                          fileUid: 123h56c891
+                          localeIds:
+                            - en-US
+                            - de-DE
                         totalCount: 2
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
@@ -11926,12 +11936,20 @@ components:
         - madcap
         - yaml
         - markdown
-    FileUri:
+    TranslationJobFile:
       properties:
         data:
           properties:
             uri:
               description: File uri
+              type: string
+            localeIds:
+              description: List of locale ids
+              type: array
+              items:
+                type: string
+            fileUid:
+              description: File uid
               type: string
           type: object
       type: object
@@ -12796,7 +12814,7 @@ components:
                   properties:
                     items:
                       items:
-                        $ref: '#/components/schemas/FileUri'
+                        $ref: '#/components/schemas/TranslationJobFile'
                       type: array
                     totalCount:
                       type: number
@@ -13570,6 +13588,9 @@ components:
               type: string
             uri:
               description: File uri
+              type: string
+            fileUid:
+              description: File uid
               type: string
           type: object
       type: object
