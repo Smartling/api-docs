@@ -6437,7 +6437,15 @@ paths:
                       data:
                         items:
                         - uri: /file/app1.properties
+                          fileUid: 1234567890
+                          localeIds:
+                            - en-US
+                            - fr-FR
                         - uri: /file/app2.properties
+                          fileUid: 1234567891
+                          localeIds:
+                            - en-US
+                            - de-DE
                         totalCount: 2
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
@@ -11926,12 +11934,20 @@ components:
         - madcap
         - yaml
         - markdown
-    FileUri:
+    TranslationJobFile:
       properties:
         data:
           properties:
             uri:
               description: File uri
+              type: string
+            localeIds:
+              description: List of locale ids
+              type: array
+              items:
+                type: string
+            fileUid:
+              description: File uid
               type: string
           type: object
       type: object
@@ -12796,7 +12812,7 @@ components:
                   properties:
                     items:
                       items:
-                        $ref: '#/components/schemas/FileUri'
+                        $ref: '#/components/schemas/TranslationJobFile'
                       type: array
                     totalCount:
                       type: number
