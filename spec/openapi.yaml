@@ -132,6 +132,9 @@ tags:
   - name: Machine Translation (MT)
     description: |-
       The Smartling platform offers state-of-the-art [Machine Translation capabilities](https://www.smartling.com/software/neural-machine-translation-hub/) through its synchronous account-level Machine Translation API. This API enables seamless translation of content without the need for it to be processed through Smartling Workflows. The API offers access to all MT Profiles, including the highly efficient MT Autoselect feature, providing unparalleled flexibility and control over your translation needs.
+  - name: File Translations
+    description: |-
+      The File Translations API offers a simple way to upload files and execute actions on them without any complex setup required. All resource-intensive actions are performed asynchronously and return an actionUid. By polling the API with the provided actionUid, you can easily monitor the progress of your file-based tasks in real time.
 
   - name: Jobs
     description: |-
@@ -4853,8 +4856,34 @@ paths:
           source: >
             curl -H "Authorization: Bearer $smartlingToken"
             https://api.smartling.com/mt-router-api/v2/accounts/{accountUid}/smartling-mt
-
 #
+# File translation API
+#
+  /file-translations-api/v2/accounts/{accountUid}/files:
+    $ref: './spec/file_translation/fts_upload.yaml#/x-paths/file_upload'
+
+  /file-translations-api/v2/accounts/{accountUid}/files/{fileUid}/mt:
+    $ref: './spec/file_translation/fts_mt.yaml#/x-paths/mt_action'
+
+  /file-translations-api/v2/accounts/{accountUid}/files/{fileUid}/mt/{mtUid}/status:
+    $ref: './spec/file_translation/fts_mt.yaml#/x-paths/mt_status'
+
+  /file-translations-api/v2/accounts/{accountUid}/files/{fileUid}/mt/{mtUid}/locales/{localeId}/file:
+    $ref: './spec/file_translation/fts_mt.yaml#/x-paths/mt_get_translated_file_for_locale'
+  
+  /file-translations-api/v2/accounts/{accountUid}/files/{fileUid}/mt/{mtUid}/locales/all/file/zip:
+    $ref: './spec/file_translation/fts_mt.yaml#/x-paths/mt_get_translated_files'
+  
+  /file-translations-api/v2/accounts/{accountUid}/files/{fileUid}/mt/{mtUid}/cancel:
+    $ref: './spec/file_translation/fts_mt.yaml#/x-paths/mt_cancel'
+
+  /file-translations-api/v2/accounts/{accountUid}/files/{fileUid}/language-detection:
+    $ref: './spec/file_translation/fts_language_detection.yaml#/x-paths/language_detection_action'
+
+  /file-translations-api/v2/accounts/{accountUid}/files/{fileUid}/language-detection/{languageDetectionUid}/status:
+    $ref: './spec/file_translation/fts_language_detection.yaml#/x-paths/language_detection_status'
+
+  #
 # Jobs API endpoints
 #
   '/jobs-api/v3/accounts/{accountUid}/jobs':

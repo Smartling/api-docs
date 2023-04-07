@@ -21,5 +21,6 @@ sed('-i', 'https://petstore.swagger.io/v2/swagger.json', '../swagger.json', 'web
 mkdir('-p', 'web_deploy/spec');
 cp('-R', 'spec/translation_quality', 'web_deploy/spec');
 cp('-R', 'spec/issues', 'web_deploy/spec');
+cp('-R', 'spec/file_translation', 'web_deploy/spec');
 cp('-R', 'spec/api_common.yaml', 'web_deploy/spec');
 
