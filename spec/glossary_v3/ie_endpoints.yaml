@@ -1,0 +1,163 @@
+x-paths:
+
+  export_entries:
+    post:
+      summary: Export glossary entries
+      description: >-
+        This request export glossary entries into file with preselected format.
+        For now next formats are allowed:
+         - "CSV",
+         - "XLSX",
+         - "TBX".
+        For tbx - 2 versions allowed:
+         - "V_2_CORE"
+         - "V_3_CORE"
+      tags:
+        - Glossary V3
+      operationId: exportGlossary
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
+        - $ref: './ie_common.yaml#/components/parameters/glossaryEntriesExportCommand'
+
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  initialize_import:
+    post:
+      tags:
+        - Glossary V3
+      summary: Initialize glossary import process
+      description: >-
+        Initialize glossary import process. Upload file, and perform validation.
+        ( NO changes will be done during this method call ). In case of success
+        glossary import will be created with 'PENDING' status".
+      operationId: initializeGlossaryImport
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
+        - $ref: './ie_common.yaml#/components/parameters/glossaryImportCommand'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './ie_common.yaml#/components/schemas/GlossaryImportResponsePTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  import_status:
+    get:
+      tags:
+        - Glossary V3
+      summary: Read import process status
+      description: >-
+        Read import process status
+      operationId: importStatus
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
+        - $ref: './ie_common.yaml#/components/parameters/importUidPathParameter'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './ie_common.yaml#/components/schemas/GlossaryImportPTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  confirm_import:
+    get:
+      tags:
+        - Glossary V3
+      summary: Confirm previously created glossary import
+
+      description: >-
+        Confirm previously created glossary import. Only imports in status : 'PENDING' may be confirmed.
+      operationId: confirmGlossaryImport
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
+        - $ref: './ie_common.yaml#/components/parameters/importUidPathParameter'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './ie_common.yaml#/components/schemas/GlossaryImportPTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+
+

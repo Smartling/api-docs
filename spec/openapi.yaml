@@ -327,6 +327,23 @@ tags:
   - name: Translation quality checks
     description: The translation quality check service is an API endpoint at which you can check the quality of your translations.
 
+  - name: Glossary V3
+    description: |-
+      During translation process, text may contain specific words, which are very important to has 
+      consistent meaning through out the resulted translation for target language. This is usually 
+      referenced as terminology, glossary, thesaurus, etc. And one of the vital steps in high-quality
+      translation is to extract such terms (words/phrases) in a separate set, and define correct 
+      translation to be used during work process. Imagine not correctly translated medical/legal 
+      terms - or inconsistent translation for the same terms by different translators in one document.
+      
+      Current provides glossary manipulation API, such as :
+       - glossary manipulation,
+       - glossary entries manipulation,
+       - import / export (in multiple formats),
+       - glossary labels management,
+       - etc.
+  
+
 paths:
   /auth-api/v2/authenticate:
     post:
@@ -10032,6 +10049,28 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
+
+#
+## GlossaryV3 API Start
+#
+
+  ### Glossary ImportExport (ie) Start
+  /glossary-api/v3/accounts/{accountUid}/glossaries/{glossaryUid}/entries/download:
+    $ref: './spec/glossary_v3/ie_endpoints.yaml#/x-paths/export_entries'
+
+  /glossary-api/v3/accounts/{accountUid}/glossaries/{glossaryUid}/import:
+    $ref: './spec/glossary_v3/ie_endpoints.yaml#/x-paths/initialize_import'
+
+  /glossary-api/v3/accounts/{accountUid}/glossaries/{glossaryUid}/import/{importUid}:
+    $ref: './spec/glossary_v3/ie_endpoints.yaml#/x-paths/import_status'
+
+  /glossary-api/v3/accounts/{accountUid}/glossaries/{glossaryUid}/import/{importUid}/confirm:
+    $ref: './spec/glossary_v3/ie_endpoints.yaml#/x-paths/confirm_import'
+  ### Glossary ImportExport (ie) End
+
+#
+## GlossaryV3 API END
+#
 
 components:
   requestBodies:

@@ -1,0 +1,178 @@
+components:
+  parameters:
+
+    importUidPathParameter:
+      name: importUid
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Unique identifier of the glossary-import - in UUID format
+
+    glossaryEntriesExportCommand:
+      in: body
+      name: body
+      description: export command, with properties and filter
+      required: true
+      schema:
+        $ref: '#/components/schemas/GlossaryEntriesExportCommandPTO'
+
+    glossaryImportCommand:
+      in: body
+      name: body
+      description: import command
+      required: true
+      schema:
+        $ref: "#/components/schemas/GlossaryImportCommandPTO"
+
+
+  schemas:
+
+    GlossaryEntriesExportCommandPTO:
+      type: object
+      required:
+        - filter
+        - format
+        - localeIds
+      properties:
+        format:
+          type: string
+          description: export format
+          example: >-
+            CSV | XLSX | TBX
+        tbxVersion:
+          type: string
+          description: TBX version, required when TBX format preselected
+          example: >-
+             V_2_CORE |  V_3_CORE
+        filter:
+          description: glossary entries filter
+          $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
+        focusLocaleId:
+          type: string
+          description: first locale id in the export scope
+        localeIds:
+          type: array
+          description: locales ids for the export
+          items:
+            type: string
+        skipEntries:
+          type: boolean
+          description: skip entries export if true; exports only headers ( template )
+      description: Export command with filtering properties and additional options
+
+    GlossaryImportCommandPTO:
+      type: object
+      required:
+        - importFile
+        - importFileMediaType
+        - importFileName
+      properties:
+        archiveMode:
+          type: boolean
+          description: >-
+            in case if {@code true} passed - all entries that are not in import file will be archived
+        importFile:
+          type: string
+          format: binary
+          description: binary file data to upload
+        importFileName:
+          type: string
+          description: name and extension of the import file
+        importFileMediaType:
+          type: string
+          description: import file media type
+          example: >-
+             text/csv |  text/xml | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      description: Glossary import command
+
+
+    GlossaryImportResponsePTO:
+      type: object
+      properties:
+        glossaryImport:
+          description: glossaryImport meta-data
+          $ref: '#/components/schemas/GlossaryImportPTO'
+        entryChanges:
+          description: entries changes stats
+          $ref: '#/components/schemas/ImportEntryChangesPTO'
+        translationChanges:
+          type: array
+          description: translation changes stats
+          items:
+            $ref: '#/components/schemas/ImportEntryTranslationChangesPTO'
+        warnings:
+          type: array
+          description: import process warnings
+          items:
+            $ref: '#/components/schemas/ImportWarningPTO'
+      description: Glossary import meta-data
+
+    GlossaryImportPTO:
+      type: object
+      properties:
+        glossaryUid:
+          type: string
+          description: glossary uid
+        importUid:
+          type: string
+          description: import uid
+        importStatus:
+          type: string
+          description: status of the import
+          example: >-
+            PENDING | IN_PROGRESS | SUCCESSFUL | FAILED
+      description: Glossary import meta-data
+
+    ImportEntryChangesPTO:
+      type: object
+      properties:
+        newEntries:
+          type: integer
+          format: int32
+          description: amount of glossary entries to be created
+        existingEntryUpdates:
+          type: integer
+          format: int32
+          description: amount of glossary entries to be updated
+        notMatchedEntries:
+          type: integer
+          format: int32
+          description: amount of glossary entries that wont be updated
+        entriesToArchive:
+          type: integer
+          format: int32
+          description: amount of glossary entries to be archived
+      description: Glossary entry change stats
+
+    ImportEntryTranslationChangesPTO:
+      type: object
+      properties:
+        localeId:
+          type: string
+          description: locale identifier
+        newTranslations:
+          type: integer
+          format: int32
+          description: amount of translations to be created
+        updatedTranslations:
+          type: integer
+          format: int32
+          description: amount of translations to be updated
+        translationsToRemove:
+          type: integer
+          format: int32
+          description: amount of translations to be removed
+      description: Glossary entry translations change stats
+
+    ImportWarningPTO:
+      type: object
+      properties:
+        key:
+          type: string
+          description: warning key
+        message:
+          type: string
+          description: warning message
+      description: import related warning
+
