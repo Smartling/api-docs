@@ -93,33 +93,33 @@ components:
           description: sorting for the filter
           $ref: '#/components/schemas/GlossaryEntriesSortCommandPTO'
       description: Glossary entries filter command
-      example: >-
-                {
-                    "entryState": "BOTH",
-                    "localeIds": [ "en-US" ],
-                    "returnFallbackTranslations": false,
-                    "labels": {
-                      "type": "associated",
-                      "labelUids": [ "16ed66cc-accc-4bb5-9822-bc84e93429f8"]
-                    },
-                    "lastModifiedBy": {
-                      "level": "ANY",
-                      "userIds": [ "671b520051b2" ]
-                    },
-                    "created: {
-                      "type":"before",
-                      "date": "2023-02-01T11:45:00.000Z"
-                    },
-                    "paging": {
-                      "limit": 200,
-                      "offset": 0
-                    },
-                    "sorting": {
-                      "direction": "ASC",
-                      "field": "term"
-                    }
-        
-                }
+      examples:
+        application/json:
+          {
+            "entryState": "BOTH",
+            "localeIds": [ "en-US" ],
+            "returnFallbackTranslations": false,
+            "labels": {
+              "type": "associated",
+              "labelUids": [ "16ed66cc-accc-4bb5-9822-bc84e93429f8"]
+            },
+            "lastModifiedBy": {
+              "level": "ANY",
+              "userIds": [ "671b520051b2" ]
+            },
+            "created: {
+              "type":"before",
+              "date": "2023-02-01T11:45:00.000Z"
+            },
+            "paging": {
+              "limit": 200,
+              "offset": 0
+            },
+            "sorting": {
+              "direction": "ASC",
+              "field": "term"
+            }
+          }
 
     LabelsCommandPTO:
       type: object
@@ -149,6 +149,12 @@ components:
               readOnly: true
           description: >-
            No labels filter / labels are missing filter. Use 'empty' as type property value
+          examples :
+            application/json:
+              {
+                "type":"empty"
+              }
+
     AnyLabelsFilter:
       allOf:
         - $ref: '#/components/schemas/LabelsCommandPTO'
@@ -160,6 +166,11 @@ components:
               readOnly: true
           description: >- 
            Any labels filter. Use 'any' as type property value
+          examples:
+            application/json:
+              {
+                "type":"any"
+              }
     AssociatedLabelsFilter:
       allOf:
         - $ref: '#/components/schemas/LabelsCommandPTO'
@@ -177,6 +188,12 @@ components:
               readOnly: true
           description: >-
             Associated labels filter. Use 'any' as type property value
+          examples:
+            application/json:
+              {
+                "type":"associated",
+                "labelUids":["16ed66cc-accc-4bb5-9822-bc84e93429f8"]
+              }
 
     AuditionDateCommandPTO:
       type: object
@@ -213,6 +230,13 @@ components:
               description: after
               readOnly: true
           description: After date filter
+          examples:
+            application/json:
+              {
+                "type":"after",
+                "date":"2023-02-01T11:45:00.000Z"
+              }
+
     BeforeDateAuditionDateFilter:
       allOf:
         - $ref: '#/components/schemas/AuditionDateCommandPTO'
@@ -227,6 +251,12 @@ components:
               description: before
               readOnly: true
           description: Before date filter
+          examples:
+            application/json:
+              {
+                "type": "before",
+                "date": "2023-02-01T11:45:00.000Z"
+              }
     DateRangeAuditionDateFilter:
       allOf:
         - $ref: '#/components/schemas/AuditionDateCommandPTO'
@@ -245,6 +275,13 @@ components:
               description: date_range
               readOnly: true
           description: Date range filter
+          examples:
+            application/json:
+              {
+                "type": "date_range",
+                "from": "2023-02-01T11:45:00.000Z",
+                "to": "2023-05-01T13:45:00.000Z"
+              }
     ExactDateAuditionDateFilter:
       allOf:
         - $ref: '#/components/schemas/AuditionDateCommandPTO'
@@ -259,6 +296,13 @@ components:
               description: exact
               readOnly: true
           description: Exact date filter
+          examples:
+            application/json:
+              {
+                "type": "exact",
+                "date": "2023-02-01T11:45:00.000Z"
+              }
+
 
     AuditorCommandPTO:
       type: object
@@ -276,6 +320,12 @@ components:
           items:
             type: string
       description: Auditor user filter
+      examples:
+        application/json:
+          {
+            "level":"ANY",
+            "userIds":["671b520051b2"]
+          }
 
     PaginationCommandPTO:
       type: object
