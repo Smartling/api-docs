@@ -72,14 +72,14 @@ x-paths:
         content:
           multipart/form-data:
             schema:
-              - $ref: '#/schemas/GlossaryImportCommandPTO'
+              - $ref: '#/components/schemas/GlossaryImportCommandPTO'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/schemas/GlossaryImportResponsePTO'
+                $ref: '#/components/schemas/GlossaryImportResponsePTO'
         400:
           $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
         401:
@@ -108,14 +108,14 @@ x-paths:
       parameters:
         - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
         - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
-        - $ref: '#/parameters/importUidPathParameter'
+        - $ref: '#/components/parameters/importUidPathParameter'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/schemas/GlossaryImportPTO'
+                $ref: '#/components/schemas/GlossaryImportPTO'
         400:
           $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
         401:
@@ -145,14 +145,14 @@ x-paths:
       parameters:
         - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
         - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
-        - $ref: '#/parameters/importUidPathParameter'
+        - $ref: '#/components/parameters/importUidPathParameter'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/schemas/GlossaryImportPTO'
+                $ref: '#/components/schemas/GlossaryImportPTO'
         400:
           $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
         401:
@@ -166,231 +166,232 @@ x-paths:
         500:
           $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
 
-  parameters:
-    importUidPathParameter:
-      name: importUid
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
-      description: Unique identifier of the glossary-import
+  components:
+    parameters:
+      importUidPathParameter:
+        name: importUid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Unique identifier of the glossary-import
 
-  schemas:
-    GlossaryEntriesExportCommandPTO:
-      type: object
-      required:
-        - filter
-        - format
-        - localeIds
-      properties:
-        format:
-          type: string
-          description: export format
-          enum:
-            - CSV
-            - XLSX
-            - TBX
-        tbxVersion:
-          type: string
-          description: TBX version, required when TBX format preselected
-          enum:
-            - V_2_CORE
-            - V_3_CORE
-        filter:
-          description: glossary entries filter
-          $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
-        focusLocaleId:
-          type: string
-          description: first locale id in the export scope
-        localeIds:
-          type: array
-          description: locales ids for the export
-          items:
+    schemas:
+      GlossaryEntriesExportCommandPTO:
+        type: object
+        required:
+          - filter
+          - format
+          - localeIds
+        properties:
+          format:
             type: string
-        skipEntries:
-          type: boolean
-          description: skip entries export if true; exports only headers ( template )
-      description: Export command with filtering properties and additional options
-      examples:
-        application/json:
-          {
-            "filter": {
-              "entryState": "BOTH",
-              "localeIds": [ "en-US" ]
-            },
-            "format": "xlsx",
-            "focusLocaleId": "en-US",
-            "skipEntries": false,
-            "localeIds": [ "en-US", "en", "uk-UA" ]
-          }
-    GlossaryImportCommandPTO:
-      type: object
-      required:
-        - importFile
-        - importFileMediaType
-        - importFileName
-      properties:
-        archiveMode:
-          type: boolean
-          description: >-
-            in case if {@code true} passed - all entries that are not in import file will be archived
-        importFile:
-          type: string
-          format: binary
-          description: binary file data to upload
-        importFileName:
-          type: string
-          description: name and extension of the import file
-        importFileMediaType:
-          type: string
-          description: import file media type
-          example: >-
-            text/csv |  text/xml | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-      description: Glossary import command
-    GlossaryImportResponsePTO:
-      type: object
-      properties:
-        glossaryImport:
-          description: glossaryImport meta-data
-          $ref: '#/schemas/GlossaryImportPTO'
-        entryChanges:
-          description: entries changes stats
-          $ref: '#/schemas/ImportEntryChangesPTO'
-        translationChanges:
-          type: array
-          description: translation changes stats
-          items:
-            $ref: '#/schemas/ImportEntryTranslationChangesPTO'
-        warnings:
-          type: array
-          description: import process warnings
-          items:
-            $ref: '#/schemas/ImportWarningPTO'
-      description: Glossary import meta-data
-      examples:
-        application/json:
-          {
-            "glossaryImport": {
+            description: export format
+            enum:
+              - CSV
+              - XLSX
+              - TBX
+          tbxVersion:
+            type: string
+            description: TBX version, required when TBX format preselected
+            enum:
+              - V_2_CORE
+              - V_3_CORE
+          filter:
+            description: glossary entries filter
+            $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
+          focusLocaleId:
+            type: string
+            description: first locale id in the export scope
+          localeIds:
+            type: array
+            description: locales ids for the export
+            items:
+              type: string
+          skipEntries:
+            type: boolean
+            description: skip entries export if true; exports only headers ( template )
+        description: Export command with filtering properties and additional options
+        examples:
+          application/json:
+            {
+              "filter": {
+                "entryState": "BOTH",
+                "localeIds": [ "en-US" ]
+              },
+              "format": "xlsx",
+              "focusLocaleId": "en-US",
+              "skipEntries": false,
+              "localeIds": [ "en-US", "en", "uk-UA" ]
+            }
+      GlossaryImportCommandPTO:
+        type: object
+        required:
+          - importFile
+          - importFileMediaType
+          - importFileName
+        properties:
+          archiveMode:
+            type: boolean
+            description: >-
+              in case if {@code true} passed - all entries that are not in import file will be archived
+          importFile:
+            type: string
+            format: binary
+            description: binary file data to upload
+          importFileName:
+            type: string
+            description: name and extension of the import file
+          importFileMediaType:
+            type: string
+            description: import file media type
+            example: >-
+              text/csv |  text/xml | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        description: Glossary import command
+      GlossaryImportResponsePTO:
+        type: object
+        properties:
+          glossaryImport:
+            description: glossaryImport meta-data
+            $ref: '#/components/schemas/GlossaryImportPTO'
+          entryChanges:
+            description: entries changes stats
+            $ref: '#/components/schemas/ImportEntryChangesPTO'
+          translationChanges:
+            type: array
+            description: translation changes stats
+            items:
+              $ref: '#/components/schemas/ImportEntryTranslationChangesPTO'
+          warnings:
+            type: array
+            description: import process warnings
+            items:
+              $ref: '#/components/schemas/ImportWarningPTO'
+        description: Glossary import meta-data
+        examples:
+          application/json:
+            {
+              "glossaryImport": {
+                "glossaryUid": "bad90990-4be1-4570-81da-b719cddd5352",
+                "importUid": "939a4439-2ed0-4123-bc68-d188e4d664ab",
+                "importStatus": "PENDING"
+              },
+              "entryChanges": {
+                "newEntries": 0,
+                "existingEntryUpdates": 1,
+                "notMatchedEntries": 1,
+                "entriesToArchive": 0
+              },
+              "translationChanges": [ {
+                "localeId": "en-US",
+                "newTranslations": 0,
+                "updatedTranslations": 1,
+                "translationsToRemove": 0
+              }, {
+                "localeId": "uk-UA",
+                "newTranslations": 0,
+                "updatedTranslations": 1,
+                "translationsToRemove": 0
+              } ],
+              "warnings": [ ]
+            }
+      GlossaryImportPTO:
+        type: object
+        properties:
+          glossaryUid:
+            type: string
+            format: uuid
+            description: glossary uid
+          importUid:
+            type: string
+            format: uuid
+            description: import uid
+          importStatus:
+            type: string
+            description: status of the import
+            enum:
+              - PENDING
+              - IN_PROGRESS
+              - SUCCESSFUL
+              - FAILED
+        description: Glossary import process meta-data
+        examples:
+          application/json:
+            {
               "glossaryUid": "bad90990-4be1-4570-81da-b719cddd5352",
               "importUid": "939a4439-2ed0-4123-bc68-d188e4d664ab",
               "importStatus": "PENDING"
-            },
-            "entryChanges": {
-              "newEntries": 0,
+            }
+      ImportEntryChangesPTO:
+        type: object
+        properties:
+          newEntries:
+            type: integer
+            format: int32
+            description: amount of glossary entries to be created
+          existingEntryUpdates:
+            type: integer
+            format: int32
+            description: amount of glossary entries to be updated
+          notMatchedEntries:
+            type: integer
+            format: int32
+            description: amount of glossary entries that wont be updated
+          entriesToArchive:
+            type: integer
+            format: int32
+            description: amount of glossary entries to be archived
+        description: Glossary entry change stats
+        examples:
+          application/json:
+            {
+              "newEntries": 1,
               "existingEntryUpdates": 1,
               "notMatchedEntries": 1,
               "entriesToArchive": 0
-            },
-            "translationChanges": [ {
+            }
+      ImportEntryTranslationChangesPTO:
+        type: object
+        properties:
+          localeId:
+            type: string
+            description: locale identifier
+          newTranslations:
+            type: integer
+            format: int32
+            description: amount of translations to be created
+          updatedTranslations:
+            type: integer
+            format: int32
+            description: amount of translations to be updated
+          translationsToRemove:
+            type: integer
+            format: int32
+            description: amount of translations to be removed
+        description: Glossary entry translations change stats
+        examples:
+          application/json:
+            {
               "localeId": "en-US",
               "newTranslations": 0,
               "updatedTranslations": 1,
               "translationsToRemove": 0
-            }, {
-              "localeId": "uk-UA",
-              "newTranslations": 0,
-              "updatedTranslations": 1,
-              "translationsToRemove": 0
-            } ],
-            "warnings": [ ]
-          }
-    GlossaryImportPTO:
-      type: object
-      properties:
-        glossaryUid:
-          type: string
-          format: uuid
-          description: glossary uid
-        importUid:
-          type: string
-          format: uuid
-          description: import uid
-        importStatus:
-          type: string
-          description: status of the import
-          enum:
-            - PENDING
-            - IN_PROGRESS
-            - SUCCESSFUL
-            - FAILED
-      description: Glossary import process meta-data
-      examples:
-        application/json:
-          {
-            "glossaryUid": "bad90990-4be1-4570-81da-b719cddd5352",
-            "importUid": "939a4439-2ed0-4123-bc68-d188e4d664ab",
-            "importStatus": "PENDING"
-          }
-    ImportEntryChangesPTO:
-      type: object
-      properties:
-        newEntries:
-          type: integer
-          format: int32
-          description: amount of glossary entries to be created
-        existingEntryUpdates:
-          type: integer
-          format: int32
-          description: amount of glossary entries to be updated
-        notMatchedEntries:
-          type: integer
-          format: int32
-          description: amount of glossary entries that wont be updated
-        entriesToArchive:
-          type: integer
-          format: int32
-          description: amount of glossary entries to be archived
-      description: Glossary entry change stats
-      examples:
-        application/json:
-          {
-            "newEntries": 0,
-            "existingEntryUpdates": 1,
-            "notMatchedEntries": 1,
-            "entriesToArchive": 0
-          }
-    ImportEntryTranslationChangesPTO:
-      type: object
-      properties:
-        localeId:
-          type: string
-          description: locale identifier
-        newTranslations:
-          type: integer
-          format: int32
-          description: amount of translations to be created
-        updatedTranslations:
-          type: integer
-          format: int32
-          description: amount of translations to be updated
-        translationsToRemove:
-          type: integer
-          format: int32
-          description: amount of translations to be removed
-      description: Glossary entry translations change stats
-      examples:
-        application/json:
-          {
-            "localeId": "en-US",
-            "newTranslations": 0,
-            "updatedTranslations": 1,
-            "translationsToRemove": 0
-          }
-    ImportWarningPTO:
-      type: object
-      properties:
-        key:
-          type: string
-          description: warning key
-        message:
-          type: string
-          description: warning message
-      description: Import related warning
-      examples:
-        application/json:
-          {
-            "key": "warning.key.1",
-            "message": "some warning message"
-          }
+            }
+      ImportWarningPTO:
+        type: object
+        properties:
+          key:
+            type: string
+            description: warning key
+          message:
+            type: string
+            description: warning message
+        description: Import related warning
+        examples:
+          application/json:
+            {
+              "key": "warning.key.1",
+              "message": "some warning message"
+            }
 
