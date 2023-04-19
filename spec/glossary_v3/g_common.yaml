@@ -75,8 +75,6 @@ components:
         labels:
           description: Labels filter.
           $ref: '#/components/schemas/FilterByLabelsPTO'
-          example:
-            {"type": "associated", "labelUids": ["16ed66cc-accc-4bb5-9822-bc84e93429f8"]}
         dntTermSet:
           type: boolean
           description: Return entries where dnt term is set.
@@ -84,33 +82,21 @@ components:
         created:
           description: Created date filter.
           $ref: '#/components/schemas/AuditionDateCommandPTO'
-          example:
-            {"type": "before", "level": "ANY", "date": "2023-02-01T11:45:00.000Z"}
         lastModified:
           description: Modified date filter.
           $ref: '#/components/schemas/AuditionDateCommandPTO'
-          example:
-            {"type": "after", "level": "ANY", "date": "2023-02-01T11:45:00.000Z"}
         createdBy:
           description: Created by user filter.
           $ref: '#/components/schemas/AuditorCommandPTO'
-          example:
-            {"level": "ANY","userIds": ["671b520051b2"]}
         lastModifiedBy:
           description: modified by user filter
           $ref: '#/components/schemas/AuditorCommandPTO'
-          example:
-            {"level": "ENTRY", "userIds": ["671b520051b2"]}
         paging:
           description: Paging command.
           $ref: '#/components/schemas/PaginationCommandPTO'
-          example:
-            {"limit": 50,"offset": 0}
         sorting:
           description: Sorting command.
           $ref: '#/components/schemas/GlossaryEntriesSortCommandPTO'
-          example:
-            {"direction": "DESC", "field": "term", "localeId": "uk-UA"}
       description: Glossary entries filter command.
     FilterByLabelsPTO:
       type: object
@@ -136,6 +122,7 @@ components:
       properties:
         type:
           type: "string"
+          example: empty
       description: >-
         No labels filter / labels are missing filter. Use 'empty' as type property value.
     AnyLabelsFilter:
@@ -145,6 +132,7 @@ components:
       properties:
         type:
           type: "string"
+          example: any
       description: >-
         Any labels filter / labels - present filter. Use 'any' as type property value.
     AssociatedLabelsFilter:
@@ -155,14 +143,16 @@ components:
       properties:
         type:
           type: "string"
+          example: associated
         labelUids:
           type: array
           description: Label uuids collection for the filtering.
           items:
             type: string
             format: uuid
+          example : ["16ed66cc-accc-4bb5-9822-bc84e93429f9","69dae398-96c2-45f6-9f0d-91470c3464b6"]
       description: >-
-        Associated labels filter. Use 'any' as type property value.
+        Associated labels filter. Use 'associated' as type property value.
     AuditionDateCommandPTO:
       type: object
       oneOf:
@@ -205,6 +195,7 @@ components:
           example: '2023-02-01T11:45:00.000Z'
         type:
           required: true
+          example: after
       description: After date filter.
     BeforeDateAuditionDateFilter:
       type: object
@@ -228,6 +219,7 @@ components:
           example: '2023-02-01T11:45:00.000Z'
         type:
           type: string
+          example: before
       description: Before date filter.
     DateRangeAuditionDateFilter:
       type: object
@@ -256,6 +248,7 @@ components:
           example: '2023-02-11T11:45:00.000Z'
         type:
           type: string
+          example: date_range
       description: Date range filter.
     ExactDateAuditionDateFilter:
       type: object
@@ -280,6 +273,7 @@ components:
           example: '2023-02-01T11:45:00.000Z'
         type:
           type: string
+          example: exact
       description: Exact date filter.
     AuditorCommandPTO:
       type: object
@@ -292,12 +286,14 @@ components:
             - ENTRY
             - LOCALE
             - ANY
+          example: ANY
         userIds:
           required: true
           type: array
           description: User identifiers.
           items:
             type: string
+          example : ["user1","user2"]
       description: Auditor user filter.
     PaginationCommandPTO:
       type: object
@@ -305,24 +301,29 @@ components:
         offset:
           type: integer
           description: Amount of items to skipp.
+          example: 0
         limit:
           type: integer
           description: Amount of items to fetch.
+          example: 50
     GlossaryEntriesSortCommandPTO:
       type: object
       properties:
         field:
           type: string
           description: Sort field, select one of - term | createdDate | lastModifiedDate,  lastModifiedDate - default field with DESC direction by default.
+          example: term
         direction:
           type: string
           description: Sort direction.
           enum:
             - ASC
             - DESC
+          example: DESC
         localeId:
           type: string
           description: Locale identifier - for case when 'term' sort field is selected.
+          example: uk-UA
       description: Sorting options.
     SuccessResponse:
       properties:
