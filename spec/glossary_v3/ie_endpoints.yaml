@@ -6,10 +6,11 @@ x-paths:
       description: >-
         This request export glossary entries into file with preselected format.
         For now next formats are allowed:
-         - "CSV",
-         - "XLSX",
+         - "CSV"
+         - "XLSX"
          - "TBX".
-        For tbx - 2 versions allowed:
+        
+        For TBX files - 2 versions allowed:
          - "V_2_CORE"
          - "V_3_CORE"
       tags:
@@ -22,7 +23,8 @@ x-paths:
       parameters:
         - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
         - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
-        - $ref: './ie_common.yaml#/components/parameters/glossaryEntriesExportCommand'
+      requestBody:
+        - $ref: './ie_common.yaml#/components/schemas/GlossaryEntriesExportCommandPTO'
 
       responses:
         200:
@@ -52,7 +54,7 @@ x-paths:
       summary: Initialize glossary import process
       description: >-
         Initialize glossary import process. Upload file, and perform validation.
-        ( NO changes will be done during this method call ). In case of success
+        ( No changes will be done during this method call ). In case of success
         glossary import will be created with 'PENDING' status".
       operationId: initializeGlossaryImport
       consumes:
@@ -62,7 +64,8 @@ x-paths:
       parameters:
         - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
         - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
-        - $ref: './ie_common.yaml#/components/parameters/glossaryImportCommand'
+      requestBody:
+        - $ref: './ie_common.yaml#/components/schemas/GlossaryImportCommandPTO'
       responses:
         200:
           description: OK
@@ -122,7 +125,7 @@ x-paths:
           $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
 
   confirm_import:
-    get:
+    post:
       tags:
         - Glossary V3
       summary: Confirm previously created glossary import

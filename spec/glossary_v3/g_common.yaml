@@ -15,6 +15,7 @@ components:
       in: path
       schema:
         type: string
+        format: uuid
       required: true
       description: Unique identifier of the glossary - in UUID format.
 
@@ -24,6 +25,7 @@ components:
       required: true
       schema:
         type: string
+        format: uuid
       description: Unique identifier of the glossary entry - in UUID format
 
 
@@ -50,8 +52,10 @@ components:
         entryState:
           type: string
           description: state of the glossary entry
-          example: >-
-            ACTIVE | ARCHIVED | BOTH
+          enum:
+            - ACTIVE
+            - ARCHIVED
+            - BOTH
         missingTranslationLocaleId:
           type: string
           description: additional locale id filter, which allow to find missing/empty translations
@@ -89,6 +93,33 @@ components:
           description: sorting for the filter
           $ref: '#/components/schemas/GlossaryEntriesSortCommandPTO'
       description: Glossary entries filter command
+      example: >-
+                {
+                    "entryState": "BOTH",
+                    "localeIds": [ "en-US" ],
+                    "returnFallbackTranslations": false,
+                    "labels": {
+                      "type": "associated",
+                      "labelUids": [ "16ed66cc-accc-4bb5-9822-bc84e93429f8"]
+                    },
+                    "lastModifiedBy": {
+                      "level": "ANY",
+                      "userIds": [ "671b520051b2" ]
+                    },
+                    "created: {
+                      "type":"before",
+                      "date": "2023-02-01T11:45:00.000Z"
+                    },
+                    "paging": {
+                      "limit": 200,
+                      "offset": 0
+                    },
+                    "sorting": {
+                      "direction": "ASC",
+                      "field": "term"
+                    }
+        
+                }
 
     LabelsCommandPTO:
       type: object
@@ -99,8 +130,8 @@ components:
           readOnly: true
           description: >-
             Possible values :
-             - empty;
-             - any;
+             - empty
+             - any
              - associated
       description: >-
         Labels filter on glossary entry level. There are 3 subTypes :
@@ -154,8 +185,10 @@ components:
         level:
           type: string
           description: Level on which filtering should be performed ( glossary entry / glossary translation )
-          example: >-
-            ENTRY | LOCALE | ANY
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
         type:
           type: string
           readOnly: true
@@ -233,8 +266,10 @@ components:
         level:
           type: string
           description: level on which filtering should be performed ( glossary entry /  glossary translation )
-          example: >-
-            ENTRY | LOCALE | ANY
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
         userIds:
           type: array
           description: user identifiers
@@ -261,8 +296,9 @@ components:
         direction:
           type: string
           description: sort direction
-          example: >-
-            ASC | DESC
+          enum:
+            - ASC
+            - DESC
         localeId:
           type: string
       description: Sorting options

@@ -7,23 +7,8 @@ components:
       required: true
       schema:
         type: string
+        format: uuid
       description: Unique identifier of the glossary-import - in UUID format
-
-    glossaryEntriesExportCommand:
-      in: body
-      name: body
-      description: export command, with properties and filter
-      required: true
-      schema:
-        $ref: '#/components/schemas/GlossaryEntriesExportCommandPTO'
-
-    glossaryImportCommand:
-      in: body
-      name: body
-      description: import command
-      required: true
-      schema:
-        $ref: "#/components/schemas/GlossaryImportCommandPTO"
 
 
   schemas:
@@ -38,13 +23,16 @@ components:
         format:
           type: string
           description: export format
-          example: >-
-            CSV | XLSX | TBX
+          enum:
+            - CSV
+            - XLSX
+            - TBX
         tbxVersion:
           type: string
           description: TBX version, required when TBX format preselected
-          example: >-
-             V_2_CORE |  V_3_CORE
+          enum:
+            - V_2_CORE
+            - V_3_CORE
         filter:
           description: glossary entries filter
           $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
@@ -60,6 +48,18 @@ components:
           type: boolean
           description: skip entries export if true; exports only headers ( template )
       description: Export command with filtering properties and additional options
+      example: >-
+              {
+                  "filter": {
+                      "entryState": "BOTH",
+                      "localeIds": ["en-US"]
+                  },
+                  "format": "xlsx",
+                  "focusLocaleId": "en-US",
+                  "skipEntries": false,
+                  "localeIds": ["en-US", "en", "uk-UA"]
+              }
+        
 
     GlossaryImportCommandPTO:
       type: object
@@ -83,8 +83,16 @@ components:
           type: string
           description: import file media type
           example: >-
+             Supported media types are one of :
              text/csv |  text/xml | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
       description: Glossary import command
+      example: >-
+                    {
+                      "importFile" : "[binary data]", 
+                      "importFileName":"glossary_1.xlsx", 
+                      "importFileMediaType":"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                      "archiveMode": false
+                    }
 
 
     GlossaryImportResponsePTO:
@@ -107,22 +115,59 @@ components:
           items:
             $ref: '#/components/schemas/ImportWarningPTO'
       description: Glossary import meta-data
+      example: >-
+                 {       
+        			"glossaryImport": {
+        				"glossaryUid": "bad90990-4be1-4570-81da-b719cddd5352",
+        				"importUid": "939a4439-2ed0-4123-bc68-d188e4d664ab",
+        				"importStatus": "PENDING"
+        			},
+        			"entryChanges": {
+        				"newEntries": 0,
+        				"existingEntryUpdates": 1,
+        				"notMatchedEntries": 1,
+        				"entriesToArchive": 0
+        			},
+        			"translationChanges": [{
+        				"localeId": "en-US",
+        				"newTranslations": 0,
+        				"updatedTranslations": 1,
+        				"translationsToRemove": 0
+        			}, {
+        				"localeId": "uk-UA",
+        				"newTranslations": 0,
+        				"updatedTranslations": 1,
+        				"translationsToRemove": 0
+        			}],
+        			"warnings": []
+        		}
 
     GlossaryImportPTO:
       type: object
       properties:
         glossaryUid:
           type: string
+          format: uuid
           description: glossary uid
         importUid:
           type: string
+          format: uuid
           description: import uid
         importStatus:
           type: string
           description: status of the import
-          example: >-
-            PENDING | IN_PROGRESS | SUCCESSFUL | FAILED
-      description: Glossary import meta-data
+          enum:
+            - PENDING
+            - IN_PROGRESS
+            - SUCCESSFUL
+            - FAILED
+      description: Glossary import process meta-data
+      example: >-
+                           {
+                				"glossaryUid": "bad90990-4be1-4570-81da-b719cddd5352",
+                				"importUid": "939a4439-2ed0-4123-bc68-d188e4d664ab",
+                				"importStatus": "PENDING"
+                			}
 
     ImportEntryChangesPTO:
       type: object
@@ -144,6 +189,13 @@ components:
           format: int32
           description: amount of glossary entries to be archived
       description: Glossary entry change stats
+      example: >-
+                    {
+                      "newEntries": 0,
+                      "existingEntryUpdates": 1,
+                      "notMatchedEntries": 1,
+                      "entriesToArchive": 0
+                    }
 
     ImportEntryTranslationChangesPTO:
       type: object
@@ -164,6 +216,14 @@ components:
           format: int32
           description: amount of translations to be removed
       description: Glossary entry translations change stats
+      example: >-
+                    {
+        				"localeId": "en-US",
+        				"newTranslations": 0,
+        				"updatedTranslations": 1,
+        				"translationsToRemove": 0
+        			}
+
 
     ImportWarningPTO:
       type: object
@@ -174,5 +234,5 @@ components:
         message:
           type: string
           description: warning message
-      description: import related warning
+      description: Import related warning
 
