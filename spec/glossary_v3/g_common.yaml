@@ -73,6 +73,7 @@ components:
         labels:
           description: Labels filter.
           $ref: '#/components/schemas/FilterByLabelsPTO'
+          example: '{"type":"any"} | {"type":"empty"} | {"type":"associated", "labelUids":[""16ed66cc-accc-4bb5-9822-bc84e93429f8""]}'
         dntTermSet:
           type: boolean
           description: Return entries where dnt term is set.
@@ -156,9 +157,10 @@ components:
     AuditionDateCommandPTO:
       type: object
       oneOf:
-        - $ref: '#/components/schemas/NoLabelsFilter'
-        - $ref: '#/components/schemas/AnyLabelsFilter'
-        - $ref: '#/components/schemas/AssociatedLabelsFilter'
+        - $ref: '#/components/schemas/AfterDateAuditionDateFilter'
+        - $ref: '#/components/schemas/BeforeDateAuditionDateFilter'
+        - $ref: '#/components/schemas/DateRangeAuditionDateFilter'
+        - $ref: '#/components/schemas/ExactDateAuditionDateFilter'
       discriminator:
         propertyName: type
         mapping:
