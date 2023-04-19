@@ -37,14 +37,18 @@ components:
           description: Locales list for translation filtering.
           items:
             type: string
-          example: '["uk-UA","en","en-US"]'
+          example:
+            application/json:
+              [ "uk-UA","en","en-US" ]
         entryUids:
           type: array
           description: Glossary entry uids filter.
           uniqueItems: true
           items:
             type: string
-          example: '["16ed66cc-accc-4bb5-9822-bc84e93429f8", "69dae398-96c2-45f6-9f0d-91470c3464bd"]'
+          example:
+            application/json:
+              [ "16ed66cc-accc-4bb5-9822-bc84e93429f8", "69dae398-96c2-45f6-9f0d-91470c3464bd" ]
         entryState:
           required: true
           type: string
@@ -73,7 +77,9 @@ components:
         labels:
           description: Labels filter.
           $ref: '#/components/schemas/FilterByLabelsPTO'
-          example: '{"type":"any"} | {"type":"empty"} | {"type":"associated", "labelUids":[""16ed66cc-accc-4bb5-9822-bc84e93429f8""]}'
+          example:
+            application/json:
+              { "type": "associated", "labelUids": [ "16ed66cc-accc-4bb5-9822-bc84e93429f8" ] }
         dntTermSet:
           type: boolean
           description: Return entries where dnt term is set.
@@ -81,27 +87,39 @@ components:
         created:
           description: Created date filter.
           $ref: '#/components/schemas/AuditionDateCommandPTO'
-          example: '{ "type": "before", "date":"2023-02-01T11:45:00.000Z" }'
+          example:
+            application/json:
+              { "type": "before", "level": "ANY", "date": "2023-02-01T11:45:00.000Z" }
         lastModified:
           description: Modified date filter.
           $ref: '#/components/schemas/AuditionDateCommandPTO'
-          example: '{ "type": "after", "date": "2023-02-01T11:45:00.000Z" }'
+          example:
+            application/json:
+              { "type": "after", "level": "ANY", "date": "2023-02-01T11:45:00.000Z" }
         createdBy:
           description: Created by user filter.
           $ref: '#/components/schemas/AuditorCommandPTO'
-          example: '{"level": "ANY","userIds": [ "671b520051b2" ]}'
+          example:
+            application/json:
+              { "level": "ANY","userIds": [ "671b520051b2" ] }
         lastModifiedBy:
           description: modified by user filter
           $ref: '#/components/schemas/AuditorCommandPTO'
-          example: '{"level": "ENTRY", "userIds": [ "671b520051b2" ]}'
+          example:
+            application/json:
+              { "level": "ENTRY", "userIds": [ "671b520051b2" ] }
         paging:
           description: Paging command.
           $ref: '#/components/schemas/PaginationCommandPTO'
-          example: '{"limit": 50,"offset": 0}'
+          example:
+            application/json:
+              { "limit": 50,"offset": 0 }
         sorting:
           description: Sorting command.
           $ref: '#/components/schemas/GlossaryEntriesSortCommandPTO'
-          example: '{ "direction": "DESC", "field": "term" }'
+          example:
+            application/json:
+              { "direction": "DESC", "field": "term", "localeId": "uk-UA" }
       description: Glossary entries filter command.
     FilterByLabelsPTO:
       type: object
@@ -169,12 +187,12 @@ components:
           date_range: '#/components/schemas/DateRangeAuditionDateFilter'
           exact: '#/components/schemas/ExactDateAuditionDateFilter'
       description: >-
-           Audition date-time filter.
-           Possible values :
-            - after - after date-time filter, as example :  '{ "type": "after", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }';
-            - before - before date-time filter, as example :  '{ "type": "before", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }';
-            - date_range - date time in-range filter, as example :  '{ "type": "date_range", "level":"ANY", "from":"2023-02-01T11:45:00.000Z", "to":"2023-03-01T11:45:00.000Z" }';
-            - exact - exact date time filter, as example :  '{ "type": "before", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }'.
+        Audition date-time filter.
+        Possible values :
+         - after - after date-time filter, as example :  '{ "type": "after", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }';
+         - before - before date-time filter, as example :  '{ "type": "before", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }';
+         - date_range - date time in-range filter, as example :  '{ "type": "date_range", "level":"ANY", "from":"2023-02-01T11:45:00.000Z", "to":"2023-03-01T11:45:00.000Z" }';
+         - exact - exact date time filter, as example :  '{ "type": "before", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }'.
     AfterDateAuditionDateFilter:
       type: object
       required:
@@ -184,12 +202,12 @@ components:
       properties:
         level:
           type: string
-          description:  Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
           enum:
             - ENTRY
             - LOCALE
             - ANY
-          example : ANY
+          example: ANY
         date:
           type: string
           description: Date-time value.
@@ -212,7 +230,7 @@ components:
             - ENTRY
             - LOCALE
             - ANY
-          example : ANY
+          example: ANY
         date:
           type: string
           description: Date-time value.
@@ -231,12 +249,12 @@ components:
         level:
           required: true
           type: string
-          description:  Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
           enum:
             - ENTRY
             - LOCALE
             - ANY
-          example : ANY
+          example: ANY
         from:
           type: string
           description: From date-time / range start.
@@ -263,7 +281,7 @@ components:
             - ENTRY
             - LOCALE
             - ANY
-          example : ANY
+          example: ANY
         date:
           required: true
           type: string
@@ -338,7 +356,7 @@ components:
                 data:
                   description: Always empty.
                   type: object
-                  example: {}
+                  example: { }
               type: object
     AcceptedResponse:
       properties:
