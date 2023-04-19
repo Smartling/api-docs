@@ -235,57 +235,26 @@ components:
             - CSV
             - XLSX
             - TBX
-          example: CSV
         tbxVersion:
           type: string
           description: TBX version-name, required when TBX format preselected.
           enum:
             - TBXcoreStructV02
             - TBXcoreStructV03
-          example:  TBXcoreStructV02
         filter:
           description: Glossary entries filter.
           $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
-          example:
-              '{
-                "entryState": "BOTH",
-                "localeIds": [ "en-US" ],
-                "returnFallbackTranslations": false,
-                "labels": {
-                  "type": "associated",
-                  "labelUids": [ "16ed66cc-accc-4bb5-9822-bc84e93429f8" ]
-                },
-                "lastModifiedBy": {
-                  "level": "ANY",
-                  "userIds": [ "671b520051b2" ]
-                },
-                "created": {
-                  "type":"before",
-                  "date": "2023-02-01T11:45:00.000Z"
-                },
-                "paging": {
-                  "limit": 200,
-                  "offset": 0
-                },
-                "sorting": {
-                  "direction": "ASC",
-                  "field": "term"
-                }
-              }'
         focusLocaleId:
           type: string
           description: First locale id in the export scope.
-          example: en-US
         localeIds:
           type: array
           description: Locales ids for the export.
           items:
             type: string
-          example: '["uk-UA","en-US"]'
         skipEntries:
           type: boolean
           description: Skip entries export if true; exports only headers ( template ).
-          example: false
       description: Export command with filtering properties and additional options.
     GlossaryImportCommandPTO:
       type: object
@@ -309,7 +278,6 @@ components:
           required: true
           type: string
           description: Import file media type. One of 'text/csv |  text/xml | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-          example: text/csv |  text/xml | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
       description: Glossary import command.
     GlossaryImportResponsePTO:
       type: object
@@ -338,12 +306,10 @@ components:
           type: string
           format: uuid
           description: Glossary uid.
-          example: 69dae398-96c2-45f6-9f0d-91470c3464cc
         importUid:
           type: string
           format: uuid
           description: Import uid.
-          example: 69dae398-96c2-45f6-9f0d-91470c3464bd
         importStatus:
           type: string
           description: Status of the import.
@@ -361,22 +327,18 @@ components:
           type: integer
           format: int32
           description: Amount of glossary entries to be created.
-          example: 1
         existingEntryUpdates:
           type: integer
           format: int32
           description: Amount of glossary entries to be updated.
-          example: 0
         notMatchedEntries:
           type: integer
           format: int32
           description: Amount of glossary entries that wont be updated.
-          example: 3
         entriesToArchive:
           type: integer
           format: int32
           description: Amount of glossary entries to be archived.
-          example: 0
       description: Glossary entry change stats.
     ImportEntryTranslationChangesPTO:
       type: object
@@ -389,17 +351,14 @@ components:
           type: integer
           format: int32
           description: Amount of translations to be created.
-          example: 1
         updatedTranslations:
           type: integer
           format: int32
           description: Amount of translations to be updated.
-          example: 2
         translationsToRemove:
           type: integer
           format: int32
           description: Amount of translations to be removed.
-          example: 0
       description: Glossary entry translations change stats.
     ImportWarningPTO:
       type: object
@@ -407,9 +366,7 @@ components:
         key:
           type: string
           description: Warning key.
-          example: warning.key.1
         message:
           type: string
           description: Warning message.
-          example: some warning message
       description: Import related warning.
