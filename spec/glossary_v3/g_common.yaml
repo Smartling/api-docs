@@ -6,7 +6,7 @@ components:
       schema:
         type: string
       required: true
-      description: A unique account identifier. This can be found in the Smartling Dashboard under Account Settings - API
+      description: A unique account identifier. This can be found in the Smartling Dashboard under Account Settings - API.
     glossaryUidPathParameter:
       name: glossaryUid
       in: path
@@ -14,7 +14,7 @@ components:
         type: string
         format: uuid
       required: true
-      description: Unique identifier of the glossary
+      description: Unique identifier of the glossary.
     entryUidPathParameter:
       name: entryUid
       in: path
@@ -22,7 +22,7 @@ components:
       schema:
         type: string
         format: uuid
-      description: Unique identifier of the glossary entry
+      description: Unique identifier of the glossary entry.
 
   schemas:
     GetGlossaryEntriesByFilterCommandPTO:
@@ -30,11 +30,11 @@ components:
       properties:
         query:
           type: string
-          description: keyword search for translation of variants
+          description: Keyword search for translation of variants.
           example: P&G term
         localeIds:
           type: array
-          description: locales list for translation filtering
+          description: Locales list for translation filtering.
           items:
             type: string
           example:
@@ -42,7 +42,7 @@ components:
               {["uk-UA","en","en-US"]}
         entryUids:
           type: array
-          description: glossary entry uids filter
+          description: Glossary entry uids filter.
           uniqueItems: true
           items:
             type: string
@@ -51,7 +51,7 @@ components:
               {["16ed66cc-accc-4bb5-9822-bc84e93429f8", "69dae398-96c2-45f6-9f0d-91470c3464bd"]}
         entryState:
           type: string
-          description: state of the glossary entry
+          description: State of the glossary entry.
           enum:
             - ACTIVE
             - ARCHIVED
@@ -59,44 +59,44 @@ components:
           example: BOTH
         missingTranslationLocaleId:
           type: string
-          description: additional locale id filter, which allow to find missing/empty translations
+          description: Additional locale id filter, which allow to find missing/empty translations.
           example: uk-UA
         presentTranslationLocaleId:
           type: string
-          description: additional locale id filter, which allow to find only present  translations
+          description: Additional locale id filter, which allow to find only present  translations.
           example: uk-UA
         dntLocaleId:
           type: string
-          description: additional locale id filter, which allow to find only DNT-marked translations
+          description: Additional locale id filter, which allow to find only DNT-marked translations.
           example: uk-UA
         returnFallbackTranslations:
           type: boolean
-          description: for all translations, if they are missing, appropriate fallback locales will be used
+          description: For all translations, if they are missing, appropriate fallback locales will be used.
           example: false
         labels:
-          description: labels filter
+          description: Labels filter.
           $ref: '#/components/schemas/LabelsCommandPTO'
           example:
             application/json:
               {"type":"any"}
         dntTermSet:
           type: boolean
-          description: return entries where dnt term is set
+          description: Return entries where dnt term is set.
           example: false
         created:
-          description: created date filter
+          description: Created date filter.
           $ref: '#/components/schemas/AuditionDateCommandPTO'
           example:
             application/json:
               { "type": "before", "date":"2023-02-01T11:45:00.000Z" }
         lastModified:
-          description: modified date filter
+          description: Modified date filter.
           $ref: '#/components/schemas/AuditionDateCommandPTO'
           example:
             application/json:
               { "type": "after", "date": "2023-02-01T11:45:00.000Z" }
         createdBy:
-          description: created by user filter
+          description: Created by user filter.
           $ref: '#/components/schemas/AuditorCommandPTO'
           example:
             application/json:
@@ -114,7 +114,7 @@ components:
                 "userIds": [ "671b520051b2" ]
               }
         paging:
-          description: paging for the filter
+          description: Paging command.
           $ref: '#/components/schemas/PaginationCommandPTO'
           example:
             application/json:
@@ -123,7 +123,7 @@ components:
                 "offset": 0
               }
         sorting:
-          description: sorting for the filter
+          description: Sorting command.
           $ref: '#/components/schemas/GlossaryEntriesSortCommandPTO'
           example:
             application/json:
@@ -131,7 +131,7 @@ components:
                 "direction": "DESC",
                 "field": "term"
               }
-      description: Glossary entries filter command
+      description: Glossary entries filter command.
       examples:
         application/json:
           {
@@ -175,7 +175,7 @@ components:
         Labels filter on glossary entry level. There are 3 subTypes :
          - empty - please see 'NoLabelsFilter';
          - any - please see 'AnyLabelsFilter';
-         - associated - please see 'AssociatedLabelsFilter'
+         - associated - please see 'AssociatedLabelsFilter'.
     NoLabelsFilter:
       allOf:
         - $ref: '#/components/schemas/LabelsCommandPTO'
@@ -186,7 +186,7 @@ components:
               description: empty
               readOnly: true
           description: >-
-           No labels filter / labels are missing filter. Use 'empty' as type property value
+           No labels filter / labels are missing filter. Use 'empty' as type property value.
           examples :
             application/json:
               {
@@ -202,7 +202,7 @@ components:
               description: any
               readOnly: true
           description: >- 
-           Any labels filter. Use 'any' as type property value
+           Any labels filter. Use 'any' as type property value.
           examples:
             application/json:
               {
@@ -215,7 +215,7 @@ components:
           properties:
             labelUids:
               type: array
-              description: label uuids collection for the filtering
+              description: Label uuids collection for the filtering.
               items:
                 type: string
                 format: uuid
@@ -224,7 +224,7 @@ components:
               description: associated
               readOnly: true
           description: >-
-            Associated labels filter. Use 'any' as type property value
+            Associated labels filter. Use 'any' as type property value.
           examples:
             application/json:
               {
@@ -237,7 +237,7 @@ components:
       properties:
         level:
           type: string
-          description: Level on which filtering should be performed ( glossary entry / glossary translation )
+          description: Level on which filtering should be performed ( glossary entry / glossary translation ).
           enum:
             - ENTRY
             - LOCALE
@@ -259,13 +259,13 @@ components:
           properties:
             date:
               type: string
-              description: date-time value
+              description: Date-time value.
               example: '2023-02-01T11:45:00.000Z'
             type:
               type: string
               description: after
               readOnly: true
-          description: After date filter
+          description: After date filter.
           examples:
             application/json:
               {
@@ -279,13 +279,13 @@ components:
           properties:
             date:
               type: string
-              description: 'date-time value'
+              description: Date-time value.
               example: '2023-02-01T11:45:00.000Z'
             type:
               type: string
               description: before
               readOnly: true
-          description: Before date filter
+          description: Before date filter.
           examples:
             application/json:
               {
@@ -299,17 +299,17 @@ components:
           properties:
             from:
               type: string
-              description: from date-time / range start
+              description: From date-time / range start.
               example: '2023-02-01T11:45:00.000Z'
             to:
               type: string
-              description: to date-time / range end
+              description: To date-time / range end.
               example: '2023-02-11T11:45:00.000Z'
             type:
               type: string
               description: date_range
               readOnly: true
-          description: Date range filter
+          description: Date range filter.
           examples:
             application/json:
               {
@@ -324,13 +324,13 @@ components:
           properties:
             date:
               type: string
-              description: date-time value
+              description: Date-time value.
               example: '2023-02-01T11:45:00.000Z'
             type:
               type: string
               description: exact
               readOnly: true
-          description: Exact date filter
+          description: Exact date filter.
           examples:
             application/json:
               {
@@ -342,17 +342,17 @@ components:
       properties:
         level:
           type: string
-          description: level on which filtering should be performed ( glossary entry /  glossary translation )
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any).
           enum:
             - ENTRY
             - LOCALE
             - ANY
         userIds:
           type: array
-          description: user identifiers
+          description: User identifiers.
           items:
             type: string
-      description: Auditor user filter
+      description: Auditor user filter.
       examples:
         application/json:
           {
@@ -364,31 +364,31 @@ components:
       properties:
         offset:
           type: integer
-          description: amount of items to skipp
+          description: Amount of items to skipp.
         limit:
           type: integer
-          description: amount of items to fetch
+          description: Amount of items to fetch.
     GlossaryEntriesSortCommandPTO:
       type: object
       properties:
         field:
           type: string
-          description: sort field, select one of - term | createdDate | lastModifiedDate,  lastModifiedDate - default field with DESC direction by default
+          description: Sort field, select one of - term | createdDate | lastModifiedDate,  lastModifiedDate - default field with DESC direction by default.
         direction:
           type: string
-          description: sort direction
+          description: Sort direction.
           enum:
             - ASC
             - DESC
         localeId:
           type: string
-          description : locale identifier - for case when 'term' sort field is selected
-      description: Sorting options
+          description: Locale identifier - for case when 'term' sort field is selected.
+      description: Sorting options.
     SuccessResponse:
       properties:
         code:
           description: >-
-            Indicates whether the response was successful or what error has occurred
+            Indicates whether the response was successful or what error has occurred.
           enum:
             - SUCCESS
           type: string
@@ -413,7 +413,7 @@ components:
       properties:
         code:
           description: >-
-            Indicates whether the response was successful or what error has occurred
+            Indicates whether the response was successful or what error has occurred.
           enum:
             - ACCEPTED
           type: string
@@ -427,7 +427,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occurred
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - VALIDATION_ERROR
               type: string
@@ -447,7 +447,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occurred
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - AUTHENTICATION_ERROR
                 - AUTHORIZATION_ERROR
@@ -470,7 +470,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occurred
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - ACCESS_DENIED_ERROR
               type: string
@@ -491,7 +491,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occurred
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - NOT_FOUND_ERROR
               type: string
@@ -511,7 +511,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occurred
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - MAX_OPERATIONS_LIMIT_EXCEEDED
               type: string
@@ -532,7 +532,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occurred
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - GENERAL_ERROR
               type: string
@@ -550,7 +550,7 @@ components:
 
   responses:
     Error400ResponseDefinition:
-      description: Provided request parameters are invalid
+      description: Provided request parameters are invalid.
       content:
         application/json:
           schema:
@@ -565,7 +565,7 @@ components:
                     message: >-
                       glossary with name 'test' already present in scope of account 'test'
     Error401ResponseDefinition:
-      description: Provided credentials are not valid
+      description: Provided credentials are not valid.
       content:
         application/json:
           schema:
@@ -580,7 +580,7 @@ components:
                     key: invalid_token
                     message: Invalid token
     Error403ResponseDefinition:
-      description: Access denied
+      description: Access denied.
       content:
         application/json:
           schema:
@@ -595,7 +595,7 @@ components:
                     message: >-
                       no rights                 
     Error404ResponseDefinition:
-      description: Resource not found
+      description: Resource not found.
       content:
         application/json:
           schema:
@@ -610,7 +610,7 @@ components:
                     message: >-
                       glossary 'uid' not found                      
     Error429ResponseDefinition:
-      description: Too many simultaneous API requests
+      description: Too many simultaneous API requests.
       content:
         application/json:
           schema:
@@ -625,7 +625,7 @@ components:
                     message: >-
                       Limitation message
     Error500ResponseDefinition:
-      description: Unexpected error
+      description: Unexpected error.
       content:
         application/json:
           schema:

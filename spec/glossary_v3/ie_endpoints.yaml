@@ -18,12 +18,11 @@ x-paths:
       operationId: exportGlossary
       consumes:
         - application/json
-      produces:
-        - '*/*'
       parameters:
         - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
         - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
       requestBody:
+        description: ''
         required: true
         content:
           application/json:
@@ -68,6 +67,7 @@ x-paths:
         - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
         - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
       requestBody:
+        description: ''
         required: true
         content:
           multipart/form-data:
@@ -175,7 +175,7 @@ components:
       schema:
         type: string
         format: uuid
-      description: Unique identifier of the glossary-import
+      description: Unique identifier of the glossary-import.
       example: 69dae398-96c2-45f6-9f0d-91470c3464bd
 
   schemas:
@@ -188,7 +188,7 @@ components:
       properties:
         format:
           type: string
-          description: export format
+          description: Export format.
           enum:
             - CSV
             - XLSX
@@ -196,13 +196,13 @@ components:
           example: CSV
         tbxVersion:
           type: string
-          description: TBX version, required when TBX format preselected
+          description: TBX version, required when TBX format preselected.
           enum:
             - V_2_CORE
             - V_3_CORE
           example:  V_2_CORE
         filter:
-          description: glossary entries filter
+          description: Glossary entries filter.
           $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
           example:
             application/json:
@@ -233,11 +233,11 @@ components:
               }
         focusLocaleId:
           type: string
-          description: first locale id in the export scope
+          description: First locale id in the export scope.
           example: en-US
         localeIds:
           type: array
-          description: locales ids for the export
+          description: Locales ids for the export.
           items:
             type: string
           example:
@@ -245,9 +245,9 @@ components:
               {["uk-UA","en-US"]}
         skipEntries:
           type: boolean
-          description: skip entries export if true; exports only headers ( template )
+          description: Skip entries export if true; exports only headers ( template ).
           example: false
-      description: Export command with filtering properties and additional options
+      description: Export command with filtering properties and additional options.
       examples:
         application/json:
           {
@@ -270,40 +270,40 @@ components:
         archiveMode:
           type: boolean
           description: >-
-            in case if {@code true} passed - all entries that are not in import file will be archived
+            In case if {@code true} passed - all entries that are not in import file will be archived.
         importFile:
           type: string
           format: binary
-          description: binary file data to upload
+          description: Binary file data to upload.
         importFileName:
           type: string
-          description: name and extension of the import file
+          description: Name and extension of the import file.
         importFileMediaType:
           type: string
-          description: import file media type
+          description: Import file media type.
           example: >-
             text/csv |  text/xml | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-      description: Glossary import command
+      description: Glossary import command.
     GlossaryImportResponsePTO:
       type: object
       properties:
         glossaryImport:
-          description: glossaryImport meta-data
+          description: GlossaryImport meta-data.
           $ref: '#/components/schemas/GlossaryImportPTO'
         entryChanges:
-          description: entries changes stats
+          description: Entries changes stats.
           $ref: '#/components/schemas/ImportEntryChangesPTO'
         translationChanges:
           type: array
-          description: translation changes stats
+          description: Translation changes stats.
           items:
             $ref: '#/components/schemas/ImportEntryTranslationChangesPTO'
         warnings:
           type: array
-          description: import process warnings
+          description: Import process warnings.
           items:
             $ref: '#/components/schemas/ImportWarningPTO'
-      description: Glossary import meta-data
+      description: Glossary import meta-data.
       examples:
         application/json:
           {
@@ -337,23 +337,23 @@ components:
         glossaryUid:
           type: string
           format: uuid
-          description: glossary uid
+          description: Glossary uid.
           example: 69dae398-96c2-45f6-9f0d-91470c3464cc
         importUid:
           type: string
           format: uuid
-          description: import uid
+          description: Import uid.
           example: 69dae398-96c2-45f6-9f0d-91470c3464bd
         importStatus:
           type: string
-          description: status of the import
+          description: Status of the import.
           example: PENDING
           enum:
             - PENDING
             - IN_PROGRESS
             - SUCCESSFUL
             - FAILED
-      description: Glossary import process meta-data
+      description: Glossary import process meta-data.
       examples:
         application/json:
           {
@@ -367,24 +367,24 @@ components:
         newEntries:
           type: integer
           format: int32
-          description: amount of glossary entries to be created
+          description: Amount of glossary entries to be created.
           example: 1
         existingEntryUpdates:
           type: integer
           format: int32
-          description: amount of glossary entries to be updated
+          description: Amount of glossary entries to be updated.
           example: 0
         notMatchedEntries:
           type: integer
           format: int32
-          description: amount of glossary entries that wont be updated
+          description: Amount of glossary entries that wont be updated.
           example: 3
         entriesToArchive:
           type: integer
           format: int32
-          description: amount of glossary entries to be archived
+          description: Amount of glossary entries to be archived.
           example: 0
-      description: Glossary entry change stats
+      description: Glossary entry change stats.
       examples:
         application/json:
           {
@@ -398,24 +398,24 @@ components:
       properties:
         localeId:
           type: string
-          description: locale identifier
+          description: Locale identifier.
           example : en-US
         newTranslations:
           type: integer
           format: int32
-          description: amount of translations to be created
+          description: Amount of translations to be created.
           example: 1
         updatedTranslations:
           type: integer
           format: int32
-          description: amount of translations to be updated
+          description: Amount of translations to be updated.
           example: 2
         translationsToRemove:
           type: integer
           format: int32
-          description: amount of translations to be removed
+          description: Amount of translations to be removed.
           example: 0
-      description: Glossary entry translations change stats
+      description: Glossary entry translations change stats.
       examples:
         application/json:
           {
@@ -429,11 +429,13 @@ components:
       properties:
         key:
           type: string
-          description: warning key
+          description: Warning key.
+          example: warning.key.1
         message:
           type: string
-          description: warning message
-      description: Import related warning
+          description: Warning message.
+          example: some warning message
+      description: Import related warning.
       examples:
         application/json:
           {
