@@ -162,81 +162,71 @@ components:
           }
     LabelsCommandPTO:
       type: object
-      discriminator: type
-      properties:
-        type:
-          required: true
-          type: string
-          readOnly: true
-          description: >-
-            Possible values :
-             - empty
-             - any
-             - associated
+      oneOf:
+        - $ref: '#/components/schemas/NoLabelsFilter'
+        - $ref: '#/components/schemas/AnyLabelsFilter'
+        - $ref: '#/components/schemas/AssociatedLabelsFilter'
       description: >-
         Labels filter on glossary entry level. There are 3 subTypes :
-         - empty - please see 'NoLabelsFilter';
-         - any - please see 'AnyLabelsFilter';
-         - associated - please see 'AssociatedLabelsFilter'.
+         - empty - this is  'NoLabelsFilter';
+         - any - this is 'AnyLabelsFilter';
+         - associated - this is 'AssociatedLabelsFilter'.
     NoLabelsFilter:
-      allOf:
-        - $ref: '#/components/schemas/LabelsCommandPTO'
-        - type: object
-          properties:
-            type:
-              required: true
-              type: string
-              description: empty
-              readOnly: true
-          description: >-
-           No labels filter / labels are missing filter. Use 'empty' as type property value.
-          examples :
-            application/json:
-              {
-                "type":"empty"
-              }
+     type: object
+     required:
+       - type
+     properties:
+       type:
+         type: string
+         description: empty
+         readOnly: true
+     description: >-
+      No labels filter / labels are missing filter. Use 'empty' as type property value.
+     examples :
+       application/json:
+         {
+           "type":"empty"
+         }
     AnyLabelsFilter:
-      allOf:
-        - $ref: '#/components/schemas/LabelsCommandPTO'
-        - type: object
-          properties:
-            type:
-              required: true
-              type: string
-              description: any
-              readOnly: true
-          description: >- 
-           Any labels filter. Use 'any' as type property value.
-          examples:
-            application/json:
-              {
-                "type":"any"
-              }
+     type: object
+     required:
+       - type
+     properties:
+       type:
+         type: string
+         description: any
+         readOnly: true
+     description: >- 
+      Any labels filter. Use 'any' as type property value.
+     examples:
+       application/json:
+         {
+           "type":"any"
+         }
     AssociatedLabelsFilter:
-      allOf:
-        - $ref: '#/components/schemas/LabelsCommandPTO'
-        - type: object
-          properties:
-            labelUids:
-              required: true
-              type: array
-              description: Label uuids collection for the filtering.
-              items:
-                type: string
-                format: uuid
-            type:
-              required: true
-              type: string
-              description: associated
-              readOnly: true
-          description: >-
-            Associated labels filter. Use 'any' as type property value.
-          examples:
-            application/json:
-              {
-                "type":"associated",
-                "labelUids":["16ed66cc-accc-4bb5-9822-bc84e93429f8"]
-              }
+     type: object
+     required:
+       - type
+       - labelUids
+     properties:
+       labelUids:
+         type: array
+         description: Label uuids collection for the filtering.
+         items:
+           type: string
+           format: uuid
+       type:
+         type: string
+         description: associated
+         readOnly: true
+     description: >-
+       Associated labels filter. Use 'any' as type property value.
+     examples:
+       application/json:
+         {
+           "type":"associated",
+           "labelUids":["16ed66cc-accc-4bb5-9822-bc84e93429f8"]
+         }
     AuditionDateCommandPTO:
       type: object
       discriminator: type

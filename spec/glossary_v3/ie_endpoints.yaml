@@ -181,9 +181,12 @@ components:
   schemas:
     GlossaryEntriesExportCommandPTO:
       type: object
+      required:
+        - format
+        - filter
+        - localeIds
       properties:
         format:
-          required: true
           type: string
           description: Export format.
           enum:
@@ -199,7 +202,6 @@ components:
             - TBXcoreStructV03
           example:  TBXcoreStructV02
         filter:
-          required: true
           description: Glossary entries filter.
           $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
           example:
@@ -234,7 +236,6 @@ components:
           description: First locale id in the export scope.
           example: en-US
         localeIds:
-          required: true
           type: array
           description: Locales ids for the export.
           items:
@@ -249,12 +250,15 @@ components:
       description: Export command with filtering properties and additional options.
     GlossaryImportCommandPTO:
       type: object
+      required:
+        - importFile
+        - importFileName
+        - importFileMediaType
       properties:
         archiveMode:
           type: boolean
           description: In case if {@code true} passed - all entries that are not in import file will be archived.
         importFile:
-          required: true
           type: string
           format: binary
           description: Binary file data to upload.
