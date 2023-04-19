@@ -31,17 +31,24 @@ components:
         query:
           type: string
           description: keyword search for translation of variants
+          example: P&G term
         localeIds:
           type: array
           description: locales list for translation filtering
           items:
             type: string
+          example:
+            application/json:
+              {["uk-UA","en","en-US"]}
         entryUids:
           type: array
           description: glossary entry uids filter
           uniqueItems: true
           items:
             type: string
+          example:
+            application/json:
+              {["16ed66cc-accc-4bb5-9822-bc84e93429f8", "69dae398-96c2-45f6-9f0d-91470c3464bd"]}
         entryState:
           type: string
           description: state of the glossary entry
@@ -49,42 +56,81 @@ components:
             - ACTIVE
             - ARCHIVED
             - BOTH
+          example: BOTH
         missingTranslationLocaleId:
           type: string
           description: additional locale id filter, which allow to find missing/empty translations
+          example: uk-UA
         presentTranslationLocaleId:
           type: string
           description: additional locale id filter, which allow to find only present  translations
+          example: uk-UA
         dntLocaleId:
           type: string
           description: additional locale id filter, which allow to find only DNT-marked translations
+          example: uk-UA
         returnFallbackTranslations:
           type: boolean
           description: for all translations, if they are missing, appropriate fallback locales will be used
+          example: false
         labels:
           description: labels filter
           $ref: '#/components/schemas/LabelsCommandPTO'
+          example:
+            application/json:
+              {"type":"any"}
         dntTermSet:
           type: boolean
           description: return entries where dnt term is set
+          example: false
         created:
           description: created date filter
           $ref: '#/components/schemas/AuditionDateCommandPTO'
+          example:
+            application/json:
+              { "type": "before", "date":"2023-02-01T11:45:00.000Z" }
         lastModified:
           description: modified date filter
           $ref: '#/components/schemas/AuditionDateCommandPTO'
+          example:
+            application/json:
+              { "type": "after", "date": "2023-02-01T11:45:00.000Z" }
         createdBy:
           description: created by user filter
           $ref: '#/components/schemas/AuditorCommandPTO'
+          example:
+            application/json:
+              {
+                "level": "ANY",
+                "userIds": [ "671b520051b2" ]
+              }
         lastModifiedBy:
           description: modified by user filter
           $ref: '#/definitions/AuditorCommandPTO'
+          example:
+            application/json:
+              {
+                "level": "ENTRY",
+                "userIds": [ "671b520051b2" ]
+              }
         paging:
           description: paging for the filter
           $ref: '#/components/schemas/PaginationCommandPTO'
+          example:
+            application/json:
+              "paging": {
+                "limit": 50,
+                "offset": 0
+              }
         sorting:
           description: sorting for the filter
           $ref: '#/components/schemas/GlossaryEntriesSortCommandPTO'
+          example:
+            application/json:
+              "sorting": {
+                "direction": "DESC",
+                "field": "term"
+              }
       description: Glossary entries filter command
       examples:
         application/json:
@@ -100,7 +146,7 @@ components:
               "level": "ANY",
               "userIds": [ "671b520051b2" ]
             },
-            "created: {
+            "created": {
               "type":"before",
               "date": "2023-02-01T11:45:00.000Z"
             },
