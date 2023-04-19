@@ -181,12 +181,9 @@ components:
   schemas:
     GlossaryEntriesExportCommandPTO:
       type: object
-      required:
-        - filter
-        - format
-        - localeIds
       properties:
         format:
+          required: true
           type: string
           description: Export format.
           enum:
@@ -202,6 +199,7 @@ components:
             - V_3_CORE
           example:  V_2_CORE
         filter:
+          required: true
           description: Glossary entries filter.
           $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
           example:
@@ -236,6 +234,7 @@ components:
           description: First locale id in the export scope.
           example: en-US
         localeIds:
+          required: true
           type: array
           description: Locales ids for the export.
           items:
@@ -262,23 +261,22 @@ components:
           }
     GlossaryImportCommandPTO:
       type: object
-      required:
-        - importFile
-        - importFileMediaType
-        - importFileName
       properties:
         archiveMode:
           type: boolean
           description: >-
             In case if {@code true} passed - all entries that are not in import file will be archived.
         importFile:
+          required: true
           type: string
           format: binary
           description: Binary file data to upload.
         importFileName:
+          required: true
           type: string
           description: Name and extension of the import file.
         importFileMediaType:
+          required: true
           type: string
           description: Import file media type.
           example: >-
