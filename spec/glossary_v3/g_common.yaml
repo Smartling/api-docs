@@ -76,7 +76,7 @@ components:
           example: false
         labels:
           description: Labels filter.
-          $ref: '#/components/schemas/LabelsCommandPTO'
+          $ref: '#/components/schemas/FilterByLabels'
           example:
             application/json:
               {"type":"any"}
@@ -160,85 +160,76 @@ components:
               "field": "term"
             }
           }
-    LabelsCommandPTO:
+    FilterByLabels:
       type: object
-      required:
-        - type
-      discriminator:
-        propertyName: type
-        mapping:
-          empty: '#/components/schemas/NoLabelsFilter'
-          any: '#/components/schemas/AnyLabelsFilter'
-          associated: '#/components/schemas/AssociatedLabelsFilter'
-#      oneOf:
-#        - $ref: '#/components/schemas/NoLabelsFilter'
-#        - $ref: '#/components/schemas/AnyLabelsFilter'
-#        - $ref: '#/components/schemas/AssociatedLabelsFilter'
+      oneOf:
+        - $ref: '#/components/schemas/NoLabelsFilter'
+        - $ref: '#/components/schemas/AnyLabelsFilter'
+        - $ref: '#/components/schemas/AssociatedLabelsFilter'
       description: >-
         Labels filter on glossary entry level. There are 3 subTypes :
          - empty - this is  'NoLabelsFilter';
          - any - this is 'AnyLabelsFilter';
          - associated - this is 'AssociatedLabelsFilter'.
     NoLabelsFilter:
-      allOf:
-        - $ref: "#/definitions/LabelsCommandPTO"
-        - type: "object"
-          properties:
-            type:
-              type: "string"
-              enum:
-               - empty
-              readOnly: true
-          description: >-
-            No labels filter / labels are missing filter. Use 'empty' as type property value.
-          examples:
-            application/json:
-              {
-                "type": "empty"
-              }
+      type: "object"
+      required:
+        - type
+      properties:
+        type:
+          type: "string"
+          enum:
+           - empty
+          readOnly: true
+      description: >-
+        No labels filter / labels are missing filter. Use 'empty' as type property value.
+      examples:
+        application/json:
+          {
+            "type": "empty"
+          }
     AnyLabelsFilter:
-      allOf:
-        - $ref: "#/definitions/LabelsCommandPTO"
-        - type: "object"
-          properties:
-            type:
-              type: "string"
-              enum:
-                - any
-              readOnly: true
-          description: >-
-            Any labels filter / labels - present filter. Use 'any' as type property value.
-          examples:
-            application/json:
-              {
-                "type": "any"
-              }
+      type: "object"
+      required:
+        - type
+      properties:
+        type:
+          type: "string"
+          enum:
+            - any
+          readOnly: true
+      description: >-
+        Any labels filter / labels - present filter. Use 'any' as type property value.
+      examples:
+        application/json:
+          {
+            "type": "any"
+          }
     AssociatedLabelsFilter:
-      allOf:
-        - $ref: "#/definitions/LabelsCommandPTO"
-        - type: "object"
-          required:
-            - labelUids
-          properties:
-            type:
-              type: "string"
-              enum:
-                - associated
-              readOnly: true
-            labelUids:
-              type: array
-              description: Label uuids collection for the filtering.
-              items:
-                type: string
-                format: uuid
-          description: >-
-            Associated labels filter. Use 'any' as type property value.
-          examples:
-            application/json:
-              {
-                "type": "associated",
-                "labelUids": [ "16ed66cc-accc-4bb5-9822-bc84e93429f8" ]
-              }
+      type: "object"
+      required:
+        - type
+        - labelUids
+      properties:
+        type:
+          type: "string"
+          enum:
+            - associated
+          readOnly: true
+        labelUids:
+          type: array
+          description: Label uuids collection for the filtering.
+          items:
+            type: string
+            format: uuid
+      description: >-
+        Associated labels filter. Use 'any' as type property value.
+      examples:
+        application/json:
+          {
+            "type": "associated",
+            "labelUids": [ "16ed66cc-accc-4bb5-9822-bc84e93429f8" ]
+          }
     AuditionDateCommandPTO:
       type: object
       discriminator: type
