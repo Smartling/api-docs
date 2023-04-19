@@ -116,9 +116,9 @@ components:
           associated: '#/components/schemas/AssociatedLabelsFilter'
       description: >-
         Labels filter on glossary entry level. There are 3 subTypes :
-         - empty - this is  'NoLabelsFilter';
-         - any - this is 'AnyLabelsFilter';
-         - associated - this is 'AssociatedLabelsFilter'.
+         - empty -  allow to search for entries where no labels are assigned;
+         - any - allow to search for entries where ant labels are assigned;
+         - associated - allow to search for entries where pre-selected labels are assigned.
     NoLabelsFilter:
       type: "object"
       required:
@@ -155,7 +155,52 @@ components:
         Associated labels filter. Use 'any' as type property value.
     AuditionDateCommandPTO:
       type: object
-      discriminator: type
+      oneOf:
+        - $ref: '#/components/schemas/NoLabelsFilter'
+        - $ref: '#/components/schemas/AnyLabelsFilter'
+        - $ref: '#/components/schemas/AssociatedLabelsFilter'
+      discriminator:
+        propertyName: type
+        mapping:
+          after: '#/components/schemas/AfterDateAuditionDateFilter'
+          before: '#/components/schemas/BeforeDateAuditionDateFilter'
+          date_range: '#/components/schemas/DateRangeAuditionDateFilter'
+          exact: '#/components/schemas/ExactDateAuditionDateFilter'
+        description: >-
+            Audition date-time filter.
+            Possible values :
+             - after - after date-time filter;
+             - before - before date-time filter;
+             - date_range - date time in-range filter;
+             - exact - exact date time filter.
+    AfterDateAuditionDateFilter:
+      type: object
+      required:
+        - level
+        - date
+        - type
+      properties:
+        level:
+          type: string
+          description:  Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example : ANY
+        date:
+          type: string
+          description: Date-time value.
+          example: '2023-02-01T11:45:00.000Z'
+        type:
+          required: true
+      description: After date filter.
+    BeforeDateAuditionDateFilter:
+      type: object
+      required:
+        - level
+        - date
+        - type
       properties:
         level:
           required: true
@@ -165,93 +210,73 @@ components:
             - ENTRY
             - LOCALE
             - ANY
+          example : ANY
+        date:
+          type: string
+          description: Date-time value.
+          example: '2023-02-01T11:45:00.000Z'
         type:
+          type: string
+      description: Before date filter.
+    DateRangeAuditionDateFilter:
+      type: object
+      required:
+        - level
+        - from
+        - to
+        - type
+      properties:
+        level:
           required: true
           type: string
-          readOnly: true
-          description: >-
-            Possible values :
-             - after - see 'AfterDateAuditionDateFilter';
-             - before - see 'BeforeDateAuditionDateFilter';
-             - date_range - see 'DateRangeAuditionDateFilter';
-             - exact - see 'ExactDateAuditionDateFilter'.
-      description: Audition date-time filter
-    AfterDateAuditionDateFilter:
-      allOf:
-        - $ref: '#/components/schemas/AuditionDateCommandPTO'
-        - type: object
-          properties:
-            date:
-              required: true
-              type: string
-              description: Date-time value.
-              example: '2023-02-01T11:45:00.000Z'
-            type:
-              required: true
-              type: string
-              description: after
-              readOnly: true
-          description: After date filter.
-    BeforeDateAuditionDateFilter:
-      allOf:
-        - $ref: '#/components/schemas/AuditionDateCommandPTO'
-        - type: object
-          properties:
-            date:
-              required: true
-              type: string
-              description: Date-time value.
-              example: '2023-02-01T11:45:00.000Z'
-            type:
-              required: true
-              type: string
-              description: before
-              readOnly: true
-          description: Before date filter.
-    DateRangeAuditionDateFilter:
-      allOf:
-        - $ref: '#/components/schemas/AuditionDateCommandPTO'
-        - type: object
-          properties:
-            from:
-              required: true
-              type: string
-              description: From date-time / range start.
-              example: '2023-02-01T11:45:00.000Z'
-            to:
-              required: true
-              type: string
-              description: To date-time / range end.
-              example: '2023-02-11T11:45:00.000Z'
-            type:
-              required: true
-              type: string
-              description: date_range
-              readOnly: true
-          description: Date range filter.
+          description:  Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example : ANY
+        from:
+          type: string
+          description: From date-time / range start.
+          example: '2023-02-01T11:45:00.000Z'
+        to:
+          type: string
+          description: To date-time / range end.
+          example: '2023-02-11T11:45:00.000Z'
+        type:
+          type: string
+      description: Date range filter.
     ExactDateAuditionDateFilter:
-      allOf:
-        - $ref: '#/components/schemas/AuditionDateCommandPTO'
-        - type: object
-          properties:
-            date:
-              required: true
-              type: string
-              description: Date-time value.
-              example: '2023-02-01T11:45:00.000Z'
-            type:
-              required: true
-              type: string
-              description: exact
-              readOnly: true
-          description: Exact date filter.
+      type: object
+      required:
+        - level
+        - date
+        - type
+      properties:
+        level:
+          required: true
+          type: string
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example : ANY
+        date:
+          required: true
+          type: string
+          description: Date-time value.
+          example: '2023-02-01T11:45:00.000Z'
+        type:
+          type: string
+      description: Exact date filter.
     AuditorCommandPTO:
       type: object
       properties:
         level:
           required: true
           type: string
-          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any).
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
           enum:
             - ENTRY
             - LOCALE
