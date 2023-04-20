@@ -4,9 +4,9 @@ x-paths:
     get:
       tags:
         - Glossary API
-      summary: Read account labels
-      description: Read all labels endpoint.
-      operationId: readAllLabels
+      summary: Read account glossary labels
+      description: Read all glossary labels endpoint.
+      operationId: readAllGlossaryLabels
       consumes:
         - "application/json"
       produces:
@@ -19,7 +19,7 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccountLabelsSuccessResponse"
+                $ref: "#/components/schemas/AccountGlossaryLabelsSuccessResponse"
         401:
           $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
         403:
@@ -30,11 +30,11 @@ x-paths:
           $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
 
     post:
-      summary: Create label
-      description: Create label endpoint.
+      summary: Create glossary label
+      description: Create glossary label endpoint.
       tags:
         - Glossary API
-      operationId: exportGlossary
+      operationId: createGlossaryLabel
       consumes:
         - application/json
       parameters:
@@ -45,14 +45,14 @@ x-paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ManageLabelCommandPTO'
+              $ref: '#/components/schemas/ManageGlossaryLabelCommandPTO'
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LabelPTO'
+                $ref: '#/components/schemas/GlossaryLabelPTO'
               response:
                 value:
                   response:
@@ -77,9 +77,9 @@ x-paths:
     put:
       tags:
         - Glossary API
-      summary: Update label
-      description: Update label endpoint.
-      operationId: updateLabel
+      summary: Update glossary label
+      description: Update glossary label endpoint.
+      operationId: updateGlossaryLabel
       consumes:
         - application/json
       produces:
@@ -93,14 +93,14 @@ x-paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ManageLabelCommandPTO'
+              $ref: '#/components/schemas/ManageGlossaryLabelCommandPTO'
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LabelPTO'
+                $ref: '#/components/schemas/GlossaryLabelPTO'
               response:
                 value:
                   response:
@@ -123,9 +123,9 @@ x-paths:
     delete:
       tags:
         - Glossary API
-      summary: Delete label
-      description: Delete label endpoint.
-      operationId: deleteLabel
+      summary: Delete glossary label
+      description: Delete glossary label endpoint.
+      operationId: deleteGlossaryLabel
       consumes:
         - application/json
       produces:
@@ -170,7 +170,7 @@ components:
       example: 69dae398-96c2-45f6-9f0d-91470c3464bd
 
   schemas:
-    AccountLabelsSuccessResponse:
+    AccountGlossaryLabelsSuccessResponse:
       type: object
       required:
         - response
@@ -182,8 +182,8 @@ components:
         items:
           type: "array"
           items:
-            $ref: "#/components/schemas/LabelPTO"
-    LabelPTO:
+            $ref: "#/components/schemas/GlossaryLabelPTO"
+    GlossaryLabelPTO:
       type: object
       properties:
         labelUid:
@@ -195,8 +195,8 @@ components:
           type: string
           description: Text of the label. Text max size is 50 characters.
           example: glossaryLabel1
-      description: Label representation.
-    ManageLabelCommandPTO:
+      description: Glossary label representation.
+    ManageGlossaryLabelCommandPTO:
       type: object
       required:
         - labelText
@@ -204,7 +204,7 @@ components:
         labelText:
           type: string
           description: Text of the label. Text max size is 50 characters.
-      description: Label manage command.
+      description: Glossary label manage command.
     EmptyResponse:
       type: object
       required:
