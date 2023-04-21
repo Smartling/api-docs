@@ -431,9 +431,12 @@ components:
         translations:
           type: array
           description: >-
-            Glossary entry translations. Please note : - in case if glossary
-             entry already has some translation, they will be removed if not present
-             in current array - during update procedure.
+            Glossary entry translations. 
+            Please note : 
+            - in case if glossary entry already has some translation, they will be removed if not present
+              in current array - during update procedure ( be careful, to prevent translations overwrite or loses);
+            - each translation from the array should at least has not empty term or notes field, or disabled property marked as 'true',
+              otherwise 'validation error' ( code : 400 ) will be returned.
           items:
             $ref: "#/components/schemas/GlossaryEntryTranslationCommandPTO"
         customFieldValues:
@@ -472,13 +475,13 @@ components:
           type: array
           description: >-
             Translation synonyms/variations. Max length of single variation entry is 250 characters.
-            Max amount of variations in current array is 50."
+            Max amount of variations in current array is 50.
           items:
             type: string
           example: [ "en synonym to the term" ]
         customFieldValues:
           type: array
-          description: "Translation assigned custom fields values."
+          description: Translation assigned custom fields values.
           items:
             $ref: "#/components/schemas/CustomFieldValuesCommandPTO"
       description: >-
@@ -505,12 +508,14 @@ components:
       allOf:
         - $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
         - type: object
+          required:
+            -glossaryUids
           properties:
             glossaryUids:
-              type: "array"
-              description: "Glossary uids for the entries search."
+              type: array
+              description: Glossary uids for the entries search.
               items:
-                type: "string"
+                type: string
               example: ["aad90990-4be1-4570-81da-b719cddd5352", "aad90990-4be1-4570-81da-b719cddd5355"]
           description: >- 
             Glossary entries filter, which allow to search for entries in scope of multiple glossaries.    
@@ -689,8 +694,8 @@ components:
         - type: object
           properties:
             requestTranslationStatuses:
-              type: "object"
-              description: "Request translation details in min form."
+              type: object
+              description: Request translation details in min form. Please note that translation locale id will be used as a key.
               additionalProperties:
                 $ref: "#/components/schemas/EntryTranslationInProgressPTO"
           description: Glossary entry response. Which provides translation request details in minimal form.
@@ -702,7 +707,7 @@ components:
           properties:
             requestTranslationStatuses:
               type: object
-              description: Request translation details in detailed form.
+              description: Request translation details in detailed form. Please note that translation locale id will be used as a key.
               additionalProperties:
                 $ref: "#/components/schemas/EntryTranslationInProgressFullPTO"
           description: Glossary entry response. Which provides translation request details in extended form.
