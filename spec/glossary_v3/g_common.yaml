@@ -50,12 +50,14 @@ components:
         entryState:
           required: true
           type: string
-          description: State of the glossary entry.
+          description: >-
+            State of the glossary entry.
+            ACTIVE will be used in case if omitted.
           enum:
             - ACTIVE
             - ARCHIVED
             - BOTH
-          example: BOTH
+          example: ACTIVE
         missingTranslationLocaleId:
           type: string
           description: Additional locale id filter, which allow to find missing/empty translations.
@@ -116,33 +118,33 @@ components:
          - any - allow to search for entries where ant labels are assigned, as example - '{"type":"any"}';
          - associated - allow to search for entries where pre-selected labels are assigned, as example - '{"type":"associated", "labelUids":[""16ed66cc-accc-4bb5-9822-bc84e93429f8""]}'.
     NoLabelsFilter:
-      type: "object"
+      type: object
       required:
         - type
       properties:
         type:
-          type: "string"
+          type: string
           example: empty
       description: >-
         No labels filter / labels are missing filter. Use 'empty' as type property value.
     AnyLabelsFilter:
-      type: "object"
+      type: object
       required:
         - type
       properties:
         type:
-          type: "string"
+          type: string
           example: any
       description: >-
         Any labels filter / labels - present filter. Use 'any' as type property value.
     AssociatedLabelsFilter:
-      type: "object"
+      type: object
       required:
         - type
         - labelUids
       properties:
         type:
-          type: "string"
+          type: string
           example: associated
         labelUids:
           type: array
@@ -183,7 +185,7 @@ components:
       properties:
         level:
           type: string
-          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
           enum:
             - ENTRY
             - LOCALE
@@ -207,7 +209,7 @@ components:
         level:
           required: true
           type: string
-          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
           enum:
             - ENTRY
             - LOCALE
@@ -232,7 +234,7 @@ components:
         level:
           required: true
           type: string
-          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
           enum:
             - ENTRY
             - LOCALE
@@ -260,7 +262,7 @@ components:
         level:
           required: true
           type: string
-          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
           enum:
             - ENTRY
             - LOCALE
@@ -311,7 +313,11 @@ components:
       properties:
         field:
           type: string
-          description: Sort field, select one of - term | createdDate | lastModifiedDate,  lastModifiedDate - default field with DESC direction by default.
+          description: Sort field, select one of - term | createdDate | lastModifiedDate.
+          enum:
+            - term
+            - createdDate
+            - lastModifiedDate
           example: term
         direction:
           type: string
@@ -325,6 +331,14 @@ components:
           description: Locale identifier - for case when 'term' sort field is selected.
           example: uk-UA
       description: Sorting options.
+
+    AsyncOperationResponsePTO:
+      type: object
+      properties:
+        operationUid:
+          type: string
+          description: Uid of the async operation.
+
     SuccessResponse:
       properties:
         code:
@@ -534,7 +548,7 @@ components:
                   errors:
                     key: no.access
                     message: >-
-                      no rights                 
+                      access denied message
     Error404ResponseDefinition:
       description: Resource not found.
       content:
@@ -564,7 +578,7 @@ components:
                   errors:
                     key: too.many.requests
                     message: >-
-                      Limitation message
+                      limitation message
     Error500ResponseDefinition:
       description: Unexpected error.
       content:
