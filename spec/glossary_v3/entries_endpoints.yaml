@@ -154,44 +154,6 @@ x-paths:
         500:
           $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
 
-  search_entries_in_multiple_glossaries:
-    post:
-      summary: Search glossary entries in scope of multiple glossaries
-      description: Search glossary entries in scope of multiple glossaries endpoint.
-      tags:
-        - Glossary API
-      operationId: searchEntriesInMultipleGlossaries
-      consumes:
-        - application/json
-      parameters:
-        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
-      requestBody:
-        description: ''
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GetGlossariesEntriesByFilterCommandPTO'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EntriesSearchSuccessResponse'
-
-        400:
-          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
-        403:
-          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
-        429:
-          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
-
-
   bulk_archive_entries:
     post:
       summary: Archive glossary entries
@@ -506,21 +468,6 @@ components:
           example: field string value short text
       description: Custom field value command.
 
-    GetGlossariesEntriesByFilterCommandPTO:
-      allOf:
-        - $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
-        - type: object
-          required:
-            - glossaryUids
-          properties:
-            glossaryUids:
-              type: array
-              description: Glossary uids for the entries search.
-              items:
-                type: string
-              example: ["aad90990-4be1-4570-81da-b719cddd5352", "aad90990-4be1-4570-81da-b719cddd5355"]
-          description: >- 
-            Glossary entries filter, which allow to search for entries in scope of multiple glossaries.    
 
     EntriesBulkActionCommandPTO:
       type: object
