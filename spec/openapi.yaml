@@ -13257,12 +13257,18 @@ components:
           minimum: 1
           type: integer
         videoMatchingMode:
-          description: >-
-            Specifies the behavior of the video file while matching. If not specified, the default value is `AUTO`.
+          description: |
+            Specifies the behavior of the video context while matching. The default value is `AUTO`.
+            | videoMatchingMode | Description |
+            |-------------------|-------------|
+            | `SUBTITLES` | In this mode you should provide the property `contentFileUri` that points to the subtitles content file. Strings will be bound by the subtitle's timestamp.|
+            | `OCR_WITH_SPLITTING` | The video context is divided into separate frames. Each frame then goes through an OCR phase, and any extracted strings are matched with strings in the project according to the matchParams settings. If the frame has any strings bound, an image context will be created; otherwise, the frame will be removed. The original video context is then removed.|
+            | `OCR` | The video context is divided into separate frames. Each frame then goes through an OCR phase, and any extracted strings are matched with strings in the project according to the matchParams settings. If the frame has any strings matched we bound the string by timestamp to video context. |
+            | `AUTO` | Behaves like `SUBTITLES` in case if `contentFileUri` field is present, otherwise it will behave like `OCR_WITH_SPLITTING`|
           enum:
-            - OCR
-            - OCR_WITH_SPLITTING
             - SUBTITLES
+            - OCR_WITH_SPLITTING
+            - OCR
             - AUTO
           type: string
     DeleteContextsRequest:
