@@ -13256,6 +13256,21 @@ components:
             "overrideContextOlderThanDays" old.
           minimum: 1
           type: integer
+        videoMatchingMode:
+          description: |
+            Specifies the behavior of string matching for video contexts.
+
+            | videoMatchingMode | Description |
+            |----------------------|-------------|
+            | `SUBTITLES` | In this mode you should provide the property `contentFileUri` that points to the subtitles content file. Strings will be bound by the subtitle's timestamps. |
+            | `OCR_WITH_SPLITTING` | Detects key frames and checks each frame for text using OCR. If string matches, an image context is created for that frame. Frames without matches and the original video are deleted. |
+            | `OCR` | Detects key frames and checks each frame for text using OCR. If string matches, we bind the string to the original video using the key frame's timestamp and text coordinates. |
+
+          enum:
+            - SUBTITLES
+            - OCR_WITH_SPLITTING
+            - OCR
+          type: string
     DeleteContextsRequest:
       properties:
         contextUids:
