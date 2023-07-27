@@ -6117,6 +6117,7 @@ paths:
       description: >-
         This searches for jobs based on hashcodes (string identifiers),
         `fileUri`s, and `translationJobUid`s.
+        Will return max of 100 translation job list items.
       tags:
       - Jobs
       operationId: searchForJob
@@ -6133,7 +6134,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SearchJobRequest'
-        description: The filters to use when searching for jobs within the project.
+        description: >- 
+          The filters to use when searching for jobs within the project.
+          Requirements: One of the parameters should non be an empty collection (fileUris or hashcodes or translationJobUids).
         required: true
       responses:
         200:
@@ -9330,6 +9333,13 @@ paths:
               type: string
             type: array
         - description: >-
+            Optional parameter of unique agency identifier.
+          in: query
+          name: agencyUid
+          required: false
+          schema:
+            type: string
+        - description: >-
             Optional parameter to filter to the specified list of translation
             resources.
           in: query
@@ -9595,6 +9605,13 @@ paths:
             items:
               type: string
             type: array
+        - description: >-
+            Optional parameter of unique agency identifier.
+          in: query
+          name: agencyUid
+          required: false
+          schema:
+            type: string
         - description: >-
             Optional parameter to filter to the specified list of translation
             resources.
