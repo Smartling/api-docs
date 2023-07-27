@@ -4,7 +4,6 @@
 ## Links
 
 - Documentation(ReDoc): https://api-reference.smartling.com/
-- SwaggerUI: https://api-reference.smartling.com/swagger-ui/
 - Look full spec:
     + JSON https://api-reference.smartling.com/swagger.json
     + YAML https://api-reference.smartling.com/swagger.yaml
@@ -26,7 +25,7 @@
 3. Checkout console output to see where local server is started. You can use all [links](#links) (except `preview`) by replacing https://smartling.github.io/api-docs/ with url from the message: `Server started <url>`
 4. Make changes using your favorite editor or `swagger-editor` (look for URL in console output)
 5. All changes are immediately propagated to your local server, moreover all documentation pages will be automagically refreshed in a browser after each change
-**TIP:** you can open `swagger-editor`, documentation and `swagger-ui` in parallel
+**TIP:** you can open `swagger-editor`, and documentation in parallel
 6. Once you finish with the changes you can run tests using: `npm test`
 7. Share your changes with the rest of the world by pushing to GitHub :smile:
 
