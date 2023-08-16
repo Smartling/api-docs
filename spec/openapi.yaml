@@ -342,7 +342,16 @@ tags:
        - import / export (in multiple formats),
        - glossary labels management,
        - etc.
-  
+
+  - name: Blocklist API
+    description: |-
+      Allow to manage blocklists and terms in scope of the blocklists. Those are lists with terms that should not be used
+      in the translation process.
+      Currently blocklists are tied to Glossaries. 
+      
+      Current section describes glossary manipulation API, such as :
+       - blocklist manipulation,
+       - blocklist terms manipulation.
 
 paths:
   /auth-api/v2/authenticate:
@@ -10169,6 +10178,52 @@ paths:
 #
 ## GlossaryV3 API END
 #
+
+#
+## Blocklist API Start
+#
+
+  ### Blocklist manage endpoints START
+  /glossary-api/v3/accounts/{accountUid}/blocklists:
+    $ref: './spec/glossary_v3/blocklist_endpoints.yaml#/x-paths/create_blocklist'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}:
+    $ref: './spec/glossary_v3/blocklist_endpoints.yaml#/x-paths/read_update_blocklist'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/archive:
+    $ref: './spec/glossary_v3/blocklist_endpoints.yaml#/x-paths/archive'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/unarchive:
+    $ref: './spec/glossary_v3/blocklist_endpoints.yaml#/x-paths/restore'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/search:
+    $ref: './spec/glossary_v3/blocklist_endpoints.yaml#/x-paths/search_by_filter'
+
+  ### Blocklist manage endpoints END
+
+  ### BlocklistTerms manage endpoints START
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/terms:
+    $ref: './spec/glossary_v3/blocklist_term_endpoints.yaml#/x-paths/create_blocklist_term'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/terms/{termUid}:
+    $ref: './spec/glossary_v3/blocklist_term_endpoints.yaml#/x-paths/read_update_blocklist_term'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/terms/search:
+    $ref: './spec/glossary_v3/blocklist_term_endpoints.yaml#/x-paths/search_terms'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/terms/{termUid}/archive:
+    $ref: './spec/glossary_v3/blocklist_term_endpoints.yaml#/x-paths/archive_term'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/terms/{termUid}/unarchive:
+    $ref: './spec/glossary_v3/blocklist_term_endpoints.yaml#/x-paths/restore_term'
+
+  ### BlocklistTerms manage endpoints END
+
+#
+## Blocklist API END
+#
+
 
 components:
   requestBodies:
