@@ -121,6 +121,13 @@ x-paths:
       parameters:
         - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
         - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmptyBodyPTO'
       responses:
         '200':
           description: ''
@@ -154,6 +161,13 @@ x-paths:
       parameters:
         - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
         - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmptyBodyPTO'
       responses:
         '200':
           description: ''
@@ -192,7 +206,7 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetBlocklistByFilterCommand'
+                $ref: '#/components/schemas/GetBlocklistByFilterCommandPTO'
         responses:
           '200':
             description: ''
@@ -220,6 +234,7 @@ components:
       type: object
       required:
         - blocklistName
+        - glossaryUids
       properties:
         blocklistName:
           type: string
@@ -238,7 +253,7 @@ components:
           example: ["b45df55c-a5ae-4eda-857d-9c4b00526bc5", "b45df55c-a5ae-4eda-857d-9c4b00526bc1"]
       description: Blocklist command.
 
-    GetBlocklistByFilterCommand:
+    GetBlocklistByFilterCommandPTO:
       type: object
       properties:
         query:
@@ -271,6 +286,9 @@ components:
       description: >-
         Blocklist filter command.  
 
+    EmptyBodyPTO:
+      type: object
+      nullable: true
 
     BlocklistResponsePTO:
       type: object
@@ -325,7 +343,6 @@ components:
         code:
           type: string
           description: 'SUCCESS' in case if operation was successfully performed, 'NO_CONTENT' in case if  operation was not performed
-          example: SUCCESS
       description: Result of the archive / restore operation on blocklist.
 
     BlocklistSearchListResponsePTO:
