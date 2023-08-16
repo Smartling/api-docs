@@ -237,47 +237,47 @@ components:
 
     BlocklistTermCommandPTO:
       type: object
+      required:
+        - term
       properties:
-        properties:
-          term:
+        term:
+          type: string
+          description: Blocklist term. Max term length is equal to 250 characters.
+          example: some term to be blocked
+        notes:
+          type: string
+          description: Blocklist term. Max notes length is equal to 1500 characters.
+        caseSensitive:
+          type: boolean
+          description: Term caseSensitive.
+        exactMatch:
+          type: boolean
+          description: Term exactMatch.
+        variants:
+          type: array
+          description: >-
+            Term synonyms/variations. Max length of single variation entry is 250 characters.
+            Max amount of variations in current array is 50.
+          items:
             type: string
-            description: Blocklist term. Max term length is equal to 250 characters.
-            example: some term to be blocked
-          notes:
+          example: [ "en synonym to the term" ]
+        preferredTerms:
+          type: array
+          description: >-
+            Possible terms to be used instead of blocked. Max length of single variation entry is 250 characters.
+            Max amount of variations in current array is 50.
+          items:
             type: string
-            description: Blocklist term. Max notes length is equal to 1500 characters.
-          caseSensitive:
-            type: boolean
-            description: Term caseSensitive.
-          exactMatch:
-            type: boolean
-            description: Term exactMatch.
-          variants:
-            type: array
-            description: >-
-              Term synonyms/variations. Max length of single variation entry is 250 characters.
-              Max amount of variations in current array is 50.
-            items:
-              type: string
-            example: [ "en synonym to the term" ]
-          preferredTerms:
-            type: array
-            description: >-
-              Possible terms to be used instead of blocked. Max length of single variation entry is 250 characters.
-              Max amount of variations in current array is 50.
-            items:
-              type: string
-            example: [ "some preferred term instead of current" ]
-          localeIds:
-            type: array
-            description: >-
-              Associated locale identifiers.
-            items:
-              type: string
-            example: [ "uk-UA", "en" ]
-        description: >-
-          Blocklist term command. Please note that one of 'term | note' property values are required,
-          otherwise validation error ( code : 400 ) will be returned.
+          example: [ "some preferred term instead of current" ]
+        localeIds:
+          type: array
+          description: >-
+            Associated locale identifiers.
+          items:
+            type: string
+          example: [ "uk-UA", "en" ]
+      description: >-
+        Blocklist term command.
 
     GetBlocklistTermByFilterCommandPTO:
       type: object
