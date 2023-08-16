@@ -5,7 +5,7 @@ x-paths:
       summary: Create blocklist
       description: Create blocklist endpoint.
       tags:
-        - Glossary API
+        - Blocklist API
       operationId: createBlocklist
       consumes:
         - application/json
@@ -32,6 +32,77 @@ x-paths:
           $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
         403:
           $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  read_update_blocklist:
+    get:
+      tags:
+        - Blocklist API
+      summary: Read blocklist
+      description: Read blocklist endpoint.
+      operationId: readBlocklist
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlocklistResponsePTO"
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+    put:
+      summary: Update blocklist
+      description: Update blocklist endpoint.
+      tags:
+        - Blocklist API
+      operationId: updateBlocklist
+      consumes:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlocklistCommandPTO'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocklistResponsePTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
         429:
           $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
         500:
