@@ -108,43 +108,80 @@ x-paths:
         500:
           $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
 
-
-    blocklists_search_by_filter:
-      post:
-        summary: Search blocklists by filter
-        description: Search blocklists by filter endpoint.
-        tags:
-          - Blocklist API
-        operationId: searchBlocklist
-        consumes:
-          - application/json
-        parameters:
-          - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
-        requestBody:
+  archive_blocklist:
+    put:
+      summary: Archive blocklist
+      description: Archive blocklist endpoint.
+      tags:
+        - Blocklist API
+      operationId: archiveBlocklist
+      consumes:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './g_common.yaml#/components/schemas/EmptyCommandPTO'
+      responses:
+        '200':
           description: ''
-          required: true
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetBlocklistByFilterCommandPTO'
-        responses:
-          '200':
-            description: ''
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/BlocklistSearchListResponsePTO'
+                $ref: '#/components/schemas/BlocklistArchiveUnarchivedResponsePTO'
 
-          400:
-            $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
-          401:
-            $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
-          403:
-            $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
-          429:
-            $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
-          500:
-            $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  blocklists_search_by_filter:
+    post:
+      summary: Search blocklists by filter
+      description: Search blocklists by filter endpoint.
+      tags:
+        - Blocklist API
+      operationId: searchBlocklist
+      consumes:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetBlocklistByFilterCommandPTO'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocklistSearchListResponsePTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
 
 components:
 
@@ -252,6 +289,15 @@ components:
           description: Blocklist last modification date.
           example: 2021-07-20T13:19:46Z
       description: Blocklist response.
+
+    BlocklistArchiveUnarchivedResponsePTO:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 'SUCCESS' in case if operation was successfully performed, 'NO_CONTENT' in case if  operation was not performed
+          example: SUCCESS
+      description: Result of the archive / restore operation on blocklist.
 
     BlocklistSearchListResponsePTO:
       type: object
