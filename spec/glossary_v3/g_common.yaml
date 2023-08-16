@@ -351,12 +351,7 @@ components:
           example: uk-UA
       description: Sorting options.
 
-    EmptyCommandPTO:
-      type: object
-      nullable: true
-      description: Empty body.
-
-    AsyncOperationResponsePTO:
+    AsyncOperationResponse:
       type: object
       properties:
         operationUid:
@@ -374,6 +369,14 @@ components:
       required:
         - code
       type: object
+
+    AsyncOperationResponsePTO:
+      allOf:
+        - $ref: "#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/AsyncOperationResponse"
 
     EmptyResponse:
       type: object

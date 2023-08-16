@@ -315,7 +315,7 @@ components:
         from fallback locale in case if requested locale does not provide translation  data.
     
 
-    GlossariesArchiveUnarchiveCommandPTO:
+    GlossariesArchiveUnarchiveCommand:
       type: object
       required:
         - glossaryUids
@@ -327,6 +327,15 @@ components:
             type: string
           example: [ "58966072-6569-4c22-930c-de906b7fb18d", "12366072-6569-4c22-930c-de906b7fb18d" ]
       description: Archive / restore glossaries command.
+
+
+    GlossariesArchiveUnarchiveCommandPTO:
+      allOf:
+        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/GlossariesArchiveUnarchiveCommand"
 
     GetGlossariesByFilterCommandPTO:
       type: object
@@ -397,7 +406,7 @@ components:
           description: Sorting direction.
       description: Sorting options for the filter.
 
-    GlossaryResponsePTO:
+    GlossaryResponse:
       type: object
       properties:
         glossaryUid:
@@ -466,6 +475,15 @@ components:
           example: [ "en-US" ]
       description: Fallback locale configuration.
 
+    GlossaryResponsePTO:
+      allOf:
+        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/GlossaryResponse"
+
+
     GlossariesArchiveUnarchivedResponsePTO:
       type: object
       properties:
@@ -493,7 +511,7 @@ components:
 
     GlossarySearchResponsePTO:
       allOf:
-        - $ref: "#/components/schemas/GlossaryResponsePTO"
+        - $ref: "#/components/schemas/GlossaryResponse"
         - type: object
           properties:
             entriesCount:

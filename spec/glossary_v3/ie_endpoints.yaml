@@ -286,27 +286,28 @@ components:
           type: string
           description: Import file media type. One of 'text/csv |  text/xml | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       description: Glossary import command.
-    GlossaryImportResponsePTO:
+
+    GlossaryImportResponse:
       type: object
       properties:
         glossaryImport:
           description: GlossaryImport meta-data.
-          $ref: '#/components/schemas/GlossaryImportPTO'
+          $ref: '#/components/schemas/GlossaryImport'
         entryChanges:
           description: Entry changes stats.
-          $ref: '#/components/schemas/ImportEntryChangesPTO'
+          $ref: '#/components/schemas/ImportEntryChanges'
         translationChanges:
           type: array
           description: Translation changes stats.
           items:
-            $ref: '#/components/schemas/ImportEntryTranslationChangesPTO'
+            $ref: '#/components/schemas/ImportEntryTranslationChanges'
         warnings:
           type: array
           description: Import process warnings.
           items:
-            $ref: '#/components/schemas/ImportWarningPTO'
+            $ref: '#/components/schemas/ImportWarning'
       description: Glossary import meta-data.
-    GlossaryImportPTO:
+    GlossaryImport:
       type: object
       properties:
         glossaryUid:
@@ -327,7 +328,7 @@ components:
             - SUCCESSFUL
             - FAILED
       description: Glossary import process meta-data.
-    ImportEntryChangesPTO:
+    ImportEntryChanges:
       type: object
       properties:
         newEntries:
@@ -347,7 +348,7 @@ components:
           format: int32
           description: Amount of glossary entries to be archived.
       description: Glossary entry change stats.
-    ImportEntryTranslationChangesPTO:
+    ImportEntryTranslationChanges:
       type: object
       properties:
         localeId:
@@ -367,7 +368,7 @@ components:
           format: int32
           description: Amount of translations to be removed.
       description: Glossary entry translations change stats.
-    ImportWarningPTO:
+    ImportWarning:
       type: object
       properties:
         key:
@@ -377,3 +378,20 @@ components:
           type: string
           description: Warning message.
       description: Import related warning.
+
+    GlossaryImportResponsePTO:
+      allOf:
+        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/GlossaryImportResponse"
+
+    GlossaryImportPTO:
+      allOf:
+        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/GlossaryImport"
+
