@@ -336,13 +336,22 @@ tags:
       translation to be used during work process. Imagine not correctly translated medical/legal 
       terms - or inconsistent translation for the same terms by different translators in one document.
       
-      Current section describes glossary manipulation API, such as :
+       Current section describes glossary manipulation API, such as :
        - glossary manipulation,
        - glossary entries manipulation,
        - import / export (in multiple formats),
        - glossary labels management,
        - etc.
-  
+  - name: Blocklist API
+    description: |-
+      Defines list of terms that should not be used during the translation process.
+      Blocklists are tied to glossary functionality.
+      
+      Current section describes blocklists manipulation API, such as :
+       - blocklist manipulation,
+       - blocklist terms manipulation,
+       - import / export (in multiple formats).
+
 
 paths:
   /auth-api/v2/authenticate:
@@ -10166,9 +10175,62 @@ paths:
     $ref: './spec/glossary_v3/label_endpoints.yaml#/x-paths/update_remove_label'
   ## Glossary Labels End
 
+
+
+
+  ## Blocklist manage endpoints START
+  /glossary-api/v3/accounts/{accountUid}/blocklists:
+    $ref: './spec/glossary_v3/blocklist_endpoints.yaml#/x-paths/create_blocklist'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}:
+    $ref: './spec/glossary_v3/blocklist_endpoints.yaml#/x-paths/read_update_blocklist'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/archive:
+    $ref: './spec/glossary_v3/blocklist_endpoints.yaml#/x-paths/archive_blocklist'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/unarchive:
+    $ref: './spec/glossary_v3/blocklist_endpoints.yaml#/x-paths/restore_blocklist'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/search:
+    $ref: './spec/glossary_v3/blocklist_endpoints.yaml#/x-paths/blocklists_search_by_filter'
+  ## Blocklist manage endpoints END
+
+  ## BlocklistTerms manage endpoints START
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/terms:
+    $ref: './spec/glossary_v3/blocklist_terms_endpoints.yaml#/x-paths/create_blocklist_term'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/terms/{termUid}:
+    $ref: './spec/glossary_v3/blocklist_terms_endpoints.yaml#/x-paths/read_update_blocklist_term'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/terms/{termUid}/archive:
+    $ref: './spec/glossary_v3/blocklist_terms_endpoints.yaml#/x-paths/archive_blocklist_term'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/terms/{termUid}/unarchive:
+    $ref: './spec/glossary_v3/blocklist_terms_endpoints.yaml#/x-paths/restore_blocklist_term'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/terms/search:
+    $ref: './spec/glossary_v3/blocklist_terms_endpoints.yaml#/x-paths/search_blocklist_terms'
+  ## BlocklistTerms manage endpoints END
+
+  ### Blocklist ImportExport (ie) Start
+  /glossary-api/v3//accounts/{accountUid}/blocklists/{blocklistUid}/download:
+    $ref: './spec/glossary_v3/blocklist_ie_endpoints.yaml#/x-paths/blocklist_export_terms'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/import:
+    $ref: './spec/glossary_v3/blocklist_ie_endpoints.yaml#/x-paths/blocklist_initialize_import'
+
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/import/{importUid}:
+    $ref: './spec/glossary_v3/blocklist_ie_endpoints.yaml#/x-paths/blocklist_import_status'
+
+  /glossary-api/v3/accounts/accounts/{accountUid}/blocklists/{blocklistUid}/import/{importUid}/confirm:
+    $ref: './spec/glossary_v3/blocklist_ie_endpoints.yaml#/x-paths/blocklist_confirm_import'
+  ### Blocklist ImportExport (ie) End
+
+
 #
 ## GlossaryV3 API END
 #
+
 
 components:
   requestBodies:

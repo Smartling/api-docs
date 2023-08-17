@@ -24,6 +24,24 @@ components:
         format: uuid
       description: Unique identifier of the glossary entry.
 
+    blocklistUidPathParameter:
+      name: blocklistUid
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique identifier of the blocklist.
+
+    termUidPathParameter:
+      name: termUid
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique identifier of the blocklist term.
+
   schemas:
     GetGlossaryEntriesByFilterCommandPTO:
       type: object
@@ -333,7 +351,7 @@ components:
           example: uk-UA
       description: Sorting options.
 
-    AsyncOperationResponsePTO:
+    AsyncOperationResponse:
       type: object
       properties:
         operationUid:
@@ -351,6 +369,15 @@ components:
       required:
         - code
       type: object
+
+    AsyncOperationResponsePTO:
+      allOf:
+        - $ref: "#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/AsyncOperationResponse"
+
     EmptyResponse:
       type: object
       required:
