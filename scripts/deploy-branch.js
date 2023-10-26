@@ -18,6 +18,8 @@ if (branch && branch !== 'gh-pages') {
   cp('-R', 'spec/translation_quality', specFolder);
   cp('-R', 'spec/file_translation', specFolder);
   cp('-R', 'spec/issues', specFolder);
+  cp('-R', 'spec/job_batches_v1', specFolder);
+  cp('-R', 'spec/job_batches_v2', specFolder);
   cp('-R', 'spec/glossary_v3', specFolder);
   cp('-R', 'spec/api_common.yaml', specFolder);
 
