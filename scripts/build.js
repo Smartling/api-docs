@@ -17,7 +17,8 @@ exec('npm run swagger bundle -- --yaml -o web_deploy/swagger.yaml');
 mkdir('-p', 'web_deploy/spec');
 cp('-R', 'spec/translation_quality', 'web_deploy/spec');
 cp('-R', 'spec/issues', 'web_deploy/spec');
+cp('-R', 'spec/job_batches_v1', 'web_deploy/spec');
+cp('-R', 'spec/job_batches_v2', 'web_deploy/spec');
 cp('-R', 'spec/file_translation', 'web_deploy/spec');
 cp('-R', 'spec/glossary_v3', 'web_deploy/spec');
 cp('-R', 'spec/api_common.yaml', 'web_deploy/spec');
-
