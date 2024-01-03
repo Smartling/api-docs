@@ -356,6 +356,9 @@ tags:
        - blocklist terms manipulation,
        - import / export (in multiple formats).
 
+  - name: Workflow Assignment
+    description: |-
+      The Workflow Assignment API handles workflow step assignments for non agency users.
 
 paths:
   /auth-api/v2/authenticate:
@@ -949,6 +952,314 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
+
+#
+# Workflow Assignment API
+#
+  /people-api/v3/accounts/{accountUid}/processes/{processUid}:
+    get:
+      summary: Assignments removal status
+      description: |
+        Checking state of workflow assignments removal process
+      operationId: workflowAssignmentsProcess
+      tags:
+        - Workflow Assignment
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            format: uid
+            type: string
+        - name: processUid
+          in: path
+          required: true
+          description: The process unique identifier.
+          schema:
+            format: uuid
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAssignmentProcessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: '67f4287b-895f-4fc6-b672-6e3f376b0cd5'
+                        processState: 'RUNNING'
+                        createdDate: '2023-12-11T20:40:30Z'
+                        requested: 10
+                        processed: 5
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /people-api/v3/accounts/{accountUid}/users/{userUid}/workflow-steps/assign:
+    post:
+      summary: Create Steps Assignment
+      description: Create new workflow steps assignment
+      operationId: workflowAssignmentsCreate
+      tags:
+        - Workflow Assignment
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            format: uid
+            type: string
+        - name: userUid
+          in: path
+          required: true
+          description: User identifier.
+          schema:
+            format: uid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowAssignmentCreate'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAssignmentCreateResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 10
+                        items:
+                          workflowStepUid: '8312172ed60d'
+                          localePais:
+                            sourceLocaleId: 'en-US'
+                            targetLocaleIds:
+                              - 'fr-FR'
+                              - 'es-ES'
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /people-api/v3/accounts/{accountUid}/users/{userUid}/workflow-steps/remove:
+    post:
+      summary: Remove Step Assignments
+      description: Schedule workflow steps assignment removal and returns process uid for status check.
+      operationId: workflowAssignmentsRemove
+      tags:
+        - Workflow Assignment
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            format: uid
+            type: string
+        - name: userUid
+          in: path
+          required: true
+          description: User identifier.
+          schema:
+            format: uid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                workflowStepAssignments:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/WorkflowAssignmentWorkflowStep'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAssignmentProcessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: '67f4287b-895f-4fc6-b672-6e3f376b0cd5'
+                        processState: 'RUNNING'
+                        createdDate: '2023-12-11T20:40:30Z'
+                        requested: 10
+                        processed: 5
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /people-api/v3/accounts/{accountUid}/users/workflow-steps:
+    post:
+      summary: Search For Account Assignments
+      description: Search for workflow step assignments within account
+      operationId: workflowAssignmentsSearch
+      tags:
+        - Workflow Assignment
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            format: uid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                workflowStepUids:
+                  type: array
+                  minimum: 0
+                  maximum: 1000
+                  description: Optional workflow steps uids.
+                  example:
+                    - '8312172ed60d'
+                    - '42121ad3df2c'
+                  items:
+                    type: string
+                userUid:
+                  type: string
+                  description: Optional user identifier.
+                  example: 'ac48ht4qy'
+                offsetToken:
+                  type: string
+                  description: Offset token for next data batch or null
+                  example: 'd966008f-c341-4c75-a986-7e25a0135e01'
+                limit:
+                  type: integer
+                  minimum: 1
+                  maximum: 5000
+                  description: Size of batch for single request
+                  example: 1000
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAssignmentSearchResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        offsetToken: '67f4287b-895f-4fc6-b672-6e3f376b0cd5'
+                        workflowStepUserAssignments:
+                          userUid: 'ac48ht4qy'
+                          roleValue: 'ROLE_TRANSLATION_RESOURCE'
+                          agencyUid: null
+                          workflowStepAssignments:
+                            workflowStepUid: '8312172ed60d'
+                            localePais:
+                              sourceLocaleId: 'en-US'
+                              targetLocaleIds:
+                                - 'fr-FR'
+                                - 'es-ES'
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /people-api/v3/accounts/{accountUid}/users/{userUid}/workflow-steps:
+    post:
+      summary: Search For User Assignments
+      description: Search for workflow step assignments for single user
+      operationId: workflowAssignmentsUserSearch
+      tags:
+        - Workflow Assignment
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            format: uid
+            type: string
+        - name: userUid
+          in: path
+          required: true
+          description: User identifier.
+          schema:
+            format: uid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                offsetToken:
+                  type: string
+                  description: Offset token for next data batch or null
+                  example: '67f4287b-895f-4fc6-b672-6e3f376b0cd5'
+                limit:
+                  type: integer
+                  minimum: 1
+                  maximum: 5000
+                  description: Size of batch for single request
+                  example: 1000
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAssignmentSearchResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        offsetToken: '67f4287b-895f-4fc6-b672-6e3f376b0cd5'
+                        workflowStepUserAssignments:
+                          userUid: '0d1ff048f7e7'
+                          roleValue: 'ROLE_TRANSLATION_RESOURCE'
+                          agencyUid: null
+                          workflowStepAssignments:
+                            workflowStepUid: '8312172ed60d'
+                            localePais:
+                              sourceLocaleId: 'en-US'
+                              targetLocaleIds:
+                                - 'fr-FR'
+                                - 'es-ES'
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
 #
 # File API
 #
@@ -13454,6 +13765,131 @@ components:
                     - items
                   type: object
               type: object
+
+    WorkflowAssignmentProcessResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    processUid:
+                      type: string
+                    processState:
+                      enum:
+                      - RUNNING
+                      - COMPLETED
+                      - FAILED
+                      type: string
+                      description: The total number of users matching the request
+                    createdDate:
+                      type: string
+                      description: The date the process was created
+                    requested:
+                      type: integer
+                      description: Number of total workers within process
+                    processed:
+                      type: integer
+                      description: Number of processed workers within process
+
+    WorkflowAssignmentLocalePairs:
+      type: object
+      properties:
+        sourceLocaleId:
+          type: string
+          description: source locale ID
+          example: 'en-US'
+        targetLocaleIds:
+          type: array
+          description: The array of target locale IDs
+          example:
+            - 'fr-FR'
+            - 'es-ES'
+          items:
+            type: string
+
+    WorkflowAssignmentWorkflowStep:
+      type: object
+      properties:
+        workflowStepUid:
+          type: string
+          description: The uid of the workflow step.
+          example: '8312172ed60d'
+        localePairs:
+          $ref: '#/components/schemas/WorkflowAssignmentLocalePairs'
+
+    WorkflowAssignmentUserAssignment:
+      type: object
+      properties:
+        userUid:
+          type: string
+          description: User identifier.
+        roleValue:
+          type: string
+          description:  User role name.
+        agencyUid:
+          type: string
+          description: Agency identifier.
+        workflowStepAssignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowAssignmentWorkflowStep'
+
+    WorkflowAssignmentCreate:
+      type: object
+      properties:
+        roleValue:
+          enum:
+            - ROLE_TRANSLATION_RESOURCE
+            - ROLE_TRANSLATION_RESOURCE_MANAGER
+          type: string
+          description: User role name
+        workflowStepAssignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowAssignmentWorkflowStep'
+
+    WorkflowAssignmentCreateResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Number of created workflow step assignments
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/WorkflowAssignmentWorkflowStep'
+
+    WorkflowAssignmentSearchResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    offsetToken:
+                      type: string
+                      description: Offset token for next search operation
+                    workflowStepUserAssignments:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/WorkflowAssignmentUserAssignment'
 
   responses:
     Error400ResponseDefinition:
