@@ -17,6 +17,9 @@ externalDocs:
   description: Smartling Help Center
   url: 'https://help.smartling.com'
 
+security:
+  - BearerAuth: []
+
 tags:
   - name: Authentication
     description: |-
@@ -9243,6 +9246,10 @@ paths:
 
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
   requestBodies:
     TagsWithStrings:
       content:
@@ -9514,31 +9521,40 @@ components:
       properties:
         response:
           properties:
-            processState:
-              description: State of the completed process.
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occurred.
               enum:
-                - COMPLETED
-                - IN_PROGRESS
-                - FAILED
+                - SUCCESS
               type: string
-            createdDate:
-              format: date-time
-              type: string
-            modifiedDate:
-              format: date-time
-              type: string
-            errorMessage:
-              type: string
-            processType:
-              enum:
-                - MATCH_CONTEXT
-                - DELETE_CONTEXTS
-              type: string
-            result:
-              description: result if the response is COMPLETED. The content of the field is depends on `type` field
-              oneOf:
-                - $ref: '#/components/schemas/MatchAsyncResult'
-                - $ref: '#/components/schemas/DeleteContextsAsyncResult'
+            data:
+              properties:
+                processState:
+                  description: State of the completed process.
+                  enum:
+                    - COMPLETED
+                    - IN_PROGRESS
+                    - FAILED
+                  type: string
+                createdDate:
+                  format: date-time
+                  type: string
+                modifiedDate:
+                  format: date-time
+                  type: string
+                errorMessage:
+                  type: string
+                processType:
+                  enum:
+                    - MATCH_CONTEXT
+                    - DELETE_CONTEXTS
+                  type: string
+                result:
+                  description: result if the response is COMPLETED. The content of the field is depends on `type` field
+                  oneOf:
+                    - $ref: '#/components/schemas/MatchAsyncResult'
+                    - $ref: '#/components/schemas/DeleteContextsAsyncResult'
+              type: object
           type: object
       type: object
 
@@ -11547,7 +11563,7 @@ components:
                       description: >-
                         Whether translator instructions have been captured for the
                         file
-                      type: integer
+                      type: boolean
                     lastUploaded:
                       description: The time and date of the last upload
                       format: 'YYYY-MM-DDThh:mm:ssZ'
@@ -11688,7 +11704,13 @@ components:
             - $ref: '#/components/schemas/SuccessResponse'
             - properties:
                 data:
-                  $ref: '#/components/schemas/PublishedFilesAPIRecentlyPublishedFilesResponseItem'
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PublishedFilesAPIRecentlyPublishedFilesResponseItem'
+                    totalCount:
+                      type: integer
               type: object
     PublishedFilesAPIRecentlyPublishedFilesResponseItem:
       properties:
