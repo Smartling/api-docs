@@ -45,6 +45,8 @@ components:
   schemas:
     GetGlossaryEntriesByFilterCommandPTO:
       type: object
+      required:
+       - entryState
       properties:
         query:
           type: string
@@ -66,7 +68,6 @@ components:
           example:
             ["16ed66cc-accc-4bb5-9822-bc84e93429f8", "69dae398-96c2-45f6-9f0d-91470c3464bd"]
         entryState:
-          required: true
           type: string
           description: >-
             State of the glossary entry.
@@ -214,7 +215,6 @@ components:
           description: Date-time value.
           example: '2023-02-01T11:45:00.000Z'
         type:
-          required: true
           example: after
       description: After date filter.
     BeforeDateAuditionDateFilter:
@@ -225,7 +225,6 @@ components:
         - type
       properties:
         level:
-          required: true
           type: string
           description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
           enum:
@@ -250,7 +249,6 @@ components:
         - type
       properties:
         level:
-          required: true
           type: string
           description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
           enum:
@@ -278,7 +276,6 @@ components:
         - type
       properties:
         level:
-          required: true
           type: string
           description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
           enum:
@@ -287,7 +284,6 @@ components:
             - ANY
           example: ANY
         date:
-          required: true
           type: string
           description: Date-time value.
           example: '2023-02-01T11:45:00.000Z'
@@ -297,9 +293,11 @@ components:
       description: Exact date filter.
     AuditorCommandPTO:
       type: object
+      required:
+       - level
+       - userIds
       properties:
         level:
-          required: true
           type: string
           description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
           enum:
@@ -308,7 +306,6 @@ components:
             - ANY
           example: ANY
         userIds:
-          required: true
           type: array
           description: User identifiers.
           items:
@@ -416,7 +413,7 @@ components:
               type: string
             errors:
               items:
-                $ref: '#/components/schemas/Error'
+                $ref: '../api_common.yaml#/components/schemas/Error'
               type: array
           required:
             - code
@@ -437,7 +434,7 @@ components:
               type: string
             errors:
               items:
-                $ref: '#/components/schemas/Error'
+                $ref: '../openapi.yaml#/components/schemas/Error'
               type: array
           required:
             - code
@@ -459,7 +456,7 @@ components:
               type: string
             errors:
               items:
-                $ref: '#/components/schemas/Error'
+                $ref: '../openapi.yaml#/components/schemas/Error'
               type: array
           required:
             - code
@@ -480,7 +477,7 @@ components:
               type: string
             errors:
               items:
-                $ref: '#/components/schemas/Error'
+                $ref: '../openapi.yaml#/components/schemas/Error'
               type: array
           required:
             - code
@@ -500,7 +497,7 @@ components:
               type: string
             errors:
               items:
-                $ref: '#/components/schemas/Error'
+                $ref: '../openapi.yaml#/components/schemas/Error'
               type: array
           required:
             - code
@@ -521,7 +518,7 @@ components:
               type: string
             errors:
               items:
-                $ref: '#/components/schemas/Error'
+                $ref: '../openapi.yaml#/components/schemas/Error'
               type: array
           required:
             - code
