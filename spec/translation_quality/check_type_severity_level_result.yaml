@@ -7,7 +7,7 @@ x-paths:
         - Translation quality checks
       operationId: profilesUpdateCheckTypeSeverityLevel
       parameters:
-        - &ref_0
+        - &ref_1
           name: accountUid
           in: path
           schema:
@@ -16,14 +16,14 @@ x-paths:
           description: >-
             The account’s unique identifier. This can be found in the Smartling
             Dashboard under Account Settings > API.
-        - &ref_1
+        - &ref_2
           name: profileUid
           in: path
           required: true
           schema:
             type: string
           description: Unique identifier of corresponding profile.
-        - &ref_4
+        - &ref_9
           name: checkTypeCode
           in: path
           required: true
@@ -59,7 +59,7 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: &ref_2
+            schema: &ref_3
               allOf:
                 - type: object
                   properties:
@@ -76,7 +76,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: &ref_3
+              schema: &ref_4
                 type: object
                 properties:
                   response:
@@ -103,6 +103,153 @@ x-paths:
                                   - LOW
                                   - MEDIUM
                                   - HIGH
+        '400': &ref_5
+          description: Provided request parameters are invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - VALIDATION_ERROR
+                        type: string
+                      errors:
+                        items: &ref_0
+                          type: object
+                          properties:
+                            key:
+                              example: general_error
+                              type: string
+                            message:
+                              example: Unexpected server error
+                              type: string
+                            details:
+                              example: {}
+                              type: object
+                          required:
+                            - key
+                            - message
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: unknown.field
+                          message: >-
+                            The field unknown.parameter was not expected. Please
+                            consult the documentation to verify the fields you
+                            are submitting.
+                          details: {}
+        '401': &ref_6
+          description: Provided credentials are not valid.
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - AUTHENTICATION_ERROR
+                          - AUTHORIZATION_ERROR
+                        type: string
+                      errors:
+                        items: *ref_0
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
+              examples:
+                response:
+                  value:
+                    response:
+                      code: AUTHENTICATION_ERROR
+                      errors:
+                        - key: invalid_token
+                          details: {}
+                          message: Invalid token
+        '429': &ref_7
+          description: Too many simultaneous API requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - MAX_OPERATIONS_LIMIT_EXCEEDED
+                        type: string
+                      errors:
+                        items: *ref_0
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
+              examples:
+                response:
+                  value:
+                    response:
+                      code: MAX_OPERATIONS_LIMIT_EXCEEDED
+                      errors:
+                        - key: too.many.requests
+                          message: >-
+                            The limit of 10 concurrent Smartling file API
+                            operations for this project has been exceeded.
+        '500': &ref_8
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - GENERAL_ERROR
+                          - MAINTENANCE_MODE_ERROR
+                        type: string
+                      errors:
+                        items: *ref_0
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
       x-code-samples:
         - lang: curl
           source: >
@@ -117,9 +264,9 @@ x-paths:
         - Translation quality checks
       operationId: profilesUpdateCheckSubTypeSeverityLevel
       parameters:
-        - *ref_0
         - *ref_1
-        - &ref_5
+        - *ref_2
+        - &ref_10
           name: checkTypeCode
           in: path
           required: true
@@ -133,7 +280,7 @@ x-paths:
               - INSERTABLE_CONSISTENCY
               - TARGET_SOURCE_CONSISTENCY
           description: '[check type code](#operation/getTranslationQualityCheckTypes)'
-        - &ref_7
+        - &ref_12
           name: checkSubTypeCode
           in: path
           required: true
@@ -169,13 +316,17 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: *ref_2
+            schema: *ref_3
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_3
+              schema: *ref_4
+        '400': *ref_5
+        '401': *ref_6
+        '429': *ref_7
+        '500': *ref_8
       x-code-samples:
         - lang: curl
           source: >
@@ -190,10 +341,10 @@ x-paths:
         - Translation quality checks
       operationId: updateProfilesCheckGroupSeverityLevel
       parameters:
-        - *ref_0
         - *ref_1
-        - *ref_4
-        - &ref_6
+        - *ref_2
+        - *ref_9
+        - &ref_11
           name: groupUid
           in: path
           schema:
@@ -205,13 +356,17 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: *ref_2
+            schema: *ref_3
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_3
+              schema: *ref_4
+        '400': *ref_5
+        '401': *ref_6
+        '429': *ref_7
+        '500': *ref_8
       x-code-samples:
         - lang: curl
           source: >
@@ -226,23 +381,27 @@ x-paths:
         - Translation quality checks
       operationId: updateSeverityLevelForProfilesGroupAndSubType
       parameters:
-        - *ref_0
         - *ref_1
-        - *ref_5
-        - *ref_6
-        - *ref_7
+        - *ref_2
+        - *ref_10
+        - *ref_11
+        - *ref_12
       requestBody:
         description: ''
         required: true
         content:
           application/json:
-            schema: *ref_2
+            schema: *ref_3
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_3
+              schema: *ref_4
+        '400': *ref_5
+        '401': *ref_6
+        '429': *ref_7
+        '500': *ref_8
       x-code-samples:
         - lang: curl
           source: >
