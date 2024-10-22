@@ -41,10 +41,11 @@ try {
     const makeResultFunction = async() => {
         await makeResultForCertainFileFunction("./spec/translation_quality/dictionaries.yaml", "./spec/translation_quality/dictionaries_result.yaml", "./spec/translation_quality");
         await makeResultForCertainFileFunction("./spec/translation_quality/profiles.yaml", "./spec/translation_quality/profiles_result.yaml", "./spec/translation_quality");
-        await makeResultForCertainFileFunction("./spec/translation_quality/checks/accounts.yaml", "./spec/translation_quality/checks/accounts_result.yaml", "./spec/translation_quality/checks");
+        await makeResultForCertainFileFunction("./spec/translation_quality/accounts.yaml", "./spec/translation_quality/accounts_result.yaml", "./spec/translation_quality");
         await makeResultForCertainFileFunction("./spec/translation_quality/check_type_severity_level.yaml", "./spec/translation_quality/check_type_severity_level_result.yaml", "./spec/translation_quality");
         await makeResultForCertainFileFunction("./spec/translation_quality/account_settings.yaml", "./spec/translation_quality/account_settings_result.yaml", "./spec/translation_quality");
         await makeResultForCertainFileFunction("./spec/translation_quality/tqc_check.yaml", "./spec/translation_quality/tqc_check_result.yaml", "./spec/translation_quality");
+        // await makeResultForCertainFileFunction("/Users/alubenskyi/Documents/repos/api-docs/spec/translation_quality/tqc_check.yaml", "./spec/translation_quality/tqc_check_result.yaml", "./spec/translation_quality");
         await makeResultForCertainFileFunction("./spec/translation_quality/regex_check_settings.yaml", "./spec/translation_quality/regex_check_settings_result.yaml", "./spec/translation_quality");
     }
     makeResultFunction();
