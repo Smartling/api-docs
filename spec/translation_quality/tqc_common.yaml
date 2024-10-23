@@ -162,15 +162,6 @@ components:
       required:
         - name
 
-    checkTypeCode:
-      type: object
-      properties:
-        checkTypeCode:
-          type: string
-          $ref: '#/components/schemas/checkTypeCodeEnum'
-          description: '[check type code](#operation/getTranslationQualityCheckTypes)'
-          example: "LEADING_TRAILING_SPACES"
-
   schemas:
 
     groupUidResponse:
@@ -417,6 +408,10 @@ components:
             type: object
             properties:
               checkSubTypeCode:
+                type: string
+                description: check subtype code
+                example: ""
+              severityLevelCode:
                 type: string
                 description: check subtype code
                 example: ""
@@ -683,7 +678,7 @@ components:
         - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
 
     ProfilesAccountCheckTypeApplySettingsDTOResponseOneOfCommon:
-      oneOf:
+      anyOf:
         - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
@@ -735,6 +730,9 @@ components:
 
 
     checkTypeCodeEnum:
+      type: string
+      description: '[check type code](#operation/getTranslationQualityCheckTypes)'
+      example: "LEADING_TRAILING_SPACES"
       enum:
         - LEADING_TRAILING_SPACES
         - ORIGINAL_EQUALS_TARGET
