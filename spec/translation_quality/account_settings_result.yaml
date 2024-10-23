@@ -8,7 +8,7 @@ x-paths:
         - Translation quality checks
       operationId: createTranslationQualityCheckTypeGroup
       parameters:
-        - &ref_2
+        - &ref_3
           name: accountUid
           in: path
           schema:
@@ -17,11 +17,14 @@ x-paths:
           description: >-
             The account’s unique identifier. This can be found in the Smartling
             Dashboard under Account Settings > API.
-        - &ref_3
+        - &ref_4
           name: checkTypeCode
           in: path
           required: true
           schema: &ref_0
+            type: string
+            description: '[check type code](#operation/getTranslationQualityCheckTypes)'
+            example: LEADING_TRAILING_SPACES
             enum:
               - LEADING_TRAILING_SPACES
               - ORIGINAL_EQUALS_TARGET
@@ -58,7 +61,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - &ref_4
+                      - &ref_5
                         type: object
                         required:
                           - code
@@ -74,22 +77,25 @@ x-paths:
                         properties:
                           data:
                             allOf:
-                              - &ref_5
+                              - &ref_6
                                 type: object
                                 properties:
                                   groupUid:
                                     type: string
                                     description: Unique identifier of corresponding group.
-                              - &ref_6
+                              - &ref_7
                                 type: object
                                 properties:
                                   severityLevelCode: &ref_1
+                                    type: string
+                                    description: severity level code
+                                    example: MEDIUM
                                     enum:
                                       - DISABLED
                                       - LOW
                                       - MEDIUM
                                       - HIGH
-                              - &ref_7
+                              - &ref_8
                                 type: object
                                 properties:
                                   checkTypeCode: *ref_0
@@ -99,7 +105,7 @@ x-paths:
                                     type: array
                                     items:
                                       allOf:
-                                        - &ref_8
+                                        - &ref_9
                                           type: object
                                           properties:
                                             checkSubTypeCode:
@@ -132,7 +138,7 @@ x-paths:
                                               type: string
                                               description: check subtype name
                                               example: Emoji added
-                                        - &ref_9
+                                        - &ref_10
                                           type: object
                                           properties:
                                             severityLevelCode: *ref_1
@@ -142,7 +148,7 @@ x-paths:
                                     type: array
                                     items:
                                       allOf:
-                                        - &ref_10
+                                        - &ref_11
                                           type: object
                                           properties:
                                             targetLocaleId:
@@ -158,6 +164,153 @@ x-paths:
                                   ignoreSign:
                                     type: string
                                     example: false
+        '400': &ref_12
+          description: Provided request parameters are invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - VALIDATION_ERROR
+                        type: string
+                      errors:
+                        items: &ref_2
+                          type: object
+                          properties:
+                            key:
+                              example: general_error
+                              type: string
+                            message:
+                              example: Unexpected server error
+                              type: string
+                            details:
+                              example: {}
+                              type: object
+                          required:
+                            - key
+                            - message
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: unknown.field
+                          message: >-
+                            The field unknown.parameter was not expected. Please
+                            consult the documentation to verify the fields you
+                            are submitting.
+                          details: {}
+        '401': &ref_13
+          description: Provided credentials are not valid.
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - AUTHENTICATION_ERROR
+                          - AUTHORIZATION_ERROR
+                        type: string
+                      errors:
+                        items: *ref_2
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
+              examples:
+                response:
+                  value:
+                    response:
+                      code: AUTHENTICATION_ERROR
+                      errors:
+                        - key: invalid_token
+                          details: {}
+                          message: Invalid token
+        '429': &ref_14
+          description: Too many simultaneous API requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - MAX_OPERATIONS_LIMIT_EXCEEDED
+                        type: string
+                      errors:
+                        items: *ref_2
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
+              examples:
+                response:
+                  value:
+                    response:
+                      code: MAX_OPERATIONS_LIMIT_EXCEEDED
+                      errors:
+                        - key: too.many.requests
+                          message: >-
+                            The limit of 10 concurrent Smartling file API
+                            operations for this project has been exceeded.
+        '500': &ref_15
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - GENERAL_ERROR
+                          - MAINTENANCE_MODE_ERROR
+                        type: string
+                      errors:
+                        items: *ref_2
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
       x-code-samples:
         - lang: curl
           source: >
@@ -172,8 +325,8 @@ x-paths:
         - Translation quality checks
       operationId: getTranslationQualityCheckTypeGroupDetails
       parameters:
-        - *ref_2
         - *ref_3
+        - *ref_4
       responses:
         '200':
           description: OK
@@ -184,7 +337,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_4
+                      - *ref_5
                       - type: object
                         properties:
                           data:
@@ -198,29 +351,33 @@ x-paths:
                                 type: array
                                 items:
                                   allOf:
-                                    - *ref_5
                                     - *ref_6
                                     - *ref_7
+                                    - *ref_8
                                     - type: object
                                       properties:
                                         subTypes:
                                           type: array
                                           items:
                                             allOf:
-                                              - *ref_8
                                               - *ref_9
+                                              - *ref_10
                                     - type: object
                                       properties:
                                         locales:
                                           type: array
                                           items:
                                             allOf:
-                                              - *ref_10
+                                              - *ref_11
                                     - type: object
                                       properties:
                                         ignoreSign:
                                           type: string
                                           example: false
+        '400': *ref_12
+        '401': *ref_13
+        '429': *ref_14
+        '500': *ref_15
       x-code-samples:
         - lang: curl
           source: >
@@ -235,15 +392,15 @@ x-paths:
         - Translation quality checks
       operationId: getProfilesTranslationQualityCheckTypeGroupDetails
       parameters:
-        - *ref_2
-        - &ref_11
+        - *ref_3
+        - &ref_16
           name: profileUid
           in: path
           required: true
           schema:
             type: string
           description: Unique identifier of corresponding profile.
-        - *ref_3
+        - *ref_4
       responses:
         '200':
           description: OK
@@ -254,7 +411,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_4
+                      - *ref_5
                       - type: object
                         properties:
                           data:
@@ -268,8 +425,8 @@ x-paths:
                                 type: array
                                 items:
                                   allOf:
-                                    - *ref_5
-                                    - &ref_12
+                                    - *ref_6
+                                    - &ref_17
                                       type: object
                                       properties:
                                         profileUid:
@@ -278,28 +435,32 @@ x-paths:
                                             Unique identifier of corresponding
                                             profile.
                                           example: ce6d6b5dbc12
-                                    - *ref_6
                                     - *ref_7
+                                    - *ref_8
                                     - type: object
                                       properties:
                                         subTypes:
                                           type: array
                                           items:
                                             allOf:
-                                              - *ref_8
                                               - *ref_9
+                                              - *ref_10
                                     - type: object
                                       properties:
                                         locales:
                                           type: array
                                           items:
                                             allOf:
-                                              - *ref_10
+                                              - *ref_11
                                     - type: object
                                       properties:
                                         ignoreSign:
                                           type: string
                                           example: false
+        '400': *ref_12
+        '401': *ref_13
+        '429': *ref_14
+        '500': *ref_15
       x-code-samples:
         - lang: curl
           source: >
@@ -313,9 +474,9 @@ x-paths:
         - Translation quality checks
       operationId: CreateProfilesTranslationQualityCheckTypeGroup
       parameters:
-        - *ref_2
-        - *ref_11
         - *ref_3
+        - *ref_16
+        - *ref_4
       requestBody:
         content:
           application/json:
@@ -340,35 +501,39 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_4
+                      - *ref_5
                       - type: object
                         properties:
                           data:
                             allOf:
-                              - *ref_5
-                              - *ref_12
                               - *ref_6
+                              - *ref_17
                               - *ref_7
+                              - *ref_8
                               - type: object
                                 properties:
                                   subTypes:
                                     type: array
                                     items:
                                       allOf:
-                                        - *ref_8
                                         - *ref_9
+                                        - *ref_10
                               - type: object
                                 properties:
                                   locales:
                                     type: array
                                     items:
                                       allOf:
-                                        - *ref_10
+                                        - *ref_11
                               - type: object
                                 properties:
                                   ignoreSign:
                                     type: string
                                     example: false
+        '400': *ref_12
+        '401': *ref_13
+        '429': *ref_14
+        '500': *ref_15
       x-code-samples:
         - lang: curl
           source: >
@@ -384,9 +549,9 @@ x-paths:
         - Translation quality checks
       operationId: getTranslationQualityCheckTypeGroupDetailsByGroup
       parameters:
-        - *ref_2
         - *ref_3
-        - &ref_13
+        - *ref_4
+        - &ref_18
           name: groupUid
           in: path
           schema:
@@ -403,34 +568,38 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_4
+                      - *ref_5
                       - type: object
                         properties:
                           data:
                             allOf:
-                              - *ref_5
                               - *ref_6
                               - *ref_7
+                              - *ref_8
                               - type: object
                                 properties:
                                   subTypes:
                                     type: array
                                     items:
                                       allOf:
-                                        - *ref_8
                                         - *ref_9
+                                        - *ref_10
                               - type: object
                                 properties:
                                   locales:
                                     type: array
                                     items:
                                       allOf:
-                                        - *ref_10
+                                        - *ref_11
                               - type: object
                                 properties:
                                   ignoreSign:
                                     type: string
                                     example: false
+        '400': *ref_12
+        '401': *ref_13
+        '429': *ref_14
+        '500': *ref_15
       x-code-samples:
         - lang: curl
           source: >
@@ -445,9 +614,9 @@ x-paths:
         - Translation quality checks
       operationId: deleteTranslationQualityCheckTypeGroup
       parameters:
-        - *ref_2
         - *ref_3
-        - *ref_13
+        - *ref_4
+        - *ref_18
       responses:
         '200':
           description: OK
@@ -458,12 +627,16 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_4
+                      - *ref_5
                       - type: object
                         properties:
                           data:
                             allOf:
-                              - *ref_5
+                              - *ref_6
+        '400': *ref_12
+        '401': *ref_13
+        '429': *ref_14
+        '500': *ref_15
       x-code-samples:
         - lang: curl
           source: >
@@ -478,10 +651,10 @@ x-paths:
         - Translation quality checks
       operationId: getProfilesTranslationQualityCheckTypeGroupDetailsByGroup
       parameters:
-        - *ref_2
-        - *ref_11
         - *ref_3
-        - *ref_13
+        - *ref_16
+        - *ref_4
+        - *ref_18
       responses:
         '200':
           description: OK
@@ -492,35 +665,39 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_4
+                      - *ref_5
                       - type: object
                         properties:
                           data:
                             allOf:
-                              - *ref_5
-                              - *ref_12
                               - *ref_6
+                              - *ref_17
                               - *ref_7
+                              - *ref_8
                               - type: object
                                 properties:
                                   subTypes:
                                     type: array
                                     items:
                                       allOf:
-                                        - *ref_8
                                         - *ref_9
+                                        - *ref_10
                               - type: object
                                 properties:
                                   locales:
                                     type: array
                                     items:
                                       allOf:
-                                        - *ref_10
+                                        - *ref_11
                               - type: object
                                 properties:
                                   ignoreSign:
                                     type: string
                                     example: false
+        '400': *ref_12
+        '401': *ref_13
+        '429': *ref_14
+        '500': *ref_15
       x-code-samples:
         - lang: curl
           source: >
@@ -534,22 +711,24 @@ x-paths:
         - Translation quality checks
       operationId: deleteProfilesTranslationQualityCheckTypeGroup
       parameters:
-        - *ref_2
-        - *ref_11
         - *ref_3
-        - *ref_13
+        - *ref_16
+        - *ref_4
+        - *ref_18
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_4
+              schema: *ref_5
               examples:
                 response:
                   value:
-                    response:
-                      code: SUCCESS
-                      data: null
+                    code: SUCCESS
+        '400': *ref_12
+        '401': *ref_13
+        '429': *ref_14
+        '500': *ref_15
       x-code-samples:
         - lang: curl
           source: >
@@ -565,33 +744,37 @@ x-paths:
         - Translation quality checks
       operationId: addLocaleToTranslationQualityCheckTypeGroup
       parameters:
-        - *ref_2
         - *ref_3
-        - *ref_13
+        - *ref_4
+        - *ref_18
       requestBody:
         description: ''
         required: true
         content:
           application/json:
-            schema: &ref_14
+            schema: &ref_19
               allOf:
-                - *ref_10
+                - *ref_11
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: &ref_15
+              schema: &ref_20
                 type: object
                 properties:
                   response:
                     allOf:
-                      - *ref_4
+                      - *ref_5
                       - type: object
                         properties:
                           data:
                             allOf:
-                              - *ref_10
+                              - *ref_11
+        '400': *ref_12
+        '401': *ref_13
+        '429': *ref_14
+        '500': *ref_15
       x-code-samples:
         - lang: curl
           source: >
@@ -606,22 +789,26 @@ x-paths:
         - Translation quality checks
       operationId: addLocaleToProfilesTranslationQualityCheckTypeGroup
       parameters:
-        - *ref_2
-        - *ref_11
         - *ref_3
-        - *ref_13
+        - *ref_16
+        - *ref_4
+        - *ref_18
       requestBody:
         description: ''
         required: true
         content:
           application/json:
-            schema: *ref_14
+            schema: *ref_19
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_15
+              schema: *ref_20
+        '400': *ref_12
+        '401': *ref_13
+        '429': *ref_14
+        '500': *ref_15
       x-code-samples:
         - lang: curl
           source: >
@@ -637,10 +824,10 @@ x-paths:
         - Translation quality checks
       operationId: deleteLocaleFromTranslationQualityCheckTypeGroup
       parameters:
-        - *ref_2
         - *ref_3
-        - *ref_13
-        - &ref_16
+        - *ref_4
+        - *ref_18
+        - &ref_21
           name: targetLocaleId
           in: path
           required: true
@@ -657,12 +844,16 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_4
+                      - *ref_5
                       - type: object
                         properties:
                           data:
                             allOf:
-                              - *ref_10
+                              - *ref_11
+        '400': *ref_12
+        '401': *ref_13
+        '429': *ref_14
+        '500': *ref_15
       x-code-samples:
         - lang: curl
           source: >
@@ -677,23 +868,25 @@ x-paths:
         - Translation quality checks
       operationId: deleteLocaleFromProfilesTranslationQualityCheckTypeGroup
       parameters:
-        - *ref_2
-        - *ref_11
         - *ref_3
-        - *ref_13
         - *ref_16
+        - *ref_4
+        - *ref_18
+        - *ref_21
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_4
+              schema: *ref_5
               examples:
                 response:
                   value:
-                    response:
-                      code: SUCCESS
-                      data: null
+                    code: SUCCESS
+        '400': *ref_12
+        '401': *ref_13
+        '429': *ref_14
+        '500': *ref_15
       x-code-samples:
         - lang: curl
           source: >

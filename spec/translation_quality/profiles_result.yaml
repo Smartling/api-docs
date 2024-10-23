@@ -7,7 +7,7 @@ x-paths:
         - Translation quality checks
       operationId: getTQCProfiles
       parameters:
-        - &ref_0
+        - &ref_1
           name: accountUid
           in: path
           schema:
@@ -47,7 +47,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - &ref_1
+                      - &ref_2
                         type: object
                         required:
                           - code
@@ -70,7 +70,7 @@ x-paths:
                                 example: 1
                               items:
                                 type: array
-                                items: &ref_2
+                                items: &ref_3
                                   type: object
                                   properties:
                                     profileUid:
@@ -101,6 +101,153 @@ x-paths:
                                       type: string
                                       description: modified date
                                       example: '2018-07-02T13:39:27Z'
+        '400': &ref_4
+          description: Provided request parameters are invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - VALIDATION_ERROR
+                        type: string
+                      errors:
+                        items: &ref_0
+                          type: object
+                          properties:
+                            key:
+                              example: general_error
+                              type: string
+                            message:
+                              example: Unexpected server error
+                              type: string
+                            details:
+                              example: {}
+                              type: object
+                          required:
+                            - key
+                            - message
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: unknown.field
+                          message: >-
+                            The field unknown.parameter was not expected. Please
+                            consult the documentation to verify the fields you
+                            are submitting.
+                          details: {}
+        '401': &ref_5
+          description: Provided credentials are not valid.
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - AUTHENTICATION_ERROR
+                          - AUTHORIZATION_ERROR
+                        type: string
+                      errors:
+                        items: *ref_0
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
+              examples:
+                response:
+                  value:
+                    response:
+                      code: AUTHENTICATION_ERROR
+                      errors:
+                        - key: invalid_token
+                          details: {}
+                          message: Invalid token
+        '429': &ref_6
+          description: Too many simultaneous API requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - MAX_OPERATIONS_LIMIT_EXCEEDED
+                        type: string
+                      errors:
+                        items: *ref_0
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
+              examples:
+                response:
+                  value:
+                    response:
+                      code: MAX_OPERATIONS_LIMIT_EXCEEDED
+                      errors:
+                        - key: too.many.requests
+                          message: >-
+                            The limit of 10 concurrent Smartling file API
+                            operations for this project has been exceeded.
+        '500': &ref_7
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - GENERAL_ERROR
+                          - MAINTENANCE_MODE_ERROR
+                        type: string
+                      errors:
+                        items: *ref_0
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
       x-code-samples:
         - lang: curl
           source: >
@@ -113,15 +260,15 @@ x-paths:
         - Translation quality checks
       operationId: createTQCProfile
       parameters:
-        - *ref_0
+        - *ref_1
       requestBody:
         description: ''
         required: true
         content:
           application/json:
-            schema: &ref_3
+            schema: &ref_8
               allOf:
-                - &ref_4
+                - &ref_9
                   type: object
                   properties:
                     name:
@@ -135,15 +282,19 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: &ref_6
+              schema: &ref_11
                 type: object
                 properties:
                   response:
                     allOf:
-                      - *ref_1
+                      - *ref_2
                       - type: object
                         properties:
-                          data: *ref_2
+                          data: *ref_3
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -158,8 +309,8 @@ x-paths:
         - Translation quality checks
       operationId: updateTQCProfile
       parameters:
-        - *ref_0
-        - &ref_5
+        - *ref_1
+        - &ref_10
           name: profileUid
           in: path
           required: true
@@ -171,7 +322,7 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: *ref_3
+            schema: *ref_8
       responses:
         '200':
           description: OK
@@ -182,10 +333,14 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_1
+                      - *ref_2
                       - type: object
                         properties:
-                          data: *ref_4
+                          data: *ref_9
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -200,14 +355,18 @@ x-paths:
         - Translation quality checks
       operationId: getTQCProfile
       parameters:
-        - *ref_0
-        - *ref_5
+        - *ref_1
+        - *ref_10
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_6
+              schema: *ref_11
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -220,20 +379,22 @@ x-paths:
         - Translation quality checks
       operationId: deleteTQCProfile
       parameters:
-        - *ref_0
-        - *ref_5
+        - *ref_1
+        - *ref_10
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_1
+              schema: *ref_2
               examples:
                 response:
                   value:
-                    response:
-                      code: SUCCESS
-                      data: null
+                    code: SUCCESS
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -248,13 +409,17 @@ x-paths:
         - Translation quality checks
       operationId: getTQCDefaultProfile
       parameters:
-        - *ref_0
+        - *ref_1
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_6
+              schema: *ref_11
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -267,7 +432,7 @@ x-paths:
         - Translation quality checks
       operationId: updateTQCDefaultProfile
       parameters:
-        - *ref_0
+        - *ref_1
       requestBody:
         description: ''
         required: true
@@ -288,7 +453,11 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: *ref_6
+              schema: *ref_11
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
         x-code-samples:
           - lang: curl
             source: >
@@ -303,7 +472,7 @@ x-paths:
         - Translation quality checks
       operationId: copyTQCProfile
       parameters:
-        - *ref_0
+        - *ref_1
         - name: profileUid
           in: path
           required: true
@@ -315,13 +484,17 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: *ref_3
+            schema: *ref_8
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_6
+              schema: *ref_11
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >

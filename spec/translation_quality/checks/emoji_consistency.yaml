@@ -13,7 +13,6 @@ components:
       title: EMOJI_CONSISTENCY
       allOf:
         - $ref: '#/components/schemas/EmojiConsistencySettingsDTO'
-        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
         - type: object
           required:
             - noEmojisAllowedInTarget
@@ -49,6 +48,8 @@ components:
                       - EMOJI_PRESENT
                     description: check subtype code
                     example: "EMOJI_ADDED"
+                  severityLevelCode:
+                    $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeEnum'
 
     ProfilesAccountCheckTypeEffectiveDTO:
       title: EMOJI_CONSISTENCY
@@ -77,6 +78,8 @@ components:
                       - EMOJI_PRESENT
                     description: check subtype code
                     example: "EMOJI_ADDED"
+                  severityLevelCode:
+                    $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeEnum'
 
     ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
@@ -102,6 +105,7 @@ components:
               description: check type code
               example: "EMOJI_CONSISTENCY"
             details:
+              nullable: true
               type: object
               properties:
                 emoji:
@@ -116,6 +120,15 @@ components:
                     - EMOJI_PRESENT
                   description: emoji defect type
                   example: "EMOJI_DELETED"
+                severityLevelCode:
+                  type: string
+                  enum:
+                    - LOW
+                    - MEDIUM
+                    - HIGH
+                    - DISABLED
+                  description: severity level code
+                  example: "LOW"
             positionTypeCode:
               type: string
               enum:
@@ -127,31 +140,40 @@ components:
   examples:
 
     profiles_account_check_types_settings_effective_example:
-      "profileUid": "ce6d6b5dbc12"
-      "severityLevelCode": "LOW"
-      "checkTypeCode": "EMOJI_CONSISTENCY"
-      "subTypes":
-        - "checkSubTypeCode": "EMOJI_PRESENT"
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "profileUid": "ce6d6b5dbc12"
           "severityLevelCode": "LOW"
-        - "checkSubTypeCode": "EMOJI_DELETED"
-          "severityLevelCode": "DISABLED"
-        - "checkSubTypeCode": "EMOJI_ADDED"
-          "severityLevelCode": "LOW"
-      "localeSeverityLevels": []
-      "groups": []
-      "noEmojisAllowedInTarget": false
+          "checkTypeCode": "EMOJI_CONSISTENCY"
+          "subTypes":
+            - "checkSubTypeCode": "EMOJI_PRESENT"
+              "severityLevelCode": "LOW"
+            - "checkSubTypeCode": "EMOJI_DELETED"
+              "severityLevelCode": "DISABLED"
+            - "checkSubTypeCode": "EMOJI_ADDED"
+              "severityLevelCode": "LOW"
+          "localeSeverityLevels": []
+          "groups": []
+          "noEmojisAllowedInTarget": false
 
     accounts_check_types_checkType_settings_example:
       noEmojisAllowedInTarget: true
 
     profiles_accounts_check_types_checkType_settings_example:
-      noEmojisAllowedInTarget: true
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "noEmojisAllowedInTarget": true
 
     accounts_check_types_checkType_group_settings_example:
       noEmojisAllowedInTarget: true
 
     profiles_accounts_check_types_checkType_group_settings_example:
-      noEmojisAllowedInTarget: true
+      "response":
+        "code": "SUCCESS"
+        "data":
+          noEmojisAllowedInTarget: true
 
     tqc_check_response_example:
       "response":
@@ -172,8 +194,8 @@ components:
                     - "from": 14
                       "to": 16
                   "details":
-                    - "emoji": "😀"
-                      "type": "EMOJI_DELETED"
+                    "emoji": "😀"
+                    "type": "EMOJI_DELETED"
                   "positionTypeCode": "SOURCE"
 
     accounts_check_types_settings_example:

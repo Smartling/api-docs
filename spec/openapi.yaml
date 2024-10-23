@@ -8843,13 +8843,13 @@ paths:
     $ref: './translation_quality/profiles_result.yaml#/x-paths/default_profile'
 
   /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types:
-    $ref: './translation_quality/checks/accounts_result.yaml#/x-paths/profiles_check_types_settings'
+    $ref: './translation_quality/accounts_result.yaml#/x-paths/profiles_check_types_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}:
-    $ref: './translation_quality/checks/accounts_result.yaml#/x-paths/profiles_check_types_settings_effective'
+    $ref: './translation_quality/accounts_result.yaml#/x-paths/profiles_check_types_settings_effective'
 
   /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/settings:
-    $ref: './translation_quality/checks/accounts_result.yaml#/x-paths/profiles_check_types_checkType_settings'
+    $ref: './translation_quality/accounts_result.yaml#/x-paths/profiles_check_types_checkType_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/severity-level:
     $ref: './translation_quality/check_type_severity_level_result.yaml#/x-paths/profiles_check_type_severity_level'
@@ -8864,7 +8864,7 @@ paths:
     $ref: './translation_quality/account_settings_result.yaml#/x-paths/profiles_check_type_groups_group'
 
   /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/groups/{groupUid}/settings:
-    $ref: './translation_quality/checks/accounts_result.yaml#/x-paths/profiles_check_types_checkType_group_settings'
+    $ref: './translation_quality/accounts_result.yaml#/x-paths/profiles_check_types_checkType_group_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/{checkTypeCode}/groups/{groupUid}/locales:
     $ref: './translation_quality/account_settings_result.yaml#/x-paths/profiles_check_type_groups_group_locales'
@@ -8903,7 +8903,7 @@ paths:
     $ref: './translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_group_severity_level'
 
   /translation-quality-api/v2/projects/{projectId}/locales/{localeId}/check-types:
-    $ref: './translation_quality/checks/accounts_result.yaml#/x-paths/get_project_check_types_settings'
+    $ref: './translation_quality/accounts_result.yaml#/x-paths/get_project_check_types_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/projects/{projectId}/check:
     $ref: './translation_quality/tqc_check_result.yaml#/x-paths/tqc_check'
@@ -13136,6 +13136,7 @@ components:
                 description: When this translation was last modified.
                 type: string
               pluralForm:
+                nullable: true
                 description: >-
                   Pural form of the translation.  `null` if this translation is
                   not a plural.
@@ -13925,12 +13926,12 @@ components:
                 response:
                   code: VALIDATION_ERROR
                   errors:
-                    key: unknown.field
-                    message: >-
-                      The field unknown.parameter was not expected. Please
-                      consult the documentation to verify the fields you are
-                      submitting.
-                    details: unknown.parameter
+                    - key: unknown.field
+                      message: >-
+                        The field unknown.parameter was not expected. Please
+                        consult the documentation to verify the fields you are
+                        submitting.
+                      details: {}
 
     Error401ResponseDefinition:
       description: Provided credentials are not valid.
@@ -13944,9 +13945,9 @@ components:
                 response:
                   code: AUTHENTICATION_ERROR
                   errors:
-                    details: {}
-                    key: invalid_token
-                    message: Invalid token
+                    - key: invalid_token
+                      details: {}
+                      message: Invalid token
 
     Error429ResponseDefinition:
       description: Too many simultaneous API requests.
@@ -13960,10 +13961,10 @@ components:
                 response:
                   code: MAX_OPERATIONS_LIMIT_EXCEEDED
                   errors:
-                    key: too.many.requests
-                    message: >-
-                      The limit of 10 concurrent Smartling file API
-                      operations for this project has been exceeded.
+                    - key: too.many.requests
+                      message: >-
+                        The limit of 10 concurrent Smartling file API
+                        operations for this project has been exceeded.
 
     Error500ResponseDefinition:
       description: Unexpected error

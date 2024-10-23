@@ -30,115 +30,116 @@ x-paths:
           application/json:
             schema:
               allOf:
-                - allOf:
-                    - type: object
-                      properties:
-                        targetLocaleId:
-                          type: string
-                          description: >-
-                            Smartling ID for the language you want to translate
-                            to.
-                          example: it-IT
-                      required:
-                        - targetLocaleId
-                    - type: object
-                      properties:
-                        sourceLocaleId:
-                          type: string
-                          description: >-
-                            The locale identifier for the source locale of the
-                            project. This indicates the base locale for which
-                            content should be uploaded to the project.
-                          example: en-US
-                    - type: object
-                      properties:
-                        skipSuggestions:
-                          type: boolean
-                          description: skip suggestions
-                          example: false
-                        strings:
-                          type: array
-                          items:
-                            allOf:
-                              - type: object
-                                properties:
-                                  hashcode:
-                                    type: string
-                                    description: string hashcode
-                                    example: 7191152182c69d9b72069ac1290fe24b
-                              - type: object
-                                properties:
-                                  stringUid:
-                                    type: string
-                                    description: >-
-                                      it is string part unique identifier if
-                                      string is splitted on several parts
-                                    example: ''
-                              - type: object
-                                properties:
-                                  originalString:
-                                    type: string
-                                    description: original string
-                                    example: blacklist_term
-                              - type: object
-                                properties:
-                                  translation:
-                                    type: string
-                                    description: translation of the original string
-                                    example: blacklist_term
-                              - type: object
-                                properties:
-                                  pluralFormGroupUid:
-                                    type: string
-                                    description: unique identifier of plural form
-                                    example: 7191152182c69d9b72069ac1290fe24b
-                              - type: object
-                                properties:
-                                  pluralForm:
-                                    type: string
-                                    description: plural form
-                                    example: ONE
-                        useDefaultSettings:
-                          type: boolean
-                          description: use default settings
-                          example: false
-                        checkTypeCodes:
-                          minItems: 1
-                          maxItems: 100
-                          type: array
-                          items:
-                            allOf:
-                              - type: object
-                                properties:
-                                  checkTypeCode:
-                                    enum:
-                                      - LEADING_TRAILING_SPACES
-                                      - ORIGINAL_EQUALS_TARGET
-                                      - WHITESPACES
-                                      - SPELLCHECK
-                                      - TAG_CONSISTENCY
-                                      - TARGET_LENGTH_LIMIT
-                                      - NUMBER_CONSISTENCY
-                                      - REPEATED_WORD
-                                      - TARGET_IN_WRONG_LANGUAGE
-                                      - SOURCE_IN_WRONG_LANGUAGE
-                                      - SEGMENT_COMPLETENESS
-                                      - NON_TRANSLATABLE_TEXT
-                                      - EMOJI_CONSISTENCY
-                                      - INSERTABLE_CONSISTENCY
-                                      - TARGET_SOURCE_CONSISTENCY
-                                      - BLACKLISTED_TERMS
-                                      - GLOSSARY_COMPLIANCE
-                                      - TRADEMARK_CONSISTENCY
-                                      - GRAMMAR_CHECK
-                                      - GLOBAL_CAPITALISATION_CONSISTENCY
-                                      - PUNCTUATION_CONSISTENCY
-                                      - PLURALS_REPETITION
-                                      - REGEX_CHECK
-                                      - OPEN_ISSUES
-                          description: >-
-                            [check type
-                            codes](#operation/getTranslationQualityCheckTypes)
+                - type: object
+                  properties:
+                    targetLocaleId:
+                      type: string
+                      description: Smartling ID for the language you want to translate to.
+                      example: it-IT
+                  required:
+                    - targetLocaleId
+                - type: object
+                  properties:
+                    sourceLocaleId:
+                      type: string
+                      description: >-
+                        The locale identifier for the source locale of the
+                        project. This indicates the base locale for which
+                        content should be uploaded to the project.
+                      example: en-US
+                - type: object
+                  properties:
+                    skipSuggestions:
+                      type: boolean
+                      description: skip suggestions
+                      example: false
+                    strings:
+                      type: array
+                      items:
+                        allOf:
+                          - type: object
+                            properties:
+                              hashcode:
+                                type: string
+                                description: string hashcode
+                                example: 7191152182c69d9b72069ac1290fe24b
+                          - type: object
+                            properties:
+                              stringUid:
+                                nullable: true
+                                type: string
+                                description: >-
+                                  it is string part unique identifier if string
+                                  is splitted on several parts
+                                example: ''
+                          - type: object
+                            properties:
+                              originalString:
+                                type: string
+                                description: original string
+                                example: blacklist_term
+                          - type: object
+                            properties:
+                              translation:
+                                type: string
+                                description: translation of the original string
+                                example: blacklist_term
+                          - type: object
+                            properties:
+                              pluralFormGroupUid:
+                                type: string
+                                nullable: true
+                                description: unique identifier of plural form
+                                example: 7191152182c69d9b72069ac1290fe24b
+                          - type: object
+                            properties:
+                              pluralForm:
+                                nullable: true
+                                type: string
+                                description: plural form
+                                example: ONE
+                    useDefaultSettings:
+                      type: boolean
+                      description: use default settings
+                      example: false
+                    checkTypeCodes:
+                      minItems: 1
+                      maxItems: 100
+                      type: array
+                      items:
+                        type: string
+                        description: >-
+                          [check type
+                          code](#operation/getTranslationQualityCheckTypes)
+                        example: LEADING_TRAILING_SPACES
+                        enum:
+                          - LEADING_TRAILING_SPACES
+                          - ORIGINAL_EQUALS_TARGET
+                          - WHITESPACES
+                          - SPELLCHECK
+                          - TAG_CONSISTENCY
+                          - TARGET_LENGTH_LIMIT
+                          - NUMBER_CONSISTENCY
+                          - REPEATED_WORD
+                          - TARGET_IN_WRONG_LANGUAGE
+                          - SOURCE_IN_WRONG_LANGUAGE
+                          - SEGMENT_COMPLETENESS
+                          - NON_TRANSLATABLE_TEXT
+                          - EMOJI_CONSISTENCY
+                          - INSERTABLE_CONSISTENCY
+                          - TARGET_SOURCE_CONSISTENCY
+                          - BLACKLISTED_TERMS
+                          - GLOSSARY_COMPLIANCE
+                          - TRADEMARK_CONSISTENCY
+                          - GRAMMAR_CHECK
+                          - GLOBAL_CAPITALISATION_CONSISTENCY
+                          - PUNCTUATION_CONSISTENCY
+                          - PLURALS_REPETITION
+                          - REGEX_CHECK
+                          - OPEN_ISSUES
+                      description: >-
+                        [check type
+                        codes](#operation/getTranslationQualityCheckTypes)
             example:
               targetLocaleId: en-US
               sourceLocaleId: fr-FR
@@ -196,6 +197,7 @@ x-paths:
                                       properties:
                                         stringUid:
                                           type: string
+                                          nullable: true
                                           description: >-
                                             it is string part unique identifier if
                                             string is splitted on several parts
@@ -214,10 +216,12 @@ x-paths:
                                           example: 7191152182c69d9b72069ac1290fe24b
                                         pluralFormGroupUid:
                                           type: string
+                                          nullable: true
                                           description: unique identifier of plural form
                                           example: 7191152182c69d9b72069ac1290fe24b
                                         pluralForm:
                                           type: string
+                                          nullable: true
                                           description: plural form
                                           example: FEW
                                     mistakes:
@@ -226,10 +230,32 @@ x-paths:
                                         oneOf:
                                           - title: BLACKLISTED_TERMS
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - &ref_0
+                                                type: object
+                                                properties:
+                                                  severityLevelCode: &ref_2
+                                                    type: string
+                                                    description: severity level code
+                                                    example: MEDIUM
+                                                    enum:
+                                                      - DISABLED
+                                                      - LOW
+                                                      - MEDIUM
+                                                      - HIGH
+                                              - &ref_1
+                                                type: object
+                                                properties:
+                                                  positions:
+                                                    type: array
+                                                    items:
+                                                      type: object
+                                                      properties:
+                                                        from:
+                                                          type: integer
+                                                          description: start position in the string
+                                                        to:
+                                                          type: integer
+                                                          description: end position in the string
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -266,10 +292,8 @@ x-paths:
                                                     example: TARGET
                                           - title: EMOJI_CONSISTENCY
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -279,6 +303,7 @@ x-paths:
                                                     description: check type code
                                                     example: EMOJI_CONSISTENCY
                                                   details:
+                                                    nullable: true
                                                     type: object
                                                     properties:
                                                       emoji:
@@ -293,6 +318,15 @@ x-paths:
                                                           - EMOJI_PRESENT
                                                         description: emoji defect type
                                                         example: EMOJI_DELETED
+                                                      severityLevelCode:
+                                                        type: string
+                                                        enum:
+                                                          - LOW
+                                                          - MEDIUM
+                                                          - HIGH
+                                                          - DISABLED
+                                                        description: severity level code
+                                                        example: LOW
                                                   positionTypeCode:
                                                     type: string
                                                     enum:
@@ -302,10 +336,8 @@ x-paths:
                                                     example: SOURCE
                                           - title: GLOBAL_CAPITALISATION_CONSISTENCY
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -315,6 +347,7 @@ x-paths:
                                                     description: check type code
                                                     example: GLOBAL_CAPITALISATION_CONSISTENCY
                                                   details:
+                                                    nullable: true
                                                     type: object
                                                   positionTypeCode:
                                                     type: string
@@ -324,10 +357,8 @@ x-paths:
                                                     example: TARGET
                                           - title: GLOSSARY_COMPLIANCE
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -338,6 +369,7 @@ x-paths:
                                                     example: GLOSSARY_COMPLIANCE
                                                   details:
                                                     type: object
+                                                    nullable: true
                                                     properties:
                                                       glossaryTerm:
                                                         type: object
@@ -365,6 +397,7 @@ x-paths:
                                                                 type: string
                                                                 description: translator user identifier
                                                                 example: 23ddd32e
+                                                                nullable: true
                                                               lockTranslation:
                                                                 type: boolean
                                                                 description: lock translation
@@ -446,10 +479,8 @@ x-paths:
                                                     example: SOURCE
                                           - title: GRAMMAR_CHECK
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -459,6 +490,7 @@ x-paths:
                                                     description: check type code
                                                     example: GRAMMAR_CHECK
                                                   details:
+                                                    nullable: true
                                                     type: object
                                                     properties:
                                                       text:
@@ -493,10 +525,8 @@ x-paths:
                                                     example: TARGET
                                           - title: INSERTABLE_CONSISTENCY
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -507,6 +537,7 @@ x-paths:
                                                     example: INSERTABLE_CONSISTENCY
                                                   details:
                                                     type: object
+                                                    nullable: true
                                                     properties:
                                                       insertable:
                                                         type: string
@@ -532,10 +563,8 @@ x-paths:
                                                     example: SOURCE
                                           - title: LEADING_TRAILING_SPACES
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -546,6 +575,7 @@ x-paths:
                                                     example: LEADING_TRAILING_SPACES
                                                   details:
                                                     type: object
+                                                    nullable: true
                                                   positionTypeCode:
                                                     type: string
                                                     enum:
@@ -554,10 +584,8 @@ x-paths:
                                                     example: TARGET
                                           - title: NON_TRANSLATABLE_TEXT
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -568,6 +596,7 @@ x-paths:
                                                     example: NON_TRANSLATABLE_TEXT
                                                   details:
                                                     type: object
+                                                    nullable: true
                                                     properties:
                                                       placeable:
                                                         type: string
@@ -591,10 +620,8 @@ x-paths:
                                                     example: SOURCE
                                           - title: NUMBER_CONSISTENCY
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -604,6 +631,8 @@ x-paths:
                                                     description: check type code
                                                     example: NUMBER_CONSISTENCY
                                                   details:
+                                                    type: object
+                                                    nullable: true
                                                     oneOf:
                                                       - type: object
                                                         title: NUMBER_ADDED
@@ -654,10 +683,8 @@ x-paths:
                                                     example: SOURCE
                                           - title: ORIGINAL_EQUALS_TARGET
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -667,6 +694,7 @@ x-paths:
                                                     description: check type code
                                                     example: ORIGINAL_EQUALS_TARGET
                                                   details:
+                                                    nullable: true
                                                     type: object
                                                     properties:
                                                       types:
@@ -687,10 +715,8 @@ x-paths:
                                                     example: TARGET
                                           - title: REPEATED_WORD
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -700,6 +726,7 @@ x-paths:
                                                     description: check type code
                                                     example: REPEATED_WORD
                                                   details:
+                                                    nullable: true
                                                     type: object
                                                     properties:
                                                       word:
@@ -714,10 +741,8 @@ x-paths:
                                                     example: TARGET
                                           - title: SEGMENT_COMPLETENESS
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -728,6 +753,7 @@ x-paths:
                                                     example: SEGMENT_COMPLETENESS
                                                   details:
                                                     type: object
+                                                    nullable: true
                                                     properties:
                                                       type:
                                                         type: string
@@ -745,10 +771,8 @@ x-paths:
                                                     example: TARGET
                                           - title: SOURCE_IN_WRONG_LANGUAGE
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -758,6 +782,7 @@ x-paths:
                                                     description: check type code
                                                     example: SOURCE_IN_WRONG_LANGUAGE
                                                   details:
+                                                    nullable: true
                                                     type: object
                                                   positionTypeCode:
                                                     type: string
@@ -767,10 +792,8 @@ x-paths:
                                                     example: SOURCE
                                           - title: SPELLCHECK
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -781,6 +804,7 @@ x-paths:
                                                     example: SPELLCHECK
                                                   details:
                                                     type: object
+                                                    nullable: true
                                                     properties:
                                                       word:
                                                         type: string
@@ -802,10 +826,8 @@ x-paths:
                                                     example: TARGET
                                           - title: TAG_CONSISTENCY
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -838,10 +860,8 @@ x-paths:
                                                     example: SOURCE
                                           - title: TARGET_IN_WRONG_LANGUAGE
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -852,6 +872,7 @@ x-paths:
                                                     example: TARGET_IN_WRONG_LANGUAGE
                                                   details:
                                                     type: object
+                                                    nullable: true
                                                   positionTypeCode:
                                                     type: string
                                                     enum:
@@ -860,10 +881,8 @@ x-paths:
                                                     example: TARGET
                                           - title: TARGET_LENGTH_LIMIT
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -874,6 +893,7 @@ x-paths:
                                                     example: TARGET_LENGTH_LIMIT
                                                   details:
                                                     type: object
+                                                    nullable: true
                                                   positionTypeCode:
                                                     type: string
                                                     enum:
@@ -882,10 +902,8 @@ x-paths:
                                                     example: TARGET
                                           - title: TARGET_SOURCE_CONSISTENCY
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -896,6 +914,7 @@ x-paths:
                                                     example: TARGET_SOURCE_CONSISTENCY
                                                   details:
                                                     type: object
+                                                    nullable: true
                                                     properties:
                                                       type:
                                                         type: string
@@ -920,10 +939,8 @@ x-paths:
                                                     example: TARGET
                                           - title: TRADEMARK_CONSISTENCY
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -934,6 +951,7 @@ x-paths:
                                                     example: TRADEMARK_CONSISTENCY
                                                   details:
                                                     type: object
+                                                    nullable: true
                                                     properties:
                                                       trademarkTypeCode:
                                                         type: string
@@ -952,10 +970,8 @@ x-paths:
                                                     example: SOURCE
                                           - title: WHITESPACES
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -966,6 +982,7 @@ x-paths:
                                                     example: WHITESPACES
                                                   details:
                                                     type: object
+                                                    nullable: true
                                                   positionTypeCode:
                                                     type: string
                                                     enum:
@@ -974,10 +991,8 @@ x-paths:
                                                     example: TARGET
                                           - title: PUNCTUATION_CONSISTENCY
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -987,6 +1002,7 @@ x-paths:
                                                     description: check type code
                                                     example: PUNCTUATION_CONSISTENCY
                                                   details:
+                                                    nullable: true
                                                     type: object
                                                   positionTypeCode:
                                                     type: string
@@ -996,10 +1012,8 @@ x-paths:
                                                     example: SOURCE
                                           - title: PLURALS_REPETITION
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -1009,6 +1023,7 @@ x-paths:
                                                     description: check type code
                                                     example: PLURALS_REPETITION
                                                   details:
+                                                    nullable: true
                                                     type: object
                                                     properties:
                                                       pluralFormGroupUid:
@@ -1028,10 +1043,8 @@ x-paths:
                                                     example: TARGET
                                           - title: REGEX_CHECK
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -1041,8 +1054,111 @@ x-paths:
                                                     description: check type code
                                                     example: REGEX_CHECK
                                                   details:
-                                                    - $ref: >-
-                                                        ./tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
+                                                    allOf:
+                                                      - type: object
+                                                        properties:
+                                                          ruleUid:
+                                                            type: string
+                                                            description: >-
+                                                              Unique identifier of corresponding check
+                                                              rule
+                                                            example: ce6d6b5dbc12
+                                                      - type: object
+                                                        properties:
+                                                          ruleName:
+                                                            type: string
+                                                            description: Rule name
+                                                            example: ruleName
+                                                          severityLevelCode:
+                                                            enum:
+                                                              - DISABLED
+                                                              - LOW
+                                                              - MEDIUM
+                                                              - HIGH
+                                                          ruleTypeCode:
+                                                            enum:
+                                                              - FORBIDDEN
+                                                              - MISSING
+                                                              - COUNT_MISMATCH
+                                                          flavorCode:
+                                                            enum:
+                                                              - JAVA
+                                                              - DOT_NET
+                                                          originalPattern:
+                                                            type: string
+                                                            description: >-
+                                                              Regular expression to evaluate against
+                                                              the source string.
+                                                            example: '@mail'
+                                                          translationPattern:
+                                                            type: string
+                                                            description: >-
+                                                              Regular expression to evaluate against
+                                                              the translation.
+                                                            example: '@gmail'
+                                                          caseInsensitive:
+                                                            type: boolean
+                                                            description: Enable case insensitive search
+                                                            example: true
+                                                          multiLine:
+                                                            type: boolean
+                                                            description: >-
+                                                              Enables multine search. If true then
+                                                              search will span newlines in a string.
+                                                              Users can use ^ and $ characters with
+                                                              special meaning for beginning of line
+                                                              and end of line match.
+                                                            example: true
+                                                          description:
+                                                            type: string
+                                                            description: >-
+                                                              Human readable description of the role;
+                                                              shown in the the dashboard UI.
+                                                            example: rule description
+                                                          warningMessage:
+                                                            type: string
+                                                            description: >-
+                                                              Human readable warning message appended
+                                                              to the standard message that is shown in
+                                                              the CAT tool when the check fails.
+                                                            example: ' test warning message'
+                                                        required:
+                                                          - ruleName
+                                                          - severityLevelCode
+                                                          - ruleTypeCode
+                                                          - flavorCode
+                                                          - originalPattern
+                                                          - translationPattern
+                                                          - caseInsensitive
+                                                          - multiLine
+                                                      - type: object
+                                                        properties:
+                                                          groups:
+                                                            type: array
+                                                            items:
+                                                              allOf:
+                                                                - type: object
+                                                                  properties:
+                                                                    groupUid:
+                                                                      type: string
+                                                                      description: >-
+                                                                        Smartling rule group identifier of the
+                                                                        translation
+                                                                      example: ce6d6b5dbc12
+                                                                    ruleUid:
+                                                                      type: string
+                                                                      description: >-
+                                                                        Smartling rule identifier of the
+                                                                        translation
+                                                                      example: ce6d6b5dbcs2
+                                                                    targetLocaleIds:
+                                                                      description: The list of target locales.
+                                                                      example:
+                                                                        - ru-RU
+                                                                      items:
+                                                                        type: string
+                                                                      type: array
+                                                                    severityLevelCode: *ref_2
                                                   positionTypeCode:
                                                     type: string
                                                     enum:
@@ -1051,10 +1167,8 @@ x-paths:
                                                     example: TARGET
                                           - title: OPEN_ISSUES
                                             allOf:
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/severityLevelCodeResponse
-                                              - $ref: >-
-                                                  ./tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - *ref_0
+                                              - *ref_1
                                               - type: object
                                                 properties:
                                                   checkTypeCode:
@@ -1064,6 +1178,7 @@ x-paths:
                                                     description: check type code
                                                     example: OPEN_ISSUES
                                                   details:
+                                                    nullable: true
                                                     type: object
                                                     properties:
                                                       sourceIssuesCount:
@@ -1101,10 +1216,10 @@ x-paths:
                                   - from: 0
                                     to: 14
                                 details:
-                                  - blacklistedTermUid: uidgj1
-                                    termText: blacklist_term
-                                    alternatives: []
-                                    notes: ''
+                                  blacklistedTermUid: uidgj1
+                                  termText: blacklist_term
+                                  alternatives: []
+                                  notes: ''
                                 positionTypeCode: TARGET
                 EMOJI_CONSISTENCY:
                   value:
@@ -1126,8 +1241,8 @@ x-paths:
                                   - from: 14
                                     to: 16
                                 details:
-                                  - emoji: 😀
-                                    type: EMOJI_DELETED
+                                  emoji: 😀
+                                  type: EMOJI_DELETED
                                 positionTypeCode: SOURCE
                 GLOBAL_CAPITALISATION_CONSISTENCY:
                   value:
@@ -1292,8 +1407,8 @@ x-paths:
                               - checkTypeCode: NUMBER_CONSISTENCY
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 5
-                                  to: 7
+                                  - from: 5
+                                    to: 7
                                 details:
                                   type: NUMBER_ADDED
                                   number: '20'
@@ -1315,10 +1430,10 @@ x-paths:
                               - checkTypeCode: REPEATED_WORD
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 5
-                                  to: 9
+                                  - from: 5
+                                    to: 9
                                 details:
-                                  - word: Hello
+                                  word: Hello
                                 positionTypeCode: TARGET
                 SEGMENT_COMPLETENESS:
                   value:
@@ -1337,8 +1452,8 @@ x-paths:
                               - checkTypeCode: SEGMENT_COMPLETENESS
                                 severityLevelCode: MEDIUM
                                 positions:
-                                  from: 0
-                                  to: 10
+                                  - from: 0
+                                    to: 10
                                 details:
                                   type: TARGET_IS_MUCH_SHORTER_THAN_SOURCE
                                 positionTypeCode: TARGET
@@ -1359,8 +1474,8 @@ x-paths:
                               - checkTypeCode: SOURCE_IN_WRONG_LANGUAGE
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 0
-                                  to: 63
+                                  - from: 0
+                                    to: 63
                                 details: null
                                 positionTypeCode: SOURCE
                 SPELLCHECK:
@@ -1380,8 +1495,8 @@ x-paths:
                               - checkTypeCode: SPELLCHECK
                                 severityLevelCode: MEDIUM
                                 positions:
-                                  from: 0
-                                  to: 5
+                                  - from: 0
+                                    to: 5
                                 details:
                                   word: homewrk
                                   suggestions:
@@ -1404,8 +1519,8 @@ x-paths:
                               - checkTypeCode: TAG_CONSISTENCY
                                 severityLevelCode: MEDIUM
                                 positions:
-                                  from: 8
-                                  to: 12
+                                  - from: 8
+                                    to: 12
                                 details:
                                   tag: </p>
                                   type: TAG_DELETED
@@ -1427,8 +1542,8 @@ x-paths:
                               - checkTypeCode: TARGET_LENGTH_LIMIT
                                 severityLevelCode: HIGH
                                 positions:
-                                  from: 0
-                                  to: 4
+                                  - from: 0
+                                    to: 4
                                 details: null
                                 positionTypeCode: TARGET
                 TARGET_IN_WRONG_LANGUAGE:
@@ -1448,8 +1563,8 @@ x-paths:
                               - checkTypeCode: TARGET_IN_WRONG_LANGUAGE
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 0
-                                  to: 64
+                                  - from: 0
+                                    to: 64
                                 details: null
                                 positionTypeCode: TARGET
                 TARGET_SOURCE_CONSISTENCY:
@@ -1469,8 +1584,8 @@ x-paths:
                               - checkTypeCode: TARGET_SOURCE_CONSISTENCY
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 0
-                                  to: 27
+                                  - from: 0
+                                    to: 27
                                 details:
                                   type: SAME_SOURCE_DIFFERENT_TRANSLATIONS
                                   originalString: Le chien a mangé mes devoirs.
@@ -1493,8 +1608,8 @@ x-paths:
                               - checkTypeCode: TRADEMARK_CONSISTENCY
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 6
-                                  to: 7
+                                  - from: 6
+                                    to: 7
                                 details:
                                   trademarkTypeCode: COPYRIGHT
                                 positionTypeCode: SOURCE
@@ -1515,8 +1630,8 @@ x-paths:
                               - checkTypeCode: WHITESPACES
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 4
-                                  to: 6
+                                  - from: 4
+                                    to: 6
                                 details: null
                                 positionTypeCode: TARGET
                 GRAMMAR_CHECK:
@@ -1536,8 +1651,8 @@ x-paths:
                               - checkTypeCode: GRAMMAR_CHECK
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 9
-                                  to: 13
+                                  - from: 9
+                                    to: 13
                                 details:
                                   text: ate
                                   message: Possible agreement error
@@ -1563,8 +1678,8 @@ x-paths:
                               - checkTypeCode: ORIGINAL_EQUALS_TARGET
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 0
-                                  to: 5
+                                  - from: 0
+                                    to: 5
                                 details:
                                   types:
                                     - IDENTICAL_CAPITALIZATION
@@ -1587,8 +1702,8 @@ x-paths:
                               - checkTypeCode: PUNCTUATION_CONSISTENCY
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 5
-                                  to: 6
+                                  - from: 5
+                                    to: 6
                                 details:
                                   punctuationMark: '!'
                                   type: PUNCTUATION_MARK_DELETED
@@ -1611,8 +1726,8 @@ x-paths:
                               - checkTypeCode: PLURALS_REPETITION
                                 severityLevelCode: MEDIUM
                                 positions:
-                                  from: 0
-                                  to: 5
+                                  - from: 0
+                                    to: 5
                                 details:
                                   pluralFormGroupUid: a0b1acda22fc97da9c2b9ae5f3b25888
                                   repeatedPluralForms:
@@ -1669,12 +1784,159 @@ x-paths:
                               - checkTypeCode: OPEN_ISSUES
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 0
-                                  to: 5
+                                  - from: 0
+                                    to: 5
                                 details:
                                   sourceIssuesCount: 5
                                   translationIssuesCount: 3
                                 positionTypeCode: TARGET
+        '400':
+          description: Provided request parameters are invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - VALIDATION_ERROR
+                        type: string
+                      errors:
+                        items: &ref_3
+                          type: object
+                          properties:
+                            key:
+                              example: general_error
+                              type: string
+                            message:
+                              example: Unexpected server error
+                              type: string
+                            details:
+                              example: {}
+                              type: object
+                          required:
+                            - key
+                            - message
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: unknown.field
+                          message: >-
+                            The field unknown.parameter was not expected. Please
+                            consult the documentation to verify the fields you
+                            are submitting.
+                          details: {}
+        '401':
+          description: Provided credentials are not valid.
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - AUTHENTICATION_ERROR
+                          - AUTHORIZATION_ERROR
+                        type: string
+                      errors:
+                        items: *ref_3
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
+              examples:
+                response:
+                  value:
+                    response:
+                      code: AUTHENTICATION_ERROR
+                      errors:
+                        - key: invalid_token
+                          details: {}
+                          message: Invalid token
+        '429':
+          description: Too many simultaneous API requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - MAX_OPERATIONS_LIMIT_EXCEEDED
+                        type: string
+                      errors:
+                        items: *ref_3
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
+              examples:
+                response:
+                  value:
+                    response:
+                      code: MAX_OPERATIONS_LIMIT_EXCEEDED
+                      errors:
+                        - key: too.many.requests
+                          message: >-
+                            The limit of 10 concurrent Smartling file API
+                            operations for this project has been exceeded.
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - GENERAL_ERROR
+                          - MAINTENANCE_MODE_ERROR
+                        type: string
+                      errors:
+                        items: *ref_3
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
       x-code-samples:
         - lang: curl
           source: >
