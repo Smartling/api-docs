@@ -194,7 +194,7 @@ x-paths:
                                         - *ref_1
                                         - *ref_5
                                         - allOf:
-                                            - &ref_23
+                                            - &ref_22
                                               type: object
                                               properties:
                                                 matchMethod:
@@ -213,7 +213,7 @@ x-paths:
                                                   minimum: 0
                                                   maximum: 100
                                                   example: 10
-                                            - &ref_24
+                                            - &ref_23
                                               type: object
                                               properties:
                                                 sameTermCount:
@@ -334,7 +334,7 @@ x-paths:
                                       allOf:
                                         - *ref_1
                                         - *ref_6
-                                        - &ref_21
+                                        - &ref_20
                                           type: object
                                           properties:
                                             ignoreSign:
@@ -377,7 +377,7 @@ x-paths:
                                       allOf:
                                         - *ref_1
                                         - *ref_5
-                                        - &ref_25
+                                        - &ref_24
                                           type: object
                                           properties:
                                             mustHaveIdenticalTags:
@@ -414,7 +414,7 @@ x-paths:
                                       allOf:
                                         - *ref_1
                                         - *ref_6
-                                        - &ref_26
+                                        - &ref_25
                                           type: object
                                           properties:
                                             lowerLengthThreshold:
@@ -558,7 +558,7 @@ x-paths:
                                       allOf:
                                         - *ref_1
                                         - *ref_5
-                                        - &ref_20
+                                        - &ref_19
                                           type: object
                                           properties:
                                             minTextLengthLimit:
@@ -590,7 +590,7 @@ x-paths:
                                       allOf:
                                         - *ref_1
                                         - *ref_6
-                                        - &ref_22
+                                        - &ref_21
                                           type: object
                                           properties:
                                             ignoreTagsAndPlaceholders:
@@ -802,7 +802,7 @@ x-paths:
                                       allOf:
                                         - *ref_1
                                         - *ref_5
-                                        - &ref_27
+                                        - &ref_26
                                           type: object
                                           properties:
                                             sourceIssuesMustBeResolved:
@@ -2208,7 +2208,7 @@ x-paths:
       parameters:
         - *ref_8
         - *ref_9
-        - &ref_29
+        - &ref_28
           name: checkTypeCode
           in: path
           required: true
@@ -2232,17 +2232,73 @@ x-paths:
           application/json:
             schema:
               oneOf:
-                - &ref_30
+                - &ref_29
                   title: EMOJI_CONSISTENCY
                   allOf:
                     - *ref_16
                     - type: object
                       required:
                         - noEmojisAllowedInTarget
-                - title: SPELLCHECK
+                - &ref_30
+                  title: SPELLCHECK
                   allOf:
                     - *ref_17
-                    - &ref_19
+                    - type: object
+                      required:
+                        - skipIfWordInUserDictionary
+                        - skipIfWordStartsWithCapitalLetter
+                        - skipIfWordAppearsInSourceString
+                        - skipIfWordValidInSourceLocale
+                        - runSpellcheckForSubWords
+                - &ref_31
+                  title: SOURCE_IN_WRONG_LANGUAGE
+                  allOf:
+                    - *ref_18
+                    - type: object
+                      required:
+                        - minTextLengthLimit
+                - &ref_32
+                  title: TARGET_IN_WRONG_LANGUAGE
+                  allOf:
+                    - type: object
+                      required:
+                        - minTextLengthLimit
+                    - *ref_19
+                - &ref_33
+                  title: NUMBER_CONSISTENCY
+                  allOf:
+                    - *ref_20
+                - &ref_34
+                  title: TARGET_SOURCE_CONSISTENCY
+                  allOf:
+                    - *ref_21
+                    - type: object
+                      required:
+                        - ignoreTagsAndPlaceholders
+                        - ignoreCase
+                - &ref_35
+                  title: GLOSSARY_COMPLIANCE
+                  allOf:
+                    - &ref_27
+                      allOf:
+                        - *ref_22
+                        - *ref_23
+                    - type: object
+                      required:
+                        - matchMethod
+                        - matchThreshold
+                - &ref_36
+                  title: ORIGINAL_EQUALS_TARGET
+                  allOf:
+                    - *ref_24
+                    - type: object
+                      required:
+                        - mustHaveIdenticalTags
+                        - mustHaveIdenticalCapitalization
+                - title: SEGMENT_COMPLETENESS
+                  allOf:
+                    - *ref_25
+                    - &ref_37
                       type: object
                       properties:
                         targetLocaleId:
@@ -2253,71 +2309,10 @@ x-paths:
                           example: it-IT
                       required:
                         - targetLocaleId
-                    - &ref_31
-                      type: object
-                      required:
-                        - skipIfWordInUserDictionary
-                        - skipIfWordStartsWithCapitalLetter
-                        - skipIfWordAppearsInSourceString
-                        - skipIfWordValidInSourceLocale
-                        - runSpellcheckForSubWords
-                - title: SOURCE_IN_WRONG_LANGUAGE
-                  allOf:
-                    - *ref_18
-                    - *ref_19
-                    - &ref_32
-                      type: object
-                      required:
-                        - minTextLengthLimit
-                - title: TARGET_IN_WRONG_LANGUAGE
-                  allOf:
-                    - &ref_33
-                      type: object
-                      required:
-                        - minTextLengthLimit
-                    - *ref_19
-                    - *ref_20
-                - &ref_34
-                  title: NUMBER_CONSISTENCY
-                  allOf:
-                    - *ref_21
-                - title: TARGET_SOURCE_CONSISTENCY
-                  allOf:
-                    - *ref_22
-                    - *ref_19
-                    - &ref_35
-                      type: object
-                      required:
-                        - ignoreTagsAndPlaceholders
-                        - ignoreCase
-                - &ref_36
-                  title: GLOSSARY_COMPLIANCE
-                  allOf:
-                    - &ref_28
-                      allOf:
-                        - *ref_23
-                        - *ref_24
-                    - type: object
-                      required:
-                        - matchMethod
-                        - matchThreshold
-                - title: ORIGINAL_EQUALS_TARGET
-                  allOf:
-                    - *ref_25
-                    - *ref_19
-                    - &ref_37
-                      type: object
-                      required:
-                        - mustHaveIdenticalTags
-                        - mustHaveIdenticalCapitalization
-                - title: SEGMENT_COMPLETENESS
-                  allOf:
-                    - *ref_26
-                    - *ref_19
                 - &ref_38
                   title: OPEN_ISSUES
                   allOf:
-                    - *ref_27
+                    - *ref_26
                     - type: object
                       required:
                         - sourceIssuesMustBeResolved
@@ -2348,25 +2343,25 @@ x-paths:
                                   - *ref_18
                               - title: TARGET_IN_WRONG_LANGUAGE
                                 allOf:
-                                  - *ref_20
+                                  - *ref_19
                               - title: NUMBER_CONSISTENCY
                                 allOf:
-                                  - *ref_21
+                                  - *ref_20
                               - title: TARGET_SOURCE_CONSISTENCY
                                 allOf:
-                                  - *ref_22
+                                  - *ref_21
                               - title: GLOSSARY_COMPLIANCE
                                 allOf:
-                                  - *ref_28
+                                  - *ref_27
                               - title: ORIGINAL_EQUALS_TARGET
                                 allOf:
-                                  - *ref_25
+                                  - *ref_24
                               - title: SEGMENT_COMPLETENESS
                                 allOf:
-                                  - *ref_26
+                                  - *ref_25
                               - title: OPEN_ISSUES
                                 allOf:
-                                  - *ref_27
+                                  - *ref_26
               examples:
                 EMOJI_CONSISTENCY:
                   value:
@@ -2459,7 +2454,7 @@ x-paths:
       parameters:
         - *ref_8
         - *ref_9
-        - *ref_29
+        - *ref_28
         - name: groupUid
           in: path
           schema:
@@ -2473,38 +2468,18 @@ x-paths:
           application/json:
             schema:
               oneOf:
+                - *ref_29
                 - *ref_30
-                - title: SPELLCHECK
-                  allOf:
-                    - *ref_17
-                    - *ref_19
-                    - *ref_31
-                - title: SOURCE_IN_WRONG_LANGUAGE
-                  allOf:
-                    - *ref_18
-                    - *ref_19
-                    - *ref_32
-                - title: TARGET_IN_WRONG_LANGUAGE
-                  allOf:
-                    - *ref_33
-                    - *ref_19
-                    - *ref_20
+                - *ref_31
+                - *ref_32
+                - *ref_33
                 - *ref_34
-                - title: TARGET_SOURCE_CONSISTENCY
-                  allOf:
-                    - *ref_22
-                    - *ref_19
-                    - *ref_35
+                - *ref_35
                 - *ref_36
-                - title: ORIGINAL_EQUALS_TARGET
-                  allOf:
-                    - *ref_25
-                    - *ref_19
-                    - *ref_37
                 - title: SEGMENT_COMPLETENESS
                   allOf:
-                    - *ref_26
-                    - *ref_19
+                    - *ref_25
+                    - *ref_37
                 - *ref_38
       responses:
         '200':
@@ -2706,7 +2681,7 @@ x-paths:
                                     - title: GLOSSARY_COMPLIANCE
                                       allOf:
                                         - *ref_5
-                                        - *ref_23
+                                        - *ref_22
                                         - type: object
                                           properties:
                                             sameTermCount:
@@ -2820,7 +2795,7 @@ x-paths:
                                     - title: NUMBER_CONSISTENCY
                                       allOf:
                                         - *ref_6
-                                        - *ref_21
+                                        - *ref_20
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2854,7 +2829,7 @@ x-paths:
                                     - title: ORIGINAL_EQUALS_TARGET
                                       allOf:
                                         - *ref_5
-                                        - *ref_25
+                                        - *ref_24
                                         - type: object
                                           required:
                                             - checkTypeCode
@@ -2879,7 +2854,7 @@ x-paths:
                                     - title: SEGMENT_COMPLETENESS
                                       allOf:
                                         - *ref_6
-                                        - *ref_26
+                                        - *ref_25
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2973,7 +2948,7 @@ x-paths:
                                     - title: TARGET_IN_WRONG_LANGUAGE
                                       allOf:
                                         - *ref_5
-                                        - *ref_20
+                                        - *ref_19
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2996,7 +2971,7 @@ x-paths:
                                     - title: TARGET_SOURCE_CONSISTENCY
                                       allOf:
                                         - *ref_6
-                                        - *ref_22
+                                        - *ref_21
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -3087,7 +3062,7 @@ x-paths:
                                     - title: OPEN_ISSUES
                                       allOf:
                                         - *ref_5
-                                        - *ref_27
+                                        - *ref_26
                                         - type: object
                                           required:
                                             - checkTypeCode
