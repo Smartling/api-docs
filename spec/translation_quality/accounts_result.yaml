@@ -147,8 +147,6 @@ x-paths:
                                               type: boolean
                                               description: No emoji is allowed in target
                                               example: false
-                                          required:
-                                            - noEmojisAllowedInTarget
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -1599,8 +1597,6 @@ x-paths:
                                             type: boolean
                                             description: No emoji is allowed in target
                                             example: false
-                                        required:
-                                          - noEmojisAllowedInTarget
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -2146,7 +2142,7 @@ x-paths:
       parameters:
         - *ref_8
         - *ref_9
-        - &ref_28
+        - &ref_29
           name: checkTypeCode
           in: path
           required: true
@@ -2170,10 +2166,13 @@ x-paths:
           application/json:
             schema:
               oneOf:
-                - &ref_29
+                - &ref_30
                   title: EMOJI_CONSISTENCY
                   allOf:
                     - *ref_16
+                    - type: object
+                      required:
+                        - noEmojisAllowedInTarget
                 - title: SPELLCHECK
                   allOf:
                     - *ref_17
@@ -2188,7 +2187,7 @@ x-paths:
                           example: it-IT
                       required:
                         - targetLocaleId
-                    - &ref_30
+                    - &ref_31
                       type: object
                       required:
                         - skipIfWordInUserDictionary
@@ -2200,19 +2199,19 @@ x-paths:
                   allOf:
                     - *ref_18
                     - *ref_19
-                    - &ref_31
+                    - &ref_32
                       type: object
                       required:
                         - minTextLengthLimit
                 - title: TARGET_IN_WRONG_LANGUAGE
                   allOf:
-                    - &ref_32
+                    - &ref_33
                       type: object
                       required:
                         - minTextLengthLimit
                     - *ref_19
                     - *ref_20
-                - &ref_33
+                - &ref_34
                   title: NUMBER_CONSISTENCY
                   allOf:
                     - *ref_21
@@ -2220,15 +2219,16 @@ x-paths:
                   allOf:
                     - *ref_22
                     - *ref_19
-                    - &ref_34
+                    - &ref_35
                       type: object
                       required:
                         - ignoreTagsAndPlaceholders
                         - ignoreCase
-                - &ref_35
+                - &ref_36
                   title: GLOSSARY_COMPLIANCE
                   allOf:
-                    - allOf:
+                    - &ref_28
+                      allOf:
                         - *ref_23
                         - *ref_24
                     - type: object
@@ -2239,7 +2239,7 @@ x-paths:
                   allOf:
                     - *ref_25
                     - *ref_19
-                    - &ref_36
+                    - &ref_37
                       type: object
                       required:
                         - mustHaveIdenticalTags
@@ -2248,7 +2248,7 @@ x-paths:
                   allOf:
                     - *ref_26
                     - *ref_19
-                - &ref_37
+                - &ref_38
                   title: OPEN_ISSUES
                   allOf:
                     - *ref_27
@@ -2269,11 +2269,38 @@ x-paths:
                       - *ref_10
                       - type: object
                         properties:
-                          data: &ref_38
+                          data: &ref_39
                             oneOf:
                               - title: EMOJI_CONSISTENCY
                                 allOf:
                                   - *ref_16
+                              - title: SPELLCHECK
+                                allOf:
+                                  - *ref_17
+                              - title: SOURCE_IN_WRONG_LANGUAGE
+                                allOf:
+                                  - *ref_18
+                              - title: TARGET_IN_WRONG_LANGUAGE
+                                allOf:
+                                  - *ref_20
+                              - title: NUMBER_CONSISTENCY
+                                allOf:
+                                  - *ref_21
+                              - title: TARGET_SOURCE_CONSISTENCY
+                                allOf:
+                                  - *ref_22
+                              - title: GLOSSARY_COMPLIANCE
+                                allOf:
+                                  - *ref_28
+                              - title: ORIGINAL_EQUALS_TARGET
+                                allOf:
+                                  - *ref_25
+                              - title: SEGMENT_COMPLETENESS
+                                allOf:
+                                  - *ref_26
+                              - title: OPEN_ISSUES
+                                allOf:
+                                  - *ref_27
               examples:
                 EMOJI_CONSISTENCY:
                   value:
@@ -2366,7 +2393,7 @@ x-paths:
       parameters:
         - *ref_8
         - *ref_9
-        - *ref_28
+        - *ref_29
         - name: groupUid
           in: path
           schema:
@@ -2380,39 +2407,39 @@ x-paths:
           application/json:
             schema:
               oneOf:
-                - *ref_29
+                - *ref_30
                 - title: SPELLCHECK
                   allOf:
                     - *ref_17
                     - *ref_19
-                    - *ref_30
+                    - *ref_31
                 - title: SOURCE_IN_WRONG_LANGUAGE
                   allOf:
                     - *ref_18
                     - *ref_19
-                    - *ref_31
+                    - *ref_32
                 - title: TARGET_IN_WRONG_LANGUAGE
                   allOf:
-                    - *ref_32
+                    - *ref_33
                     - *ref_19
                     - *ref_20
-                - *ref_33
+                - *ref_34
                 - title: TARGET_SOURCE_CONSISTENCY
                   allOf:
                     - *ref_22
                     - *ref_19
-                    - *ref_34
-                - *ref_35
+                    - *ref_35
+                - *ref_36
                 - title: ORIGINAL_EQUALS_TARGET
                   allOf:
                     - *ref_25
                     - *ref_19
-                    - *ref_36
+                    - *ref_37
                 - title: SEGMENT_COMPLETENESS
                   allOf:
                     - *ref_26
                     - *ref_19
-                - *ref_37
+                - *ref_38
       responses:
         '200':
           description: OK
@@ -2426,7 +2453,7 @@ x-paths:
                       - *ref_10
                       - type: object
                         properties:
-                          data: *ref_38
+                          data: *ref_39
               examples:
                 EMOJI_CONSISTENCY:
                   value:
