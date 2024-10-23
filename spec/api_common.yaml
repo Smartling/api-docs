@@ -53,6 +53,7 @@ components:
           type: string
           enum:
             - SUCCESS
+            - ACCEPTED
           description: Indicates whether the response was successful or what error has occurred.
 
     EmptyResponse:
@@ -66,6 +67,22 @@ components:
             - properties:
                 data:
                   description: Always null.
+                  type: object
+              type: object
+
+    NotEmptyResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    message:
+                      type: string
                   type: object
               type: object
 
