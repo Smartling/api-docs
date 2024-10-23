@@ -29,7 +29,6 @@ components:
       title: SPELLCHECK
       allOf:
         - $ref: '#/components/schemas/SpellcheckSettingsDTO'
-        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
         - type: object
           required:
             - skipIfWordInUserDictionary
@@ -106,6 +105,7 @@ components:
               example: "SPELLCHECK"
             details:
               type: object
+              nullable: true
               properties:
                 word:
                   type: string
@@ -127,17 +127,20 @@ components:
   examples:
 
     profiles_account_check_types_settings_effective_example:
-      "profileUid": "ce6d6b5dbc12"
-      "severityLevelCode": "LOW"
-      "checkTypeCode": "SPELLCHECK"
-      "subTypes": []
-      "localeSeverityLevels": []
-      "groups": []
-      "skipIfWordInUserDictionary": true
-      "skipIfWordStartsWithCapitalLetter": false
-      "skipIfWordAppearsInSourceString": true
-      "skipIfWordValidInSourceLocale": false
-      "runSpellcheckForSubWords": false
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "profileUid": "ce6d6b5dbc12"
+          "severityLevelCode": "LOW"
+          "checkTypeCode": "SPELLCHECK"
+          "subTypes": []
+          "localeSeverityLevels": []
+          "groups": []
+          "skipIfWordInUserDictionary": true
+          "skipIfWordStartsWithCapitalLetter": false
+          "skipIfWordAppearsInSourceString": true
+          "skipIfWordValidInSourceLocale": false
+          "runSpellcheckForSubWords": false
 
     accounts_check_types_settings_example:
       "severityLevelCode": "LOW"
@@ -184,11 +187,14 @@ components:
       runSpellcheckForSubWords: true
 
     profiles_accounts_check_types_checkType_settings_example:
-      skipIfWordInUserDictionary: false
-      skipIfWordStartsWithCapitalLetter: true
-      skipIfWordAppearsInSourceString: false
-      skipIfWordValidInSourceLocale: true
-      runSpellcheckForSubWords: true
+      response:
+        code: "SUCCESS"
+        data:
+          skipIfWordInUserDictionary: false
+          skipIfWordStartsWithCapitalLetter: true
+          skipIfWordAppearsInSourceString: false
+          skipIfWordValidInSourceLocale: true
+          runSpellcheckForSubWords: true
 
     accounts_check_types_checkType_group_settings_example:
       skipIfWordInUserDictionary: false
@@ -198,11 +204,14 @@ components:
       runSpellcheckForSubWords: true
 
     profiles_accounts_check_types_checkType_group_settings_example:
-      skipIfWordInUserDictionary: false
-      skipIfWordStartsWithCapitalLetter: true
-      skipIfWordAppearsInSourceString: false
-      skipIfWordValidInSourceLocale: true
-      runSpellcheckForSubWords: true
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "skipIfWordInUserDictionary": false
+          "skipIfWordStartsWithCapitalLetter": true
+          "skipIfWordAppearsInSourceString": false
+          "skipIfWordValidInSourceLocale": true
+          "runSpellcheckForSubWords": true
 
     tqc_check_response_example:
       "response":
@@ -220,8 +229,8 @@ components:
                 - "checkTypeCode": "SPELLCHECK"
                   "severityLevelCode": "MEDIUM"
                   "positions":
-                    "from": 0
-                    "to": 5
+                    - "from": 0
+                      "to": 5
                   "details":
                       "word": "homewrk"
                       "suggestions":

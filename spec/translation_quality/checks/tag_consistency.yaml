@@ -18,6 +18,7 @@ components:
                 type: object
                 properties:
                   checkSubTypeCode:
+                    nullable: true
                     type: string
                     enum:
                       - TAG_ADDED
@@ -26,6 +27,8 @@ components:
                       - TAG_ORDER_IS_CHANGED
                     description: check subtype code
                     example: "TAG_ADDED"
+                  severityLevelCode:
+                    $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeEnum'
 
     ProfilesAccountCheckTypeEffectiveDTO:
       title: TAG_CONSISTENCY
@@ -41,12 +44,14 @@ components:
               description: check type code
               example: "TAG_CONSISTENCY"
             subTypes:
+              nullable: true
               type: array
               items:
                 type: object
                 properties:
                   checkSubTypeCode:
                     type: string
+                    nullable: true
                     enum:
                       - TAG_ADDED
                       - TAG_DELETED
@@ -54,6 +59,8 @@ components:
                       - TAG_ORDER_IS_CHANGED
                     description: check subtype code
                     example: "TAG_ADDED"
+                  severityLevelCode:
+                    $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeEnum'
 
     ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
@@ -103,20 +110,23 @@ components:
   examples:
 
     profiles_account_check_types_settings_effective_example:
-      "profileUid": "ce6d6b5dbc12"
-      "severityLevelCode": "LOW"
-      "checkTypeCode": "TAG_CONSISTENCY"
-      "subTypes":
-        - "checkSubTypeCode": "TAG_ADDED"
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "profileUid": "ce6d6b5dbc12"
           "severityLevelCode": "LOW"
-        - "checkSubTypeCode": "TAG_DELETED"
-          "severityLevelCode": "LOW"
-        - "checkSubTypeCode": "TAG_ORDER_IS_CHANGED"
-          "severityLevelCode": "LOW"
-        - "checkSubTypeCode": "SPACES_AROUND_TAGS"
-          "severityLevelCode": "LOW"
-      "localeSeverityLevels": []
-      "groups": []
+          "checkTypeCode": "TAG_CONSISTENCY"
+          "subTypes":
+            - "checkSubTypeCode": "TAG_ADDED"
+              "severityLevelCode": "LOW"
+            - "checkSubTypeCode": "TAG_DELETED"
+              "severityLevelCode": "LOW"
+            - "checkSubTypeCode": "TAG_ORDER_IS_CHANGED"
+              "severityLevelCode": "LOW"
+            - "checkSubTypeCode": "SPACES_AROUND_TAGS"
+              "severityLevelCode": "LOW"
+          "localeSeverityLevels": []
+          "groups": []
 
     accounts_check_types_settings_example:
       "severityLevelCode": "LOW"
@@ -180,8 +190,8 @@ components:
                 - "checkTypeCode": "TAG_CONSISTENCY"
                   "severityLevelCode": "MEDIUM"
                   "positions":
-                    "from": 8
-                    "to": 12
+                    - "from": 8
+                      "to": 12
                   "details":
                       "tag": "</p>"
                       "type": "TAG_DELETED"

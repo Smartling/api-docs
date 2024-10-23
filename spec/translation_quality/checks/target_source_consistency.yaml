@@ -16,7 +16,6 @@ components:
       title: TARGET_SOURCE_CONSISTENCY
       allOf:
         - $ref: '#/components/schemas/SourceConsistencySettingsDTO'
-        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
         - type: object
           required:
             - ignoreTagsAndPlaceholders
@@ -52,6 +51,8 @@ components:
                       - SAME_TRANSLATION_DIFFERENT_SOURCES
                     description: check subtype code
                     example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+                  severityLevelCode:
+                    $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeEnum'
 
     ProfilesAccountCheckTypeEffectiveDTO:
       title: TARGET_SOURCE_CONSISTENCY
@@ -79,6 +80,8 @@ components:
                       - SAME_TRANSLATION_DIFFERENT_SOURCES
                     description: check subtype code
                     example: "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+                  severityLevelCode:
+                    $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeEnum'
 
     ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
@@ -104,6 +107,7 @@ components:
               example: "TARGET_SOURCE_CONSISTENCY"
             details:
               type: object
+              nullable: true
               properties:
                 type:
                   type: string
@@ -130,18 +134,21 @@ components:
   examples:
 
     profiles_account_check_types_settings_effective_example:
-      "profileUid": "ce6d6b5dbc12"
-      "severityLevelCode": "LOW"
-      "checkTypeCode": "TARGET_SOURCE_CONSISTENCY"
-      "subTypes":
-        - "checkSubTypeCode": "SAME_TRANSLATION_DIFFERENT_SOURCES"
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "profileUid": "ce6d6b5dbc12"
           "severityLevelCode": "LOW"
-        - "checkSubTypeCode": "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
-          "severityLevelCode": "LOW"
-      "localeSeverityLevels": []
-      "groups": []
-      "ignoreTagsAndPlaceholders": true
-      "ignoreCase": true
+          "checkTypeCode": "TARGET_SOURCE_CONSISTENCY"
+          "subTypes":
+            - "checkSubTypeCode": "SAME_TRANSLATION_DIFFERENT_SOURCES"
+              "severityLevelCode": "LOW"
+            - "checkSubTypeCode": "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
+              "severityLevelCode": "LOW"
+          "localeSeverityLevels": []
+          "groups": []
+          "ignoreTagsAndPlaceholders": true
+          "ignoreCase": true
 
     accounts_check_types_settings_example:
       "severityLevelCode": "LOW"
@@ -188,16 +195,22 @@ components:
       ignoreCase: true
 
     profiles_accounts_check_types_checkType_settings_example:
-      ignoreTagsAndPlaceholders: true
-      ignoreCase: true
+      "response":
+        "code": "SUCCESS"
+        "data":
+          ignoreTagsAndPlaceholders: true
+          ignoreCase: true
 
     accounts_check_types_checkType_group_settings_example:
       ignoreTagsAndPlaceholders: true
       ignoreCase: true
 
     profiles_accounts_check_types_checkType_group_settings_example:
-      ignoreTagsAndPlaceholders: true
-      ignoreCase: true
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "ignoreTagsAndPlaceholders": true
+          "ignoreCase": true
 
     tqc_check_response_example:
       "response":
@@ -215,8 +228,8 @@ components:
                 - "checkTypeCode": "TARGET_SOURCE_CONSISTENCY"
                   "severityLevelCode": "LOW"
                   "positions":
-                    "from": 0
-                    "to": 27
+                    - "from": 0
+                      "to": 27
                   "details":
                     "type": "SAME_SOURCE_DIFFERENT_TRANSLATIONS"
                     "originalString": "Le chien a mangé mes devoirs."

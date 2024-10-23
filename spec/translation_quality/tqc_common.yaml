@@ -3,7 +3,8 @@ components:
     groupUidPathParameter:
       name: groupUid
       in: path
-      type: string
+      schema:
+        type: string
       required: true
       description: Unique identifier of corresponding group.
 
@@ -11,7 +12,8 @@ components:
       name: wordUid
       in: path
       required: true
-      type: string
+      schema:
+        type: string
       description: Word unique identifier.
 
     checkTypeCodePathParameter:
@@ -20,7 +22,7 @@ components:
       required: true
       schema:
         type: string
-        $ref: '#/components/schemas/enum/checkTypeCodeEnum'
+        $ref: '#/components/schemas/checkTypeCodeEnum'
       description: '[check type code](#operation/getTranslationQualityCheckTypes)'
 
     checkTypeCodeWithSettingsPathParameter:
@@ -29,7 +31,7 @@ components:
       required: true
       schema:
         type: string
-        $ref: '#/components/schemas/enum/checkTypeCodeWithSettingsEnum'
+        $ref: '#/components/schemas/checkTypeCodeWithSettingsEnum'
       description: '[check type code](#operation/getTranslationQualityCheckTypes)'
 
     checkTypeCodeOnlyWithSubtypesPathParameter:
@@ -38,7 +40,7 @@ components:
       required: true
       schema:
         type: string
-        $ref: '#/components/schemas/enum/checkTypeCodeOnlyWithSubtypesEnum'
+        $ref: '#/components/schemas/checkTypeCodeOnlyWithSubtypesEnum'
       description: '[check type code](#operation/getTranslationQualityCheckTypes)'
 
     checkSubTypeCodePathParameter:
@@ -47,42 +49,47 @@ components:
       required: true
       schema:
         type: string
-        $ref: '#/components/schemas/enum/checkSubtypeEnum'
+        $ref: '#/components/schemas/checkSubtypeEnum'
       description: '[check subtype code](#operation/getTranslationQualityCheckSubTypes)'
 
     targetLocaleIdPathParameter:
       name: targetLocaleId
       in: path
       required: true
-      type: string
+      schema:
+        type: string
       description: Smartling ID for the language you want to translate to.
 
     targetLocaleIdQueryParameter:
       name: targetLocaleId
       in: query
       required: true
-      type: string
+      schema:
+        type: string
       description: Smartling ID for the language you want to translate to.
 
     profileUidPathParameter:
       name: profileUid
       in: path
       required: true
-      type: string
+      schema:
+        type: string
       description: Unique identifier of corresponding profile.
 
     copyProfileUidPathParameter:
       name: profileUid
       in: path
       required: true
-      type: string
+      schema:
+        type: string
       description: Unique identifier of the profile for copy creation.
 
     nameMaskQueryParameter:
       name: nameMask
       in: query
       required: false
-      type: string
+      schema:
+        type: string
       description: name mask.
       example: default
 
@@ -90,7 +97,8 @@ components:
       name: limit
       in: query
       required: false
-      type: integer
+      schema:
+        type: integer
       description: limit size.
       example: 100
 
@@ -98,7 +106,8 @@ components:
       name: offset
       in: query
       required: false
-      type: integer
+      schema:
+        type: integer
       description: offset number.
       example: 1
 
@@ -106,7 +115,8 @@ components:
       name: ruleUid
       in: path
       required: true
-      type: string
+      schema:
+        type: string
       description: Unique identifier of corresponding check rule.
 
   requestBodies:
@@ -116,7 +126,7 @@ components:
       properties:
         severityLevelCode:
           type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnumCopyForRequest'
+          $ref: '#/components/schemas/severityLevelCodeEnumCopyForRequest'
           description: '[severity level code](#operation/getTranslationQualityCheckSeverityLevels)'
           example: "MEDIUM"
       required:
@@ -137,7 +147,6 @@ components:
       properties:
         profileUid:
           type: string
-          required: true
           description: Unique identifier of corresponding profile.
           example: "ce6d6b5dbc12"
       required:
@@ -152,15 +161,6 @@ components:
           example: "default name"
       required:
         - name
-
-    checkTypeCode:
-      type: object
-      properties:
-        checkTypeCode:
-          type: string
-          $ref: '#/components/schemas/enum/checkTypeCodeEnum'
-          description: '[check type code](#operation/getTranslationQualityCheckTypes)'
-          example: "LEADING_TRAILING_SPACES"
 
   schemas:
 
@@ -191,7 +191,7 @@ components:
           type: array
         severityLevelCode:
           type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          $ref: '#/components/schemas/severityLevelCodeEnum'
           description: severity level code
           example: "MEDIUM"
 
@@ -204,17 +204,17 @@ components:
           example: "ruleName"
         severityLevelCode:
           type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnumCopyForRequest'
+          $ref: '#/components/schemas/severityLevelCodeEnumCopyForRequest'
           description: '[Severity level code](#operation/getTranslationQualityCheckSeverityLevels)'
           example: "MEDIUM"
         ruleTypeCode:
           type: string
-          $ref: '#/components/schemas/enum/ruleTypeCodeEnumCopyForRequest'
+          $ref: '#/components/schemas/ruleTypeCodeEnumCopyForRequest'
           description: '[Rule type code](#operation/getRegexQualityCheckRuleTypes)'
           example: "FORBIDDEN"
         flavorCode:
           type: string
-          $ref: '#/components/schemas/enum/flavorCodeEnum'
+          $ref: '#/components/schemas/flavorCodeEnum'
           description: Flavor code
           example: "JAVA"
         originalPattern:
@@ -273,7 +273,7 @@ components:
       properties:
         ruleTypeCode:
           type: string
-          $ref: '#/components/schemas/enum/ruleTypeCodeEnum'
+          $ref: '#/components/schemas/ruleTypeCodeEnum'
           description: rule type code
           example: "FORBIDDEN"
 
@@ -282,7 +282,7 @@ components:
       properties:
         flavorCode:
           type: string
-          $ref: '#/components/schemas/enum/flavorCodeEnum'
+          $ref: '#/components/schemas/flavorCodeEnum'
           description: flavor code
           example: "JAVA"
 
@@ -299,7 +299,7 @@ components:
       properties:
         checkTypeCode:
           type: string
-          $ref: '#/components/schemas/enum/checkTypeCodeEnum'
+          $ref: '#/components/schemas/checkTypeCodeEnum'
           description: check type code
 
     profileResponse:
@@ -335,7 +335,7 @@ components:
       properties:
         checkSubTypeCode:
           type: string
-          $ref: '#/components/schemas/enum/checkSubtypeEnum'
+          $ref: '#/components/schemas/checkSubtypeEnum'
           description: check subtype code
           example: "EMOJI_ADDED"
         name:
@@ -360,16 +360,17 @@ components:
       properties:
         severityLevelCode:
           type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          $ref: '#/components/schemas/severityLevelCodeEnum'
           description: severity level code
           example: "MEDIUM"
+
 
     severityLevelCodeResponse1:
       type: object
       properties:
         severityLevelCode:
           type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          $ref: '#/components/schemas/severityLevelCodeEnum'
           description: severity level code
           example: "MEDIUM"
 
@@ -411,6 +412,10 @@ components:
                 type: string
                 description: check subtype code
                 example: ""
+              severityLevelCode:
+                type: string
+                description: check subtype code
+                example: ""
 
     localeSeverityLevelsAccountCheckTypeSettingsEffective:
       type: object
@@ -426,7 +431,7 @@ components:
                 example: "it-IT"
               severityLevelCode:
                 type: string
-                $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+                $ref: '#/components/schemas/severityLevelCodeEnum'
                 description: severity level code
                 example: "MEDIUM"
 
@@ -446,6 +451,7 @@ components:
       type: object
       properties:
         stringUid:
+          nullable: true
           type: string
           description: it is string part unique identifier if string is splitted on several parts
           example: ""
@@ -479,6 +485,7 @@ components:
       properties:
         pluralFormGroupUid:
           type: string
+          nullable: true
           description: unique identifier of plural form
           example: "7191152182c69d9b72069ac1290fe24b"
 
@@ -486,6 +493,7 @@ components:
       type: object
       properties:
         pluralForm:
+          nullable: true
           type: string
           description: plural form
           example: "ONE"
@@ -671,7 +679,7 @@ components:
         - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
 
     ProfilesAccountCheckTypeApplySettingsDTOResponseOneOfCommon:
-      oneOf:
+      anyOf:
         - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
@@ -721,111 +729,117 @@ components:
         - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
         - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeApplySettingsRequest'
 
-    enum:
-      checkTypeCodeEnum:
-        enum:
-          - LEADING_TRAILING_SPACES
-          - ORIGINAL_EQUALS_TARGET
-          - WHITESPACES
-          - SPELLCHECK
-          - TAG_CONSISTENCY
-          - TARGET_LENGTH_LIMIT
-          - NUMBER_CONSISTENCY
-          - REPEATED_WORD
-          - TARGET_IN_WRONG_LANGUAGE
-          - SOURCE_IN_WRONG_LANGUAGE
-          - SEGMENT_COMPLETENESS
-          - NON_TRANSLATABLE_TEXT
-          - EMOJI_CONSISTENCY
-          - INSERTABLE_CONSISTENCY
-          - TARGET_SOURCE_CONSISTENCY
-          - BLACKLISTED_TERMS
-          - GLOSSARY_COMPLIANCE
-          - TRADEMARK_CONSISTENCY
-          - GRAMMAR_CHECK
-          - GLOBAL_CAPITALISATION_CONSISTENCY
-          - PUNCTUATION_CONSISTENCY
-          - PLURALS_REPETITION
-          - REGEX_CHECK
-          - OPEN_ISSUES
 
-      checkSubtypeEnum:
-        enum:
-          - EMOJI_ADDED
-          - EMOJI_DELETED
-          - EMOJI_PRESENT
-          - INSERTABLE_ADDED
-          - INSERTABLE_DELETED
-          - PLACEABLE_ADDED
-          - PLACEABLE_DELETED
-          - SPACES_AROUND_PLACEABLE
-          - PLACEABLE_FORMAT
-          - NUMBER_ADDED
-          - NUMBER_DELETED
-          - NUMBER_INCORRECT_CONVERSION
-          - TARGET_IS_EMPTY
-          - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
-          - TARGET_IS_MUCH_LONGER_THAN_SOURCE
-          - TAG_ADDED
-          - TAG_DELETED
-          - SPACES_AROUND_TAGS
-          - TAG_ORDER_IS_CHANGED
-          - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
-          - INVALID_TAG_NESTING
-          - TAG_IS_CHANGED
-          - SAME_SOURCE_DIFFERENT_TRANSLATIONS
-          - SAME_TRANSLATION_DIFFERENT_SOURCES
+    checkTypeCodeEnum:
+      type: string
+      description: '[check type code](#operation/getTranslationQualityCheckTypes)'
+      example: "LEADING_TRAILING_SPACES"
+      enum:
+        - LEADING_TRAILING_SPACES
+        - ORIGINAL_EQUALS_TARGET
+        - WHITESPACES
+        - SPELLCHECK
+        - TAG_CONSISTENCY
+        - TARGET_LENGTH_LIMIT
+        - NUMBER_CONSISTENCY
+        - REPEATED_WORD
+        - TARGET_IN_WRONG_LANGUAGE
+        - SOURCE_IN_WRONG_LANGUAGE
+        - SEGMENT_COMPLETENESS
+        - NON_TRANSLATABLE_TEXT
+        - EMOJI_CONSISTENCY
+        - INSERTABLE_CONSISTENCY
+        - TARGET_SOURCE_CONSISTENCY
+        - BLACKLISTED_TERMS
+        - GLOSSARY_COMPLIANCE
+        - TRADEMARK_CONSISTENCY
+        - GRAMMAR_CHECK
+        - GLOBAL_CAPITALISATION_CONSISTENCY
+        - PUNCTUATION_CONSISTENCY
+        - PLURALS_REPETITION
+        - REGEX_CHECK
+        - OPEN_ISSUES
 
-      severityLevelCodeEnum:
-        enum:
-          - DISABLED
-          - LOW
-          - MEDIUM
-          - HIGH
+    checkSubtypeEnum:
+      enum:
+        - EMOJI_ADDED
+        - EMOJI_DELETED
+        - EMOJI_PRESENT
+        - INSERTABLE_ADDED
+        - INSERTABLE_DELETED
+        - PLACEABLE_ADDED
+        - PLACEABLE_DELETED
+        - SPACES_AROUND_PLACEABLE
+        - PLACEABLE_FORMAT
+        - NUMBER_ADDED
+        - NUMBER_DELETED
+        - NUMBER_INCORRECT_CONVERSION
+        - TARGET_IS_EMPTY
+        - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+        - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+        - TAG_ADDED
+        - TAG_DELETED
+        - SPACES_AROUND_TAGS
+        - TAG_ORDER_IS_CHANGED
+        - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+        - INVALID_TAG_NESTING
+        - TAG_IS_CHANGED
+        - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+        - SAME_TRANSLATION_DIFFERENT_SOURCES
 
-      severityLevelCodeEnumCopyForRequest:
-        enum:
-          - DISABLED
-          - LOW
-          - MEDIUM
-          - HIGH
+    severityLevelCodeEnum:
+      type: string
+      description: severity level code
+      example: "MEDIUM"
+      enum:
+        - DISABLED
+        - LOW
+        - MEDIUM
+        - HIGH
 
-      checkTypeCodeWithSettingsEnum:
-        enum:
-          - ORIGINAL_EQUALS_TARGET
-          - SPELLCHECK
-          - NUMBER_CONSISTENCY
-          - TARGET_IN_WRONG_LANGUAGE
-          - SOURCE_IN_WRONG_LANGUAGE
-          - SEGMENT_COMPLETENESS
-          - EMOJI_CONSISTENCY
-          - TARGET_SOURCE_CONSISTENCY
-          - GLOSSARY_COMPLIANCE
-          - OPEN_ISSUES
+    severityLevelCodeEnumCopyForRequest:
+      enum:
+        - DISABLED
+        - LOW
+        - MEDIUM
+        - HIGH
 
-      checkTypeCodeOnlyWithSubtypesEnum:
-        enum:
-          - TAG_CONSISTENCY
-          - NUMBER_CONSISTENCY
-          - SEGMENT_COMPLETENESS
-          - NON_TRANSLATABLE_TEXT
-          - EMOJI_CONSISTENCY
-          - INSERTABLE_CONSISTENCY
-          - TARGET_SOURCE_CONSISTENCY
+    checkTypeCodeWithSettingsEnum:
+      enum:
+        - ORIGINAL_EQUALS_TARGET
+        - SPELLCHECK
+        - NUMBER_CONSISTENCY
+        - TARGET_IN_WRONG_LANGUAGE
+        - SOURCE_IN_WRONG_LANGUAGE
+        - SEGMENT_COMPLETENESS
+        - EMOJI_CONSISTENCY
+        - TARGET_SOURCE_CONSISTENCY
+        - GLOSSARY_COMPLIANCE
+        - OPEN_ISSUES
 
-      ruleTypeCodeEnum:
-        enum:
-          - FORBIDDEN
-          - MISSING
-          - COUNT_MISMATCH
+    checkTypeCodeOnlyWithSubtypesEnum:
+      enum:
+        - TAG_CONSISTENCY
+        - NUMBER_CONSISTENCY
+        - SEGMENT_COMPLETENESS
+        - NON_TRANSLATABLE_TEXT
+        - EMOJI_CONSISTENCY
+        - INSERTABLE_CONSISTENCY
+        - TARGET_SOURCE_CONSISTENCY
 
-      ruleTypeCodeEnumCopyForRequest:
-        enum:
-          - FORBIDDEN
-          - MISSING
-          - COUNT_MISMATCH
+    ruleTypeCodeEnum:
+      enum:
+        - FORBIDDEN
+        - MISSING
+        - COUNT_MISMATCH
 
-      flavorCodeEnum:
-        enum:
-          - JAVA
-          - DOT_NET
+    ruleTypeCodeEnumCopyForRequest:
+      enum:
+        - FORBIDDEN
+        - MISSING
+        - COUNT_MISMATCH
+
+    flavorCodeEnum:
+      enum:
+        - JAVA
+        - DOT_NET
