@@ -6,10 +6,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTranslationQualityCheckTypes
-      consumes:
-        - application/json
-      produces:
-        - application/json
       responses:
         '200':
           description: OK
@@ -20,7 +16,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - &ref_1
+                      - &ref_2
                         type: object
                         required:
                           - code
@@ -46,7 +42,12 @@ x-paths:
                                   allOf:
                                     - type: object
                                       properties:
-                                        checkTypeCode: &ref_0
+                                        checkTypeCode: &ref_1
+                                          type: string
+                                          description: >-
+                                            [check type
+                                            code](#operation/getTranslationQualityCheckTypes)
+                                          example: LEADING_TRAILING_SPACES
                                           enum:
                                             - LEADING_TRAILING_SPACES
                                             - ORIGINAL_EQUALS_TARGET
@@ -88,7 +89,7 @@ x-paths:
                                           type: array
                                           items:
                                             allOf:
-                                              - &ref_2
+                                              - &ref_3
                                                 type: object
                                                 properties:
                                                   checkSubTypeCode:
@@ -163,9 +164,7 @@ x-paths:
                             name: Tag order changed
                       - checkTypeCode: TARGET_LENGTH_LIMIT
                         name: Target length limit
-                        description: >-
-                          Check that the translation is within the length
-                          limit
+                        description: Check that the translation is within the length limit
                         checkSubTypes: []
                       - checkTypeCode: NUMBER_CONSISTENCY
                         name: Number consistency
@@ -297,6 +296,153 @@ x-paths:
                         name: Open Issues
                         description: Check that strings do not have open issues
                         checkSubTypes: []
+        '400': &ref_4
+          description: Provided request parameters are invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - VALIDATION_ERROR
+                        type: string
+                      errors:
+                        items: &ref_0
+                          type: object
+                          properties:
+                            key:
+                              example: general_error
+                              type: string
+                            message:
+                              example: Unexpected server error
+                              type: string
+                            details:
+                              example: {}
+                              type: object
+                          required:
+                            - key
+                            - message
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: unknown.field
+                          message: >-
+                            The field unknown.parameter was not expected. Please
+                            consult the documentation to verify the fields you
+                            are submitting.
+                          details: {}
+        '401': &ref_5
+          description: Provided credentials are not valid.
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - AUTHENTICATION_ERROR
+                          - AUTHORIZATION_ERROR
+                        type: string
+                      errors:
+                        items: *ref_0
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
+              examples:
+                response:
+                  value:
+                    response:
+                      code: AUTHENTICATION_ERROR
+                      errors:
+                        - key: invalid_token
+                          details: {}
+                          message: Invalid token
+        '429': &ref_6
+          description: Too many simultaneous API requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - MAX_OPERATIONS_LIMIT_EXCEEDED
+                        type: string
+                      errors:
+                        items: *ref_0
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
+              examples:
+                response:
+                  value:
+                    response:
+                      code: MAX_OPERATIONS_LIMIT_EXCEEDED
+                      errors:
+                        - key: too.many.requests
+                          message: >-
+                            The limit of 10 concurrent Smartling file API
+                            operations for this project has been exceeded.
+        '500': &ref_7
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                properties:
+                  response:
+                    properties:
+                      code:
+                        description: >-
+                          Indicates whether the response was successful or what
+                          error has occured.
+                        enum:
+                          - GENERAL_ERROR
+                          - MAINTENANCE_MODE_ERROR
+                        type: string
+                      errors:
+                        items: *ref_0
+                        type: array
+                    required:
+                      - code
+                      - errors
+                    type: object
+                required:
+                  - response
+                type: object
       x-code-samples:
         - lang: curl
           source: >
@@ -309,15 +455,11 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTranslationQualityCheckSubTypes
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: checkTypeCode
           in: path
           required: true
-          schema: *ref_0
+          schema: *ref_1
           description: '[check type code](#operation/getTranslationQualityCheckTypes)'
       responses:
         '200':
@@ -329,7 +471,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_1
+                      - *ref_2
                       - type: object
                         properties:
                           data:
@@ -342,7 +484,7 @@ x-paths:
                                 type: array
                                 items:
                                   allOf:
-                                    - *ref_2
+                                    - *ref_3
               example:
                 response:
                   code: SUCCESS
@@ -355,6 +497,10 @@ x-paths:
                         name: Emoji deleted
                       - checkSubTypeCode: EMOJI_PRESENT
                         name: Emoji present
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -367,10 +513,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getGlossaryComplianceMatchMethods
-      consumes:
-        - application/json
-      produces:
-        - application/json
       responses:
         '200':
           description: OK
@@ -381,7 +523,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_1
+                      - *ref_2
                       - type: object
                         properties:
                           data:
@@ -422,6 +564,10 @@ x-paths:
                         matchMethodName: Exact match
                       - matchMethodCode: LEXICAL_ANALYSIS
                         matchMethodName: Lexical analysis
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -434,10 +580,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTranslationQualityCheckSeverityLevels
-      consumes:
-        - application/json
-      produces:
-        - application/json
       responses:
         '200':
           description: OK
@@ -448,7 +590,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_1
+                      - *ref_2
                       - type: object
                         properties:
                           data:
@@ -464,6 +606,9 @@ x-paths:
                                     - type: object
                                       properties:
                                         severityLevelCode:
+                                          type: string
+                                          description: severity level code
+                                          example: MEDIUM
                                           enum:
                                             - DISABLED
                                             - LOW
@@ -489,6 +634,10 @@ x-paths:
                         name: Medium Severity
                       - severityLevelCode: HIGH
                         name: High Severity
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -501,10 +650,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTrademarkConsistencyTrademarkTypes
-      consumes:
-        - application/json
-      produces:
-        - application/json
       responses:
         '200':
           description: OK
@@ -515,7 +660,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_1
+                      - *ref_2
                       - type: object
                         properties:
                           data:
@@ -559,6 +704,10 @@ x-paths:
                         trademarkTypeCode: REGISTERED
                       - name: Trademark symbol
                         trademarkTypeCode: TRADEMARK
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -571,16 +720,13 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getUserCustomDictionary
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
-        - &ref_3
+        - &ref_8
           name: localeId
           in: path
           required: true
-          type: string
+          schema:
+            type: string
           description: A valid Smartling Locale ID.
       responses:
         '200':
@@ -592,7 +738,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_1
+                      - *ref_2
                       - type: object
                         properties:
                           data:
@@ -605,7 +751,7 @@ x-paths:
                                 type: array
                                 items:
                                   allOf:
-                                    - &ref_4
+                                    - &ref_9
                                       type: object
                                       properties:
                                         wordUid:
@@ -623,6 +769,10 @@ x-paths:
                                             the UTC value of the date the word was
                                             added.
                                           example: 2018-11-21T01:51:17.000Z
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -634,12 +784,8 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: addWordToUserCustomDictionary
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
-        - *ref_3
+        - *ref_8
       requestBody:
         description: ''
         required: true
@@ -657,17 +803,21 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: &ref_5
+              schema: &ref_10
                 type: object
                 properties:
                   response:
                     allOf:
-                      - *ref_1
+                      - *ref_2
                       - type: object
                         properties:
                           data:
                             allOf:
-                              - *ref_4
+                              - *ref_9
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -681,23 +831,24 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: removeWordFromUserCustomDictionary
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
-        - *ref_3
+        - *ref_8
         - name: wordUid
           in: path
           required: true
-          type: string
+          schema:
+            type: string
           description: Word unique identifier.
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_5
+              schema: *ref_10
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -711,8 +862,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getRegexQualityCheckRuleTypes
-      produces:
-        - application/json
       responses:
         '200':
           description: OK
@@ -723,7 +872,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_1
+                      - *ref_2
                       - type: object
                         properties:
                           data:
@@ -763,6 +912,10 @@ x-paths:
                         name: >-
                           Count of regex matches differ between source and
                           target
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >
@@ -775,8 +928,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getRegexQualityCheckFlavors
-      produces:
-        - application/json
       responses:
         '200':
           description: OK
@@ -787,7 +938,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_1
+                      - *ref_2
                       - type: object
                         properties:
                           data:
@@ -822,6 +973,10 @@ x-paths:
                         name: Java
                       - flavorCode: DOT_NET
                         name: .NET
+        '400': *ref_4
+        '401': *ref_5
+        '429': *ref_6
+        '500': *ref_7
       x-code-samples:
         - lang: curl
           source: >

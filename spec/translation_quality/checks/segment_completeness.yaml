@@ -54,6 +54,8 @@ components:
                       - TARGET_IS_MUCH_LONGER_THAN_SOURCE
                     description: check subtype code
                     example: "TARGET_IS_EMPTY"
+                  severityLevelCode:
+                    $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeEnum'
 
     ProfilesAccountCheckTypeEffectiveDTO:
       title: SEGMENT_COMPLETENESS
@@ -75,6 +77,7 @@ components:
                 type: object
                 properties:
                   checkSubTypeCode:
+                    nullable: true
                     type: string
                     enum:
                       - TARGET_IS_EMPTY
@@ -82,6 +85,8 @@ components:
                       - TARGET_IS_MUCH_LONGER_THAN_SOURCE
                     description: check subtype code
                     example: "TARGET_IS_EMPTY"
+                  severityLevelCode:
+                    $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeEnum'
 
     ProfilesAccountCheckTypeEffectiveResponse:
       allOf:
@@ -107,6 +112,7 @@ components:
               example: "SEGMENT_COMPLETENESS"
             details:
               type: object
+              nullable: true
               properties:
                 type:
                   type: string
@@ -126,21 +132,24 @@ components:
   examples:
 
     profiles_account_check_types_settings_effective_example:
-      "profileUid": "ce6d6b5dbc12"
-      "severityLevelCode": "MEDIUM"
-      "checkTypeCode": "SEGMENT_COMPLETENESS"
-      "subTypes":
-        - "checkSubTypeCode": "TARGET_IS_MUCH_SHORTER_THAN_SOURCE"
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "profileUid": "ce6d6b5dbc12"
           "severityLevelCode": "MEDIUM"
-        - "checkSubTypeCode": "TARGET_IS_MUCH_LONGER_THAN_SOURCE"
-          "severityLevelCode": "MEDIUM"
-        - "checkSubTypeCode": "TARGET_IS_EMPTY"
-          "severityLevelCode": "DISABLED"
-      "localeSeverityLevels": []
-      "groups": []
-      "lowerLengthThreshold": 50
-      "upperLengthThreshold": 250
-      "minLengthThreshold": 10
+          "checkTypeCode": "SEGMENT_COMPLETENESS"
+          "subTypes":
+            - "checkSubTypeCode": "TARGET_IS_MUCH_SHORTER_THAN_SOURCE"
+              "severityLevelCode": "MEDIUM"
+            - "checkSubTypeCode": "TARGET_IS_MUCH_LONGER_THAN_SOURCE"
+              "severityLevelCode": "MEDIUM"
+            - "checkSubTypeCode": "TARGET_IS_EMPTY"
+              "severityLevelCode": "DISABLED"
+          "localeSeverityLevels": []
+          "groups": []
+          "lowerLengthThreshold": 50
+          "upperLengthThreshold": 250
+          "minLengthThreshold": 10
 
     accounts_check_types_settings_example:
       "severityLevelCode": "MEDIUM"
@@ -197,9 +206,12 @@ components:
       "minLengthThreshold": 10
 
     profiles_accounts_check_types_checkType_settings_example:
-      lowerLengthThreshold: 10
-      upperLengthThreshold: 20
-      minLengthThreshold: 15
+      "response":
+        "code": "SUCCESS"
+        "data":
+          lowerLengthThreshold: 10
+          upperLengthThreshold: 20
+          minLengthThreshold: 15
 
     accounts_check_types_checkType_group_settings_example:
       lowerLengthThreshold: 10
@@ -207,9 +219,12 @@ components:
       minLengthThreshold: 15
 
     profiles_accounts_check_types_checkType_group_settings_example:
-      lowerLengthThreshold: 10
-      upperLengthThreshold: 20
-      minLengthThreshold: 15
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "lowerLengthThreshold": 10
+          "upperLengthThreshold": 20
+          "minLengthThreshold": 15
 
     tqc_check_response_example:
       "response":
@@ -227,8 +242,8 @@ components:
                 - "checkTypeCode": "SEGMENT_COMPLETENESS"
                   "severityLevelCode": "MEDIUM"
                   "positions":
-                    "from": 0
-                    "to": 10
+                    - "from": 0
+                      "to": 10
                   "details":
                     "type": "TARGET_IS_MUCH_SHORTER_THAN_SOURCE"
                   "positionTypeCode": "TARGET"

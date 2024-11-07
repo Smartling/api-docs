@@ -8,13 +8,11 @@ x-paths:
       tags:
         - File Machine Translations (MT)
       operationId: detectFileSourceLanguage
-      produces:
-        - application/json
       parameters:
         - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
         - $ref: './fts_common.yaml#/components/parameters/fileUidPathParameter'
       responses:
-        '202':
+        202:
           content:
             application/json:
               examples:
@@ -27,11 +25,12 @@ x-paths:
               schema:
                 $ref: '#/components/schemas/LanguageDetectionResponse'
           description: OK
-        '400':
+        400:
+          description: "Validation error"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -44,12 +43,12 @@ x-paths:
                         details:
                           field: "fileUid"
 
-        '401':
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        '429':
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        '500':
-          $ref: '#/components/responses/Error500ResponseDefinition'
+        401:
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '../api_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: >
@@ -65,14 +64,12 @@ x-paths:
       tags:
         - File Machine Translations (MT)
       operationId: getLanguageDetectionStatus
-      produces:
-        - application/json
       parameters:
         - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
         - $ref: './fts_common.yaml#/components/parameters/fileUidPathParameter'
         - $ref: './fts_common.yaml#/components/parameters/languageDetectionUidPathParameter'
       responses:
-        '200':
+        200:
           content:
             application/json:
               examples:
@@ -91,14 +88,14 @@ x-paths:
               schema:
                 $ref: '#/components/schemas/LanguageDetectionStatusResponse'
           description: OK
-        '400':
+        400:
           $ref: './fts_common.yaml#/components/responses/Error400ResponseDefinition'
-        '401':
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        '429':
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        '500':
-          $ref: '#/components/responses/Error500ResponseDefinition'
+        401:
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '../api_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: >
@@ -143,12 +140,13 @@ components:
                       type: array
                       items:
                         type: object
-                      languageId:
-                        type: string
-                        description: Detected source language of the file
-                      defaultLocaleId:
-                        type: string
-                        description: Smartling's default locale that corresponds to languageId
+                        properties:
+                          languageId:
+                            type: string
+                            description: Detected source language of the file
+                          defaultLocaleId:
+                            type: string
+                            description: Smartling's default locale that corresponds to languageId
                   type: object
 
               type: object    

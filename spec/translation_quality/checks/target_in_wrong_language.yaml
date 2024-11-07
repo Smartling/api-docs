@@ -7,7 +7,6 @@ components:
         - type: object
           required:
             - minTextLengthLimit
-        - $ref: '../tqc_common.yaml#/components/requestBodies/targetLocaleId'
         - $ref: '#/components/schemas/responseFields/minTextLengthLimit'
 
     AccountCheckTypeApplySettingsDTOResponse:
@@ -78,6 +77,7 @@ components:
               example: "TARGET_IN_WRONG_LANGUAGE"
             details:
               type: object
+              nullable: true
             positionTypeCode:
               type: string
               enum:
@@ -88,13 +88,16 @@ components:
   examples:
 
     profiles_account_check_types_settings_effective_example:
-      "profileUid": "ce6d6b5dbc12"
-      "severityLevelCode": "LOW"
-      "checkTypeCode": "TARGET_IN_WRONG_LANGUAGE"
-      "subTypes": []
-      "localeSeverityLevels": []
-      "groups": []
-      "minTextLengthLimit": 40
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "profileUid": "ce6d6b5dbc12"
+          "severityLevelCode": "LOW"
+          "checkTypeCode": "TARGET_IN_WRONG_LANGUAGE"
+          "subTypes": []
+          "localeSeverityLevels": []
+          "groups": []
+          "minTextLengthLimit": 40
 
     accounts_check_types_settings_example:
       "severityLevelCode": "LOW"
@@ -125,13 +128,19 @@ components:
       minTextLengthLimit: 15
 
     profiles_accounts_check_types_checkType_settings_example:
-      minTextLengthLimit: 15
+      "response":
+        "code": "SUCCESS"
+        "data":
+          minTextLengthLimit: 15
 
     accounts_check_types_checkType_group_settings_example:
       minTextLengthLimit: 15
 
     profiles_accounts_check_types_checkType_group_settings_example:
-      minTextLengthLimit: 15
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "minTextLengthLimit": 15
 
     tqc_check_response_example:
       "response":
@@ -149,8 +158,8 @@ components:
                 - "checkTypeCode": "TARGET_IN_WRONG_LANGUAGE"
                   "severityLevelCode": "LOW"
                   "positions":
-                    "from": 0
-                    "to": 64
+                    - "from": 0
+                      "to": 64
                   "details": null
                   "positionTypeCode": "TARGET"
 

@@ -3,7 +3,8 @@ components:
       accountUid:
         name: accountUid
         in: path
-        type: string
+        schema:
+          type: string
         required: true
         description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
 
@@ -11,14 +12,16 @@ components:
         name: projectId
         in: path
         required: true
-        type: string
+        schema:
+          type: string
         description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
 
       localeId:
         name: localeId
         in: path
         required: true
-        type: string
+        schema:
+          type: string
         description: A valid Smartling Locale ID.
 
   requestBodies:
@@ -50,6 +53,7 @@ components:
           type: string
           enum:
             - SUCCESS
+            - ACCEPTED
           description: Indicates whether the response was successful or what error has occurred.
 
     EmptyResponse:
@@ -63,6 +67,22 @@ components:
             - properties:
                 data:
                   description: Always null.
+                  type: object
+              type: object
+
+    NotEmptyResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    message:
+                      type: string
                   type: object
               type: object
 
@@ -89,7 +109,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - VALIDATION_ERROR
               type: string
@@ -110,7 +130,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - AUTHENTICATION_ERROR
                 - AUTHORIZATION_ERROR
@@ -132,7 +152,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - NOT_FOUND_ERROR
               type: string
@@ -153,7 +173,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - RESOURCE_LOCKED
               type: string
@@ -174,7 +194,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - MAX_OPERATIONS_LIMIT_EXCEEDED
               type: string
@@ -195,7 +215,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - GENERAL_ERROR
                 - MAINTENANCE_MODE_ERROR
@@ -224,12 +244,12 @@ components:
                 response:
                   code: VALIDATION_ERROR
                   errors:
-                    key: unknown.field
-                    message: >-
-                      The field unknown.parameter was not expected. Please
-                      consult the documentation to verify the fields you are
-                      submitting.
-                    details: unknown.parameter
+                    - key: unknown.field
+                      message: >-
+                        The field unknown.parameter was not expected. Please
+                        consult the documentation to verify the fields you are
+                        submitting.
+                      details: {}
 
     Error401ResponseDefinition:
       description: Provided credentials are not valid.
@@ -243,9 +263,9 @@ components:
                 response:
                   code: AUTHENTICATION_ERROR
                   errors:
-                    details: {}
-                    key: invalid_token
-                    message: Invalid token
+                    - key: invalid_token
+                      details: {}
+                      message: Invalid token
 
     Error429ResponseDefinition:
       description: Too many simultaneous API requests.
@@ -259,10 +279,10 @@ components:
                 response:
                   code: MAX_OPERATIONS_LIMIT_EXCEEDED
                   errors:
-                    key: too.many.requests
-                    message: >-
-                      The limit of 10 concurrent Smartling file API
-                      operations for this project has been exceeded.
+                    - key: too.many.requests
+                      message: >-
+                        The limit of 10 concurrent Smartling file API
+                        operations for this project has been exceeded.
 
     Error500ResponseDefinition:
       description: Unexpected error

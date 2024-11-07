@@ -8,20 +8,12 @@ set('-v');
 
 var branch = process.env.BRANCH_NAME && process.env.BRANCH_NAME.toLowerCase();
 if (branch && branch !== 'gh-pages') {
-  var branchPath = path.join('.tmp', 'preview', branch, '/');
-  mkdir('-p', branchPath);
-  cp('-R', 'web/*', branchPath);
-  exec('npm run swagger bundle -- -o ' + branchPath + 'swagger.json');
+    var branchPath = path.join('.tmp', 'preview', branch, '/');
+    mkdir('-p', branchPath);
+    cp('-R', 'web/*', branchPath);
+    exec('redocly build-docs ./spec/openapi.yaml -o ' + branchPath + 'index.html');
+    exec('redocly bundle ./spec/openapi.yaml     -o ' + branchPath + 'swagger.yaml');
+    exec('redocly bundle ./spec/openapi.yaml     -o ' + branchPath + 'swagger.json');
 
-  var specFolder = path.join(branchPath, 'spec');
-  mkdir('-p', specFolder);
-  cp('-R', 'spec/translation_quality', specFolder);
-  cp('-R', 'spec/file_translation', specFolder);
-  cp('-R', 'spec/issues', specFolder);
-  cp('-R', 'spec/job_batches_v1', specFolder);
-  cp('-R', 'spec/job_batches_v2', specFolder);
-  cp('-R', 'spec/glossary_v3', specFolder);
-  cp('-R', 'spec/api_common.yaml', specFolder);
-
-  exec('deploy-to-gh-pages --update .tmp');
+    exec('deploy-to-gh-pages --update .tmp');
 }
