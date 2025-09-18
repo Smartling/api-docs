@@ -4218,6 +4218,84 @@ paths:
           "fileUri=$smartlingFileUri"
           https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/source-strings
 
+    post:
+      summary: List all source strings (POST)
+      description: >-
+        Returns source strings from Smartling. You can get strings by specifying
+        a file you want strings for, or you can specify individual strings by
+        hashcode.
+
+
+        _If you do not specify at least one of these parameters (`hashcodes` or
+        `fileUri`) no results will be returned._
+
+
+        **Note**: If you use this call to get strings that are not added via the
+        Strings API, you may see differences in the response.
+
+
+        You may see a value for `parsedStringText` but a `null` value for
+        `stringText`. The `stringText` records the raw input received by the
+        Strings API, and therefore will only appear for strings uploaded via the
+        Strings API.
+
+        If you are getting a GDN string, the original placeholder values you
+        used will not be returned as these are not saved by Smartling. GDN
+        strings will have placeholders in the format `{0}`, `{1}`, etc.
+      tags:
+      - Strings
+      operationId: getAllSourceStringsByProjectPost
+      parameters:
+      - in: path
+        name: projectId
+        required: true
+        schema:
+          format: uuid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hashcodes:
+                  description: Hashcodes for each string you want to get source strings for.
+                  type: array
+                  items:
+                    type: string
+                fileUri:
+                  description: URI of a file you want to get strings for.
+                  type: string
+                limit:
+                  description: >-
+                    By default, responses will be limited to 500 per request. This is
+                    also the maximum allowed value.
+                  type: number
+                offset:
+                  description: Pagination setting. Default is 0.
+                  type: number
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringResponse'
+          description: OK
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d
+          '{"fileUri": "$smartlingFileUri"}'
+          https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/source-strings
+
   '/strings-api/v2/projects/{projectId}/translations':
     get:
       summary: List all translations
@@ -4317,6 +4395,103 @@ paths:
       - lang: curl
         source: >
           curl -H "Authorization: Bearer $smartlingToken" -G
+          https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/translations
+
+    post:
+      summary: List all translations (POST)
+      description: >-
+        Returns translated strings from Smartling. You can get translations by
+        specifying a file you want strings for, or you can specify individual
+        strings by hashcode.
+
+
+        _If you do not specify at least one of these parameters (`hashcodes` or
+        `fileUri`) no results will be returned._
+
+
+        **Note**: If you use this call to get strings that were not created via
+        the Strings API, you may see differences in the response.
+
+
+        Only authorized and active strings will be returned. Excluded,
+        unauthorized, and inactive strings will not be returned.
+
+
+        You may see a value for `parsedStringText` but a `null` value for
+        `stringText`. The `stringText` records the raw input received by the
+        Strings API, and therefore will only appear for strings uploaded via the
+        Strings API.
+
+        If you are getting a GDN string, the original placeholder values you
+        used will not be returned as these are not saved by Smartling. GDN
+        strings will have placeholders in the format `{0}`, `{1}`, etc.
+      tags:
+      - Strings
+      operationId: getAllTranslationsByProjectPost
+      parameters:
+      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - targetLocaleId
+              properties:
+                hashcodes:
+                  description: Hashcodes for each string you want to get translations for.
+                  type: array
+                  items:
+                    type: string
+                targetLocaleId:
+                  description: Smartling ID for the language you want to get translations for.
+                  type: string
+                retrievalType:
+                  description: >-
+                    Sets the types of translations you want returned. `published` will
+                    only return translations that have completed their workflows and
+                    been published. `pending` will return any saved translations.
+                  type: string
+                  enum:
+                    - pending
+                    - published
+                fileUri:
+                  description: URI of a file you want to get translations for.
+                  type: string
+                limit:
+                  description: >-
+                    Pagination setting. By default, responses will be limited to 500 per
+                    request. This is also the maximum allowed value.
+                  type: number
+                offset:
+                  description: Pagination setting. Default is 0.
+                  type: number
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationResponse'
+          description: OK
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d
+          '{"targetLocaleId": "es", "fileUri": "$smartlingFileUri"}'
           https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/translations
 
 #
