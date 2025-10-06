@@ -8479,6 +8479,8 @@ paths:
     $ref: './spec/job_batches_v2/job_batches_endpoints.yaml#/x-paths/status_process_batch'
   /job-batches-api/v2/projects/{projectId}/batches/{batchUid}/file:
     $ref: './spec/job_batches_v2/job_batches_endpoints.yaml#/x-paths/add_file_to_batch'
+  /job-batches-api/v2/projects/{projectId}/jobs:
+    $ref: './spec/job_batches_v2/job_batches_endpoints.yaml#/x-paths/create_job'
 
 #
 # Vendors API
@@ -10191,31 +10193,9 @@ components:
         status:
           $ref: '#/components/schemas/BatchItemStatus'
         targetLocales:
+          description: Array of target locales where this file will be translated
           items:
             $ref: '#/components/schemas/BatchItemLocaleV1'
-          type: array
-        updatedDate:
-          description: The UTC value of the date the batch item was updated.
-          example: '2015-11-21T01:51:17.000Z'
-          format: date-time
-          type: string
-      type: object
-    BatchItemV2:
-      description: Associates an uploaded file with particular Batch. BatchItem is handled
-      properties:
-        errors:
-          description: >-
-            A list of errors occured while uploading or attaching file linked to
-            this batchItem
-          type: string
-        fileUri:
-          description: Uri of the file linked to the Batch
-          type: string
-        status:
-          $ref: '#/components/schemas/BatchItemStatus'
-        targetLocales:
-          items:
-            $ref: '#/components/schemas/BatchItemLocaleV2'
           type: array
         updatedDate:
           description: The UTC value of the date the batch item was updated.
@@ -10274,14 +10254,18 @@ components:
           description: The UID of the previously created translation job.
           type: string
         fileUris:
-          description: A list of File URI's to be uploaded later
+          description: A list of File URI's to be uploaded later. Must be a non-empty array with unique values.
           type: array
+          minItems: 1
+          uniqueItems: true
           items:
             type: string
+            minLength: 1
         localeWorkflows:
+          description: Optional array of workflow configurations for target locales
           type: array
           items:
-            $ref: '#/components/schemas/LocaleWorkflow'
+            $ref: '#/components/schemas/WorkflowDTO'
       type: object
     CreateBatchResponse:
       type: object
@@ -10431,6 +10415,7 @@ components:
                       format: date-time
                       type: string
                     files:
+                      description: Array of files included in this batch with their processing status
                       items:
                         $ref: '#/components/schemas/BatchItemV2'
                       type: array
@@ -12699,6 +12684,121 @@ components:
       required:
         - targetLocaleId
         - workflowUid
+      type: object
+    TranslationJobWorkflowStepDueDateDTO:
+      description: Due date configuration for a specific workflow step
+      properties:
+        workflowStepUid:
+          description: Unique identifier of the workflow step to set due date for
+          type: string
+          example: e5c049862da1
+        dueDate:
+          description: |
+            Due date for the workflow step. Must be in one of these ISO 8601 formats:
+            - ISO Instant format: "2024-12-31T23:59:59Z" 
+            - ISO Offset DateTime format: "2024-12-31T23:59:59+01:00"
+            
+            Validation will fail with "Wrong due date format" if an invalid format is provided.
+          type: string
+          format: date-time
+          example: "2024-12-31T23:59:59Z"
+      required:
+        - workflowStepUid
+        - dueDate
+      type: object
+    ContentAssignmentDTO:
+      description: Content assignment for a specific workflow step
+      properties:
+        workflowStepUid:
+          description: Unique identifier of the workflow step to assign content to
+          type: string
+          example: e5c049862da1
+        userUids:
+          description: Array of user UIDs to assign to this workflow step. Must contain exactly 1 user UID (minimum 1, maximum 1).
+          type: array
+          maxItems: 1
+          minItems: 1
+          items:
+            type: string
+          example: ["7f3b8d2a9c6e"]
+      required:
+        - workflowStepUid
+        - userUids
+      type: object
+    WorkflowDTO:
+      description: Workflow configuration for a specific target locale in batch processing
+      properties:
+        targetLocaleId:
+          description: A valid Smartling Locale ID that the workflow applies to. Must be a non-empty string.
+          type: string
+          minLength: 1
+          example: cy-GB
+        workflowUid:
+          description: Optional unique identifier for the workflow. If not provided, default workflow is used.
+          type: string
+          example: 9422471c2202
+        contentAssignments:
+          description: Optional content assignments for specific workflow steps
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentAssignmentDTO'
+        translationJobWorkflowStepDueDates:
+          description: >
+            Optional due dates for specific workflow steps. 
+            
+
+            **Constraint**: This field can only be specified when the batch `authorize` parameter is set to `true`.
+          type: array
+          items:
+            $ref: '#/components/schemas/TranslationJobWorkflowStepDueDateDTO'
+      required:
+        - targetLocaleId
+      type: object
+    BatchItemV2:
+      description: Detailed information about a file item in a batch (V2)
+      properties:
+        status:
+          description: Current status of the batch item
+          type: string
+          enum: [UPLOADING, UPLOADED, PROCESSING, COMPLETED, FAILED, CANCELED]
+          example: UPLOADING
+        updatedDate:
+          description: Last update date of the batch item in ISO 8601 format
+          type: string
+          format: date-time
+          example: '2015-11-21T11:53:17Z'
+        errors:
+          description: JSON string containing error details if any occurred
+          type: string
+          example: ''
+        fileUri:
+          description: URI of the file in the batch
+          type: string
+          example: files/example1.json
+        targetLocales:
+          description: Array of target locales for this file
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchItemLocaleV2DTO'
+      required:
+        - status
+        - fileUri
+        - targetLocales
+      type: object
+    BatchItemLocaleV2DTO:
+      description: Locale-specific information for a batch item (V2)
+      properties:
+        localeId:
+          description: The locale identifier
+          type: string
+          example: fr-FR
+        stringsAdded:
+          description: Number of strings added for this locale
+          type: integer
+          example: 42
+      required:
+        - localeId
+        - stringsAdded
       type: object
     LocalesAPISuccessResponse:
       type: object

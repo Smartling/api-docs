@@ -55,7 +55,49 @@ x-paths:
                         message: >-
                           Job {translationJobUid} not found for project {projectId}.
         400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                duplicate_file_uris:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: batch.not.created
+                          message: "All fileUris must be unique"
+                missing_required_fields:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: translationJobUid
+                          message: "Parameter 'translationJobUid' has invalid value 'null'"
+                        - key: fileUris
+                          message: "Parameter 'fileUris' has invalid value 'null'"
+                invalid_schedule_modification:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: batch.schedule.invalid
+                          message: "Batch with authorized='false' does not support translation job schedule modification"
+                invalid_user_assignment:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: userUids
+                          message: "Parameter 'userUids' has invalid value '[]' (must contain exactly 1 user)"
+                invalid_due_date_format:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: dueDate
+                          message: "Wrong due date format"
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
         500:
@@ -66,8 +108,7 @@ x-paths:
             curl -X POST
             "https://api.smartling.com/job-batches-api/v2/projects/$smartlingProjectId/batches"
             -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
-            application/json" -d '{"translationJobUid":
-            "$translationJobUid", "authorize": true, "fileUris": ["example.json", "test.xml"]}'
+            application/json" -d '{"translationJobUid": "$translationJobUid", "authorize": true, "fileUris": ["example.json", "test.xml"], "localeWorkflows": [{"targetLocaleId": "fr-FR", "workflowUid": "2b91c391d71a"}]}'
 
     get:
       summary: List batches
@@ -264,14 +305,14 @@ x-paths:
 
     put:
       summary: Process batch action
-      description: >-
-        Supports two actions now:
-
-        REGISTER_FILE - adds given file uri to the initial file name list for uploading.
+      description: |
+        Supports two batch actions:
+        
+        **REGISTER_FILE** - Adds given file URI to the initial file name list for uploading.
         Creates a new batchItem if the batch is in ADDING_FILES status.
-
-        CANCEL_FILE - tells that file will not be uploaded
-        Changes batchItem status to CANCELED and writes reason to "errors" column
+        
+        **CANCEL_FILE** - Indicates that file will not be uploaded.  
+        Changes batchItem status to CANCELED and writes reason to "errors" column.
       tags:
         - Job Batches V2
       operationId: processBatchActionV2
@@ -326,7 +367,33 @@ x-paths:
                           Batch with uid={batchUid} and projectId={projectId}
                           not found.
         400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                file_not_registered:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: file.not.registered
+                          message: "File URI not registered in batch"
+                file_not_canceled:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: file.not.cancelled
+                          message: "Failed to cancel file"
+                batch_not_suitable:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: batch.not.suitable
+                          message: "Batch is not in suitable state for this action"
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
         500:
@@ -549,3 +616,176 @@ x-paths:
             -F "fileType=javaProperties" \
             -F "localeIdsToAuthorize[]=fr-FR" \
             -F "localeIdsToAuthorize[]=ru-RU"
+
+  create_job:
+    post:
+      summary: Create translation job
+      description: |
+        Creates a new translation job or fetches an existing one based on the specified criteria.
+        
+        The behavior depends on the `mode` parameter:
+        
+        - **REUSE_EXISTING**: Returns an existing job if one matches the name template
+        - **CREATE_NEW**: Always creates a new job with unique naming based on the salt parameter
+      tags:
+        - Job Batches V2
+      operationId: createJobV2
+
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            format: uid
+            type: string
+          description: Unique identifier of the project within an account.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobBatchCreateJobRequest'
+        description: Create Job Request
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobBatchCreateJobResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        translationJobUid: abc123def456
+                        jobName: "Localization Project Q2 2024"
+                        jobNumber: "JOB-2024-001"
+                        dueDate: "2024-06-30T23:59:59Z"
+                        targetLocaleIds: ["fr-FR", "de-DE", "es-ES"]
+                        createdDate: "2024-03-15T10:30:00Z"
+                        jobStatus: "AWAITING_AUTHORIZATION"
+                        referenceNumber: "REF-Q2-2024"
+                        description: "Q2 2024 product localization"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                missing_name_template:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: nameTemplate
+                          message: "Parameter 'nameTemplate' has invalid value 'null'"
+                job_name_evaluation_failed:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: job.name.evaluation.failed
+                          message: "Failed to evaluate job name from template"
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST
+            "https://api.smartling.com/job-batches-api/v2/projects/$smartlingProjectId/jobs"
+            -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
+            application/json" -d '{"nameTemplate": "Localization Project Q2 2024", "description": "Q2 2024 product localization", "targetLocaleIds": ["fr-FR", "de-DE"], "mode": "REUSE_EXISTING", "salt": "RANDOM_ALPHANUMERIC", "timeZoneName": "America/New_York"}'
+
+components:
+  schemas:
+    JobBatchCreateJobRequest:
+      description: The payload to use when creating a translation job.
+      required:
+        - nameTemplate
+      properties:
+        nameTemplate:
+          description: The name template for the job. Used to identify or create the job. Must be a non-empty string.
+          type: string
+          minLength: 1
+        description:
+          description: Optional description for the job.
+          type: string
+        targetLocaleIds:
+          description: List of target locale IDs for the job.
+          type: array
+          items:
+            type: string
+        mode:
+          $ref: '#/components/schemas/JobBatchJobCreationMode'
+        salt:
+          $ref: '#/components/schemas/JobBatchJobCreationSalt'
+        timeZoneName:
+          description: Time zone name for the job (e.g., "America/New_York").
+          type: string
+      type: object
+    JobBatchCreateJobResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    translationJobUid:
+                      description: The unique identifier of the translation job.
+                      type: string
+                    jobName:
+                      description: The name of the job.
+                      type: string
+                    jobNumber:
+                      description: The job number.
+                      type: string
+                    dueDate:
+                      description: The due date of the job in ISO 8601 format.
+                      type: string
+                    targetLocaleIds:
+                      description: List of target locale IDs for the job.
+                      type: array
+                      items:
+                        type: string
+                    createdDate:
+                      description: The creation date of the job in ISO 8601 format.
+                      type: string
+                    jobStatus:
+                      description: The current status of the job.
+                      type: string
+                    referenceNumber:
+                      description: The reference number for the job.
+                      type: string
+                    description:
+                      description: The description of the job.
+                      type: string
+                  type: object
+              type: object
+      description: Info about created or fetched translation job.
+    JobBatchJobCreationMode:
+      type: string
+      enum:
+        - CREATE_NEW
+        - REUSE_EXISTING
+      description: >-
+        Determines job creation behavior:
+        - CREATE_NEW: Always creates a new job with unique naming
+        - REUSE_EXISTING: Returns existing job if one matches the name template
+    JobBatchJobCreationSalt:
+      type: string
+      enum:
+        - RANDOM_ALPHANUMERIC
+        - TIMESTAMP
+      description: >-
+        Determines how unique identifiers are generated when creating new jobs:
+        - RANDOM_ALPHANUMERIC: Uses random alphanumeric characters
+        - TIMESTAMP: Uses timestamp-based identifiers
