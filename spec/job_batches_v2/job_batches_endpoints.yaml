@@ -567,11 +567,63 @@ x-paths:
       summary: Create translation job
       description: |
         Creates a new translation job or fetches an existing one based on the specified criteria.
-        
-        The behavior depends on the `mode` parameter:
-        
-        - **REUSE_EXISTING**: Returns an existing job if one matches the name template
-        - **CREATE_NEW**: Always creates a new job with unique naming based on the salt parameter
+
+        **Purpose**: This endpoint simplifies the common workflow where you need to obtain a translation job for file uploads
+        without managing the full complexity of job creation. It's particularly useful in automation scripts (e.g., bash scripts)
+        and integration scenarios where you have a desired job name and simply need to get a `translationJobUid` to proceed
+        with file uploads. The job can be reviewed and configured later through the Smartling dashboard.
+
+        **When to use this endpoint**:
+        - You need a simple "get or create" job operation by name
+        - You're building file upload workflows and need a job quickly
+        - You're writing automation scripts or integrations
+
+        **When to use the standard Jobs API instead**: If you require full control over job creation with all available
+        parameters (custom fields, reference numbers, due dates, etc.), please use the
+        [Jobs API Create Job endpoint](#operation/addJob).
+        This endpoint intentionally provides a simplified interface focused on the most common use case.
+
+        **Dynamic job naming**: The `nameTemplate` parameter supports date pattern placeholders using Java `DateTimeFormatter`
+        syntax (e.g., `{yyyy}`, `{QQQ}`). These patterns are evaluated at request time using the specified `timeZoneName`.
+
+        **Job creation behavior** depends on the `mode` parameter:
+
+        - **REUSE_EXISTING**: Returns an existing job if one matches the evaluated name template. If the matching job is
+          closed or completed, creates a new job with a unique name using the specified `salt` strategy.
+        - **CREATE_NEW**: Attempts to create a new job with the evaluated name. If a job with that name already exists,
+          appends a unique identifier using the specified `salt` strategy to ensure creation succeeds.
+
+        **Examples**:
+
+        1. **Quarterly localization job**:
+           ```json
+           {
+             "nameTemplate": "Q{QQQ} {yyyy} Localization",
+             "timeZoneName": "America/New_York",
+             "mode": "REUSE_EXISTING"
+           }
+           ```
+           Evaluates to: "Q1 2025 Localization" (when called in Q1 2025)
+
+        2. **Daily content updates**:
+           ```json
+           {
+             "nameTemplate": "Daily Update {yyyy-MM-dd}",
+             "timeZoneName": "Europe/London",
+             "mode": "REUSE_EXISTING"
+           }
+           ```
+           Evaluates to: "Daily Update 2025-10-08"
+
+        3. **Always unique jobs**:
+           ```json
+           {
+             "nameTemplate": "Feature Release {yyyy}",
+             "mode": "CREATE_NEW",
+             "salt": "TIMESTAMP"
+           }
+           ```
+           Creates: "Feature Release 2025 2025-10-08 02:34:15 PM" (if job already exists)
       tags:
         - Job Batches V2
       operationId: createJobV2
@@ -870,7 +922,30 @@ components:
         - nameTemplate
       properties:
         nameTemplate:
-          description: The name template for the job. Used to identify or create the job. Must be a non-empty string.
+          description: |
+            The name template for the job, used to identify or create the job. Must be a non-empty string.
+
+            **Dynamic date patterns**: The template supports date pattern placeholders enclosed in curly braces `{}`, which are
+            evaluated at request time using Java `DateTimeFormatter` syntax. Patterns are replaced with actual date/time values
+            based on the specified `timeZoneName` (or server time if not specified).
+
+            **Common pattern examples**:
+            - `{yyyy}` - Four-digit year (e.g., "2025")
+            - `{yy}` - Two-digit year (e.g., "25")
+            - `{QQQ}` - Quarter of year (e.g., "Q1", "Q2")
+            - `{QQQQ}` - Full quarter text (e.g., "1st quarter")
+            - `{MM}` - Month as two digits (e.g., "01", "12")
+            - `{MMM}` - Short month name (e.g., "Jan", "Dec")
+            - `{dd}` - Day of month (e.g., "08", "25")
+            - `{yyyy-MM-dd}` - ISO date format (e.g., "2025-10-08")
+
+            **Examples**:
+            - `"Q{QQQ} {yyyy} Localization"` → evaluates to "Q1 2025 Localization" (in Q1 2025)
+            - `"Daily Update {yyyy-MM-dd}"` → evaluates to "Daily Update 2025-10-08"
+            - `"Release {yyyy}"` → evaluates to "Release 2025"
+
+            For complete pattern syntax, refer to the
+            [Java DateTimeFormatter documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/format/DateTimeFormatter.html).
           type: string
           minLength: 1
         description:
@@ -937,16 +1012,42 @@ components:
       enum:
         - CREATE_NEW
         - REUSE_EXISTING
+      default: REUSE_EXISTING
       description: >-
-        Determines job creation behavior:
-        - CREATE_NEW: Always creates a new job with unique naming
-        - REUSE_EXISTING: Returns existing job if one matches the name template
+        Determines job creation behavior. Defaults to REUSE_EXISTING.
+
+
+        - **REUSE_EXISTING** (default): Returns an existing job if one matches the evaluated `nameTemplate`. If the
+          matching job is closed or completed (final state), automatically creates a new job with a unique name by
+          appending a salt identifier. This mode is ideal for workflows where you want to reuse active jobs but ensure
+          work continues when previous jobs are closed.
+
+        - **CREATE_NEW**: Attempts to create a new job with the evaluated `nameTemplate`. If a job with that exact name
+          already exists, automatically appends a salt identifier to create a job with a unique name. If no job exists
+          with that name, creates the job without salt modification.
     JobBatchJobCreationSalt:
       type: string
       enum:
         - RANDOM_ALPHANUMERIC
         - TIMESTAMP
+      default: RANDOM_ALPHANUMERIC
       description: >-
-        Determines how unique identifiers are generated when creating new jobs:
-        - RANDOM_ALPHANUMERIC: Uses random alphanumeric characters
-        - TIMESTAMP: Uses timestamp-based identifiers
+        Determines the format of the unique identifier appended to job names when necessary to avoid conflicts.
+        Defaults to RANDOM_ALPHANUMERIC. Salt is applied based on the `mode` parameter behavior.
+
+
+        **When salt is applied**:
+
+        - With **REUSE_EXISTING**: Salt is appended when an existing job with the evaluated name is in a closed or completed
+          state, ensuring a new unique job is created.
+
+        - With **CREATE_NEW**: Salt is appended when a job with the evaluated name already exists, regardless of status.
+
+
+        **Salt formats**:
+
+        - **RANDOM_ALPHANUMERIC** (default): Appends a space and 5 random alphanumeric characters to the job name
+          (e.g., "My Job aB3x9").
+
+        - **TIMESTAMP**: Appends a space and formatted timestamp in "yyyy-MM-dd hh:mm:ss a" format, evaluated using the
+          specified `timeZoneName` (e.g., "My Job 2025-10-08 02:34:15 PM").
