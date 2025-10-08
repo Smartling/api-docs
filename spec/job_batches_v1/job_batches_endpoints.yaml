@@ -39,20 +39,7 @@ x-paths:
                       data:
                         batchUid: qwe0rty98poi
         404:
-          description: provided translationJobUid is not found in the TMS
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        key: job.not.found
-                        message: >-
-                          Job {translationJobUid} not found for project {projectId}.
+          $ref: '#/components/responses/BatchJobNotFoundResponse'
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -242,21 +229,7 @@ x-paths:
                         translationJobUid: sjhs782hdb4djf
                         updatedDate: '2015-11-21T11:51:17Z'
         404:
-          description: Batch provided in path is not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        key: batch.not.found
-                        message: >-
-                          Batch with uid={batchUid} and projectId={projectId}
-                          not found.
+          $ref: '#/components/responses/BatchNotFoundResponse'
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -315,21 +288,7 @@ x-paths:
                     response:
                       code: SUCCESS
         404:
-          description: Batch provided in path is not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        key: batch.not.found
-                        message: >-
-                          Batch with uid={batchUid} and projectId={projectId}
-                          not found.
+          $ref: '#/components/responses/BatchNotFoundResponse'
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -515,21 +474,7 @@ x-paths:
                           Your file was successfully uploaded. Word and string
                           counts are not available right now.
         404:
-          description: Batch provided in path is not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        key: batch.not.found
-                        message: >-
-                          Batch with uid={batchUid} and projectId={projectId}
-                          not found.
+          $ref: '#/components/responses/BatchNotFoundResponse'
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
@@ -738,21 +683,7 @@ x-paths:
                       code: ACCEPTED
                       data:
         404:
-          description: Batch provided in path is not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400Response'
-              examples:
-                response:
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        key: batch.not.found
-                        message: >-
-                          Batch with uid={batchUid} and projectId={projectId}
-                          not found.
+          $ref: '#/components/responses/BatchNotFoundResponse'
         429:
           $ref: '#/components/responses/Error429ResponseDefinition'
         400:
@@ -772,3 +703,250 @@ x-paths:
             -F "fileType=javaProperties" \
             -F "localeIdsToAuthorize[]=fr-FR" \
             -F "localeIdsToAuthorize[]=ru-RU"
+
+components:
+  responses:
+    BatchNotFoundResponse:
+      description: Batch provided in path is not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: VALIDATION_ERROR
+                  errors:
+                    key: batch.not.found
+                    message: >-
+                      Batch with uid={batchUid} and projectId={projectId}
+                      not found.
+    BatchJobNotFoundResponse:
+      description: provided translationJobUid is not found in the TMS
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: VALIDATION_ERROR
+                  errors:
+                    key: job.not.found
+                    message: >-
+                      Job {translationJobUid} not found for project {projectId}.
+
+  schemas:
+    BatchStatus:
+      description: The status of the Batch
+      enum:
+        - DRAFT
+        - ADDING_FILES
+        - EXECUTING
+        - COMPLETED
+      type: string
+    BatchItemStatus:
+      description: The status of the BatchItem
+      enum:
+        - DRAFT
+        - UPLOADING
+        - UPLOAD_FAILED
+        - ATTACHING
+        - ATTACH_FAILED
+        - COMPLETED
+        - CANCELED
+      type: string
+    Batch:
+      description: >-
+        The Job Batch is a session for uploading multiple files into tms,
+        attaching them to a translationJob and authorizing this job.
+      properties:
+        batchUid:
+          description: A unique identifier for a batch.
+          format: uid
+          type: string
+        status:
+          $ref: '#/components/schemas/BatchStatus'
+        authorized:
+          description: The flag showing if authorizing job is requested for this Batch
+          type: boolean
+        translationJobUid:
+          description: The UID of the translationJob
+          format: uid
+          type: string
+        projectId:
+          description: The UID of the project
+          format: uid
+          type: string
+        createdDate:
+          description: The UTC value of the date the batch was created.
+          example: '2015-11-21T01:51:17.000Z'
+          format: date-time
+          type: string
+        modifiedDate:
+          description: The UTC value of the date the batch was modified.
+          example: '2015-11-21T01:51:17.000Z'
+          format: date-time
+          type: string
+        hasError:
+          description: The flag showing if any error occurred during batch processing
+          type: boolean
+      type: object
+    CreateBatchResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    batchUid:
+                      description: The UID of the created batch.
+                      type: string
+                  type: object
+              type: object
+      description: Info about created batch.
+    ListBatchesResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/Batch'
+                      type: array
+                    totalCount:
+                      description: number of batches in the current rsponse
+                      type: integer
+                  type: object
+              type: object
+      description: 'A list of found, filtered and sorted batches'
+    CreateBatchRequestV1:
+      description: The payload to use when creating a job batch.
+      properties:
+        authorize:
+          description: >-
+            if the set is true then the job will be authorized when uploaded and attach
+            processes completed for all files in the batch.
+          type: boolean
+        translationJobUid:
+          description: The UID of the previously created translation job.
+          type: string
+      type: object
+    BatchActionRequestV1:
+      description: Describes the action to be done with the Batch
+      properties:
+        action:
+          enum:
+            - execute
+          type: string
+        localeWorkflows:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocaleWorkflow'
+      type: object
+    LocaleWorkflow:
+      properties:
+        targetLocaleId:
+          description: A valid Smartling Locale ID
+          example: cy-GB
+          type: string
+        workflowUid:
+          description: Unique identifier for workflow
+          example: 9422471c2202
+          type: string
+      required:
+        - targetLocaleId
+        - workflowUid
+      type: object
+    BatchStatusResponseV1:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    status:
+                      $ref: '#/components/schemas/BatchStatus'
+                    authorized:
+                      description: >-
+                        The flag showing if authorizing job is requested for this
+                        Batch
+                      type: boolean
+                    generalErrors:
+                      description: >-
+                        Describes a list of errors which occurred while batch
+                        processing
+                      type: string
+                    projectId:
+                      description: The UID of the project
+                      format: uid
+                      type: string
+                    translationJobUid:
+                      description: The UID of the translationJob
+                      format: uid
+                      type: string
+                    updatedDate:
+                      description: The UTC value of the date the batch was updated.
+                      example: '2015-11-21T01:51:17.000Z'
+                      format: date-time
+                      type: string
+                    files:
+                      items:
+                        $ref: '#/components/schemas/BatchItemV1'
+                      type: array
+                  type: object
+              type: object
+      description: 'Batch info with detailed statuses of all batch items and their locales'
+    BatchItemV1:
+      description: Associates an uploaded file with particular Batch. BatchItem is handled
+      properties:
+        errors:
+          description: >-
+            A list of errors occured while uploading or attaching file linked to
+            this batchItem
+          type: string
+        fileUri:
+          description: Uri of the file linked to the Batch
+          type: string
+        status:
+          $ref: '#/components/schemas/BatchItemStatus'
+        targetLocales:
+          description: Array of target locales where this file will be translated
+          items:
+            $ref: '#/components/schemas/BatchItemLocaleV1'
+          type: array
+        updatedDate:
+          description: The UTC value of the date the batch item was updated.
+          example: '2015-11-21T01:51:17.000Z'
+          format: date-time
+          type: string
+      type: object
+    BatchItemLocaleV1:
+      description: A smartling locale which file should be authorized to
+      properties:
+        localeId:
+          description: Smartling locale identifier
+          type: string
+        stringsAdded:
+          description: Number of strings added to the translationJob from this file
+          type: integer
+        stringsSkipped:
+          description: Number of strings not added to the translationJob from this file
+          type: integer
+      type: object
