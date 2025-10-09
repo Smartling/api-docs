@@ -789,8 +789,6 @@ components:
             Due date for the workflow step. Must be in one of these ISO 8601 formats:
             - ISO Instant format: "2024-12-31T23:59:59Z" 
             - ISO Offset DateTime format: "2024-12-31T23:59:59+01:00"
-            
-            Validation will fail with "Wrong due date format" if an invalid format is provided.
           type: string
           format: date-time
           example: "2024-12-31T23:59:59Z"
@@ -961,7 +959,11 @@ components:
         salt:
           $ref: '#/components/schemas/JobBatchJobCreationSalt'
         timeZoneName:
-          description: Time zone name for the job (e.g., "America/New_York").
+          description: |
+            Time zone name for the job, either an abbreviation such as "PST", a full name such as "America/Los_Angeles", or a custom ID such as "GMT-8:00".
+            
+            For complete pattern syntax, refer to the
+            [Java TimeZone documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/TimeZone.html)
           type: string
       type: object
     JobBatchCreateJobResponse:
@@ -1014,7 +1016,7 @@ components:
         - REUSE_EXISTING
       default: REUSE_EXISTING
       description: >-
-        Determines job creation behavior. Defaults to REUSE_EXISTING.
+        Determines job creation behavior.
 
 
         - **REUSE_EXISTING** (default): Returns an existing job if one matches the evaluated `nameTemplate`. If the
@@ -1033,7 +1035,7 @@ components:
       default: RANDOM_ALPHANUMERIC
       description: >-
         Determines the format of the unique identifier appended to job names when necessary to avoid conflicts.
-        Defaults to RANDOM_ALPHANUMERIC. Salt is applied based on the `mode` parameter behavior.
+        Salt is applied based on the `mode` parameter behavior.
 
 
         **When salt is applied**:
