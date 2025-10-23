@@ -1836,7 +1836,7 @@ paths:
 
   '/files-api/v2/projects/{projectId}/files/zip':
     get:
-      summary: Download multiple translated files
+      summary: Download multiple translated files (DEPRECATED)
       description: |
         Download ZIP archive with the requested translated files.
 
@@ -1974,6 +1974,190 @@ paths:
               schema:
                 type: string
                 format: binary
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+    post:
+      summary: Download multiple translated files
+      description: |
+        Download ZIP archive with the requested translated files.
+
+        This endpoint allows you to specify multiple files and locales in the
+        request body (limit is 500 file-locale combinations) to select which files
+        and languages you want to download.
+
+        It is important to check the HTTP response status code. If Smartling
+        finds and returns the file normally, you will receive a `200` SUCCESS
+        response. If you receive a `204` response, no files were included because
+        the requested files were not fully published and `fileFilter` was set to
+        `PUBLISHED_FILES_ONLY`. If you receive any other response status code
+        than `200`, the requested files will not be part of the response.
+
+        When you upload a UTF-16 character encoded file, then /file/get requests
+        for that file will have a character encoding of UTF-16. All other
+        uploaded files will return with a character encoding of UTF-8.
+
+        You can always use the content-type header in the response of a file/get
+        request to determine the character encoding.
+
+        **Example:**
+
+        ```bash
+          curl -X POST \
+            -H "Authorization: Bearer {token}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "files": [
+                {
+                  "fileUri": "yourfile.json",
+                  "localeIds": ["de-DE", "fr-FR"]
+                },
+                {
+                  "fileUri": "anotherfile.xml",
+                  "localeIds": ["es-ES"]
+                }
+              ],
+              "retrievalType": "published",
+              "includeOriginalStrings": true,
+              "fileNameMode": "LOCALE_LAST",
+              "localeMode": "LOCALE_IN_PATH",
+              "zipFileName": "translations.zip",
+              "fileFilter": "ALL_FILES"
+            }' \
+            'https://api.smartling.com/files-api/v2/projects/{projectId}/files/zip'
+        ```
+      tags:
+      - Files
+      operationId: downloadMultipleTranslatedFilesPost
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          type: string
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - files
+              properties:
+                files:
+                  description: |
+                    List of files with their associated locales to download.
+                    At least one entry is required, each with at least one locale.
+                    The total number of file-locale combinations cannot exceed 500.
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                      - fileUri
+                      - localeIds
+                    properties:
+                      fileUri:
+                        type: string
+                        description: Smartling value that uniquely identifies a file.
+                      localeIds:
+                        type: array
+                        description: List of locales to download for the given file. Must contain at least one element.
+                        minItems: 1
+                        items:
+                          type: string
+                retrievalType:
+                  description: |
+                    Determines the desired format for the download. Applies only to
+                    translated files.
+
+                    | retrievalType | Description |
+                    |---------------|-------------|
+                    | pending | Smartling returns any translations (including non-published translations)|
+                    | published | Smartling returns only published/pre-published translations.|
+                    | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application.|
+                    | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension.|
+                  type: string
+                  enum:
+                    - pending
+                    - published
+                    - pseudo
+                    - contextMatchingInstrumented
+                includeOriginalStrings:
+                  description: |
+                    Specifies whether Smartling will return the original string or an
+                    empty string where no translation is available. This parameter is
+                    only supported for Android XML, gettext, Java properties, custom
+                    XML, and JSON files.
+
+                    | Value | Description |
+                    |-------|-------------|
+                    | true | If there is no translation, Smartling returns the original string. |
+                    | false | If there is no translation, Smartling returns an empty string. |
+                  type: boolean
+                fileNameMode:
+                  description: |
+                    Determines how files in the ZIP file will be named. If not set, the
+                    full original file path will be used as the filename.
+
+                    | fileNameMode | Description |
+                    |--------------|-------------|
+                    | UNCHANGED | Full original file path is used |
+                    | TRIM_LEADING | Remove all except the last path segment. e.g. ```/en/strings/nav.properties``` becomes ```nav.properties```|
+                    | LOCALE_LAST | Adds a locale folder to the file path directly before the filename. e.g. ```/strings/nav.properties``` becomes ```/strings/en/nav.properties``` |
+                  type: string
+                  enum:
+                    - UNCHANGED
+                    - TRIM_LEADING
+                    - LOCALE_LAST
+                localeMode:
+                  description: |
+                    Determines how locales will be handled in the downloaded zip
+
+                    | localeMode | Description |
+                    |------------|-------------|
+                    | LOCALE_IN_PATH | Locale code is added to the end of the file path. e.g. ```/strings/es-ES/nav.properties```. |
+                    | LOCALE_IN_NAME | Locale code is added to the end of the file name e.g. ```/strings/nav_es-ES.properties```. |
+                    | LOCALE_IN_NAME_AND_PATH | Locale code is added to both the path and the filename. e.g. ```/strings/es-ES/nav_es-ES.properties```. |
+                  type: string
+                  enum:
+                    - LOCALE_IN_PATH
+                    - LOCALE_IN_NAME
+                    - LOCALE_IN_NAME_AND_PATH
+                zipFileName:
+                  description: Name for the downloaded ZIP file. If unset, default is ```translations.zip```
+                  type: string
+                fileFilter:
+                  description: |
+                    Specifies which files will be included in the response.
+
+                    | Value | Description |
+                    |--------|-------------|
+                    | ALL_FILES | All requested files will be included in the response. |
+                    | PUBLISHED_FILES_ONLY | Only fully published files will be included in the response. |
+                  type: string
+                  enum:
+                    - ALL_FILES
+                    - PUBLISHED_FILES_ONLY
+
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        204:
+          description: No content — returned when `fileFilter=PUBLISHED_FILES_ONLY` and none of the requested files are fully published.
         400:
           $ref: '#/components/responses/Error400ResponseDefinition'
         401:
