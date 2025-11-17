@@ -78,6 +78,13 @@ x-paths:
                       errors:
                         - key: userUids
                           message: "Parameter 'userUids' has invalid value '[]' (must contain exactly 1 user)"
+                invalid_file_uri_length:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: fileUris[0]
+                          message: "File URI must not exceed 512 characters"
                 invalid_due_date_format:
                   value:
                     response:
@@ -353,6 +360,13 @@ x-paths:
                       errors:
                         - key: batch.not.suitable
                           message: "Batch is not in suitable state for this action"
+                invalid_file_uri:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: fileUri
+                          message: "File URI must not exceed 512 characters"
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
         500:
@@ -432,7 +446,12 @@ x-paths:
 
 
                     Example: `/myproject/i18n/ui.properties`
+                    
+
+                    **Validation**: Must not be blank and must not exceed 512 characters.
                   type: string
+                  minLength: 1
+                  maxLength: 512
                 fileType:
                   $ref: '#/components/schemas/FileType'
                 authorize:
@@ -716,13 +735,16 @@ components:
           description: The UID of the previously created translation job.
           type: string
         fileUris:
-          description: A list of File URI's to be uploaded later. Must be a non-empty array with unique values.
+          description: >-
+            A list of File URI's to be uploaded later. Must be a non-empty array with unique values.
+            Each file URI must not be blank and must not exceed 512 characters.
           type: array
           minItems: 1
           uniqueItems: true
           items:
             type: string
             minLength: 1
+            maxLength: 512
         localeWorkflows:
           description: Optional array of workflow configurations for target locales
           type: array
@@ -808,8 +830,11 @@ components:
             - REGISTER_FILE
           type: string
         fileUri:
-          description: fileUri to be cancelled or registred
+          description: >-
+            File URI to be cancelled or registered. Must not be blank and must not exceed 512 characters.
           type: string
+          minLength: 1
+          maxLength: 512
         reason:
           description: any text to describe the reason the file is canceled
           type: string
