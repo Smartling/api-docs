@@ -1633,13 +1633,31 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
-  /files-api/v2/projects/{projectId}/locales/{localeId}/file:
+  /files-api/v2/projects/{projectId}/locales/{localeIds}/file:
     get:
-      summary: Download translated file (single locale)
+      summary: Download translated file (single locale or multi-locale)
       tags:
       - Files
       description: |
-        This downloads the requested file from Smartling.
+        Downloads the requested translated file from Smartling.  
+        
+        This endpoint supports two modes depending on the value of `localeIds`:
+  
+        ### **Single-locale mode**
+        - Provide a **single locale ID**, e.g. `"fr-FR"`
+        - Smartling returns a file containing translations only for that locale
+  
+        ### **Multi-locale mode**
+        - Provide a **comma-separated list of locale IDs**, e.g. `"fr-FR,de-DE,es-ES"`
+        - Or specify `"all"` to include all project locales
+        - Smartling returns a **combined multi-locale file** with translations for all specified locales inside one file
+        - Supported only for:
+          **MADCAP, DITA_ZIP, CSV, XLSX_TEMPLATE, XCSTRINGS**
+  
+        Single-locale download is supported for **all file types**.  
+        Multi-locale download is only supported for the file types listed above.
+  
+        ---
 
         It is important to check the HTTP response status code. If Smartling
         finds and returns the file normally, you will receive a `200` SUCCESS
@@ -1658,7 +1676,7 @@ paths:
         exactly the fileUri provided. The only exception to this is with .pot
         gettext files. When a .pot file is specified as the fileUri, Smartling
         returns a .po file.
-      operationId: downloadTranslatedFileSingleLocale
+      operationId: downloadTranslatedFile
 
       parameters:
       - name: projectId
@@ -1667,8 +1685,13 @@ paths:
         required: true
         schema:
           type: string
-      - name: localeId
-        description: Identifier for a locale.
+
+      - name: localeIds
+        description: |
+          One of:
+          - A **single locale ID**, e.g. `"fr-FR"` → single-locale mode  
+          - A **comma-separated list** of locale IDs, e.g. `"fr-FR,de-DE"` → multi-locale mode  
+          - `"all"` → download translations for all project locales
         in: path
         required: true
         schema:
@@ -1736,97 +1759,6 @@ paths:
           curl -H "Authorization: Bearer $smartlingToken" -o $smartlingLocaleId$smartlingFileUri
           -G --data-urlencode "fileUri=$smartlingFileUri"
           "https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/file"
-  
-  /files-api/v2/projects/{projectId}/locales/{localeIds}/file:
-    get:
-      summary: Download translated file (Multi-locales)
-      tags:
-      - Files
-      description: |
-        This downloads a multi-locale version of the requested file, where translations for all specified locales are delivered inside one combined file.
-        
-        Multi-locale download is supported only for the following file types:
-        MADCAP, DITA_ZIP, CSV, XLSX_TEMPLATE, and XCSTRINGS.
-        All other file types must be downloaded using the single-locale API.
-
-        It is important to check the HTTP response status code. If Smartling
-        finds and returns the file normally, you will receive a `200` SUCCESS
-        response. If you receive any other response status code other than
-        `200`, the requested file will not be part of the response.
-
-        When you upload a UTF-16 character encoded file, then /file/get requests
-        for that file will have a character encoding of UTF-16. All other
-        uploaded files will return with a character encoding of UTF-8.
-
-        You can always use the content-type header in the response of a file/get
-        request to determine the character encoding.
-
-        **Note**: The filename in the response header is based on the fileUri
-        associated with the requested file. In most cases, the filename is
-        exactly the fileUri provided.
-      operationId: downloadTranslatedFileMultiLocales
-
-      parameters:
-      - name: projectId
-        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: localeIds
-        description: Comma-separated list of locale IDs (e.g., "fr-FR,de-DE"), or the value "all" to download translations for all project locales.
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: fileUri
-        description: Value that uniquely identifies the downloaded file
-        in: query
-        required: true
-        schema:
-          type: string
-      - name: retrievalType
-        description: |
-          Determines the desired format for the download. Applies to translated files only.
-
-          | retrievalType | Description |
-          |---------------|-------------|
-          | pending | Smartling returns any translations (including non-published translations)|
-          | published | Smartling returns only published/pre-published translations.|
-          | pseudo | Smartling returns a modified version of the original text with certain characters transformed and the text expanded. For example, the uploaded string "This is a sample string", will return as "T~hís ~ís á s~ámpl~é str~íñg". Pseudo translations enable you to test how a longer string integrates into your application.|
-          | contextMatchingInstrumented | Smartling returns a modified version of the original file with strings wrapped in a specific set of Unicode symbols that can later be recognized and matched by the Chrome Context Capture Extension.|
-        in: query
-        required: false
-        schema:
-          enum:
-          - pending
-          - published
-          - pseudo
-          - contextMatchingInstrumented
-          type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: string
-                format: binary
-        400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
-        401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
-        429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
-        500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
-
-      x-code-samples:
-      - lang: curl
-        source: >
-          curl -H "Authorization: Bearer $smartlingToken" -o $smartlingLocaleId$smartlingFileUri
-          -G --data-urlencode "fileUri=$smartlingFileUri"
-          "https://api.smartling.com/files-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleIds/file"
 
   /files-api/v2/projects/{projectId}/locales/all/file/zip:
     get:
