@@ -1633,13 +1633,30 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
-  /files-api/v2/projects/{projectId}/locales/{localeId}/file:
+  /files-api/v2/projects/{projectId}/locales/{localeIds}/file:
     get:
-      summary: Download translated file (single locale)
+      summary: Download translated file (single locale or multi-locale)
       tags:
       - Files
       description: |
-        This downloads the requested file from Smartling.
+        Downloads the requested translated file from Smartling.  
+        
+        This endpoint supports two modes depending on the value of `localeIds`:
+  
+        ### **Single-locale mode**
+        - Provide a **single locale ID**, e.g. `fr-FR`
+        - Smartling returns a file containing translations only for that locale
+        - Supported for **all file types**.
+  
+        ### **Multi-locale mode**
+        - Provide a **comma-separated list of locale IDs**, e.g. `fr-FR,de-DE,es-ES`
+        - Or specify `all` to include all available locales
+        - Smartling returns a **combined multi-locale file** with translations for all specified locales inside one file
+        - Supported only for:
+          **MADCAP, DITA_ZIP, CSV, XLSX_TEMPLATE, XCSTRINGS**
+  
+  
+        ---
 
         It is important to check the HTTP response status code. If Smartling
         finds and returns the file normally, you will receive a `200` SUCCESS
@@ -1657,8 +1674,8 @@ paths:
         associated with the requested file. In most cases, the filename is
         exactly the fileUri provided. The only exception to this is with .pot
         gettext files. When a .pot file is specified as the fileUri, Smartling
-        returns a .po file.`
-      operationId: downloadTranslatedFileSingleLocale
+        returns a .po file.
+      operationId: downloadTranslatedFile
 
       parameters:
       - name: projectId
@@ -1667,8 +1684,13 @@ paths:
         required: true
         schema:
           type: string
-      - name: localeId
-        description: Identifier for a locale.
+
+      - name: localeIds
+        description: |
+          One of:
+          - A **single locale ID**, e.g. `"fr-FR"` → single-locale mode  
+          - A **comma-separated list** of locale IDs, e.g. `"fr-FR,de-DE"` → multi-locale mode  
+          - `"all"` → download translations for all available locales
         in: path
         required: true
         schema:
@@ -1753,7 +1775,7 @@ paths:
 
         When you upload a UTF-16 character encoded file, then /file/get requests
         for that file will have a character encoding of UTF-16. All other
-        uploaded files will return with a character encoding of UTF-8.
+        uploaded files will be returned with a character encoding of UTF-8.
 
         You can always use the content-type header in the response of a file/get
         request to determine the character encoding.
