@@ -1,0 +1,351 @@
+x-paths:
+  create_tqc_profile_or_get_profiles:
+    get:
+      description: Get profiles.
+      summary: Get profiles
+      tags:
+        - Translation quality checks
+      operationId: getTQCProfiles
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - &ref_0
+          name: accountUid
+          in: path
+          type: string
+          required: true
+          description: >-
+            The account’s unique identifier. This can be found in the Smartling
+            Dashboard under Account Settings > API.
+        - name: nameMask
+          in: query
+          required: false
+          type: string
+          description: name mask.
+          example: default
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: limit size.
+          example: 100
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: offset number.
+          example: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - &ref_1
+                        type: object
+                        required:
+                          - code
+                        properties:
+                          code:
+                            type: string
+                            enum:
+                              - SUCCESS
+                            description: >-
+                              Indicates whether the response was successful or
+                              what error has occurred.
+                      - type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              totalCount:
+                                type: integer
+                                description: Total element count
+                                example: 1
+                              items:
+                                type: array
+                                items: &ref_2
+                                  type: object
+                                  properties:
+                                    profileUid:
+                                      type: string
+                                      description: Unique identifier of the profile.
+                                      example: ce6d6b5dbc12
+                                    name:
+                                      type: string
+                                      description: profile name
+                                      example: default profile
+                                    createdByUserUid:
+                                      type: string
+                                      description: >-
+                                        Unique identifier for the user who
+                                        created the profile.
+                                      example: xas344dsd3
+                                    modifiedByUserUid:
+                                      type: string
+                                      description: >-
+                                        Unique identifier for the user who
+                                        modified the profile.
+                                      example: xas344dsd3
+                                    createdDate:
+                                      type: string
+                                      description: created date
+                                      example: '2018-07-02T13:39:27Z'
+                                    modifiedDate:
+                                      type: string
+                                      description: modified date
+                                      example: '2018-07-02T13:39:27Z'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles
+    post:
+      description: Create a profile.
+      summary: Create a profile
+      tags:
+        - Translation quality checks
+      operationId: createTQCProfile
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: &ref_3
+              allOf:
+                - &ref_4
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: profile name.
+                      example: default name
+                  required:
+                    - name
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: &ref_6
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_1
+                      - type: object
+                        properties:
+                          data: *ref_2
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles
+  update_tqc_profile:
+    put:
+      description: Update the profile name.
+      summary: Update the profile name
+      tags:
+        - Translation quality checks
+      operationId: updateTQCProfile
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+        - &ref_5
+          name: profileUid
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of corresponding profile.
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: *ref_3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_1
+                      - type: object
+                        properties:
+                          data: *ref_4
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/name
+  get_or_delete_tqc_profile:
+    get:
+      description: Get a profile.
+      summary: Get a profile
+      tags:
+        - Translation quality checks
+      operationId: getTQCProfile
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+        - *ref_5
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_6
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid
+    delete:
+      description: Delete profile.
+      summary: Delete profile
+      tags:
+        - Translation quality checks
+      operationId: deleteTQCProfile
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+        - *ref_5
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_1
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid
+  default_profile:
+    get:
+      description: Get default profile.
+      summary: Get default profile
+      tags:
+        - Translation quality checks
+      operationId: getTQCDefaultProfile
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_6
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/default-profile
+    put:
+      description: Update default profile.
+      summary: Update default profile
+      tags:
+        - Translation quality checks
+      operationId: updateTQCDefaultProfile
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  properties:
+                    profileUid:
+                      type: string
+                      required: true
+                      description: Unique identifier of corresponding profile.
+                      example: ce6d6b5dbc12
+                  required:
+                    - profileUid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_6
+        x-code-samples:
+          - lang: curl
+            source: >
+              curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+              "Content-Type: application/json" -d "$smartlingStringTQCJSON" 
+              https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/default-profile
+  copy_tqc_profile:
+    post:
+      description: Copy a profile.
+      summary: Copy a profile
+      tags:
+        - Translation quality checks
+      operationId: copyTQCProfile
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+        - name: profileUid
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of the profile for copy creation.
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: *ref_3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_6
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/copy
