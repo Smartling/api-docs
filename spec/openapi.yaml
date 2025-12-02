@@ -8728,6 +8728,74 @@ paths:
           curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" \
           https://api.smartling.com/vendors-api/v2/agencies/{agencyUid}/jobs
 
+  /vendors-api/v2/accounts/{accountUid}/content-assignments:
+    get:
+      summary: List content assignments
+      description: Returns the list of content assignments for the account.
+      tags:
+      - Vendors
+      operationId: getContentAssignmentsByAccount
+
+      parameters:
+      - name: accountUid
+        in: path
+        required: true
+        description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        schema:
+          type: string
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - accountUid: "111222333"
+                            accountName: "Test account"
+                            projectUid: "111222333"
+                            projectName: "Test Project"
+                            localeId: "es-ES"
+                            workflowUid: "111222333444"
+                            workflowName: "Example Workflow"
+                            workflowStepUid: "111222333444"
+                            workflowStepName: "Translation"
+                            workflowStepType: "TRANSLATION"
+                            translationJobUid: "111222333444"
+                            translationJobName: "Example Job"
+                            translationJobWorkflowStepDueDate: "2025-01-20T18:01:00Z"
+                            translationJobOverallDueDate: "2025-01-20T18:01:00Z"
+                            userUid: null
+                            userFirstName: null
+                            userLastName: null
+                            userEmail: null
+                            agencyUid: null
+                            agencyName: null
+                            wordCount: 300
+                            workflowStepOrder: 2
+                            assignmentEnabled: false
+              schema:
+                $ref: '#/components/schemas/VendorsAPIContentAssignmentsSuccessResponse'
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+      x-code-samples:
+      - lang: curl
+        source: |
+          curl -H "Authorization: Bearer $smartlingToken" \
+          https://api.smartling.com/vendors-api/v2/accounts/{accountUid}/content-assignments
+
 #
 # Reports API
 #
@@ -13668,6 +13736,98 @@ components:
         - project
         - progressDetails
         - translationJob
+      type: object
+    VendorsAPIContentAssignmentsSuccessResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/VendorsAPIContentAssignmentItem'
+                      type: array
+                  required:
+                    - items
+                  type: object
+              type: object
+    VendorsAPIContentAssignmentItem:
+      properties:
+        accountUid:
+          type: string
+        accountName:
+          type: string
+        projectUid:
+          type: string
+        projectName:
+          type: string
+        localeId:
+          type: string
+        workflowUid:
+          type: string
+        workflowName:
+          type: string
+        workflowStepUid:
+          type: string
+        workflowStepName:
+          type: string
+        workflowStepType:
+          type: string
+        translationJobUid:
+          type: string
+        translationJobName:
+          type: string
+        translationJobWorkflowStepDueDate:
+          format: date-time
+          type: string
+        translationJobOverallDueDate:
+          format: date-time
+          type: string
+        userUid:
+          type: string
+          nullable: true
+        userFirstName:
+          type: string
+          nullable: true
+        userLastName:
+          type: string
+          nullable: true
+        userEmail:
+          type: string
+          nullable: true
+        agencyUid:
+          type: string
+          nullable: true
+        agencyName:
+          type: string
+          nullable: true
+        wordCount:
+          type: integer
+        workflowStepOrder:
+          type: integer
+        assignmentEnabled:
+          type: boolean
+      required:
+        - accountUid
+        - accountName
+        - projectUid
+        - projectName
+        - localeId
+        - workflowUid
+        - workflowName
+        - workflowStepUid
+        - workflowStepName
+        - workflowStepType
+        - translationJobUid
+        - translationJobName
+        - wordCount
+        - workflowStepOrder
+        - assignmentEnabled
       type: object
     WebPageDetailListRequest:
       properties:
