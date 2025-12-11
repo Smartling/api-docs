@@ -608,7 +608,7 @@ x-paths:
         **Job creation behavior** depends on the `mode` parameter:
 
         - **REUSE_EXISTING**: Returns an existing job if one matches the evaluated name template. If the matching job is
-          closed or completed, creates a new job with a unique name using the specified `salt` strategy.
+          cancelled, deleted or closed, creates a new job with a unique name using the specified `salt` strategy.
         - **CREATE_NEW**: Attempts to create a new job with the evaluated name. If a job with that name already exists,
           appends a unique identifier using the specified `salt` strategy to ensure creation succeeds.
 
@@ -643,6 +643,48 @@ x-paths:
            }
            ```
            Creates: "Feature Release 2025 2025-10-08 02:34:15 PM" (if job already exists)
+
+        4. **Job reuse with salt suffix**:
+           **First request** - Creates initial job:
+           ```json
+           POST /job-batches-api/v2/projects/abc123/jobs
+           {
+             "nameTemplate": "Daily Report {yyyy-MM-dd}",
+             "mode": "REUSE_EXISTING",
+             "salt": "RANDOM_ALPHANUMERIC",
+             "targetLocaleIds": ["fr-FR", "de-DE"]
+           }
+           ```
+           Response: `{"jobName": "Daily Report 2025-12-09", "translationJobUid": "job001"}`
+
+           **After job is completed and closed...**
+
+           **Second request** - Creates job with salt (original is closed):
+           ```json
+           POST /job-batches-api/v2/projects/abc123/jobs
+           {
+             "nameTemplate": "Daily Report {yyyy-MM-dd}",
+             "mode": "REUSE_EXISTING",
+             "salt": "RANDOM_ALPHANUMERIC",
+             "targetLocaleIds": ["fr-FR", "de-DE"]
+           }
+           ```
+           Response: `{"jobName": "Daily Report 2025-12-09 a7x9k", "translationJobUid": "job002"}`
+
+           **Third request** - Reuses job with salt (prevents duplicate):
+           ```json
+           POST /job-batches-api/v2/projects/abc123/jobs
+           {
+             "nameTemplate": "Daily Report {yyyy-MM-dd}",
+             "mode": "REUSE_EXISTING",
+             "salt": "RANDOM_ALPHANUMERIC",
+             "targetLocaleIds": ["fr-FR", "de-DE"]
+           }
+           ```
+           Response: `{"jobName": "Daily Report 2025-12-09 a7x9k", "translationJobUid": "job002"}` (same job)
+
+           **Key behavior**: The third request reuses the job with salt suffix instead of creating another duplicate,
+           preventing multiple jobs with different salts for the same day.
       tags:
         - Job Batches V2
       operationId: createJobV2
