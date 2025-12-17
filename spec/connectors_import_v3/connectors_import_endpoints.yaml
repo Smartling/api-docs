@@ -1,0 +1,335 @@
+x-paths:
+  request_translation:
+    post:
+      summary: Request Translation
+      description: >-
+        Creates translation requests for specified assets and target locales within a translation job.
+
+
+        **Key Features:**
+
+        - Submit one or more assets for translation in a single request
+
+        - Specify target locales with optional workflow assignments
+
+        - Control job authorization (immediate or draft)
+      tags:
+        - Connectors Import V3
+      operationId: requestTranslationV3
+
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        - name: integrationId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the connector integration.
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestTranslationCommand'
+            examples:
+              basic_request:
+                summary: Basic translation request with single asset
+                value:
+                  assets:
+                    - assetUid: "article-12345"
+                      title: "Getting Started Guide"
+                  localeWorkflows:
+                    - smartlingLocaleId: "fr"
+                      workflowUid: null
+                    - smartlingLocaleId: "de-DE"
+                      workflowUid: null
+                  translationJobUid: "job123456789"
+                  authorizeJob: true
+              with_workflows:
+                summary: Translation request with specific workflows
+                value:
+                  assets:
+                    - assetUid: "article-12345"
+                      title: "Getting Started Guide"
+                  localeWorkflows:
+                    - smartlingLocaleId: "fr"
+                      workflowUid: "wf1234567890"
+                    - smartlingLocaleId: "de-DE"
+                      workflowUid: "wf0987654321"
+                  translationJobUid: "job123456789"
+                  authorizeJob: false
+              multiple_assets:
+                summary: Translation request with multiple assets
+                value:
+                  assets:
+                    - assetUid: "page-001"
+                      title: "Homepage"
+                    - assetUid: "page-002"
+                      title: "About Us"
+                    - assetUid: "page-003"
+                      title: "Contact"
+                  localeWorkflows:
+                    - smartlingLocaleId: "es"
+                      workflowUid: null
+                    - smartlingLocaleId: "pt-BR"
+                      workflowUid: null
+                  translationJobUid: "job987654321"
+                  authorizeJob: true
+
+      responses:
+        200:
+          description: Translation request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestTranslationResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        translationRequestUids:
+                          - "req123abc456"
+                          - "req789def012"
+                        batchUid: "batch12345678"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                empty_assets:
+                  summary: Assets list is empty
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'assets' cannot be empty. Please provide at least one asset to translate."
+                empty_locales:
+                  summary: Locale workflows list is empty
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'localeWorkflows' cannot be empty. Please provide at least one target locale with optional workflow."
+                invalid_locale_format:
+                  summary: Invalid locale ID format
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "Locale ID must be in format 'xx' or 'xx-XX' (e.g., 'en', 'en-US')."
+                invalid_job_uid:
+                  summary: Invalid translation job UID format
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "Translation job UID must be exactly 12 lowercase alphanumeric characters."
+                missing_authorize_job:
+                  summary: Missing authorizeJob field
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'authorizeJob' is required. Set to true to authorize the job immediately, false to create as draft."
+                blank_asset_uid:
+                  summary: Asset UID is blank
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'assetUid' is required."
+                asset_uid_too_long:
+                  summary: Asset UID exceeds maximum length
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'assetUid' cannot exceed 255 characters."
+                blank_title:
+                  summary: Asset title is blank
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'title' is required."
+                title_too_long:
+                  summary: Asset title exceeds maximum length
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'title' cannot exceed 500 characters."
+                too_many_locales:
+                  summary: Exceeds maximum locale limit
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "Maximum 100 locale workflows allowed per request."
+                invalid_workflow_uid:
+                  summary: Invalid workflow UID format
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "Workflow UID must be exactly 12 lowercase alphanumeric characters."
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+components:
+  schemas:
+    RequestTranslationCommand:
+      type: object
+      required:
+        - assets
+        - localeWorkflows
+        - translationJobUid
+        - authorizeJob
+      properties:
+        assets:
+          type: array
+          minItems: 1
+          description: List of assets to be translated.
+          items:
+            $ref: '#/components/schemas/Asset'
+        localeWorkflows:
+          type: array
+          minItems: 1
+          maxItems: 100
+          description: List of target locales with optional workflow assignments.
+          items:
+            $ref: '#/components/schemas/LocaleWorkflow'
+        translationJobUid:
+          type: string
+          pattern: '^[a-z0-9]{12}$'
+          description: A unique translation job identifier.
+          example: "job123456789"
+        authorizeJob:
+          type: boolean
+          description: Controls whether the translation job should be authorized immediately or kept as draft.
+          example: true
+
+    Asset:
+      type: object
+      required:
+        - assetUid
+        - title
+      properties:
+        assetUid:
+          type: string
+          maxLength: 255
+          description: >-
+            Unique identifier generated by the Smartling integration for each asset.
+            This ID is used to track and reference the asset throughout the translation process. Cannot be blank.
+          example: "article-12345"
+        title:
+          type: string
+          maxLength: 500
+          description: >-
+            Human-readable title or name of the asset. Used for display and identification
+            purposes in the Smartling dashboard. Cannot be blank.
+          example: "Getting Started Guide"
+
+    LocaleWorkflow:
+      type: object
+      required:
+        - smartlingLocaleId
+      properties:
+        smartlingLocaleId:
+          type: string
+          pattern: '^[a-z]{2}(-[A-Z]{2})?$'
+          description: >-
+            Target locale identifier. The locale specified must be valid within the Smartling project.
+          example: "fr"
+        workflowUid:
+          type: string
+          pattern: '^[a-z0-9]{12}$'
+          nullable: true
+          description: Optional unique identifier for the workflow. If not provided, default workflow is used.
+          example: "wf1234567890"
+
+    RequestTranslationResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+              description: Response status code
+            data:
+              type: object
+              properties:
+                translationRequestUids:
+                  type: array
+                  items:
+                    type: string
+                  description: List of unique identifiers for the created translation requests, one per asset.
+                  example: ["req123abc456", "req789def012"]
+                batchUid:
+                  type: string
+                  description: >-
+                    Unique identifier of the batch that groups these translation requests.
+                    Used for tracking and managing the translation requests as a unit.
+                  example: "batch12345678"
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            code:
+              type: string
+              enum: [VALIDATION_ERROR]
+            errors:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  message:
+                    type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            code:
+              type: string
+            errors:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  message:
+                    type: string
