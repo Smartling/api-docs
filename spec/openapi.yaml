@@ -235,11 +235,31 @@ tags:
       
       - The service retains data for 6 months before permanently deleting it.
 
-  - name: Connectors Import V3
+  - name: Connectors Import
     description: |-
-      Connectors Import API enables third-party integrations to manage translation requests
-      for assets from external systems. The API supports requesting translations for
-      single or multiple assets, assigning workflows per locale.
+      The Connectors Import API enables custom integrations to programmatically request translations
+      for content from external systems (e.g., Shopify, Intercom, Sanity, Iterable).
+      
+      **Use this API when:**
+      - You have a configured Smartling connector to your external system
+      - You need to automate translation workflows outside the Smartling UI
+      - You want to build custom tools or dashboards for managing translation requests
+      
+      **Key capabilities:**
+      - Submit single or batch translation requests (up to 10 assets recommended per call)
+      - Target multiple locales with optional custom workflow assignments
+      - Add assets to new or existing translation jobs (up to 5,000 files per job)
+      - Control job authorization (immediate or draft for manual review)
+      
+      **Prerequisites:**
+      - Connector must be configured in Smartling Dashboard
+      - Valid asset UIDs and titles from your external system (UID format varies by integration type)
+      - Translation job UID where assets will be added
+      - Target Smartling locale IDs that are both enabled in your project AND configured in the connector's **Language Configuration**
+      
+      **Important:** This API processes requests asynchronously via priority queues. 
+      Typical latency is 15-30 seconds. Use the [Job Batches API](#tag/Job-Batches-V2/operation/getJobBatchStatusV2) 
+      to monitor processing status.
 
   - name: Context
     description: |-
