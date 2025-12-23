@@ -19,6 +19,7 @@ cp('-R', 'spec/translation_quality', 'web_deploy/spec');
 cp('-R', 'spec/issues', 'web_deploy/spec');
 cp('-R', 'spec/job_batches_v1', 'web_deploy/spec');
 cp('-R', 'spec/job_batches_v2', 'web_deploy/spec');
+cp('-R', 'spec/connectors_import_v3', 'web_deploy/spec');
 cp('-R', 'spec/file_translation', 'web_deploy/spec');
 cp('-R', 'spec/glossary_v3', 'web_deploy/spec');
 cp('-R', 'spec/webhooks_api', 'web_deploy/spec');
