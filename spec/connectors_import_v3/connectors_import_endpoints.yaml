@@ -15,6 +15,14 @@ x-paths:
         - Integrating translation requests into your CI/CD pipeline
         - Building custom dashboards or tools that manage translation workflows
 
+        **Required Permissions:**
+        This endpoint is accessible to users with the following roles:
+        - **Account Owner** - Full administrative access to the account
+        - **Project Manager** - Manages localization at the project level
+        - **Requester** - Can submit content for translation
+
+        For more information about user roles and permissions, see [Introduction to User Roles](https://help.smartling.com/hc/en-us/articles/360056193134).
+
         **Prerequisites:**
         1. You must have a configured connector between Smartling TMS and your external system via the Smartling Dashboard
         2. You must have valid asset UIDs and titles from your external system (UID format varies by integration type; title is used as file name prefix in Smartling)
@@ -87,8 +95,13 @@ x-paths:
             pattern: '^[a-z0-9]{7,9}$'
           description: |
             Your Smartling project identifier. Find this in the Smartling Dashboard under **Account Settings > API**.
-            
-            Example: `a1b2c3d4e5`
+
+            **Validation Rules:**
+            - Must be 7-9 characters long
+            - Must contain only lowercase letters (a-z) and digits (0-9)
+            - Cannot include uppercase letters, hyphens, or special characters
+
+            Example: `a1b2c3d4e`
         - name: integrationId
           in: path
           required: true
@@ -112,15 +125,20 @@ x-paths:
             The type of connector integration configured in your Smartling project.
             This must match one of the supported integration types.
             
+            **Validation Rules:**
+            - Must be 4-50 characters long
+            - Must contain only lowercase letters (a-z) and hyphens (-)
+            - Cannot include uppercase letters, digits, underscores, or other special characters
+
             **Supported Values** (partial list - more available):
             - `intercom` - Intercom integration
-            - `iterable` - Iterable integration  
+            - `iterable` - Iterable integration
             - `sanity-docs` - Sanity CMS integration (document-level translation)
-            
+
             **Important**: The asset UID format must match the integration type. For example:
             - Intercom asset UIDs typically follow pattern: `article-{id}`
             - Sanity asset UIDs follow pattern: `{documentType}-{documentId}`
-            
+
             Contact Smartling support if you need the complete list of available integration types.
 
       requestBody:
@@ -243,6 +261,22 @@ x-paths:
               schema:
                 $ref: '#/components/schemas/ValidationErrorResponse'
               examples:
+                invalid_project_id:
+                  summary: Invalid projectId format
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.path.error
+                          message: "'projectId' should contain 7-9 lowercase alphanumeric characters"
+                invalid_integration_id:
+                  summary: Invalid integrationId format
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.path.error
+                          message: "'integrationId' should contain 4-50 characters, lowercase letters and hyphens only"
                 empty_assets:
                   summary: Assets list is empty
                   value:
