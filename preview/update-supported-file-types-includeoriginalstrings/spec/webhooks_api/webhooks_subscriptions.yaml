@@ -1,0 +1,351 @@
+x-paths:
+  subscriptions:
+    get:
+      tags:
+        - Webhooks
+      summary: Get subscriptions
+      description: Retrieve all webhook subscriptions for the specified account.
+      operationId: getSubscriptions
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './webhooks_components.yaml#/components/schemas/SubscriptionListResponse'
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+    post:
+      tags:
+        - Webhooks
+      summary: Create subscription
+      description: Create a new webhook subscription for the specified account.
+      operationId: createSubscription
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './webhooks_components.yaml#/components/schemas/CreateSubscriptionCommand'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './webhooks_components.yaml#/components/schemas/SubscriptionResponse'
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+  subscription_details:
+    get:
+      tags:
+        - Webhooks
+      summary: Get subscription
+      description: Retrieve details of a specific webhook subscription.
+      operationId: getSubscription
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './webhooks_components.yaml#/components/schemas/SubscriptionResponse'
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+    delete:
+      tags:
+        - Webhooks
+      summary: Delete subscription
+      description: Delete a webhook subscription permanently.
+      operationId: deleteSubscription
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+  subscription_patch:
+    post:
+      tags:
+        - Webhooks
+      summary: Patch subscription
+      description: Update specific fields of a webhook subscription.
+      operationId: patchSubscription
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './webhooks_components.yaml#/components/schemas/PatchSubscriptionCommand'
+      responses:
+        '200':
+          description: Success
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+  subscription_secret:
+    get:
+      tags:
+        - Webhooks
+      summary: Get subscription secret
+      description: Retrieve the secret key for webhook signature verification.
+      operationId: getSubscriptionSecret
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './webhooks_components.yaml#/components/schemas/UpdateSubscriptionSecretCommand'
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+    put:
+      tags:
+        - Webhooks
+      summary: Update subscription secret
+      description: Update the secret key used for webhook signature verification.
+      operationId: updateSubscriptionSecret
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './webhooks_components.yaml#/components/schemas/UpdateSubscriptionSecretCommand'
+      responses:
+        '200':
+          description: Success
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+  subscription_statistics:
+    get:
+      tags:
+        - Webhooks
+      summary: Get subscription statistics
+      description: Retrieve delivery statistics for a webhook subscription.
+      operationId: getSubscriptionStatistics
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './webhooks_components.yaml#/components/schemas/SubscriptionStatisticsResponse'
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yamll#/components/responses/Error500ResponseDefinition'
+
+  subscription_enable:
+    post:
+      tags:
+        - Webhooks
+      summary: Enable subscription
+      description: Enable a webhook subscription to start receiving events.
+      operationId: enableSubscription
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+  subscription_disable:
+    post:
+      tags:
+        - Webhooks
+      summary: Disable subscription
+      description: Disable a webhook subscription to stop receiving events.
+      operationId: disableSubscription
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
