@@ -1,0 +1,1685 @@
+x-paths:
+  tqc_check:
+    post:
+      description: Check string translation quality.
+      summary: Check string translation quality
+      tags:
+        - Translation quality checks
+      operationId: runStringTranslationQualityCheck
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accountUid
+          in: path
+          type: string
+          required: true
+          description: >-
+            The account’s unique identifier. This can be found in the Smartling
+            Dashboard under Account Settings > API.
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: >-
+            A unique project identifier. This can be found in the Smartling
+            Dashboard under Account Settings > API.
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - allOf:
+                    - type: object
+                      properties:
+                        targetLocaleId:
+                          type: string
+                          description: >-
+                            Smartling ID for the language you want to translate
+                            to.
+                          example: it-IT
+                      required:
+                        - targetLocaleId
+                    - type: object
+                      properties:
+                        sourceLocaleId:
+                          type: string
+                          description: >-
+                            The locale identifier for the source locale of the
+                            project. This indicates the base locale for which
+                            content should be uploaded to the project.
+                          example: en-US
+                    - type: object
+                      properties:
+                        skipSuggestions:
+                          type: boolean
+                          description: skip suggestions
+                          example: false
+                        strings:
+                          type: array
+                          items:
+                            allOf:
+                              - type: object
+                                properties:
+                                  hashcode:
+                                    type: string
+                                    description: string hashcode
+                                    example: 7191152182c69d9b72069ac1290fe24b
+                              - type: object
+                                properties:
+                                  stringUid:
+                                    type: string
+                                    description: >-
+                                      it is string part unique identifier if
+                                      string is splitted on several parts
+                                    example: ''
+                              - type: object
+                                properties:
+                                  originalString:
+                                    type: string
+                                    description: original string
+                                    example: blacklist_term
+                              - type: object
+                                properties:
+                                  translation:
+                                    type: string
+                                    description: translation of the original string
+                                    example: blacklist_term
+                              - type: object
+                                properties:
+                                  pluralFormGroupUid:
+                                    type: string
+                                    description: unique identifier of plural form
+                                    example: 7191152182c69d9b72069ac1290fe24b
+                              - type: object
+                                properties:
+                                  pluralForm:
+                                    type: string
+                                    description: plural form
+                                    example: ONE
+                        useDefaultSettings:
+                          type: boolean
+                          description: use default settings
+                          example: false
+                        checkTypeCodes:
+                          minItems: 1
+                          maxItems: 100
+                          type: array
+                          items:
+                            allOf:
+                              - type: object
+                                properties:
+                                  checkTypeCode:
+                                    enum:
+                                      - LEADING_TRAILING_SPACES
+                                      - ORIGINAL_EQUALS_TARGET
+                                      - WHITESPACES
+                                      - SPELLCHECK
+                                      - TAG_CONSISTENCY
+                                      - TARGET_LENGTH_LIMIT
+                                      - NUMBER_CONSISTENCY
+                                      - REPEATED_WORD
+                                      - TARGET_IN_WRONG_LANGUAGE
+                                      - SOURCE_IN_WRONG_LANGUAGE
+                                      - SEGMENT_COMPLETENESS
+                                      - NON_TRANSLATABLE_TEXT
+                                      - EMOJI_CONSISTENCY
+                                      - INSERTABLE_CONSISTENCY
+                                      - TARGET_SOURCE_CONSISTENCY
+                                      - BLACKLISTED_TERMS
+                                      - GLOSSARY_COMPLIANCE
+                                      - TRADEMARK_CONSISTENCY
+                                      - GRAMMAR_CHECK
+                                      - GLOBAL_CAPITALISATION_CONSISTENCY
+                                      - PUNCTUATION_CONSISTENCY
+                                      - PLURALS_REPETITION
+                                      - REGEX_CHECK
+                                      - OPEN_ISSUES
+                          description: >-
+                            [check type
+                            codes](#operation/getTranslationQualityCheckTypes)
+            example:
+              targetLocaleId: en-US
+              sourceLocaleId: fr-FR
+              skipSuggestions: false
+              strings:
+                - originalString: Bonjour ©
+                  translation: Hello
+                  hashcode: 9091152182c69d9b72069ac1290fe2345
+                  stringUid: null
+                  pluralFormGroupUid: null
+                  pluralForm: null
+                - originalString: Bonjour 100
+                  translation: Hello    100
+                  hashcode: 1091152182c69d9b72069ac1290fe23999
+                  stringUid: null
+                  pluralFormGroupUid: null
+                  pluralForm: null
+              useDefaultSettings: false
+              checkTypeCodes:
+                - BLACKLISTED_TERMS
+                - EMOJI_CONSISTENCY
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - type: object
+                        required:
+                          - code
+                        properties:
+                          code:
+                            type: string
+                            enum:
+                              - SUCCESS
+                            description: >-
+                              Indicates whether the response was successful or
+                              what error has occurred.
+                      - type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              results:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    string:
+                                      type: object
+                                      properties:
+                                        stringUid:
+                                          type: string
+                                          description: >-
+                                            it is string part unique identifier if
+                                            string is splitted on several parts
+                                          example: ''
+                                        originalString:
+                                          type: string
+                                          description: original string
+                                          example: blacklist_term
+                                        translation:
+                                          type: string
+                                          description: translation of the original string
+                                          example: blacklist_term
+                                        hashcode:
+                                          type: string
+                                          description: string hashcode
+                                          example: 7191152182c69d9b72069ac1290fe24b
+                                        pluralFormGroupUid:
+                                          type: string
+                                          description: unique identifier of plural form
+                                          example: 7191152182c69d9b72069ac1290fe24b
+                                        pluralForm:
+                                          type: string
+                                          description: plural form
+                                          example: FEW
+                                    mistakes:
+                                      type: array
+                                      items:
+                                        oneOf:
+                                          - title: BLACKLISTED_TERMS
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - BLACKLISTED_TERMS
+                                                    description: check type code
+                                                    example: BLACKLISTED_TERMS
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      blacklistedTermUid:
+                                                        type: string
+                                                        description: black listed term unique identifier
+                                                        example: uidgj1
+                                                      termText:
+                                                        type: string
+                                                        description: term text
+                                                        example: blacklist_term
+                                                      alternatives:
+                                                        type: array
+                                                        items:
+                                                          type: string
+                                                          example: alternative 1
+                                                      notes:
+                                                        type: string
+                                                        description: notes
+                                                        example: ''
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: EMOJI_CONSISTENCY
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - EMOJI_CONSISTENCY
+                                                    description: check type code
+                                                    example: EMOJI_CONSISTENCY
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      emoji:
+                                                        type: string
+                                                        description: emoji symbol
+                                                        example: 😀
+                                                      type:
+                                                        type: string
+                                                        enum:
+                                                          - EMOJI_ADDED
+                                                          - EMOJI_DELETED
+                                                          - EMOJI_PRESENT
+                                                        description: emoji defect type
+                                                        example: EMOJI_DELETED
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - SOURCE
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: SOURCE
+                                          - title: GLOBAL_CAPITALISATION_CONSISTENCY
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - GLOBAL_CAPITALISATION_CONSISTENCY
+                                                    description: check type code
+                                                    example: GLOBAL_CAPITALISATION_CONSISTENCY
+                                                  details:
+                                                    type: object
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: GLOSSARY_COMPLIANCE
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - GLOSSARY_COMPLIANCE
+                                                    description: check type code
+                                                    example: GLOSSARY_COMPLIANCE
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      glossaryTerm:
+                                                        type: object
+                                                        properties:
+                                                          termUid:
+                                                            type: string
+                                                            description: term uid
+                                                            example: cdd443b9-814f-442c-9ba6-4d97e0afce74
+                                                          translation:
+                                                            type: object
+                                                            properties:
+                                                              localeId:
+                                                                type: string
+                                                                description: locale identifier
+                                                                example: ru-RU
+                                                              translatedTerm:
+                                                                type: string
+                                                                description: translated term
+                                                                example: изменить размер
+                                                              notes:
+                                                                type: string
+                                                                description: notes
+                                                                example: ''
+                                                              translatorUserUid:
+                                                                type: string
+                                                                description: translator user identifier
+                                                                example: 23ddd32e
+                                                              lockTranslation:
+                                                                type: boolean
+                                                                description: lock translation
+                                                                example: false
+                                                              submittedForTranslation:
+                                                                type: boolean
+                                                                description: submitted for translation
+                                                                example: false
+                                                              createdDate:
+                                                                type: string
+                                                                description: created date
+                                                                example: '2018-11-16T16:06:53Z'
+                                                              modifiedDate:
+                                                                type: string
+                                                                description: modified date
+                                                                example: '2018-11-17T16:06:53Z'
+                                                          termText:
+                                                            type: string
+                                                            description: term text
+                                                            example: resize
+                                                          caseSensitive:
+                                                            type: boolean
+                                                            description: case sensitive
+                                                            example: false
+                                                          exactMatch:
+                                                            type: boolean
+                                                            description: exact match
+                                                            example: false
+                                                          definition:
+                                                            type: string
+                                                            description: definition
+                                                            example: ''
+                                                          variations:
+                                                            type: string
+                                                            description: variations
+                                                            example: ''
+                                                          synonyms:
+                                                            type: string
+                                                            description: synonyms
+                                                            example: ''
+                                                          antonyms:
+                                                            type: string
+                                                            description: antonyms
+                                                            example: ''
+                                                          seo:
+                                                            type: boolean
+                                                            description: seo
+                                                            example: false
+                                                          doNotTranslate:
+                                                            type: boolean
+                                                            description: do not translate
+                                                            example: false
+                                                          notes:
+                                                            type: string
+                                                            description: notes
+                                                            example: ''
+                                                          partOfSpeechCode:
+                                                            type: string
+                                                            description: part of speech code
+                                                            example: UNSPECIFIED
+                                                          createdByUserUid:
+                                                            type: string
+                                                            description: created by user identifier
+                                                            example: xas344dsd3
+                                                          createdDate:
+                                                            type: string
+                                                            description: created date
+                                                            example: '2018-11-16T16:06:53Z'
+                                                          modifiedDate:
+                                                            type: string
+                                                            description: modified date
+                                                            example: '2018-11-17T16:06:53Z'
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                      - SOURCE
+                                                    description: position type code
+                                                    example: SOURCE
+                                          - title: GRAMMAR_CHECK
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - GRAMMAR_CHECK
+                                                    description: check type code
+                                                    example: GRAMMAR_CHECK
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      text:
+                                                        type: string
+                                                        description: text
+                                                        example: play
+                                                      message:
+                                                        type: string
+                                                        description: message
+                                                        example: >-
+                                                          Possible agreement error -- use past
+                                                          participle here:
+                                                          <suggestion>played</suggestion>.
+                                                      description:
+                                                        type: string
+                                                        description: description
+                                                        example: Had + verb present tense
+                                                      mistakeTypeCode:
+                                                        type: string
+                                                        description: mistake type code
+                                                        example: Grammar
+                                                      suggestions:
+                                                        type: array
+                                                        items:
+                                                          type: string
+                                                          example: played
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: INSERTABLE_CONSISTENCY
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - INSERTABLE_CONSISTENCY
+                                                    description: check type code
+                                                    example: INSERTABLE_CONSISTENCY
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      insertable:
+                                                        type: string
+                                                        description: insertable
+                                                        example: <br>
+                                                      insertableType:
+                                                        type: string
+                                                        description: insertable type
+                                                        example: BR_TAG
+                                                      type:
+                                                        type: string
+                                                        enum:
+                                                          - INSERTABLE_ADDED
+                                                          - INSERTABLE_DELETED
+                                                        description: insertable
+                                                        example: INSERTABLE_DELETED
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                      - SOURCE
+                                                    description: position type code
+                                                    example: SOURCE
+                                          - title: LEADING_TRAILING_SPACES
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - LEADING_TRAILING_SPACES
+                                                    description: check type code
+                                                    example: LEADING_TRAILING_SPACES
+                                                  details:
+                                                    type: object
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: NON_TRANSLATABLE_TEXT
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - NON_TRANSLATABLE_TEXT
+                                                    description: check type code
+                                                    example: NON_TRANSLATABLE_TEXT
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      placeable:
+                                                        type: string
+                                                        description: placeable
+                                                        example: '{0}'
+                                                      type:
+                                                        type: string
+                                                        enum:
+                                                          - PLACEABLE_ADDED
+                                                          - PLACEABLE_DELETED
+                                                          - SPACES_AROUND_PLACEABLE
+                                                          - PLACEABLE_FORMAT
+                                                        description: type
+                                                        example: PLACEABLE_DELETED
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                      - SOURCE
+                                                    description: position type code
+                                                    example: SOURCE
+                                          - title: NUMBER_CONSISTENCY
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - NUMBER_CONSISTENCY
+                                                    description: check type code
+                                                    example: NUMBER_CONSISTENCY
+                                                  details:
+                                                    oneOf:
+                                                      - type: object
+                                                        title: NUMBER_ADDED
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            enum:
+                                                              - NUMBER_ADDED
+                                                            example: NUMBER_ADDED
+                                                          number:
+                                                            type: string
+                                                            description: number
+                                                            example: '1000'
+                                                      - type: object
+                                                        title: NUMBER_DELETED
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            enum:
+                                                              - NUMBER_DELETED
+                                                            example: NUMBER_DELETED
+                                                          number:
+                                                            type: string
+                                                            description: number
+                                                            example: '1000'
+                                                      - type: object
+                                                        title: NUMBER_INCORRECT_CONVERSION
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            enum:
+                                                              - NUMBER_INCORRECT_CONVERSION
+                                                            example: NUMBER_INCORRECT_CONVERSION
+                                                          number:
+                                                            type: string
+                                                            description: number
+                                                            example: 1000,1
+                                                          expectedFormat:
+                                                            type: string
+                                                            description: number expected format
+                                                            example: 1,000.10
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                      - SOURCE
+                                                    description: position type code
+                                                    example: SOURCE
+                                          - title: ORIGINAL_EQUALS_TARGET
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - ORIGINAL_EQUALS_TARGET
+                                                    description: check type code
+                                                    example: ORIGINAL_EQUALS_TARGET
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      types:
+                                                        type: array
+                                                        items:
+                                                          type: string
+                                                          enum:
+                                                            - IDENTICAL_CAPITALIZATION
+                                                            - IDENTICAL_TAGS
+                                                          example: >-
+                                                            ["IDENTICAL_CAPITALIZATION",
+                                                            "IDENTICAL_TAGS"]
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: REPEATED_WORD
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - REPEATED_WORD
+                                                    description: check type code
+                                                    example: REPEATED_WORD
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      word:
+                                                        type: string
+                                                        description: word
+                                                        example: szia
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: SEGMENT_COMPLETENESS
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - SEGMENT_COMPLETENESS
+                                                    description: check type code
+                                                    example: SEGMENT_COMPLETENESS
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      type:
+                                                        type: string
+                                                        enum:
+                                                          - TARGET_IS_EMPTY
+                                                          - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                                                          - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                                                        description: word
+                                                        example: TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: SOURCE_IN_WRONG_LANGUAGE
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - SOURCE_IN_WRONG_LANGUAGE
+                                                    description: check type code
+                                                    example: SOURCE_IN_WRONG_LANGUAGE
+                                                  details:
+                                                    type: object
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - SOURCE
+                                                    description: position type code
+                                                    example: SOURCE
+                                          - title: SPELLCHECK
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - SPELLCHECK
+                                                    description: check type code
+                                                    example: SPELLCHECK
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      word:
+                                                        type: string
+                                                        description: word
+                                                        example: Sziaa
+                                                      suggestions:
+                                                        type: array
+                                                        items:
+                                                          type: string
+                                                        description: suggestions
+                                                        example: >-
+                                                          ["Szia", "Szita", "Szila", "Szia a",
+                                                          "Szilvia"]
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: TAG_CONSISTENCY
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TAG_CONSISTENCY
+                                                    description: check type code
+                                                    example: TAG_CONSISTENCY
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      tag:
+                                                        type: string
+                                                        description: tag
+                                                        example: </p>
+                                                      type:
+                                                        type: string
+                                                        enum:
+                                                          - TAG_ADDED
+                                                          - TAG_DELETED
+                                                          - SPACES_AROUND_TAGS
+                                                          - TAG_ORDER_IS_CHANGED
+                                                        example: TAG_DELETED
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                      - SOURCE
+                                                    description: position type code
+                                                    example: SOURCE
+                                          - title: TARGET_IN_WRONG_LANGUAGE
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET_IN_WRONG_LANGUAGE
+                                                    description: check type code
+                                                    example: TARGET_IN_WRONG_LANGUAGE
+                                                  details:
+                                                    type: object
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: TARGET_LENGTH_LIMIT
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET_LENGTH_LIMIT
+                                                    description: check type code
+                                                    example: TARGET_LENGTH_LIMIT
+                                                  details:
+                                                    type: object
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: TARGET_SOURCE_CONSISTENCY
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET_SOURCE_CONSISTENCY
+                                                    description: check type code
+                                                    example: TARGET_SOURCE_CONSISTENCY
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      type:
+                                                        type: string
+                                                        enum:
+                                                          - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                                          - SAME_TRANSLATION_DIFFERENT_SOURCES
+                                                        description: type
+                                                        example: SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                                      originalString:
+                                                        type: string
+                                                        description: original string
+                                                        example: I like to go to the mountains very much.
+                                                      translation:
+                                                        type: string
+                                                        description: translation
+                                                        example: Ich möchte an den Strand gehen.
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: TRADEMARK_CONSISTENCY
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TRADEMARK_CONSISTENCY
+                                                    description: check type code
+                                                    example: TRADEMARK_CONSISTENCY
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      trademarkTypeCode:
+                                                        type: string
+                                                        enum:
+                                                          - SERVICE_MARK
+                                                          - COPYRIGHT
+                                                          - REGISTERED
+                                                          - TRADEMARK
+                                                        description: trademark type code
+                                                        example: COPYRIGHT
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - SOURCE
+                                                    description: position type code
+                                                    example: SOURCE
+                                          - title: WHITESPACES
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - WHITESPACES
+                                                    description: check type code
+                                                    example: WHITESPACES
+                                                  details:
+                                                    type: object
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: PUNCTUATION_CONSISTENCY
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - PUNCTUATION_CONSISTENCY
+                                                    description: check type code
+                                                    example: PUNCTUATION_CONSISTENCY
+                                                  details:
+                                                    type: object
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - SOURCE
+                                                    description: position type code
+                                                    example: SOURCE
+                                          - title: PLURALS_REPETITION
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - PLURALS_REPETITION
+                                                    description: check type code
+                                                    example: PLURALS_REPETITION
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      pluralFormGroupUid:
+                                                        type: string
+                                                        description: unique identifier of plural form
+                                                        example: 7191152182c69d9b72069ac1290fe24b
+                                                      repeatedPluralForms:
+                                                        type: array
+                                                        items:
+                                                          type: string
+                                                          example: ONE
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: REGEX_CHECK
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - REGEX_CHECK
+                                                    description: check type code
+                                                    example: REGEX_CHECK
+                                                  details:
+                                                    - ref: >-
+                                                        ../tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+                                          - title: OPEN_ISSUES
+                                            allOf:
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/severityLevelCodeResponse
+                                              - $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO
+                                              - type: object
+                                                properties:
+                                                  checkTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - OPEN_ISSUES
+                                                    description: check type code
+                                                    example: OPEN_ISSUES
+                                                  details:
+                                                    type: object
+                                                    properties:
+                                                      sourceIssuesCount:
+                                                        type: integer
+                                                        description: text
+                                                        example: 2
+                                                      translationIssuesCount:
+                                                        type: integer
+                                                        description: message
+                                                        example: 3
+                                                  positionTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET
+                                                    description: position type code
+                                                    example: TARGET
+              examples:
+                BLACKLISTED_TERMS:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: blacklist_term
+                              translation: blacklist_term
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: BLACKLISTED_TERMS
+                                severityLevelCode: MEDIUM
+                                positions:
+                                  - from: 0
+                                    to: 14
+                                details:
+                                  - blacklistedTermUid: uidgj1
+                                    termText: blacklist_term
+                                    alternatives: []
+                                    notes: ''
+                                positionTypeCode: TARGET
+                EMOJI_CONSISTENCY:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Bonjour 😀
+                              translation: Hello
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: EMOJI_CONSISTENCY
+                                severityLevelCode: LOW
+                                positions:
+                                  - from: 14
+                                    to: 16
+                                details:
+                                  - emoji: 😀
+                                    type: EMOJI_DELETED
+                                positionTypeCode: SOURCE
+                GLOBAL_CAPITALISATION_CONSISTENCY:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: ATTENTION
+                              translation: WARNINg
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: GLOBAL_CAPITALISATION_CONSISTENCY
+                                severityLevelCode: LOW
+                                positions:
+                                  - from: 0
+                                    to: 7
+                                details: null
+                                positionTypeCode: TARGET
+                GLOSSARY_COMPLIANCE:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: resize
+                              translation: поменять
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: GLOSSARY_COMPLIANCE
+                                severityLevelCode: MEDIUM
+                                positions:
+                                  - from: 0
+                                    to: 6
+                                details:
+                                  glossaryTerm:
+                                    termUid: cdd443b9-814f-442c-9ba6-4d97e0afce74
+                                    translation:
+                                      localeId: ru-RU
+                                      translatedTerm: изменить размер
+                                      notes: ''
+                                      translatorUserUid: null
+                                      lockTranslation: false
+                                      submittedForTranslation: false
+                                      createdDate: '2018-11-16T16:06:53Z'
+                                      modifiedDate: '2018-11-16T16:06:53Z'
+                                    termText: resize
+                                    caseSensitive: false
+                                    exactMatch: false
+                                    definition: ''
+                                    variations: ''
+                                    synonyms: ''
+                                    antonyms: ''
+                                    seo: false
+                                    doNotTranslate: false
+                                    notes: ''
+                                    partOfSpeechCode: UNSPECIFIED
+                                    createdByUserUid: f64d50d91867
+                                    createdDate: '2018-11-16T16:06:05Z'
+                                    modifiedDate: '2018-11-16T16:06:05Z'
+                                positionTypeCode: SOURCE
+                INSERTABLE_CONSISTENCY:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Bonjour <br>
+                              translation: Hello
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: INSERTABLE_CONSISTENCY
+                                severityLevelCode: LOW
+                                positions:
+                                  - from: 13
+                                    to: 17
+                                details:
+                                  insertable: <br>
+                                  insertableType: BR_TAG
+                                  type: INSERTABLE_DELETED
+                                positionTypeCode: SOURCE
+                LEADING_TRAILING_SPACES:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Bonjour
+                              translation: ' Hello '
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: LEADING_TRAILING_SPACES
+                                severityLevelCode: LOW
+                                positions:
+                                  - from: 0
+                                    to: 1
+                                  - from: 6
+                                    to: 7
+                                details: null
+                                positionTypeCode: TARGET
+                NON_TRANSLATABLE_TEXT:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Bonjour {0}
+                              translation: Hello
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: NON_TRANSLATABLE_TEXT
+                                severityLevelCode: MEDIUM
+                                positions:
+                                  - from: 6
+                                    to: 9
+                                details:
+                                  placeable: '{0}'
+                                  type: PLACEABLE_DELETED
+                                positionTypeCode: SOURCE
+                NUMBER_CONSISTENCY:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Bonjour 1000
+                              translation: Hello 20
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: NUMBER_CONSISTENCY
+                                severityLevelCode: LOW
+                                positions:
+                                  - from: 6
+                                    to: 10
+                                details:
+                                  type: NUMBER_DELETED
+                                  number: '1000'
+                                positionTypeCode: SOURCE
+                              - checkTypeCode: NUMBER_CONSISTENCY
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 5
+                                  to: 7
+                                details:
+                                  type: NUMBER_ADDED
+                                  number: '20'
+                                positionTypeCode: TARGET
+                REPEATED_WORD:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Bonjour
+                              translation: Hello Hello
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: REPEATED_WORD
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 5
+                                  to: 9
+                                details:
+                                  - word: Hello
+                                positionTypeCode: TARGET
+                SEGMENT_COMPLETENESS:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Le chien a mangé mes devoirs.
+                              translation: The dog ate
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: SEGMENT_COMPLETENESS
+                                severityLevelCode: MEDIUM
+                                positions:
+                                  from: 0
+                                  to: 10
+                                details:
+                                  type: TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                                positionTypeCode: TARGET
+                SOURCE_IN_WRONG_LANGUAGE:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Der Hund hat meine Hausaufgaben gegessen.
+                              translation: The dog ate my homework.
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: SOURCE_IN_WRONG_LANGUAGE
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 0
+                                  to: 63
+                                details: null
+                                positionTypeCode: SOURCE
+                SPELLCHECK:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Le chien a mangé mes devoirs.
+                              translation: The dog ate my homewrk.
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: SPELLCHECK
+                                severityLevelCode: MEDIUM
+                                positions:
+                                  from: 0
+                                  to: 5
+                                details:
+                                  word: homewrk
+                                  suggestions:
+                                    - homework
+                                positionTypeCode: TARGET
+                TAG_CONSISTENCY:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: <p>Bonjour</p>
+                              translation: <p>Hello
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: TAG_CONSISTENCY
+                                severityLevelCode: MEDIUM
+                                positions:
+                                  from: 8
+                                  to: 12
+                                details:
+                                  tag: </p>
+                                  type: TAG_DELETED
+                                positionTypeCode: SOURCE
+                TARGET_LENGTH_LIMIT:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Bonjour
+                              translation: Hello
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: TARGET_LENGTH_LIMIT
+                                severityLevelCode: HIGH
+                                positions:
+                                  from: 0
+                                  to: 4
+                                details: null
+                                positionTypeCode: TARGET
+                TARGET_IN_WRONG_LANGUAGE:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Le chien a mangé mes devoirs.
+                              translation: Der Hund hat meine Hausaufgaben gegessen.
+                              hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: TARGET_IN_WRONG_LANGUAGE
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 0
+                                  to: 64
+                                details: null
+                                positionTypeCode: TARGET
+                TARGET_SOURCE_CONSISTENCY:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Le chien a mangé mes devoirs.
+                              translation: The dog have ate my homework.
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: TARGET_SOURCE_CONSISTENCY
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 0
+                                  to: 27
+                                details:
+                                  type: SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                  originalString: Le chien a mangé mes devoirs.
+                                  translation: The dog have ate my homework.
+                                positionTypeCode: TARGET
+                TRADEMARK_CONSISTENCY:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Bonjour ©
+                              translation: Hello
+                              hashcode: 9091152182c69d9b72069ac1290fe2345
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: TRADEMARK_CONSISTENCY
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 6
+                                  to: 7
+                                details:
+                                  trademarkTypeCode: COPYRIGHT
+                                positionTypeCode: SOURCE
+                WHITESPACES:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Bonjour 100
+                              translation: Hello  100
+                              hashcode: 1091152182c69d9b72069ac1290fe23999
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: WHITESPACES
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 4
+                                  to: 6
+                                details: null
+                                positionTypeCode: TARGET
+                GRAMMAR_CHECK:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Le chien a mangé mes devoirs.
+                              translation: The dog have ate my homework.
+                              hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: GRAMMAR_CHECK
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 9
+                                  to: 13
+                                details:
+                                  text: ate
+                                  message: Possible agreement error
+                                  description: 'Agreement: ''have'' + past/present tense'
+                                  mistakeTypeCode: Grammar
+                                  suggestions:
+                                    - eaten
+                                positionTypeCode: TARGET
+                ORIGINAL_EQUALS_TARGET:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: hello
+                              translation: hello
+                              hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: ORIGINAL_EQUALS_TARGET
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 0
+                                  to: 5
+                                details:
+                                  types:
+                                    - IDENTICAL_CAPITALIZATION
+                                    - IDENTICAL_TAGS
+                                positionTypeCode: TARGET
+                PUNCTUATION_CONSISTENCY:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: Hello!
+                              translation: Привет. Как дела?
+                              hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: PUNCTUATION_CONSISTENCY
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 5
+                                  to: 6
+                                details:
+                                  punctuationMark: '!'
+                                  type: PUNCTUATION_MARK_DELETED
+                                  punctuationMarkType: TERMINAL
+                                positionTypeCode: SOURCE
+                PLURALS_REPETITION:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: 2 rows
+                              translation: 2 rows
+                              hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
+                              stringUid: null
+                              pluralFormGroupUid: a0b1acda22fc97da9c2b9ae5f3b25888
+                              pluralForm: MANY
+                            mistakes:
+                              - checkTypeCode: PLURALS_REPETITION
+                                severityLevelCode: MEDIUM
+                                positions:
+                                  from: 0
+                                  to: 5
+                                details:
+                                  pluralFormGroupUid: a0b1acda22fc97da9c2b9ae5f3b25888
+                                  repeatedPluralForms:
+                                    - MANY
+                                    - FEW
+                                positionTypeCode: TARGET
+                REGEX_CHECK:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: test@gmail
+                              translation: test@mail
+                              hashcode: 7191152182c69d9b72069ac1290fe24b
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: REGEX_CHECK
+                                severityLevelCode: LOW
+                                positions:
+                                  - from: 5
+                                    to: 10
+                                details:
+                                  ruleUid: 30606c59ee92
+                                  severityLevelCode: LOW
+                                  ruleName: name1
+                                  ruleTypeCode: FORBIDDEN
+                                  flavorCode: JAVA
+                                  originalPattern: '@f1'
+                                  translationPattern: '@f1'
+                                  description: name1 description
+                                  caseInsensitive: true
+                                  multiLine: false
+                                  warningMessage: test warning
+                                positionTypeCode: TARGET
+                                ignored: false
+                OPEN_ISSUES:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        results:
+                          - string:
+                              originalString: hello
+                              translation: hello
+                              hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
+                              stringUid: null
+                              pluralFormGroupUid: null
+                              pluralForm: null
+                            mistakes:
+                              - checkTypeCode: OPEN_ISSUES
+                                severityLevelCode: LOW
+                                positions:
+                                  from: 0
+                                  to: 5
+                                details:
+                                  sourceIssuesCount: 5
+                                  translationIssuesCount: 3
+                                positionTypeCode: TARGET
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTagJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/projects/$smartlingProjectId/check
