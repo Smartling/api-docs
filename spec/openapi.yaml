@@ -4160,44 +4160,6 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              type: object
-              properties:
-                query:
-                  type: string
-                  description: GraphQL query string
-                variables:
-                  type: object
-                  description: Query variables
-                  properties:
-                    searchStringsFilter:
-                      type: object
-                      properties:
-                        projectIds:
-                          type: array
-                          items:
-                            type: string
-                          description: List of project identifiers to search
-                          example: [ "g07311734" ]
-                        localeIds:
-                          type: array
-                          items:
-                            type: string
-                          description: List of locale identifiers to filter by
-                          example: [ "es-LA" ]
-                        workflowStepsFilter:
-                          type: object
-                          properties:
-                            workflowStepUids:
-                              type: array
-                              items:
-                                type: string
-                              description: Workflow step unique identifiers
-                              example: [ "a58fab71dce6", "f5f168bb13b1" ]
-                        limit:
-                          type: integer
-                          description: Maximum number of results to return
-                          example: 1
             example:
               query: |-
                 query Search($searchStringsFilter: SearchStringsFilter!) {
@@ -4232,6 +4194,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ContentSearchResponse'
           description: OK
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
 
 #
 # Strings API
