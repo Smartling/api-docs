@@ -4159,40 +4159,72 @@ paths:
       requestBody:
         required: true
         content:
-          application/graphql:
+          application/json:
             schema:
               type: object
               properties:
                 query:
                   type: string
-                  example: |-
-                    query Search($searchStringsFilter: SearchStringsFilter!) {
-                      searchStrings(searchStringsFilter: $searchStringsFilter) {
-                        content {
-                          source {
-                            hashcode
-                          }
-                          translations {
-                            translationForms {
-                                translationText
-                                pluralForm
-                            }
-                          }
-                        }
-                        totalCount
-                        totalWordCount
-                        __typename
-                      }
-                    }
+                  description: GraphQL query string
                 variables:
                   type: object
-                  example:
+                  description: Query variables
+                  properties:
                     searchStringsFilter:
-                      projectIds: ["g07311734"]
-                      localeIds: ["es-LA"]
-                      workflowStepsFilter:
-                        workflowStepUids: ["a58fab71dce6", "f5f168bb13b1"]
-                      limit: 1
+                      type: object
+                      properties:
+                        projectIds:
+                          type: array
+                          items:
+                            type: string
+                          description: List of project identifiers to search
+                          example: [ "g07311734" ]
+                        localeIds:
+                          type: array
+                          items:
+                            type: string
+                          description: List of locale identifiers to filter by
+                          example: [ "es-LA" ]
+                        workflowStepsFilter:
+                          type: object
+                          properties:
+                            workflowStepUids:
+                              type: array
+                              items:
+                                type: string
+                              description: Workflow step unique identifiers
+                              example: [ "a58fab71dce6", "f5f168bb13b1" ]
+                        limit:
+                          type: integer
+                          description: Maximum number of results to return
+                          example: 1
+            example:
+              query: |-
+                query Search($searchStringsFilter: SearchStringsFilter!) {
+                  searchStrings(searchStringsFilter: $searchStringsFilter) {
+                    content {
+                      source {
+                        hashcode
+                      }
+                      translations {
+                        translationForms {
+                          translationText
+                          pluralForm
+                        }
+                      }
+                    }
+                    totalCount
+                    totalWordCount
+                    __typename
+                  }
+                }
+              variables:
+                searchStringsFilter:
+                  projectIds: [ "g07311734" ]
+                  localeIds: [ "es-LA" ]
+                  workflowStepsFilter:
+                    workflowStepUids: [ "a58fab71dce6", "f5f168bb13b1" ]
+                  limit: 1
       responses:
         '200':
           content:
