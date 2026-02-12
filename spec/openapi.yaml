@@ -4146,6 +4146,30 @@ paths:
   '/strings-view-service-graphql-api/v2/projects/{projectId}/graphql':
     post:
       summary: Search strings
+      description: |-
+        Search for strings in your project using GraphQL.
+        
+        **Example Query:**
+        ```graphql
+          query Search($searchStringsFilter: SearchStringsFilter!) {
+            searchStrings(searchStringsFilter: $searchStringsFilter) {
+              content {
+                source {
+                  hashcode
+                }
+                translations {
+                  translationForms {
+                    translationText
+                    pluralForm
+                  }
+                }
+              }
+              totalCount
+              totalWordCount
+              __typename
+            }
+          }
+        ```
       tags:
         - Content Search
       operationId: searchStrings
@@ -4161,25 +4185,6 @@ paths:
         content:
           application/json:
             example:
-              query: |-
-                query Search($searchStringsFilter: SearchStringsFilter!) {
-                  searchStrings(searchStringsFilter: $searchStringsFilter) {
-                    content {
-                      source {
-                        hashcode
-                      }
-                      translations {
-                        translationForms {
-                          translationText
-                          pluralForm
-                        }
-                      }
-                    }
-                    totalCount
-                    totalWordCount
-                    __typename
-                  }
-                }
               variables:
                 searchStringsFilter:
                   projectIds: [ "g07311734" ]
