@@ -307,6 +307,14 @@ tags:
       to a string that already exists in the project, the string will be
       overwritten.
 
+  - name: Content Search
+    description: |-
+      The Content Search API allows you to search for strings within a Smartling project.
+      You can filter by string text, hashcode, namespace, or any combination of available filters.
+    externalDocs:
+      url: https://content-search-api-reference.smartling.com/
+      description: Content Search Documentation
+
   - name: Tags
     description: |-
       Tags can help you manage your strings. The Tags API allows you to
@@ -4131,6 +4139,67 @@ paths:
 
   /issues-api/v2/dictionary/issue-types:
     $ref: './spec/issues/dictionaries.yaml#/x-paths/issue_types'
+
+  #
+  # Content Search API
+  #
+  '/strings-view-service-graphql-api/v2/projects/{projectId}/graphql':
+    post:
+      summary: Search strings
+      description: |-
+        Search for strings in your project using GraphQL.
+        
+        **Example Query:**
+        ```graphql
+          query Search($searchStringsFilter: SearchStringsFilter!) {
+            searchStrings(searchStringsFilter: $searchStringsFilter) {
+              content {
+                source {
+                  hashcode
+                }
+                translations {
+                  translationForms {
+                    translationText
+                    pluralForm
+                  }
+                }
+              }
+              totalCount
+              totalWordCount
+              __typename
+            }
+          }
+        ```
+      tags:
+        - Content Search
+      operationId: searchStrings
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              variables:
+                searchStringsFilter:
+                  localeIds: [ "es-LA" ]
+                  workflowStepsFilter:
+                    workflowStepUids: [ "a58fab71dce6", "f5f168bb13b1" ]
+                  limit: 1
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentSearchResponse'
+          description: OK
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
 
 #
 # Strings API
@@ -10960,6 +11029,61 @@ components:
           type: string
           description: Custom field value.
           example: Finance Dept
+    ContentSearchResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            searchStrings:
+              type: object
+              properties:
+                content:
+                  type: array
+                  description: Array of string content with translations
+                  items:
+                    type: object
+                    properties:
+                      source:
+                        type: object
+                        properties:
+                          hashcode:
+                            type: string
+                            description: Unique hash identifier for the source string
+                            example: "0214054db2146bef256852cd0d27f936"
+                      translations:
+                        type: array
+                        description: Array of translations for the source string
+                        items:
+                          type: object
+                          properties:
+                            translationForms:
+                              type: array
+                              description: Translation text variations (including plural forms)
+                              items:
+                                type: object
+                                properties:
+                                  translationText:
+                                    type: string
+                                    description: The translated text
+                                    example: "El rápido zorro marrón salta sobre el perro perezoso."
+                                  pluralForm:
+                                    type: string
+                                    nullable: true
+                                    description: Plural form identifier if applicable
+                                    example: ONE
+                totalCount:
+                  type: integer
+                  description: Total number of strings found
+                  example: 198
+                totalWordCount:
+                  type: integer
+                  description: Total word count
+                  example: 644
+                __typename:
+                  type: string
+                  description: GraphQL type name
+                  example: "StringGroup"
     CreateStringResponse:
       type: object
       required:
