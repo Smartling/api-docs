@@ -1,0 +1,655 @@
+x-paths:
+  request_translation:
+    post:
+      summary: Request Translation
+      description: |
+        Submits assets from your connected external system (e.g., Shopify, Intercom, Sanity) for translation in Smartling TMS.
+        This endpoint orchestrates the content upload process and creates translation requests within a specified job.
+
+        ## When to Use This Endpoint
+
+        Use this endpoint when you need to build a **custom integration** to programmatically request translations outside of the Smartling UI.
+        This is ideal for:
+        - Automating translation workflows triggered by events in your system
+        - Bulk translation requests for multiple assets
+        - Integrating translation requests into your CI/CD pipeline
+        - Building custom dashboards or tools that manage translation workflows
+
+        **Required Permissions:**
+        This endpoint is accessible to users with the following roles:
+        - **Account Owner** - Full administrative access to the account
+        - **Project Manager** - Manages localization at the project level
+        - **Requester** - Can submit content for translation
+
+        For more information about user roles and permissions, see [Introduction to User Roles](https://help.smartling.com/hc/en-us/articles/360056193134).
+
+        **Prerequisites:**
+        1. You must have a configured connector between Smartling TMS and your external system via the Smartling Dashboard
+        2. You must have valid asset UIDs and titles from your external system (UID format varies by integration type; title is used as file name prefix in Smartling)
+        3. You must have a translation job UID where assets will be added
+        4. You must have target Smartling locale IDs that are both enabled in your project AND configured in the connector's `Language Configuration` (Dashboard → Connector Settings → Language Configuration)
+
+        ## How It Works
+
+        1. **Asynchronous Processing**: This endpoint accepts your request and returns immediately with `translationRequestUids` and `batchUid`
+        2. **Queue-Based Execution**: Requests are processed via a priority queue. Typical latency is 15-30 seconds, but may take longer under heavy load
+        3. **Content Fetching**: Smartling pulls source content from your external system using the provided asset UIDs
+        4. **File Creation**: Each unique asset UID creates one file in Smartling TMS (resubmitting the same asset UID updates the existing file)
+
+        ## Key Capabilities
+
+        - **Batch Submission**: Submit up to 10 assets per request (recommended batch size)
+        - **Flexible Job Management**: Add assets to new or existing jobs (any status: draft, in-progress, or published)
+        - **Locale Targeting**: Specify up to 100 target locales with optional workflow assignments per request
+        - **Authorization Control**: Choose immediate job authorization or keep as draft for manual review
+
+        ## Important Limitations
+
+        - **Job Capacity**: Maximum 5,000 files per translation job
+        - **Locale Consistency**: All assets in a single request are submitted to the same set of locales
+        - **Rate Limiting**: Limit calls to 1-2 requests per second to avoid throttling
+        - **Integration-Specific**: Asset UID format must match your integration type (see `integrationId` parameter)
+
+        ## Common Anti-Patterns to Avoid
+
+        ⚠️ DO NOT repeatedly call this endpoint with `authorizeJob: true` for the same job
+        - Each call triggers job analysis and cost calculation, causing performance degradation
+        - Instead: Add all assets with `authorizeJob: false`, then authorize once when complete
+
+        ⚠️ DO NOT submit the same asset multiple times unnecessarily
+        - Resubmitting updates the existing file but triggers unnecessary processing
+        - Instead: Track submitted assets and only resubmit when content has changed
+
+        ⚠️ DO NOT create separate jobs for assets that belong together
+        - Creates fragmented workflows and complicates project management
+        - Instead: Batch related assets into the same job (up to 5,000 files)
+
+        ## Monitoring & Troubleshooting
+
+        - **Track Progress**: Use the [Get Batch Status API](#tag/Job-Batches-V2/operation/getJobBatchStatusV2) with the returned `batchUid`
+        - **Expected Latency**: 15-30 seconds for content to appear in Smartling TMS
+        - **Error Handling**: 
+          - `400` errors are validation failures (not retryable - fix your request)
+          - `500/502` errors are transient failures (retryable with exponential backoff)
+        - **Logging**: Implement monitoring for 5xx errors in production integrations
+
+        ## Best Practices
+
+        - Use small batches (up to 10 assets) for optimal performance and easier error handling
+        - Reuse traslation job UIDs across multiple API calls to build up job content incrementally
+        - Set `authorizeJob: false` when adding assets in multiple steps, authorize manually when complete
+        - Implement exponential backoff retry logic for 5xx errors
+        - Validate locale IDs against your project configuration before calling the endpoint
+        - Keep job size under 5,000 files; create new jobs when approaching this limit
+
+      tags:
+        - Connectors Import
+      operationId: requestTranslationV3
+
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9]{7,9}$'
+          description: |
+            Your Smartling project identifier. Find this in the Smartling Dashboard under **Account Settings > API**.
+
+            **Validation Rules:**
+            - Must be 7-9 characters long
+            - Must contain only lowercase letters (a-z) and digits (0-9)
+            - Cannot include uppercase letters, hyphens, or special characters
+
+            Example: `a1b2c3d4e`
+        - name: integrationId
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - akeneo
+              - captionhub
+              - contentful
+              - google-drive
+              - intercom
+              - iterable
+              - marketo
+              - sanity-docs
+              - sfcc
+              - shopify
+              - sitecore-xmc
+              - webflow
+            pattern: '^[a-z\-]{4,50}$'
+          description: |
+            The type of connector integration configured in your Smartling project.
+            This must match one of the supported integration types.
+            
+            **Validation Rules:**
+            - Must be 4-50 characters long
+            - Must contain only lowercase letters (a-z) and hyphens (-)
+            - Cannot include uppercase letters, digits, underscores, or other special characters
+
+            **Supported Values** (partial list - more available):
+            - `intercom` - Intercom integration
+            - `iterable` - Iterable integration
+            - `sanity-docs` - Sanity CMS integration (document-level translation)
+
+            **Important**: The asset UID format must match the integration type. For example:
+            - Intercom asset UIDs typically follow pattern: `article-{id}`
+            - Sanity asset UIDs follow pattern: `{documentType}-{documentId}`
+
+            Contact Smartling support if you need the complete list of available integration types.
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestTranslationCommand'
+            examples:
+              basic_request:
+                summary: Basic translation request with single asset
+                description: |
+                  Simple request for translating one asset to two locales using default workflows.
+                  Job is authorized immediately.
+                value:
+                  assets:
+                    - assetUid: "article-12345"
+                      title: "Getting Started Guide"
+                  localeWorkflows:
+                    - smartlingLocaleId: "fr"
+                      workflowUid: null
+                    - smartlingLocaleId: "de-DE"
+                      workflowUid: null
+                  translationJobUid: "job123456789"
+                  authorizeJob: true
+              with_workflows:
+                summary: Translation request with specific workflows
+                description: |
+                  Request using custom workflows for each locale. Job kept as draft for manual review.
+                  Useful when you need specific translation workflows different from project defaults.
+                value:
+                  assets:
+                    - assetUid: "article-12345"
+                      title: "Getting Started Guide"
+                  localeWorkflows:
+                    - smartlingLocaleId: "fr"
+                      workflowUid: "wf1234567890"
+                    - smartlingLocaleId: "de-DE"
+                      workflowUid: "wf0987654321"
+                  translationJobUid: "job123456789"
+                  authorizeJob: false
+              multiple_assets:
+                summary: Batch translation request (recommended pattern)
+                description: |
+                  Batch request with multiple assets going to the same locales.
+                  This is the recommended approach for bulk operations - group related assets together.
+                  Keep batch size to 10 or fewer assets for optimal performance.
+                value:
+                  assets:
+                    - assetUid: "page-001"
+                      title: "Homepage"
+                    - assetUid: "page-002"
+                      title: "About Us"
+                    - assetUid: "page-003"
+                      title: "Contact"
+                  localeWorkflows:
+                    - smartlingLocaleId: "es"
+                      workflowUid: null
+                    - smartlingLocaleId: "pt-BR"
+                      workflowUid: null
+                  translationJobUid: "job987654321"
+                  authorizeJob: true
+              incremental_job_building:
+                summary: Adding assets to existing job (proper pattern)
+                description: |
+                  Adding more assets to an existing job without auto-authorization.
+                  Use this pattern when building up job content across multiple API calls.
+                  Authorize manually when all assets are added.
+                value:
+                  assets:
+                    - assetUid: "article-99999"
+                      title: "Additional Content"
+                  localeWorkflows:
+                    - smartlingLocaleId: "fr"
+                      workflowUid: null
+                  translationJobUid: "job123456789"
+                  authorizeJob: false
+              mixed_locale_sets:
+                summary: Different locales per asset (requires multiple calls)
+                description: |
+                  When you need different locale sets for different assets, make separate API calls.
+                  
+                  Call 1: Asset #1 to French and German
+                  Call 2: Asset #2 to Spanish, Portuguese, and Italian
+                  
+                  This example shows Call 1. Make a second call with different assets and locales.
+                value:
+                  assets:
+                    - assetUid: "article-11111"
+                      title: "European Markets Guide"
+                  localeWorkflows:
+                    - smartlingLocaleId: "fr"
+                      workflowUid: null
+                    - smartlingLocaleId: "de-DE"
+                      workflowUid: null
+                  translationJobUid: "job555555555"
+                  authorizeJob: false
+
+      responses:
+        200:
+          description: Translation request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestTranslationResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        translationRequestUids:
+                          - "req123abc456"
+                          - "req789def012"
+                        batchUid: "batch12345678"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                invalid_project_id:
+                  summary: Invalid projectId format
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.path.error
+                          message: "'projectId' should contain 7-9 lowercase alphanumeric characters"
+                invalid_integration_id:
+                  summary: Invalid integrationId format
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.path.error
+                          message: "'integrationId' should contain 4-50 characters, lowercase letters and hyphens only"
+                empty_assets:
+                  summary: Assets list is empty
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'assets' cannot be empty. Please provide at least one asset to translate."
+                empty_locales:
+                  summary: Locale workflows list is empty
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'localeWorkflows' cannot be empty. Please provide at least one target locale with optional workflow."
+                invalid_locale_format:
+                  summary: Invalid locale ID format
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'smartlingLocaleId' must be in format 'xx' or 'xx-XX' (e.g., 'en', 'en-US')."
+                locale_not_configured:
+                  summary: Locale not configured in Language Configuration
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "Locale 'fr-FR' is not configured in the connector's **Language Configuration**. Please configure this locale mapping in **Dashboard → Connector Settings → Language Configuration**."
+                locale_disabled:
+                  summary: Locale is disabled in project
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "Locale 'de-DE' is disabled in the Smartling project. Please enable it in **Project Settings → Languages**."
+                invalid_job_uid:
+                  summary: Invalid translation job UID format
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'translationJobUid' must be exactly 12 lowercase alphanumeric characters."
+                missing_authorize_job:
+                  summary: Missing authorizeJob field
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'authorizeJob' is required. Set to true to authorize the job immediately, false to create as draft."
+                blank_asset_uid:
+                  summary: Asset UID is blank
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'assetUid' is required."
+                asset_uid_too_long:
+                  summary: Asset UID exceeds maximum length
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'assetUid' cannot exceed 255 characters."
+                blank_title:
+                  summary: Asset title is blank
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'title' is required."
+                title_too_long:
+                  summary: Asset title exceeds maximum length
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'title' cannot exceed 500 characters."
+                too_many_locales:
+                  summary: Exceeds maximum locale limit
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "Maximum 100 locale workflows allowed per request."
+                invalid_workflow_uid:
+                  summary: Invalid workflow UID format
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: validation.field.error
+                          message: "'workflowUid' must be exactly 12 lowercase alphanumeric characters."
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+components:
+  schemas:
+    RequestTranslationCommand:
+      type: object
+      required:
+        - assets
+        - localeWorkflows
+        - translationJobUid
+        - authorizeJob
+      properties:
+        assets:
+          type: array
+          minItems: 1
+          maxItems: 10
+          description: |
+            List of assets to be translated. Each asset represents a content item from your external system.
+            
+            **Recommended**: Keep batch size to 10 assets or fewer for optimal performance.
+            
+            **Behavior**: 
+            - All assets in this request will be submitted to ALL locales specified in `localeWorkflows`
+            - If you need different locale sets for different assets, make separate API calls
+            - Resubmitting the same `assetUid` updates the existing file in Smartling (does not create duplicates)
+          items:
+            $ref: '#/components/schemas/Asset'
+        localeWorkflows:
+          type: array
+          minItems: 1
+          maxItems: 100
+          description: |
+            Target locales with optional workflow assignments. All assets will be submitted to these locales.
+            
+            **Workflow Assignment**:
+            - If `workflowUid` is `null`, the project's default workflow for that locale is used
+            - Each locale in your Smartling project has a pre-configured default workflow
+            
+            **Validation**:
+            - Locale IDs must be valid Smartling locale codes (e.g., `fr-FR`, not external system codes like `fr`)
+            - Locales must be enabled in your Smartling project
+            - Locales must be configured in the connector's **Language Configuration** (**Dashboard → Connector Settings → Language Configuration**)
+            - Invalid, disabled, or unconfigured locales will return a 400 validation error
+            
+            **Important**: Not all project locales may be available for the connector. Only locales with configured 
+            mappings between Smartling and your external system can be used. For example, if your Smartling project 
+            has 5 languages but only 3 are configured in Language Configuration, only those 3 can be used with this endpoint.
+          items:
+            $ref: '#/components/schemas/LocaleWorkflow'
+        translationJobUid:
+          type: string
+          pattern: '^[a-z0-9]{12}$'
+          description: |
+            Unique identifier for the translation job. Must be exactly 12 lowercase alphanumeric characters.
+            
+            **Job Reuse**: You can call this endpoint multiple times with the same job UID to add more assets incrementally.
+            
+            **Job States**: Assets can be added to jobs in any state:
+            - Awaiting Authorization (draft)
+            - In Progress
+            - Published
+            
+            **Capacity Limit**: Each job has a hard limit of 5,000 files. Plan accordingly when building bulk integrations.
+          example: "job123456789"
+        authorizeJob:
+          type: boolean
+          description: |
+            Controls whether the translation job should be authorized immediately or kept as draft.
+            
+            **When to use `true`** (immediate authorization):
+            - Single API call with all assets ready
+            - Automated workflows where manual review is not needed
+            
+            **When to use `false`** (keep as draft):
+            - Adding assets across multiple API calls
+            - Manual review required before starting translation
+            - Building up job content incrementally
+            
+            **⚠️ Important**: Avoid calling this endpoint multiple times with `authorizeJob: true` for the same job.
+            Each authorization triggers job analysis and cost calculation. Instead, add all assets with `false`,
+            then authorize once manually or via a separate API call.
+          example: true
+
+    Asset:
+      type: object
+      required:
+        - assetUid
+        - title
+      properties:
+        assetUid:
+          type: string
+          maxLength: 255
+          description: |
+            Unique identifier for the asset in your external system. This ID must match the format
+            expected by your integration type (see `integrationId` parameter).
+            
+            **Format Requirements**:
+            - Cannot be blank or whitespace-only
+            - Maximum 255 characters
+            - Must be a valid identifier in your external system
+            
+            **Examples by Integration**:
+            - Intercom: `article-12345`, `collection-67890`
+            - Sanity: `page-abc123`, `post-def456`
+            
+            **Behavior**: 
+            - Smartling creates one file per unique asset UID
+            - Resubmitting the same UID updates the existing file (no duplicates)
+            - The asset UID is used to fetch source content from your external system
+          example: "article-12345"
+        title:
+          type: string
+          maxLength: 500
+          description: |
+            Human-readable title or name of the asset. This title serves two purposes:
+            1. **File Naming**: Used as a prefix for the file name created in Smartling TMS
+            2. **Dashboard Display**: Appears in the Smartling Dashboard for identification and organization
+            
+            **Requirements**:
+            - Cannot be blank or whitespace-only
+            - Maximum 500 characters
+            - Should be descriptive enough for translators and project managers to identify the content
+            
+            **Best Practice**: Use the actual content title from your external system for consistency
+            and easier tracking across both systems.
+          example: "Getting Started Guide"
+
+    LocaleWorkflow:
+      type: object
+      required:
+        - smartlingLocaleId
+      properties:
+        smartlingLocaleId:
+          type: string
+          pattern: '^[a-z]{2}(-[A-Z]{2})?$'
+          description: |
+            Target locale identifier in Smartling format. Must be a valid, enabled, and configured locale.
+            
+            **Format**: 
+            - Language code only: `en`, `fr`, `de`
+            - Language + region: `en-US`, `pt-BR`, `zh-CN`, `fr-FR`
+            
+            **Critical**: Always use the **Smartling locale code**, not the external system's locale code.
+            
+            **Example**: If your external system (e.g., Iterable) uses `fr` for French, but your Smartling 
+            project uses `fr-FR`, you must pass `fr-FR` in this field. The connector's Language Configuration 
+            handles the mapping between Smartling codes and external system codes.
+            
+            **Validation**: 
+            - Locale must exist in your Smartling project configuration
+            - Locale must be enabled (not disabled)
+            - Locale must be configured in the connector's **Language Configuration** (**Dashboard → Connector Settings → Language Configuration**)
+            - Invalid, disabled, or unconfigured locales return a 400 validation error
+            
+            **Find Your Locales**: 
+            1. Check your project settings in the Smartling Dashboard under **Project Settings > Languages**
+            2. Verify the locale is configured in **Connector Settings > Language Configuration**
+          example: "fr-FR"
+        workflowUid:
+          type: string
+          pattern: '^[a-z0-9]{12}$'
+          nullable: true
+          description: |
+            Optional workflow identifier. Must be exactly 12 lowercase alphanumeric characters if provided.
+            
+            **When to specify**:
+            - Use a specific workflow different from the project default
+            - Route content through custom translation workflows
+            
+            **When to omit** (set to `null`):
+            - Use the project's default workflow for this locale
+            - Simplify configuration when defaults are acceptable
+            
+            **Default Behavior**: Each locale in your project has a pre-configured default workflow.
+            If `workflowUid` is `null`, that default is automatically applied.
+          example: "wf1234567890"
+
+    RequestTranslationResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+              description: Response status code indicating successful request acceptance
+            data:
+              type: object
+              properties:
+                translationRequestUids:
+                  type: array
+                  items:
+                    type: string
+                  description: |
+                    List of unique identifiers for the created translation requests, one per asset.
+                    
+                    **Note**: These UIDs are for internal tracking. Currently, there is no public API
+                    to query individual translation request status using these identifiers.
+                  example: ["req123abc456", "req789def012"]
+                batchUid:
+                  type: string
+                  description: |
+                    Unique identifier for the batch that groups these translation requests.
+                    
+                    **Monitoring**: Use this UID with the [Get Batch Status API](#tag/Job-Batches-V2/operation/getJobBatchStatusV2)
+                    to track processing progress and check for errors.
+                    
+                    **Typical Flow**:
+                    1. Call this endpoint and receive `batchUid`
+                    2. Wait 15-30 seconds for processing
+                    3. Poll batch status API to verify completion
+                    4. Check Smartling Dashboard to confirm files appear in the job
+                  example: "batch12345678"
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            code:
+              type: string
+              enum: [VALIDATION_ERROR]
+              description: Indicates a validation failure in the request
+            errors:
+              type: array
+              description: |
+                List of validation errors. Each error includes a key and human-readable message.
+                
+                **Not Retryable**: Fix the request payload or URL parameters and resubmit.
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                    description: Error classification key
+                  message:
+                    type: string
+                    description: Human-readable error message explaining what went wrong
+
+    ErrorResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Error code indicating the type of failure
+            errors:
+              type: array
+              description: |
+                List of errors encountered during processing.
+                
+                **5xx Errors**: Typically transient failures. Implement exponential backoff retry logic.
+                
+                **Recommended Retry Strategy**:
+                - Initial retry after 1 second
+                - Double wait time for each subsequent retry (2s, 4s, 8s, etc.)
+                - Maximum 5 retry attempts
+                - Log persistent failures for investigation
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  message:
+                    type: string

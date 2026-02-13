@@ -1,0 +1,381 @@
+x-paths:
+
+  mt_action:
+    post:
+      summary: Translate file
+      description: >-
+        Perform translation for a previously uploaded file given a source locale and a set of target locales.
+      tags:
+        - File Machine Translations (MT)
+      operationId: mtFile
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/fileUidPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                sourceLocaleId:
+                  type: string
+                  description: Source locale of the uploaded file.
+                  example: "en-US"
+                targetLocaleIds:
+                  type: array
+                  items:
+                    type: string
+                  description: List of target locales that the file needs to be translated into.
+                  example:
+                    - de-DE
+                    - fr-FR
+              required:
+                - sourceLocaleId
+                - targetLocaleIds
+              type: object
+        required: true
+      responses:
+        '202':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: ACCEPTED
+                      data:
+                        mtUid: "h5dhjbg1ganp"
+              schema:
+                $ref: '#/components/schemas/MtResponse'
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" 
+            -H "Content-Type:application/json" -d '{"sourceLocaleId" : "en-US", "targetLocaleIds" : ["de-DE", "fr-FR"]}'
+            https://api.smartling.com/file-translations-api/v2/accounts/$smartlingAccountId/files/$smartlingFtsFileUid/mt
+
+  mt_status:
+    get:
+      summary: Get translation progress
+      description: |-
+        Get progress for an ongoing file translation action. Progress is reported on a per locale basis,
+        but will also include an aggregate state for all locales.
+      tags:
+        - File Machine Translations (MT)
+      operationId: getMtProgress
+      produces:
+        - application/json
+      parameters:
+        - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/fileUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/mtUidPathParameter'
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        state: "CANCELED"
+                        requestedStringCount : 100
+                        error : null
+                        localeProcessStatuses :
+                          - localeId: de-DE
+                            state: "CANCELED"
+                            processedStringCount : 67
+                            error : null
+                          - localeId: fr-FR
+                            state: "COMPLETED"
+                            processedStringCount : 100
+                            error : null
+                          - localeId: fr-CA
+                            state: "FAILED"
+                            processedStringCount : 0
+                            error :
+                              key: generalError
+                              message: 'Sorry, something went wrong. We notified the responsible team. If you still need to contact us please provide this error code: jtcorrr3'
+                              details:
+                                errorId: jtcorrr3
+              schema:
+                $ref: '#/components/schemas/MtStatusResponse'
+          description: OK
+        '400':
+          $ref: './fts_common.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken" 
+            https://api.smartling.com/file-translations-api/v2/accounts/$smartlingAccountId/files/$smartlingFtsFileUid/mt/$smartlingMtUid/status
+
+
+  mt_cancel:
+    post:
+      summary: Cancel file translation
+      description: |-
+        Cancel an ongoing file translation at any point during the translation process.
+        If file translation is complete or has already been cancelled, calling this endpoint will have no effect.
+      tags:
+        - File Machine Translations (MT)
+      operationId: cancelMt
+      produces:
+        - application/json
+      parameters:
+        - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/fileUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/mtUidPathParameter'
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: {}
+              schema:
+                $ref: './fts_common.yaml#/components/schemas/EmptyResponse'
+          description: OK
+        '400':
+          $ref: './fts_common.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type:application/json"
+            https://api.smartling.com/file-translations-api/v2/accounts/$smartlingAccountId/files/$smartlingFtsFileUid/mt/$smartlingMtUid/cancel
+
+  mt_get_translated_file_for_locale:
+    get:
+      summary: Download translated file (single locale)
+      description: |-
+        Download translated file for a specific locale. 
+        The download is allowed only if translation to the requested locale has been fully completed.
+        
+        It is important to check the HTTP response status code. If Smartling
+        finds and returns the file normally, you will receive a `200` SUCCESS
+        response. If you receive any other response status code than `200`, the
+        requested files will not be part of the response.
+
+        When you upload a UTF-16 character encoded file, then /file/get requests
+        for that file will have a character encoding of UTF-16. All other
+        uploaded files will return with a character encoding of UTF-8.
+
+        You can always use the content-type header in the response of a file/get
+        request to determine the character encoding.
+        The output filename is based on the original file name, that was provided during initial upload call.
+        
+        **Note:** for GETTEXT files we're going to return file extension as .po
+        even if during the initial file upload it was uploaded with .pot file extension.
+      tags:
+        - File Machine Translations (MT)
+      operationId: downloadMTFile
+      parameters:
+        - name: localeId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: One of translation requested with prior call to File MT end point.
+        - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/fileUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/mtUidPathParameter'
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        key: locale.not.requested
+                        message: >-
+                          Processing request did not contain locale de-DE
+                        details:
+                          field: "localeId"
+        '401':
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken" 
+            https://api.smartling.com/file-translations-api/v2/accounts/$smartlingAccountId/files/$smartlingFtsFileUid/mt/$smartlingMtUid/locales/{$smartlingLocaleId}/file
+
+  mt_get_translated_files:
+    get:
+      summary: Download translated files (all locales)
+      description: |
+        Download a ZIP archive of translated files for all requested locales.
+
+        Unlike the "Download translated file (single locale)" endpoint, you get a ZIP archive
+        with all translations of a specific file.
+
+        It is important to check the HTTP response status code. If Smartling
+        finds and returns the file normally, you will receive a `200` SUCCESS
+        response. If you receive any other response status code than `200`, the
+        requested files will not be part of the response.
+
+        When you upload a UTF-16 character encoded file, then /file/get requests
+        for that file will have a character encoding of UTF-16. All other
+        uploaded files will return with a character encoding of UTF-8.
+
+        You can always use the content-type header in the response of a file/get
+        request to determine the character encoding.
+        
+        Zip archive can only be downloaded if translation to all locales
+        has completed (overall state has to be in COMPLETED or CANCELLED states)
+        and if there is at least one locale which has COMPLETED state.
+        
+      tags:
+        - File Machine Translations (MT)
+      operationId: downloadAllMTFilesInZip
+      parameters:
+        - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/fileUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/mtUidPathParameter'
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        key: mt.not.completed
+                        message: >-
+                          State of processing is QUEUED. Only COMPLETED,CANCELED allow final file to be downloaded
+                        details:
+                          field: "mtUid"
+        '401':
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken" 
+            https://api.smartling.com/file-translations-api/v2/accounts/$smartlingAccountId/files/$smartlingFtsFileUid/mt/$smartlingMtUid/locales/{$smartlingLocaleId}/file
+
+
+
+components:
+  schemas:
+    MtResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './fts_common.yaml#/components/schemas/AcceptedResponse'
+            - properties:
+                data:
+                  properties:
+                    mtUid:
+                      description: >-
+                        Unique identifier for the file mt action.
+                      type: string
+                  type: object
+              type: object
+    MtStatusResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './fts_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    state:
+                      $ref: '#/components/schemas/MTState'
+                    requestedStringCount:
+                      type: integer
+                      description: Amount of strings requested for translation
+                    error:
+                      $ref: './fts_common.yaml#/components/schemas/Error'
+                    localeProcessStatuses:
+                      type: object
+                      properties:
+                        localeId:
+                          type: string
+                          description: Locale, requested for translation
+                        state:
+                          $ref: '#/components/schemas/MTState'
+                        processedStringCount:
+                          type: integer
+                          description: Amount of strings translated for the locale
+                        error:
+                          $ref: './fts_common.yaml#/components/schemas/Error'
+                  type: object
+
+              type: object    
+    MTState:
+      type: string
+      description: |-
+        | State | Description |
+        |---------------|-------------|
+        | **QUEUED** | Translation request queued.|
+        | **PROCESSING** | Translation in progress.|
+        | **FAILED** | Translation failed.|
+        | **CANCELED** | Translation cancelled by user.|
+        | **COMPLETED** | Translation complete.|
+      enum:
+        - QUEUED
+        - PROCESSING
+        - FAILED
+        - CANCELED
+        - COMPLETED

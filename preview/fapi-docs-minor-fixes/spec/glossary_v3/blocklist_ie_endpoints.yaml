@@ -1,0 +1,295 @@
+x-paths:
+
+  blocklist_export_terms:
+    get:
+      summary: Export blocklist terms
+      description: >-
+        This request export blocklist terms into file with preselected format.
+        For now next formats are allowed:
+         - CSV,
+         - XLSX.
+      tags:
+        - Blocklist API
+      operationId: exportBlocklist
+      consumes:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+        - $ref: '#/components/parameters/exportFormat'
+        - $ref: '#/components/parameters/skipEntriesParam'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  blocklist_initialize_import:
+    post:
+      tags:
+        - Blocklist API
+      summary: Initialize blocklist import process
+      description: >-
+        Initialize blocklist import process. Upload file, and perform validation.
+        ( No changes will be done during this method call ). In case of success
+        blocklist import will be created with 'PENDING' status.
+      operationId: initializeBlocklistImport
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BlocklistImportCommandPTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocklistImportResponsePTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  blocklist_import_status:
+    get:
+      tags:
+        - Blocklist API
+      summary: Read import process status
+      description: >-
+        Read import process status
+      operationId: blocklistImportStatus
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+        - $ref: '#/components/parameters/importUidPathParameter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocklistImportPTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  blocklist_confirm_import:
+    post:
+      tags:
+        - Blocklist API
+      summary: Confirm previously created blocklist import
+
+      description: >-
+        Confirm previously created blocklist import. Only imports in status : 'PENDING' may be confirmed.
+      operationId: confirmBlocklistImport
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+        - $ref: '#/components/parameters/importUidPathParameter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocklistImportPTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken"
+            -F "importFile=@$uploadFilePath;type=text/csv"
+            -F "importFileName=$uploadFileSmartlingName" -F "importFileMediaType=$uploadFileSmartlingMediaType"
+            "https://api.smartling.com//glossary-api/v3/accounts/$smartlingAccountUid/blocklist/$smartlingBlocklistUid/import"    
+
+components:
+  parameters:
+    importUidPathParameter:
+      name: importUid
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique identifier of the glossary-import.
+      example: 69dae398-96c2-45f6-9f0d-91470c3464bd
+
+    exportFormat:
+      name: format
+      in: query
+      schema:
+        type: string
+        enum:
+          - CSV
+          - XLSX
+      required: true
+      example: CSV
+      description: Export format, one of CSV, XLSX.
+
+    skipEntriesParam:
+      name: skipEntries
+      in: query
+      schema:
+        type: boolean
+      required: false
+      description: Will export template ( headers ) only in case if - value set to true.
+
+  schemas:
+
+    BlocklistImportCommandPTO:
+      type: object
+      required:
+        - importFile
+        - importFileName
+        - importFileMediaType
+      properties:
+        importFile:
+          type: string
+          format: binary
+          description: Binary file data to upload.
+        importFileName:
+          required: true
+          type: string
+          description: Name and extension of the import file.
+        importFileMediaType:
+          required: true
+          type: string
+          enum:
+            - text/csv
+            - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+          description: Import file media type. One of 'text/csv |  application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'.
+      description: Blocklist import command.
+
+    BlocklistImportResponse:
+      type: object
+      properties:
+        blocklistImport:
+          description: BlocklistImport meta-data.
+          $ref: '#/components/schemas/BlocklistImport'
+        termChanges:
+          type: array
+          description: Term changes stats.
+          items:
+            $ref: '#/components/schemas/ImportTermChanges'
+      description: Blocklist import meta-data.
+
+    BlocklistImport:
+      type: object
+      properties:
+        blocklistUid:
+          type: string
+          format: uuid
+          example : 'bad90990-4be1-4570-81da-b719cddd5352'
+          description: Blocklist uid.
+        importUid:
+          type: string
+          format: uuid
+          example : '939a4439-2ed0-4123-bc68-d188e4d664ab'
+          description: Import uid.
+        importStatus:
+          type: string
+          description: Status of the import.
+          example: PENDING
+          enum:
+            - PENDING
+            - IN_PROGRESS
+            - SUCCESSFUL
+            - FAILED
+      description: Blocklist import process meta-data.
+
+    ImportTermChanges:
+      type: object
+      properties:
+        newTerms:
+          type: integer
+          format: int32
+          example : 50
+          description: Amount of blocklist terms to be created.
+        existingTermUpdates:
+          type: integer
+          format: int32
+          example : 100
+          description: Amount of blocklist terms to be updated.
+      description: Blocklist term change stats.
+
+    BlocklistImportResponsePTO:
+      allOf:
+        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/BlocklistImportResponse"
+
+    BlocklistImportPTO:
+      allOf:
+        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/BlocklistImport"
+

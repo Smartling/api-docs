@@ -1,0 +1,110 @@
+x-paths:
+
+  file_upload:
+    post:
+      summary: Upload file
+      description: >-
+        Upload a file to use for asynchronous tasks like language detection or machine translation.
+        Maximum file size is 200MB.
+      tags:
+        - File Machine Translations (MT)
+      operationId: fileUpload
+      produces:
+        - application/json
+      parameters:
+        - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                request:
+                  type: object
+                  properties:
+                    fileType:
+                      description: File type of uploaded file.
+                      $ref: '#/components/schemas/FileType'
+                file:
+                  type: string
+                  format: binary
+                  description: The file contents to upload.
+              required:
+                - file
+                - request
+              type: object
+            encoding:
+              request: application/json
+              file: application/octet-stream
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        fileUid: "7ntwcv0rdj95"
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" 
+            -H "Content-Type:multipart/form-data"
+            -F "request={\"fileType\":\"PLAIN_TEXT\"};type=application/json"
+            -F "file=@/Users/smartling/Downloads/test.txt;type=application/octet-stream"
+            https://api.smartling.com/file-translations-api/v2/accounts/$smartlingAccountId/files
+
+components:
+  schemas:
+    FileUploadResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './fts_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    fileUid:
+                      description: >-
+                        Unique identifier for uploaded file.
+                      type: string
+                  type: object
+              type: object
+    FileType:
+      type: String
+      description: Supported file types
+      enum:
+        - DOCX
+        - DOCM
+        - RTF
+        - PPTX
+        - XLSX
+        - IDML
+        - RESX
+        - PLAIN_TEXT
+        - XML
+        - HTML
+        - PRES
+        - SRT
+        - MARKDOWN
+        - DITA
+        - VTT
+        - FLARE
+        - SVG
+        - XLIFF2
+        - CSV
+        - XLSX_TEMPLATE

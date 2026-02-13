@@ -1,0 +1,417 @@
+x-paths:
+  issue_comments:
+    get:
+      summary: Get comments
+      description: >-
+        Returns all comments on an issue.
+
+
+        **Note**: The `createdByUserUid` value is not currently usable for
+        identifying the users who created comments. In the future, a People API
+        will be exposed for looking up user details.
+      tags:
+        - Issues
+      operationId: getIssueComments
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - commentText: comment text
+                            createdByUserUid: 661801f19693
+                            createdDate: '2015-12-22T12:34:49Z'
+                            issueCommentUid: a75fea779bbb
+                        totalCount: 1
+              schema:
+                $ref: '#/components/schemas/IssueCommentsGetResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/comments
+
+    post:
+      summary: Create comment
+      description: >-
+        Create a comment for an issue. Comment text is treated as plain text.
+        Smartling will save the text as provided, and will not attempt to render
+        this text with any special formatting in its UIs. It will not be
+        rendered as HTML or markdown. If you're using the Issues API, escape the
+        text as needed before attempting to render it. Maximum length is 4000
+        characters.
+      tags:
+        - Issues
+      operationId: addIssueComment
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        commentText: comment text
+                        createdByUserUid: 661801f19693
+                        createdDate: '2015-12-22T12:34:49Z'
+                        issueCommentUid: a75fea779bbb
+              schema:
+                $ref: '#/components/schemas/IssueCommentAddResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssueCommentJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/comments
+  edit_issue_comment:
+    post:
+      summary: Edit comment text
+      description: >-
+        Replaces the text of an issue with new text.
+
+
+        **Note**: Only the author of an issue can perform this action. The
+        `commentTextModifiedDate` property of an issue object shows when it was
+        last updated.
+
+
+        Comment text is treated as plain text. Smartling will save the text as
+        provided and will not attempt to render this text with any special
+        formatting in its UIs. It will not be rendered as HTML or markdown. If
+        you're using the Issues API, escape the text as needed before attempting
+        to render it. Maximum length is 4000 characters.
+      tags:
+        - Issues
+      operationId: updateIssueComment
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue commment.
+          in: path
+          name: issueCommentUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        commentText: comment text
+                        commentTextModifiedDate: '2016-12-22T12:34:49Z'
+                        createdByUserUid: 661801f19693
+                        createdDate: '2015-12-22T12:34:49Z'
+                        issueCommentUid: a75fea779bbb
+              schema:
+                $ref: '#/components/schemas/IssueCommentEditResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssueCommentJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/comments/$issueCommentUid
+    get:
+      summary: Get comment details
+      description: >-
+        Returns detailed information on a single issue comment.
+
+
+        **Note**: The `createdByUserUid` value is not currently usable for
+        identifying the users who created comments. In the future, a People API
+        will be exposed for looking up user details.
+      tags:
+        - Issues
+      operationId: getIssueCommentDetails
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue comment.
+          in: path
+          name: issueCommentUid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        commentText: test comment
+                        createdByUserUid: 661801f19693
+                        createdDate: '2015-12-22T11:54:27Z'
+                        issueCommentUid: ac5211a26eca
+              schema:
+                $ref: '#/components/schemas/IssueCommentGetResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/comments/$issueCommentUid
+    delete:
+      summary: Delete comment
+      description: >-
+        Delete comment.
+
+
+        **Note**: The author of the issue comment, account owner and project manager can perform this action.
+      tags:
+        - Issues
+      operationId: deleteIssueComment
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue commment.
+          in: path
+          name: issueCommentUid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+              schema:
+                $ref: '#/components/schemas/IssueCommentDeleteResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/comments/$issueCommentUid
+
+
+components:
+  schemas:
+    CommentRequest:
+      properties:
+        commentText:
+          description: Text of the comment you want to make.
+          example: 'Hey, are you sure this is what you want?'
+          type: string
+      required:
+        - commentText
+      type: object
+    IssueCommentAddResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    commentText:
+                      description: Issue comment text
+                      type: string
+                    commentTextModifiedDate:
+                      description: Issue comment modification date
+                      type: string
+                    createdByUserUid:
+                      description: User identifier who added comment
+                      type: string
+                    createdDate:
+                      description: Issue comment creation date
+                      type: string
+                    issueCommentUid:
+                      description: Issue comment identifier
+                      type: string
+                  type: object
+              type: object
+    IssueCommentsGetResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          commentText:
+                            description: Issue comment text
+                            type: string
+                          commentTextModifiedDate:
+                            description: Issue comment modification date
+                            type: string
+                          createdByUserUid:
+                            description: User identifier who added comment
+                            type: string
+                          createdDate:
+                            description: Issue comment creation date
+                            type: string
+                          issueCommentUid:
+                            description: Issue comment identifier
+                            type: string
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object
+    IssueCommentEditResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    commentText:
+                      description: Issue comment text
+                      type: string
+                    commentTextModifiedDate:
+                      description: Issue comment modification date
+                      type: string
+                    createdByUserUid:
+                      description: User identifier who added comment
+                      type: string
+                    createdDate:
+                      description: Issue comment creation date
+                      type: string
+                    issueCommentUid:
+                      description: Issue comment identifier
+                      type: string
+                  type: object
+              type: object
+    IssueCommentGetResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    commentText:
+                      description: Issue comment text
+                      type: string
+                    commentTextModifiedDate:
+                      description: Issue comment modification date
+                      type: string
+                    createdByUserUid:
+                      description: User identifier who added comment
+                      type: string
+                    createdDate:
+                      description: Issue comment creation date
+                      type: string
+                    issueCommentUid:
+                      description: Issue comment identifier
+                      type: string
+                  type: object
+              type: object
+    IssueCommentDeleteResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
