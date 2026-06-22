@@ -42,18 +42,13 @@ x-paths:
       operationId: addStringsToProject
 
       parameters:
-      - in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
+      - $ref: '#/components/parameters/projectUid'
       requestBody:
         content:
           application/json:
             schema:
               properties:
-                strings (Required):
+                strings:
                   items:
                     properties:
                       stringText:
@@ -87,7 +82,7 @@ x-paths:
                           string and its translations.  Not specifying or
                           setting to 'null' implies no maxLength and on update
                           will remove any existing maxLegnth.
-                        type: number
+                        type: integer
                       format:
                         description: >-
                           Sets whether or not the string should be parsed as
@@ -108,6 +103,7 @@ x-paths:
                     - stringText
                     type: object
                   minItems: 1
+                  maxItems: 100
                   type: array
                 placeholderFormat:
                   description: >-
@@ -136,6 +132,35 @@ x-paths:
                     _smartling.strings-api.default.namespace_. A _NULL_ value is
                     permitted.
                   type: string
+                uri:
+                  description: >-
+                    Virtual file URI to associate with these strings.
+                    Defaults to `/Strings` when not provided.
+                  type: string
+                authorization:
+                  description: >-
+                    When provided, simultaneously authorizes the created strings
+                    into translation workflows.
+                  type: object
+                  properties:
+                    localeWorkflows:
+                      description: Locale and workflow pairs to authorize the strings into.
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - targetLocaleId
+                          - workflowUid
+                        properties:
+                          targetLocaleId:
+                            type: string
+                            description: Target locale identifier.
+                          workflowUid:
+                            type: string
+                            description: Workflow unique identifier.
+                    translationJobUid:
+                      type: string
+                      description: UID of an existing translation job to add the strings to.
               type: object
               required:
                 - strings
@@ -205,12 +230,7 @@ x-paths:
       operationId: getAddStringsToProjectRequestStatus
 
       parameters:
-      - in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
+      - $ref: '#/components/parameters/projectUid'
       - in: path
         name: processUid
         required: true
@@ -267,12 +287,7 @@ x-paths:
       - Strings
       operationId: getAllSourceStringsByProject
       parameters:
-      - in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
+      - $ref: '#/components/parameters/projectUid'
       - description: Hashcodes for each string you want to get source strings for.
         in: query
         name: hashcodes
@@ -291,12 +306,13 @@ x-paths:
         in: query
         name: limit
         schema:
-          type: number
+          type: integer
       - description: Pagination setting. Default is 0.
         in: query
         name: offset
         schema:
-          type: number
+          type: integer
+      - $ref: '#/components/parameters/showPlaceholderValues'
       responses:
         '200':
           content:
@@ -347,12 +363,7 @@ x-paths:
       - Strings
       operationId: getAllSourceStringsByProjectPost
       parameters:
-      - in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
+      - $ref: '#/components/parameters/projectUid'
       requestBody:
         required: true
         content:
@@ -372,10 +383,12 @@ x-paths:
                   description: >-
                     By default, responses will be limited to 500 per request. This is
                     also the maximum allowed value.
-                  type: number
+                  type: integer
                 offset:
                   description: Pagination setting. Default is 0.
-                  type: number
+                  type: integer
+                showPlaceholderValues:
+                  $ref: '#/components/parameters/showPlaceholderValues'
       responses:
         '200':
           content:
@@ -431,12 +444,7 @@ x-paths:
       - Strings
       operationId: getAllTranslationsByProject
       parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/projectUid'
       - description: Hashcodes for each string you want to get translations for.
         in: query
         name: hashcodes
@@ -468,16 +476,19 @@ x-paths:
           type: string
       - description: >-
           Pagination setting. By default, responses will be limited to 500 per
-          request. This is also the maximum allowed value.
+          request. Maximum allowed value is 10,000.
         in: query
         name: limit
         schema:
-          type: number
+          type: integer
+          maximum: 10000
+          default: 500
       - description: Pagination setting. Default is 0.
         in: query
         name: offset
         schema:
-          type: number
+          type: integer
+      - $ref: '#/components/parameters/showPlaceholderValues'
       responses:
         '200':
           content:
@@ -531,12 +542,7 @@ x-paths:
       - Strings
       operationId: getAllTranslationsByProjectPost
       parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/projectUid'
       requestBody:
         required: true
         content:
@@ -570,10 +576,14 @@ x-paths:
                   description: >-
                     Pagination setting. By default, responses will be limited to 500 per
                     request. This is also the maximum allowed value.
-                  type: number
+                  type: integer
+                  maximum: 500
+                  default: 500
                 offset:
                   description: Pagination setting. Default is 0.
-                  type: number
+                  type: integer
+                showPlaceholderValues:
+                  $ref: '#/components/parameters/showPlaceholderValues'
       responses:
         '200':
           content:
@@ -595,3 +605,24 @@ x-paths:
           curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d
           '{"targetLocaleId": "es", "fileUri": "$smartlingFileUri"}'
           https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/translations
+
+components:
+  parameters:
+    projectUid:
+      name: projectUid
+      in: path
+      required: true
+      description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+      schema:
+        type: string
+        format: uuid
+    showPlaceholderValues:
+      name: showPlaceholderValues
+      in: query
+      description: >-
+        When `true` (default), placeholder tokens are resolved to display
+        values. When `false`, internal placeholder format (`{0}`, `{1}`, etc.)
+        is preserved.
+      schema:
+        type: boolean
+        default: true
