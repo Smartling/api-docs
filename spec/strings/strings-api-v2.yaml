@@ -12,11 +12,6 @@ x-paths:
         will return an error. Each string has a character limit of 10,000.
 
 
-        **Note**: You cannot authorize a string via API. Once you have created
-        the strings, they will need to be authorized by a content owner in the
-        Smartling Dashboard.
-
-
         Smartling creates a unique hashcode for each string based on the parsed
         string text and any variant or namespace metadata provided. If you
         upload a string with the same text, variant and namespace, and therefore
@@ -42,7 +37,7 @@ x-paths:
       operationId: addStringsToProject
 
       parameters:
-      - $ref: '#/components/parameters/projectUid'
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       requestBody:
         content:
           application/json:
@@ -136,7 +131,8 @@ x-paths:
                   description: >-
                     Virtual file URI to associate with these strings.
                     Defaults to `/Strings` when not provided.
-                  type: string
+                  allOf:
+                    - $ref: '../api_common.yaml#/components/schemas/FileUri'
                 authorization:
                   description: >-
                     When provided, simultaneously authorizes the created strings
@@ -153,14 +149,11 @@ x-paths:
                           - workflowUid
                         properties:
                           targetLocaleId:
-                            type: string
-                            description: Target locale identifier.
+                            $ref: '../api_common.yaml#/components/schemas/LocaleId'
                           workflowUid:
-                            type: string
-                            description: Workflow unique identifier.
+                            $ref: '../api_common.yaml#/components/schemas/WorkflowUid'
                     translationJobUid:
-                      type: string
-                      description: UID of an existing translation job to add the strings to.
+                      $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
               type: object
               required:
                 - strings
@@ -230,7 +223,7 @@ x-paths:
       operationId: getAddStringsToProjectRequestStatus
 
       parameters:
-      - $ref: '#/components/parameters/projectUid'
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       - in: path
         name: processUid
         required: true
@@ -287,19 +280,19 @@ x-paths:
       - Strings
       operationId: getAllSourceStringsByProject
       parameters:
-      - $ref: '#/components/parameters/projectUid'
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       - description: Hashcodes for each string you want to get source strings for.
         in: query
         name: hashcodes
         schema:
           items:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/Hashcode'
           type: array
       - description: URI of a file you want to get strings for.
         in: query
         name: fileUri
         schema:
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/FileUri'
       - description: >-
           By default, responses will be limited to 500 per request. This is
           also the maximum allowed value.
@@ -307,11 +300,7 @@ x-paths:
         name: limit
         schema:
           type: integer
-      - description: Pagination setting. Default is 0.
-        in: query
-        name: offset
-        schema:
-          type: integer
+      - $ref: '../api_common.yaml#/components/parameters/offset'
       - $ref: '#/components/parameters/showPlaceholderValues'
       responses:
         '200':
@@ -363,7 +352,7 @@ x-paths:
       - Strings
       operationId: getAllSourceStringsByProjectPost
       parameters:
-      - $ref: '#/components/parameters/projectUid'
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       requestBody:
         required: true
         content:
@@ -375,10 +364,9 @@ x-paths:
                   description: Hashcodes for each string you want to get source strings for.
                   type: array
                   items:
-                    type: string
+                    $ref: '../api_common.yaml#/components/schemas/Hashcode'
                 fileUri:
-                  description: URI of a file you want to get strings for.
-                  type: string
+                  $ref: '../api_common.yaml#/components/schemas/FileUri'
                 limit:
                   description: >-
                     By default, responses will be limited to 500 per request. This is
@@ -388,7 +376,7 @@ x-paths:
                   description: Pagination setting. Default is 0.
                   type: integer
                 showPlaceholderValues:
-                  $ref: '#/components/parameters/showPlaceholderValues'
+                  $ref: '#/components/schemas/ShowPlaceholderValues'
       responses:
         '200':
           content:
@@ -444,20 +432,20 @@ x-paths:
       - Strings
       operationId: getAllTranslationsByProject
       parameters:
-      - $ref: '#/components/parameters/projectUid'
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       - description: Hashcodes for each string you want to get translations for.
         in: query
         name: hashcodes
         schema:
           items:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/Hashcode'
           type: array
       - description: Smartling ID for the language you want to get translations for.
         in: query
         name: targetLocaleId
         required: true
         schema:
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
       - description: >-
           Sets the types of translations you want returned. `published` will
           only return translations that have completed their workflows and
@@ -473,21 +461,15 @@ x-paths:
         in: query
         name: fileUri
         schema:
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/FileUri'
       - description: >-
           Pagination setting. By default, responses will be limited to 500 per
           request. Maximum allowed value is 10,000.
         in: query
         name: limit
         schema:
-          type: integer
-          maximum: 10000
-          default: 500
-      - description: Pagination setting. Default is 0.
-        in: query
-        name: offset
-        schema:
-          type: integer
+          $ref: '#/components/schemas/TranslationsLimit'
+      - $ref: '../api_common.yaml#/components/parameters/offset'
       - $ref: '#/components/parameters/showPlaceholderValues'
       responses:
         '200':
@@ -542,7 +524,7 @@ x-paths:
       - Strings
       operationId: getAllTranslationsByProjectPost
       parameters:
-      - $ref: '#/components/parameters/projectUid'
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       requestBody:
         required: true
         content:
@@ -556,10 +538,9 @@ x-paths:
                   description: Hashcodes for each string you want to get translations for.
                   type: array
                   items:
-                    type: string
+                    $ref: '../api_common.yaml#/components/schemas/Hashcode'
                 targetLocaleId:
-                  description: Smartling ID for the language you want to get translations for.
-                  type: string
+                  $ref: '../api_common.yaml#/components/schemas/LocaleId'
                 retrievalType:
                   description: >-
                     Sets the types of translations you want returned. `published` will
@@ -570,20 +551,14 @@ x-paths:
                     - pending
                     - published
                 fileUri:
-                  description: URI of a file you want to get translations for.
-                  type: string
+                  $ref: '../api_common.yaml#/components/schemas/FileUri'
                 limit:
-                  description: >-
-                    Pagination setting. By default, responses will be limited to 500 per
-                    request. This is also the maximum allowed value.
-                  type: integer
-                  maximum: 500
-                  default: 500
+                  $ref: '#/components/schemas/TranslationsLimit'
                 offset:
                   description: Pagination setting. Default is 0.
                   type: integer
                 showPlaceholderValues:
-                  $ref: '#/components/parameters/showPlaceholderValues'
+                  $ref: '#/components/schemas/ShowPlaceholderValues'
       responses:
         '200':
           content:
@@ -607,22 +582,24 @@ x-paths:
           https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/translations
 
 components:
-  parameters:
-    projectUid:
-      name: projectUid
-      in: path
-      required: true
-      description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-      schema:
-        type: string
-        format: uuid
-    showPlaceholderValues:
-      name: showPlaceholderValues
-      in: query
+  schemas:
+    TranslationsLimit:
+      description: >-
+        Pagination setting. By default, responses will be limited to 500 per
+        request. Maximum allowed value is 10,000.
+      type: integer
+      maximum: 10000
+      default: 500
+    ShowPlaceholderValues:
       description: >-
         When `true` (default), placeholder tokens are resolved to display
         values. When `false`, internal placeholder format (`{0}`, `{1}`, etc.)
         is preserved.
+      type: boolean
+      default: true
+  parameters:
+    showPlaceholderValues:
+      name: showPlaceholderValues
+      in: query
       schema:
-        type: boolean
-        default: true
+        $ref: '#/components/schemas/ShowPlaceholderValues'
