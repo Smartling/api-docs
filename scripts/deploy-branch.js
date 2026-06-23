@@ -23,6 +23,7 @@ if (branch && branch !== 'gh-pages') {
   cp('-R', 'spec/connectors_import_v3', specFolder);
   cp('-R', 'spec/glossary_v3', specFolder);
   cp('-R', 'spec/webhooks_api', specFolder);
+  cp('-R', 'spec/strings', specFolder);
   cp('-R', 'spec/api_common.yaml', specFolder);
 
   exec('deploy-to-gh-pages --update .tmp');
