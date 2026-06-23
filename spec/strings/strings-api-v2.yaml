@@ -597,6 +597,261 @@ components:
         is preserved.
       type: boolean
       default: true
+    CreateStringResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/CreatedString'
+                      type: array
+                    processUid:
+                      description: >-
+                        If the request takes longer than 60 seconds to process, a
+                        `202` response will be returned, indicating the request has
+                        not failed, but is not yet complete. Use the processUid
+                        value to check the status of the request using the Check
+                        Create String Status request.
+                      type: string
+                    stringCount:
+                      description: Total number of strings captured as a result of the request.
+                      type: number
+                    totalCount:
+                      type: number
+                    wordCount:
+                      description: Total number of words captured as a result of the request.
+                      type: number
+                  type: object
+              type: object
+    CreateStringStatusResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    createdDate:
+                      description: Total number of strings captured as a result of the request.
+                      type: string
+                    modifiedDate:
+                      description: >-
+                        If the request takes longer than 60 seconds to process, a
+                        `202` response will be returned, indicating the request has
+                        not failed, but is not yet complete. Use the processUid
+                        value to check the status of the request using the Check
+                        Create String Status request.
+                      type: string
+                    processState:
+                      description: State of the request
+                      enum:
+                        - OPEN
+                        - CLOSED
+                        - FAILED
+                      type: string
+                    processStatistics:
+                      description: Information on the created or updated string
+                      properties:
+                        errored:
+                          description: strings that had errors
+                          type: string
+                        processed:
+                          description: strings processed
+                          type: string
+                        requested:
+                          description: strings requested
+                          type: string
+                        skipped:
+                          description: strings skipped
+                          type: string
+                      type: object
+                    processUid:
+                      description: Unique identifer for a create string request.
+                      type: string
+                  type: object
+              type: object
+    CreatedString:
+      description: Information on the created or updated string
+      properties:
+        hashcode:
+          description: The generated unique idenitfier for this created or updated string.
+          type: string
+        overWritten:
+          description: Idenitfies if the string was already in the system.
+          type: string
+        parsedStringText:
+          description: >-
+            The text for this string used to define its uniqueness in the
+            Smartling system.  This is after placeholders have been processed
+            and escaping normalization has been applied.
+          type: string
+        stringText:
+          description: The text for this string
+          type: string
+        variant:
+          description: String variant
+          type: string
+      type: object
+    StringInfo:
+      description: Information on string
+      properties:
+        hashcode:
+          description: The generated unique idenitfier for this created or updated string.
+          type: string
+        keys:
+          description: >-
+            If this string is associated with one or more resource files this is
+            a list of the associated resource keys.
+          items:
+            properties:
+              fileUri:
+                description: resource key
+                type: string
+              key:
+                description: fileUri of the key
+                type: string
+            type: object
+          type: array
+        parsedStringText:
+          description: >-
+            The text for this string used to define its uniqueness in the
+            Smartling system.  This is after placeholders have been processed
+            and escaping normalization has been applied.
+          type: string
+        stringText:
+          description: The text for this string
+          type: string
+        stringVariant:
+          description: String variant
+          type: string
+        maxLength:
+          description: Maximum character length
+          type: number
+        stringInstructions:
+          description: >-
+            String instructions that were added to the string in the Dashboard.
+          items:
+            description: The text of the instruction.
+            type: string
+          type: array
+        contentFileStringInstructions:
+          description: >-
+            String instructions that were included in the uploaded file if any.
+          items:
+            properties:
+              fileUri:
+                description: URI of the file that contained the instruction.
+                type: string
+              contentFileStringInstruction:
+                description: The text of the instruction.
+                type: string
+            type: object
+          type: array
+      type: object
+    StringResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/StringInfo'
+                      type: array
+                    totalCount:
+                      type: number
+                  type: object
+              type: object
+    Translation:
+      description: Information on a translation
+      properties:
+        hashcode:
+          description: The generated unique idenitfier for this created or updated string.
+          type: string
+        keys:
+          description: >-
+            If this string is associated with one or more resource files this is
+            a list of the associated resource keys.
+          items:
+            properties:
+              fileUri:
+                description: resource key
+                type: string
+              key:
+                description: fileUri of the key
+                type: string
+            type: object
+          type: array
+        parsedStringText:
+          description: >-
+            The text for this string used to define its uniqueness in the
+            Smartling system.  This is after placeholders have been processed
+            and escaping normalization has been applied.
+          type: string
+        stringText:
+          description: The text for this string.
+          type: string
+        targetLocaleId:
+          description: Locale ID of this translation
+          type: string
+        translations:
+          items:
+            properties:
+              modifiedDate:
+                description: When this translation was last modified.
+                type: string
+              pluralForm:
+                description: >-
+                  Pural form of the translation.  `null` if this translation is
+                  not a plural.
+                type: string
+              translation:
+                description: Translation text
+                type: string
+            type: object
+          type: array
+        stringVariant:
+          description: String variant
+          type: string
+        workflowStepUid:
+          description: Current workflow step for this translation
+          format: uuid
+          type: string
+      type: object
+    TranslationResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/Translation'
+                      type: array
+                    totalCount:
+                      type: number
+                  type: object
+              type: object
   parameters:
     showPlaceholderValues:
       name: showPlaceholderValues
