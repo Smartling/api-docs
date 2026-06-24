@@ -1,0 +1,356 @@
+components:
+  parameters:
+      accountUid:
+        name: accountUid
+        in: path
+        type: string
+        required: true
+        description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+
+      projectId:
+        name: projectId
+        in: path
+        required: true
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        schema:
+          type: string
+          pattern: '^[a-z0-9]{9}$'
+        examples:
+          typical:
+            summary: Typical project ID
+            value: abcd12345
+
+      localeId:
+        name: localeId
+        in: path
+        required: true
+        description: |
+          Locale identifier. Either a 2-letter language code (`en`) or a
+          language-region pair (`en-US`). The language part is always lowercase;
+          the region part is always uppercase.
+        schema:
+          $ref: '#/components/schemas/LocaleId'
+        examples:
+          language_only:
+            summary: Language code only
+            value: en
+          language_region:
+            summary: Language and region
+            value: fr-FR
+
+      offset:
+        name: offset
+        in: query
+        description: Number of items to skip. Default is 0.
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+
+      limit:
+        name: limit
+        in: query
+        description: Maximum number of items to return per page.
+        schema:
+          type: integer
+          minimum: 1
+
+  requestBodies:
+
+      sourceLocaleId:
+        type: object
+        properties:
+          sourceLocaleId:
+            type: string
+            description: The locale identifier for the source locale of the project. This indicates the base locale for which content should be uploaded to the project.
+            example: "en-US"
+
+      hashcode:
+        type: object
+        properties:
+          hashcode:
+            type: string
+            description: string hashcode
+            example: "7191152182c69d9b72069ac1290fe24b"
+
+  schemas:
+
+    DateTime:
+      type: string
+      format: date-time
+      description: ISO 8601 UTC timestamp.
+      examples:
+        - "2026-01-15T10:00:00Z"
+
+    FileUri:
+      type: string
+      description: URI path of a source file within a Smartling project.
+      examples:
+        - /content/en/home.json
+
+    LocaleId:
+      type: string
+      pattern: '^[a-z]{2}(-[A-Z]{2})?$'
+      description: |
+        Locale identifier. Either a 2-letter language code (`en`) or a
+        language-region pair (`en-US`). The language part is always lowercase;
+        the region part is always uppercase.
+      example: fr-FR
+
+    Hashcode:
+      type: string
+      description: MD5 hash digest — 32 lowercase hexadecimal characters.
+      pattern: '^[a-f0-9]{32}$'
+      examples:
+        - d41d8cd98f00b204e9800998ecf8427e
+
+    TranslationJobUid:
+      type: string
+      description: Translation job unique identifier — 12 lowercase alphanumeric characters.
+      pattern: '^[a-z0-9]{12}$'
+      examples:
+        - j45v1uvsi3tx
+
+    WorkflowUid:
+      type: string
+      description: Workflow unique identifier — 12 lowercase alphanumeric characters.
+      pattern: '^[a-z0-9]{12}$'
+      examples:
+        - 5449a8595ae4
+
+    WorkflowStepUid:
+      type: string
+      description: Workflow step unique identifier — 12 lowercase alphanumeric characters.
+      pattern: '^[a-z0-9]{12}$'
+      examples:
+        - 7564fc097a85
+
+    SuccessResponse:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          enum:
+            - SUCCESS
+          description: Indicates whether the response was successful or what error has occurred.
+
+    EmptyResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  description: Always null.
+                  type: object
+              type: object
+
+    Error:
+      type: object
+      properties:
+        key:
+          example: general_error
+          type: string
+        message:
+          example: Unexpected server error
+          type: string
+        details:
+          example: {}
+          type: object
+      required:
+        - key
+        - message
+
+    Error400Response:
+      type: object
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - VALIDATION_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+
+    Error401Response:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - AUTHENTICATION_ERROR
+                - AUTHORIZATION_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+      type: object
+    Error404Response:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - NOT_FOUND_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+      type: object
+    Error423Response:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - RESOURCE_LOCKED
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+      type: object
+    Error429Response:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - MAX_OPERATIONS_LIMIT_EXCEEDED
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+      type: object
+    Error500Response:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occured.
+              enum:
+                - GENERAL_ERROR
+                - MAINTENANCE_MODE_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+      type: object
+  responses:
+    Error400ResponseDefinition:
+      description: Provided request parameters are invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: VALIDATION_ERROR
+                  errors:
+                    key: unknown.field
+                    message: >-
+                      The field unknown.parameter was not expected. Please
+                      consult the documentation to verify the fields you are
+                      submitting.
+                    details: unknown.parameter
+
+    Error401ResponseDefinition:
+      description: Provided credentials are not valid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error401Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: AUTHENTICATION_ERROR
+                  errors:
+                    details: {}
+                    key: invalid_token
+                    message: Invalid token
+
+    Error429ResponseDefinition:
+      description: Too many simultaneous API requests.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error429Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: MAX_OPERATIONS_LIMIT_EXCEEDED
+                  errors:
+                    key: too.many.requests
+                    message: >-
+                      The limit of 10 concurrent Smartling file API
+                      operations for this project has been exceeded.
+
+    Error500ResponseDefinition:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500Response'

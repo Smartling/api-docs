@@ -1,0 +1,615 @@
+components:
+  parameters:
+    accountUidPathParameter:
+      name: accountUid
+      in: path
+      schema:
+        type: string
+      required: true
+      description: A unique account identifier. This can be found in the Smartling Dashboard under Account Settings - API.
+    glossaryUidPathParameter:
+      name: glossaryUid
+      in: path
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Unique identifier of the glossary.
+    entryUidPathParameter:
+      name: entryUid
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique identifier of the glossary entry.
+
+    blocklistUidPathParameter:
+      name: blocklistUid
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique identifier of the blocklist.
+
+    termUidPathParameter:
+      name: termUid
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique identifier of the blocklist term.
+
+  schemas:
+    GetGlossaryEntriesByFilterCommandPTO:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Keyword search for translation of variants.
+          example: 'P&G term'
+        localeIds:
+          type: array
+          description: Locales list for translation filtering.
+          items:
+            type: string
+          example:
+            [ "uk-UA","en","en-US" ]
+        entryUids:
+          type: array
+          description: Glossary entry uids filter.
+          uniqueItems: true
+          items:
+            type: string
+          example:
+            ["16ed66cc-accc-4bb5-9822-bc84e93429f8", "69dae398-96c2-45f6-9f0d-91470c3464bd"]
+        entryState:
+          required: true
+          type: string
+          description: >-
+            State of the glossary entry.
+            ACTIVE will be used in case if omitted.
+          enum:
+            - ACTIVE
+            - ARCHIVED
+            - BOTH
+          example: ACTIVE
+        missingTranslationLocaleId:
+          type: string
+          description: Additional locale id filter, which allow to find missing/empty translations.
+          example: uk-UA
+        presentTranslationLocaleId:
+          type: string
+          description: Additional locale id filter, which allow to find only present  translations.
+          example: uk-UA
+        dntLocaleId:
+          type: string
+          description: Additional locale id filter, which allow to find only DNT-marked translations.
+          example: uk-UA
+        returnFallbackTranslations:
+          type: boolean
+          description: For all translations, if they are missing, appropriate fallback locales will be used.
+          example: false
+        labels:
+          description: Labels filter.
+          $ref: '#/components/schemas/FilterByLabelsPTO'
+        dntTermSet:
+          type: boolean
+          description: Return entries where dnt term is set.
+          example: false
+        created:
+          description: Created date filter.
+          $ref: '#/components/schemas/AuditionDateCommandPTO'
+        lastModified:
+          description: Modified date filter.
+          $ref: '#/components/schemas/AuditionDateCommandPTO'
+        createdBy:
+          description: Created by user filter.
+          $ref: '#/components/schemas/AuditorCommandPTO'
+        lastModifiedBy:
+          description: modified by user filter
+          $ref: '#/components/schemas/AuditorCommandPTO'
+        paging:
+          description: Paging command.
+          $ref: '#/components/schemas/PaginationCommandPTO'
+        sorting:
+          description: Sorting command.
+          $ref: '#/components/schemas/GlossaryEntriesSortCommandPTO'
+      description: Glossary entries filter command.
+    FilterByLabelsPTO:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/NoLabelsFilter'
+        - $ref: '#/components/schemas/AnyLabelsFilter'
+        - $ref: '#/components/schemas/AssociatedLabelsFilter'
+      discriminator:
+        propertyName: type
+        mapping:
+          empty: '#/components/schemas/NoLabelsFilter'
+          any: '#/components/schemas/AnyLabelsFilter'
+          associated: '#/components/schemas/AssociatedLabelsFilter'
+      description: >-
+        Labels filter on glossary entry level. There are 3 subTypes :
+         - empty -  allow to search for entries where no labels are assigned, as example - '{"type":"empty"}';
+         - any - allow to search for entries where ant labels are assigned, as example - '{"type":"any"}';
+         - associated - allow to search for entries where pre-selected labels are assigned, as example - '{"type":"associated", "labelUids":[""16ed66cc-accc-4bb5-9822-bc84e93429f8""]}'.
+    NoLabelsFilter:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          example: empty
+      description: >-
+        No labels filter / labels are missing filter. Use 'empty' as type property value.
+    AnyLabelsFilter:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          example: any
+      description: >-
+        Any labels filter / labels - present filter. Use 'any' as type property value.
+    AssociatedLabelsFilter:
+      type: object
+      required:
+        - type
+        - labelUids
+      properties:
+        type:
+          type: string
+          example: associated
+        labelUids:
+          type: array
+          description: Label uuids collection for the filtering.
+          items:
+            type: string
+            format: uuid
+          example : ["16ed66cc-accc-4bb5-9822-bc84e93429f9","69dae398-96c2-45f6-9f0d-91470c3464b6"]
+      description: >-
+        Associated labels filter. Use 'associated' as type property value.
+    AuditionDateCommandPTO:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/AfterDateAuditionDateFilter'
+        - $ref: '#/components/schemas/BeforeDateAuditionDateFilter'
+        - $ref: '#/components/schemas/DateRangeAuditionDateFilter'
+        - $ref: '#/components/schemas/ExactDateAuditionDateFilter'
+      discriminator:
+        propertyName: type
+        mapping:
+          after: '#/components/schemas/AfterDateAuditionDateFilter'
+          before: '#/components/schemas/BeforeDateAuditionDateFilter'
+          date_range: '#/components/schemas/DateRangeAuditionDateFilter'
+          exact: '#/components/schemas/ExactDateAuditionDateFilter'
+      description: >-
+        Audition date-time filter.
+        Possible values :
+         - after - after date-time filter, as example :  '{ "type": "after", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }';
+         - before - before date-time filter, as example :  '{ "type": "before", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }';
+         - date_range - date time in-range filter, as example :  '{ "type": "date_range", "level":"ANY", "from":"2023-02-01T11:45:00.000Z", "to":"2023-03-01T11:45:00.000Z" }';
+         - exact - exact date time filter, as example :  '{ "type": "before", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }'.
+    AfterDateAuditionDateFilter:
+      type: object
+      required:
+        - level
+        - date
+        - type
+      properties:
+        level:
+          type: string
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example: ANY
+        date:
+          type: string
+          description: Date-time value.
+          example: '2023-02-01T11:45:00.000Z'
+        type:
+          required: true
+          example: after
+      description: After date filter.
+    BeforeDateAuditionDateFilter:
+      type: object
+      required:
+        - level
+        - date
+        - type
+      properties:
+        level:
+          required: true
+          type: string
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example: ANY
+        date:
+          type: string
+          description: Date-time value.
+          example: '2023-02-01T11:45:00.000Z'
+        type:
+          type: string
+          example: before
+      description: Before date filter.
+    DateRangeAuditionDateFilter:
+      type: object
+      required:
+        - level
+        - from
+        - to
+        - type
+      properties:
+        level:
+          required: true
+          type: string
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example: ANY
+        from:
+          type: string
+          description: From date-time / range start.
+          example: '2023-02-01T11:45:00.000Z'
+        to:
+          type: string
+          description: To date-time / range end.
+          example: '2023-02-11T11:45:00.000Z'
+        type:
+          type: string
+          example: date_range
+      description: Date range filter.
+    ExactDateAuditionDateFilter:
+      type: object
+      required:
+        - level
+        - date
+        - type
+      properties:
+        level:
+          required: true
+          type: string
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example: ANY
+        date:
+          required: true
+          type: string
+          description: Date-time value.
+          example: '2023-02-01T11:45:00.000Z'
+        type:
+          type: string
+          example: exact
+      description: Exact date filter.
+    AuditorCommandPTO:
+      type: object
+      properties:
+        level:
+          required: true
+          type: string
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example: ANY
+        userIds:
+          required: true
+          type: array
+          description: User identifiers.
+          items:
+            type: string
+          example : ["user1","user2"]
+      description: Auditor user filter.
+    PaginationCommandPTO:
+      type: object
+      properties:
+        offset:
+          type: integer
+          description: Amount of items to skipp.
+          example: 0
+        limit:
+          type: integer
+          description: Amount of items to fetch.
+          example: 50
+      description: Pagination options.
+    GlossaryEntriesSortCommandPTO:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Sort field, select one of - term | createdDate | lastModifiedDate.
+          enum:
+            - term
+            - createdDate
+            - lastModifiedDate
+          example: term
+        direction:
+          type: string
+          description: Sort direction.
+          enum:
+            - ASC
+            - DESC
+          example: DESC
+        localeId:
+          type: string
+          description: Locale identifier - for case when 'term' sort field is selected.
+          example: uk-UA
+      description: Sorting options.
+
+    AsyncOperationResponse:
+      type: object
+      properties:
+        operationUid:
+          type: string
+          description: Uid of the async operation.
+
+    SuccessResponse:
+      properties:
+        code:
+          description: >-
+            Indicates whether the response was successful or what error has occurred.
+          enum:
+            - SUCCESS
+          type: string
+      required:
+        - code
+      type: object
+
+    AsyncOperationResponsePTO:
+      allOf:
+        - $ref: "#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/AsyncOperationResponse"
+
+    EmptyResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  description: Always empty.
+                  type: object
+                  example: { }
+              type: object
+    AcceptedResponse:
+      properties:
+        code:
+          description: >-
+            Indicates whether the response was successful or what error has occurred.
+          enum:
+            - ACCEPTED
+          type: string
+      required:
+        - code
+      type: object
+    Error400Response:
+      type: object
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occurred.
+              enum:
+                - VALIDATION_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+    Error401Response:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occurred.
+              enum:
+                - AUTHENTICATION_ERROR
+                - AUTHORIZATION_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+      type: object
+    Error403Response:
+      type: object
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occurred.
+              enum:
+                - ACCESS_DENIED_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+    Error404Response:
+      type: object
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occurred.
+              enum:
+                - NOT_FOUND_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+    Error429Response:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occurred.
+              enum:
+                - MAX_OPERATIONS_LIMIT_EXCEEDED
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+      type: object
+    Error500Response:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occurred.
+              enum:
+                - GENERAL_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+      type: object
+
+  responses:
+    Error400ResponseDefinition:
+      description: Provided request parameters are invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: VALIDATION_ERROR
+                  errors:
+                    key: error.key
+                    message: >-
+                      message that describes the error
+    Error401ResponseDefinition:
+      description: Provided credentials are not valid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error401Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: AUTHENTICATION_ERROR
+                  errors:
+                    details: { }
+                    key: invalid_token
+                    message: Invalid token
+    Error403ResponseDefinition:
+      description: Access denied.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error403Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: ACCESS_DENIED_ERROR
+                  errors:
+                    key: no.access
+                    message: >-
+                      access denied message
+    Error404ResponseDefinition:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: NOT_FOUND_ERROR
+                  errors:
+                    key: not.found
+                    message: >-
+                      message describing not found resource
+    Error429ResponseDefinition:
+      description: Too many simultaneous API requests.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error429Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: MAX_OPERATIONS_LIMIT_EXCEEDED
+                  errors:
+                    key: too.many.requests
+                    message: >-
+                      limitation message
+    Error500ResponseDefinition:
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500Response'

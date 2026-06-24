@@ -1,0 +1,88 @@
+x-paths:
+
+  authorize_for_translation:
+    post:
+      summary: Authorize glossary entries for translations.
+      description: >-
+        Allow to authorize entries for translation. Creates all required strings, authorize, then and add  to the JOB.
+      tags:
+        - Glossary API
+      operationId: authorizeEntriesForTranslation
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizeGlossaryEntriesPTO'
+      responses:
+        '202':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: './g_common.yaml#/components/schemas/AsyncOperationResponsePTO'
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+
+components:
+
+  schemas:
+    AuthorizeGlossaryEntriesPTO:
+      type: object
+      required:
+        - filter
+        - localeWorkflows
+        - projectId
+        - sourceLocale
+      properties:
+        sourceLocale:
+          type: string
+          description: >-
+            Source locale identifier.
+            Basically, source locale of the project, both with localeId of the glossaryEntryTranslations to be authorized for translation.
+        projectId:
+          type: string
+          description: Project id, where authorized content should be placed / where translation job will be created.
+        filter:
+          description: >-
+            Glossary entries filter.
+            Filter for the data ( entries / entry-translations), which should be authorized.
+          $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
+        localeWorkflows:
+          type: array
+          description: Locale / workflow pairs array for the authorization process.
+          items:
+            $ref: "#/components/schemas/LocaleWorkflowPTO"
+    LocaleWorkflowPTO:
+      type: object
+      required:
+        - localeId
+        - workflowUid
+      properties:
+        localeId:
+          type: string
+          description: Locale id.
+          example: en-US
+        workflowUid:
+          type: string
+          description: Workflow uid.
+          example: acd1

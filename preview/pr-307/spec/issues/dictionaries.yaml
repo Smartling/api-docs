@@ -1,0 +1,336 @@
+x-paths:
+
+  dictionary_issues_states:
+    get:
+      summary: Get issue states
+      description: >-
+        This request returns all current allowed states. Currently, the only
+        allowed issue states are `OPENED` and `RESOLVED`. However, in the
+        future, Smartling may introduce additional states.
+      tags:
+        - Issues
+      operationId: getAllIssuesStates
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - description: Opened
+                            issueStateCode: OPENED
+                          - description: Resolved
+                            issueStateCode: RESOLVED
+                        totalCount: 2
+              schema:
+                $ref: '#/components/schemas/IssueStatesResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/issues-api/v2/dictionary/issue-states
+
+  dictionary_severity_levels:
+    get:
+      summary: Get issue severity levels
+      description: Returns a list of issue severity levels.
+      tags:
+        - Issues
+      operationId: getAllIssueSeverityLevels
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueSeverityLevelsResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - description: Low
+                            issueSeverityLevelCode: LOW
+                          - description: Medium
+                            issueSeverityLevelCode: MEDIUM
+                          - description: High
+                            issueSeverityLevelCode: HIGH
+                        totalCount: 3
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/issues-api/v2/dictionary/issue-severity-levels
+
+  account_issue_types:
+    get:
+      summary: Get account issue types
+      description: >-
+        This request returns all current issue types for a specific account.
+        Smartling may occasionally add or change the list of allowed issue
+        types.
+      tags:
+        - Issues
+      operationId: getIssueTypesByAccount
+
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountIssueTypesResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - description: Source
+                            issueTypeCode: SOURCE
+                            subTypes:
+                              - description: Clarification
+                                issueSubTypeCode: CLARIFICATION
+                              - description: Misspelling
+                                issueSubTypeCode: MISSPELLING
+                          - description: Translation
+                            issueTypeCode: TRANSLATION
+                            subTypes:
+                              - description: Poor translation
+                                issueSubTypeCode: POOR_TRANSLATION
+                              - description: Doesn't fit the space
+                                issueSubTypeCode: DOES_NOT_FIT_SPACE
+                              - description: Placeholder issue
+                                issueSubTypeCode: PLACEHOLDER_ISSUE
+                              - description: Review translation
+                                issueSubTypeCode: REVIEW_TRANSLATION
+                              - description: MT Error
+                                issueSubTypeCode: MT_ERROR
+                        totalCount: 2
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/issue-types
+
+
+  issue_types:
+    get:
+      summary: Get issue types
+      description: >-
+        This is deprecated. Instead, use this endpoint:
+        /issues-api/v2/accounts/{accountUid}/issue-types. This request returns
+        all current issue types. Smartling may occasionally add or change the
+        list of allowed issue types.
+      deprecated: true
+      tags:
+        - Issues
+      operationId: getAllIssueTypes
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - description: Source
+                            issueTypeCode: SOURCE
+                            subTypes:
+                              - description: Clarification
+                                issueSubTypeCode: CLARIFICATION
+                              - description: Misspelling
+                                issueSubTypeCode: MISSPELLING
+                          - description: Translation
+                            issueTypeCode: TRANSLATION
+                            subTypes:
+                              - description: Poor Translation
+                                issueSubTypeCode: POOR_TRANSLATION
+                              - description: Doesn't Fit Space
+                                issueSubTypeCode: DOES_NOT_FIT_SPACE
+                              - description: Placeholder Issue
+                                issueSubTypeCode: PLACEHOLDER_ISSUE
+                              - description: Review translation
+                                issueSubTypeCode: REVIEW_TRANSLATION
+                              - description: MT Error
+                                issueSubTypeCode: MT_ERROR
+                        totalCount: 2
+              schema:
+                $ref: '#/components/schemas/IssueTypesResponse'
+          description: OK
+
+components:
+  schemas:
+    IssueStatesResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          description:
+                            description: Issue State description
+                            type: string
+                          issueStateCode:
+                            description: Issue State identifier
+                            enum:
+                              - OPENED
+                              - RESOLVED
+                            type: string
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object
+    IssueSeverityLevelsResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          description:
+                            description: Issue Severity Level description
+                            type: string
+                          issueSeverityLevelCode:
+                            description: Issue Severity Level identifier
+                            enum:
+                              - LOW
+                              - MEDIUM
+                              - HIGH
+                            type: string
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object
+    AccountIssueTypesResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          description:
+                            description: Issue Type description
+                            type: string
+                          issueTypeCode:
+                            description: Issue Type identifier
+                            enum:
+                              - SOURCE
+                              - TRANSLATION
+                            type: string
+                          subTypes:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                description:
+                                  type: string
+                                  description: Issue subtype description
+                                  example: "Clarification"
+                                issueSubTypeCode:
+                                  type: string
+                                  description: Issue subtype identifier
+                                  example: "CLARIFICATION"
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object
+    IssueTypesResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          description:
+                            description: Issue type description
+                            type: string
+                          issueTypeCode:
+                            description: Issue type identifier
+                            enum:
+                              - SOURCE
+                              - TRANSLATION
+                            type: string
+                          subTypes:
+                            properties:
+                              description:
+                                description: Issue subtype description
+                                type: string
+                              issueSubTypeCode:
+                                description: Issue subtype identifier
+                                enum:
+                                  - CLARIFICATION
+                                  - MISSPELLING
+                                  - POOR_TRANSLATION
+                                  - DOES_NOT_FIT_SPACE
+                                  - PLACEHOLDER_ISSUE
+                                  - REVIEW_TRANSLATION
+                                  - CUSTOM
+                                  - MT_ERROR
+                                type: string
+                            type: object
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object

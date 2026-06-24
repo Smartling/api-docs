@@ -1,0 +1,579 @@
+x-paths:
+  profiles_regex_check_type_rules:
+    post:
+      description: Create a custom quality check.
+      summary: Create a custom quality check
+      tags:
+        - Translation quality checks
+      operationId: createTQCRegexRule
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - &ref_1
+          name: accountUid
+          in: path
+          type: string
+          required: true
+          description: >-
+            The account’s unique identifier. This can be found in the Smartling
+            Dashboard under Account Settings > API.
+        - &ref_2
+          name: profileUid
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of corresponding profile.
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: &ref_5
+              allOf:
+                - &ref_0
+                  type: object
+                  properties:
+                    ruleName:
+                      type: string
+                      description: Rule name
+                      example: ruleName
+                    severityLevelCode: &ref_10
+                      enum:
+                        - DISABLED
+                        - LOW
+                        - MEDIUM
+                        - HIGH
+                    ruleTypeCode:
+                      enum:
+                        - FORBIDDEN
+                        - MISSING
+                        - COUNT_MISMATCH
+                    flavorCode:
+                      enum:
+                        - JAVA
+                        - DOT_NET
+                    originalPattern:
+                      type: string
+                      description: >-
+                        Regular expression to evaluate against the source
+                        string.
+                      example: '@mail'
+                    translationPattern:
+                      type: string
+                      description: Regular expression to evaluate against the translation.
+                      example: '@gmail'
+                    caseInsensitive:
+                      type: boolean
+                      description: Enable case insensitive search
+                      example: true
+                    multiLine:
+                      type: boolean
+                      description: >-
+                        Enables multine search. If true then search will span
+                        newlines in a string. Users can use ^ and $ characters
+                        with special meaning for beginning of line and end of
+                        line match.
+                      example: true
+                    description:
+                      type: string
+                      description: >-
+                        Human readable description of the role; shown in the the
+                        dashboard UI.
+                      example: rule description
+                    warningMessage:
+                      type: string
+                      description: >-
+                        Human readable warning message appended to the standard
+                        message that is shown in the CAT tool when the check
+                        fails.
+                      example: ' test warning message'
+                  required:
+                    - ruleName
+                    - severityLevelCode
+                    - ruleTypeCode
+                    - flavorCode
+                    - originalPattern
+                    - translationPattern
+                    - caseInsensitive
+                    - multiLine
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: &ref_3
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - &ref_6
+                        type: object
+                        required:
+                          - code
+                        properties:
+                          code:
+                            type: string
+                            enum:
+                              - SUCCESS
+                            description: >-
+                              Indicates whether the response was successful or
+                              what error has occurred.
+                      - type: object
+                        properties:
+                          data:
+                            allOf:
+                              - type: object
+                                properties:
+                                  ruleUid:
+                                    type: string
+                                    description: >-
+                                      Unique identifier of corresponding check
+                                      rule
+                                    example: ce6d6b5dbc12
+                              - *ref_0
+                              - type: object
+                                properties:
+                                  groups:
+                                    type: array
+                                    items:
+                                      allOf:
+                                        - &ref_7
+                                          type: object
+                                          properties:
+                                            groupUid:
+                                              type: string
+                                              description: >-
+                                                Smartling rule group identifier of the
+                                                translation
+                                              example: ce6d6b5dbc12
+                                            ruleUid:
+                                              type: string
+                                              description: >-
+                                                Smartling rule identifier of the
+                                                translation
+                                              example: ce6d6b5dbcs2
+                                            targetLocaleIds:
+                                              description: The list of target locales.
+                                              example:
+                                                - ru-RU
+                                              items:
+                                                type: string
+                                              type: array
+                                            severityLevelCode:
+                                              enum:
+                                                - DISABLED
+                                                - LOW
+                                                - MEDIUM
+                                                - HIGH
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules
+  profiles_regex_check_type_rule:
+    get:
+      description: Get a custom quality check.
+      summary: Get a custom quality check
+      tags:
+        - Translation quality checks
+      operationId: getTQCRegexRule
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - &ref_4
+          name: ruleUid
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of corresponding check rule.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_3
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid
+    put:
+      description: Update a custom quality check.
+      summary: Update a custom quality check
+      tags:
+        - Translation quality checks
+      operationId: updateTQCRegexRule
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - *ref_4
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: *ref_5
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_3
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid
+    delete:
+      description: Delete a custom quality check.
+      summary: Delete a custom quality check
+      tags:
+        - Translation quality checks
+      operationId: deleteTQCRegexRule
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - *ref_4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_6
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid
+  profiles_regex_check_type_rule_groups:
+    post:
+      description: Create a custom quality check group
+      summary: Create a custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: createTQCRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - *ref_4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                targetLocaleIds:
+                  description: List of target locale IDs.
+                  example:
+                    - ru-RU
+                  items:
+                    type: string
+                  type: array
+              required:
+                - targetLocaleIds
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: &ref_8
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_6
+                      - type: object
+                        properties:
+                          data: *ref_7
+        x-code-samples:
+          - lang: curl
+            source: >
+              curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+              "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+              https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups
+    get:
+      description: Get a custom quality check groups.
+      summary: Get a custom quality check groups
+      tags:
+        - Translation quality checks
+      operationId: getTQCRegexRuleGroups
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - *ref_4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_6
+                      - type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              totalCount:
+                                type: integer
+                                description: Total element count
+                                example: 1
+                              items:
+                                type: array
+                                items:
+                                  allOf:
+                                    - *ref_7
+        x-code-samples:
+          - lang: curl
+            source: >
+              curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+              "Content-Type: application/json"
+              https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups
+  profiles_regex_check_type_rule_group:
+    get:
+      description: Get a custom quality check group.
+      summary: Get a custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: getTQCRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - *ref_4
+        - &ref_9
+          name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_8
+        x-code-samples:
+          - lang: curl
+            source: >
+              curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+              "Content-Type: application/json"
+              https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid
+    delete:
+      description: Delete a custom quality check group.
+      summary: Delete a custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: deleteTQCRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - *ref_4
+        - *ref_9
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_6
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+        x-code-samples:
+          - lang: curl
+            source: >
+              curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H
+              "Content-Type: application/json"
+              https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid
+  profiles_regex_check_type_rule_severity_level:
+    put:
+      description: Update severity level for custom quality check.
+      summary: Update severity level for custom quality check
+      tags:
+        - Translation quality checks
+      operationId: updateProfilesCheckRuleSeverityLevel
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - *ref_4
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: &ref_11
+              allOf:
+                - type: object
+                  properties:
+                    severityLevelCode: *ref_10
+                  required:
+                    - severityLevelCode
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_3
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d
+            "$smartlingStringTQCJSON" -H "Content-Type: application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/severity-level
+  profiles_regex_check_type_rule_group_locales:
+    put:
+      description: Add locale to custom quality check group.
+      summary: Add locale custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: addLocaleToProfilesTranslationQualityCheckTypeRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - *ref_4
+        - *ref_9
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  properties:
+                    targetLocaleId:
+                      type: string
+                      description: Smartling ID for the language you want to translate to.
+                      example: it-IT
+                  required:
+                    - targetLocaleId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_8
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid/locales
+  profiles_regex_check_type_rule_group_locale:
+    delete:
+      description: Delete locale from custom quality check group.
+      summary: Delete locale from custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: deleteLocaleFromTranslationQualityCheckTypeRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_4
+        - *ref_9
+        - name: targetLocaleId
+          in: path
+          required: true
+          type: string
+          description: Smartling ID for the language you want to translate to.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_6
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid/locales/{targetLocaleId}
+  profiles_regex_check_type_rule_group_severity_level:
+    put:
+      description: Update the severity level for custom quality check group.
+      summary: Update severity level for custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: updateProfilesCheckRuleGroupSeverityLevel
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_1
+        - *ref_2
+        - *ref_4
+        - *ref_9
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: *ref_11
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_8
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d
+            "$smartlingStringTQCJSON" -H "Content-Type: application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid/severity-level
