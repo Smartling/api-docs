@@ -12,25 +12,20 @@ x-paths:
         will return an error. Each string has a character limit of 10,000.
 
 
-        **Note**: You cannot authorize a string via API. Once you have created
-        the strings, they will need to be authorized by a content owner in the
-        Smartling Dashboard.
-
-
         Smartling creates a unique hashcode for each string based on the parsed
         string text and any variant or namespace metadata provided. If you
         upload a string with the same text, variant and namespace, and therefore
-        the same hashcode, the existng string will be overwritten. This will not
+        the same hashcode, the existing string will be overwritten. This will not
         change the text of the string, but may update other metadata, such as
         placeholder and callback values. If the string is currently inactive,
-        overwriting it will cause it to be reactivated. Overwritten strings
+        overwriting it will reactivate it. Overwritten strings
         return `"overWritten": "true"` in the response object.
 
 
         Most uploads will return a `200` response indicating success. If
-        processing the request takes longer than 60 seconds, a `202` request
+        processing the request takes longer than 60 seconds, a `202` response
         will be returned, including a `processUid` value that can be used to
-        check on the progress of the request.
+        check the progress of the request.
 
 
         If you set up a POST callback for the string, you can automatically
@@ -42,18 +37,13 @@ x-paths:
       operationId: addStringsToProject
 
       parameters:
-      - in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       requestBody:
         content:
           application/json:
             schema:
               properties:
-                strings (Required):
+                strings:
                   items:
                     properties:
                       stringText:
@@ -86,8 +76,8 @@ x-paths:
                           Set the maximum character length recommended for this
                           string and its translations.  Not specifying or
                           setting to 'null' implies no maxLength and on update
-                          will remove any existing maxLegnth.
-                        type: number
+                          will remove any existing maxLength.
+                        type: integer
                       format:
                         description: >-
                           Sets whether or not the string should be parsed as
@@ -108,6 +98,7 @@ x-paths:
                     - stringText
                     type: object
                   minItems: 1
+                  maxItems: 100
                   type: array
                 placeholderFormat:
                   description: >-
@@ -136,6 +127,33 @@ x-paths:
                     _smartling.strings-api.default.namespace_. A _NULL_ value is
                     permitted.
                   type: string
+                uri:
+                  description: >-
+                    Virtual file URI to associate with these strings.
+                    Defaults to `/Strings` when not provided.
+                  allOf:
+                    - $ref: '../api_common.yaml#/components/schemas/FileUri'
+                authorization:
+                  description: >-
+                    When provided, simultaneously authorizes the created strings
+                    into translation workflows.
+                  type: object
+                  properties:
+                    localeWorkflows:
+                      description: Locale and workflow pairs to authorize the strings into.
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - targetLocaleId
+                          - workflowUid
+                        properties:
+                          targetLocaleId:
+                            $ref: '../api_common.yaml#/components/schemas/LocaleId'
+                          workflowUid:
+                            $ref: '../api_common.yaml#/components/schemas/WorkflowUid'
+                    translationJobUid:
+                      $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
               type: object
               required:
                 - strings
@@ -189,7 +207,7 @@ x-paths:
         If an **Add strings** request takes longer than 60 seconds to process, a
         `202` response will be returned, indicating that the process of creating
         strings is continuing but not yet complete. This response will include a
-        `proccessUid` value which can be used to check the progress of the
+        `processUid` value which can be used to check the progress of the
         request.
 
 
@@ -205,12 +223,7 @@ x-paths:
       operationId: getAddStringsToProjectRequestStatus
 
       parameters:
-      - in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       - in: path
         name: processUid
         required: true
@@ -267,36 +280,28 @@ x-paths:
       - Strings
       operationId: getAllSourceStringsByProject
       parameters:
-      - in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       - description: Hashcodes for each string you want to get source strings for.
         in: query
         name: hashcodes
         schema:
           items:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/Hashcode'
           type: array
       - description: URI of a file you want to get strings for.
         in: query
         name: fileUri
         schema:
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/FileUri'
       - description: >-
           By default, responses will be limited to 500 per request. This is
           also the maximum allowed value.
         in: query
         name: limit
         schema:
-          type: number
-      - description: Pagination setting. Default is 0.
-        in: query
-        name: offset
-        schema:
-          type: number
+          type: integer
+      - $ref: '../api_common.yaml#/components/parameters/offset'
+      - $ref: '#/components/parameters/showPlaceholderValues'
       responses:
         '200':
           content:
@@ -347,12 +352,7 @@ x-paths:
       - Strings
       operationId: getAllSourceStringsByProjectPost
       parameters:
-      - in: path
-        name: projectId
-        required: true
-        schema:
-          format: uuid
-          type: string
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       requestBody:
         required: true
         content:
@@ -364,18 +364,19 @@ x-paths:
                   description: Hashcodes for each string you want to get source strings for.
                   type: array
                   items:
-                    type: string
+                    $ref: '../api_common.yaml#/components/schemas/Hashcode'
                 fileUri:
-                  description: URI of a file you want to get strings for.
-                  type: string
+                  $ref: '../api_common.yaml#/components/schemas/FileUri'
                 limit:
                   description: >-
                     By default, responses will be limited to 500 per request. This is
                     also the maximum allowed value.
-                  type: number
+                  type: integer
                 offset:
                   description: Pagination setting. Default is 0.
-                  type: number
+                  type: integer
+                showPlaceholderValues:
+                  $ref: '#/components/schemas/ShowPlaceholderValues'
       responses:
         '200':
           content:
@@ -431,25 +432,20 @@ x-paths:
       - Strings
       operationId: getAllTranslationsByProject
       parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       - description: Hashcodes for each string you want to get translations for.
         in: query
         name: hashcodes
         schema:
           items:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/Hashcode'
           type: array
       - description: Smartling ID for the language you want to get translations for.
         in: query
         name: targetLocaleId
         required: true
         schema:
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
       - description: >-
           Sets the types of translations you want returned. `published` will
           only return translations that have completed their workflows and
@@ -465,19 +461,16 @@ x-paths:
         in: query
         name: fileUri
         schema:
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/FileUri'
       - description: >-
           Pagination setting. By default, responses will be limited to 500 per
-          request. This is also the maximum allowed value.
+          request. Maximum allowed value is 10,000.
         in: query
         name: limit
         schema:
-          type: number
-      - description: Pagination setting. Default is 0.
-        in: query
-        name: offset
-        schema:
-          type: number
+          $ref: '#/components/schemas/TranslationsLimit'
+      - $ref: '../api_common.yaml#/components/parameters/offset'
+      - $ref: '#/components/parameters/showPlaceholderValues'
       responses:
         '200':
           content:
@@ -531,12 +524,7 @@ x-paths:
       - Strings
       operationId: getAllTranslationsByProjectPost
       parameters:
-      - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
+      - $ref: '../api_common.yaml#/components/parameters/projectId'
       requestBody:
         required: true
         content:
@@ -550,10 +538,9 @@ x-paths:
                   description: Hashcodes for each string you want to get translations for.
                   type: array
                   items:
-                    type: string
+                    $ref: '../api_common.yaml#/components/schemas/Hashcode'
                 targetLocaleId:
-                  description: Smartling ID for the language you want to get translations for.
-                  type: string
+                  $ref: '../api_common.yaml#/components/schemas/LocaleId'
                 retrievalType:
                   description: >-
                     Sets the types of translations you want returned. `published` will
@@ -564,16 +551,14 @@ x-paths:
                     - pending
                     - published
                 fileUri:
-                  description: URI of a file you want to get translations for.
-                  type: string
+                  $ref: '../api_common.yaml#/components/schemas/FileUri'
                 limit:
-                  description: >-
-                    Pagination setting. By default, responses will be limited to 500 per
-                    request. This is also the maximum allowed value.
-                  type: number
+                  $ref: '#/components/schemas/TranslationsLimit'
                 offset:
                   description: Pagination setting. Default is 0.
-                  type: number
+                  type: integer
+                showPlaceholderValues:
+                  $ref: '#/components/schemas/ShowPlaceholderValues'
       responses:
         '200':
           content:
@@ -595,3 +580,276 @@ x-paths:
           curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d
           '{"targetLocaleId": "es", "fileUri": "$smartlingFileUri"}'
           https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/translations
+
+components:
+  schemas:
+    TranslationsLimit:
+      description: >-
+        Pagination setting. By default, responses will be limited to 500 per
+        request. Maximum allowed value is 10,000.
+      type: integer
+      maximum: 10000
+      default: 500
+    ShowPlaceholderValues:
+      description: >-
+        When `true` (default), placeholder tokens are resolved to display
+        values. When `false`, internal placeholder format (`{0}`, `{1}`, etc.)
+        is preserved.
+      type: boolean
+      default: true
+    CreateStringResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/CreatedString'
+                      type: array
+                    processUid:
+                      description: >-
+                        If the request takes longer than 60 seconds to process, a
+                        `202` response will be returned, indicating the request has
+                        not failed, but is not yet complete. Use the processUid
+                        value to check the status of the request using the Check
+                        Create String Status request.
+                      type: string
+                    stringCount:
+                      description: Total number of strings captured as a result of the request.
+                      type: number
+                    totalCount:
+                      type: number
+                    wordCount:
+                      description: Total number of words captured as a result of the request.
+                      type: number
+                  type: object
+              type: object
+    CreateStringStatusResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    createdDate:
+                      description: Date when the create strings request was submitted.
+                      type: string
+                    modifiedDate:
+                      description: Date when the create strings request was last modified.
+                      type: string
+                    processState:
+                      description: State of the request
+                      enum:
+                        - OPEN
+                        - CLOSED
+                        - FAILED
+                      type: string
+                    processStatistics:
+                      description: Information on the created or updated string
+                      properties:
+                        errored:
+                          description: strings that had errors
+                          type: string
+                        processed:
+                          description: strings processed
+                          type: string
+                        requested:
+                          description: strings requested
+                          type: string
+                        skipped:
+                          description: strings skipped
+                          type: string
+                      type: object
+                    processUid:
+                      description: Unique identifier for a create string request.
+                      type: string
+                  type: object
+              type: object
+    CreatedString:
+      description: Information on the created or updated string
+      properties:
+        hashcode:
+          description: The generated unique identifier for this created or updated string.
+          type: string
+        overWritten:
+          description: Identifies whether the string already existed in the system.
+          type: string
+        parsedStringText:
+          description: >-
+            The text for this string used to define its uniqueness in the
+            Smartling system. This is after placeholders have been processed
+            and escaping normalization has been applied.
+          type: string
+        stringText:
+          description: The text for this string
+          type: string
+        variant:
+          description: String variant
+          type: string
+      type: object
+    StringInfo:
+      description: Information on a string
+      properties:
+        hashcode:
+          description: The generated unique identifier for this created or updated string.
+          type: string
+        keys:
+          description: >-
+            If this string is associated with one or more resource files this is
+            a list of the associated resource keys.
+          items:
+            properties:
+              fileUri:
+                description: fileUri of the key
+                type: string
+              key:
+                description: Resource key. `null` if the string does not have a variant.
+                type: string
+            type: object
+          type: array
+        parsedStringText:
+          description: >-
+            The text for this string used to define its uniqueness in the
+            Smartling system. This is after placeholders have been processed
+            and escaping normalization has been applied.
+          type: string
+        stringText:
+          description: The text for this string
+          type: string
+        stringVariant:
+          description: String variant
+          type: string
+        maxLength:
+          description: Maximum character length
+          type: number
+        stringInstructions:
+          description: >-
+            String instructions that were added to the string in the Dashboard.
+          items:
+            description: The text of the instruction.
+            type: string
+          type: array
+        contentFileStringInstructions:
+          description: >-
+            String instructions that were included in the uploaded file if any.
+          items:
+            properties:
+              fileUri:
+                description: URI of the file that contained the instruction.
+                type: string
+              contentFileStringInstruction:
+                description: The text of the instruction.
+                type: string
+            type: object
+          type: array
+      type: object
+    StringResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/StringInfo'
+                      type: array
+                    totalCount:
+                      type: number
+                  type: object
+              type: object
+    Translation:
+      description: Information on a translation
+      properties:
+        hashcode:
+          description: The generated unique identifier for this created or updated string.
+          type: string
+        keys:
+          description: >-
+            If this string is associated with one or more resource files this is
+            a list of the associated resource keys.
+          items:
+            properties:
+              fileUri:
+                description: fileUri of the key
+                type: string
+              key:
+                description: Resource key. `null` if the string does not have a variant.
+                type: string
+            type: object
+          type: array
+        parsedStringText:
+          description: >-
+            The text for this string used to define its uniqueness in the
+            Smartling system. This is after placeholders have been processed
+            and escaping normalization has been applied.
+          type: string
+        stringText:
+          description: The text for this string.
+          type: string
+        targetLocaleId:
+          description: Locale ID of this translation
+          type: string
+        translations:
+          items:
+            properties:
+              modifiedDate:
+                description: When this translation was last modified.
+                type: string
+              pluralForm:
+                description: >-
+                  Plural form of the translation. `null` if this translation is
+                  not a plural.
+                type: string
+              translation:
+                description: Translation text
+                type: string
+            type: object
+          type: array
+        stringVariant:
+          description: String variant
+          type: string
+        workflowStepUid:
+          description: Current workflow step for this translation
+          format: uuid
+          type: string
+      type: object
+    TranslationResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/Translation'
+                      type: array
+                    totalCount:
+                      type: number
+                  type: object
+              type: object
+  parameters:
+    showPlaceholderValues:
+      name: showPlaceholderValues
+      in: query
+      schema:
+        $ref: '#/components/schemas/ShowPlaceholderValues'
