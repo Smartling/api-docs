@@ -15,17 +15,17 @@ x-paths:
         Smartling creates a unique hashcode for each string based on the parsed
         string text and any variant or namespace metadata provided. If you
         upload a string with the same text, variant and namespace, and therefore
-        the same hashcode, the existng string will be overwritten. This will not
+        the same hashcode, the existing string will be overwritten. This will not
         change the text of the string, but may update other metadata, such as
         placeholder and callback values. If the string is currently inactive,
-        overwriting it will cause it to be reactivated. Overwritten strings
+        overwriting it will reactivate it. Overwritten strings
         return `"overWritten": "true"` in the response object.
 
 
         Most uploads will return a `200` response indicating success. If
-        processing the request takes longer than 60 seconds, a `202` request
+        processing the request takes longer than 60 seconds, a `202` response
         will be returned, including a `processUid` value that can be used to
-        check on the progress of the request.
+        check the progress of the request.
 
 
         If you set up a POST callback for the string, you can automatically
@@ -76,7 +76,7 @@ x-paths:
                           Set the maximum character length recommended for this
                           string and its translations.  Not specifying or
                           setting to 'null' implies no maxLength and on update
-                          will remove any existing maxLegnth.
+                          will remove any existing maxLength.
                         type: integer
                       format:
                         description: >-
@@ -207,7 +207,7 @@ x-paths:
         If an **Add strings** request takes longer than 60 seconds to process, a
         `202` response will be returned, indicating that the process of creating
         strings is continuing but not yet complete. This response will include a
-        `proccessUid` value which can be used to check the progress of the
+        `processUid` value which can be used to check the progress of the
         request.
 
 
@@ -642,15 +642,10 @@ components:
                 data:
                   properties:
                     createdDate:
-                      description: Total number of strings captured as a result of the request.
+                      description: Date when the create strings request was submitted.
                       type: string
                     modifiedDate:
-                      description: >-
-                        If the request takes longer than 60 seconds to process, a
-                        `202` response will be returned, indicating the request has
-                        not failed, but is not yet complete. Use the processUid
-                        value to check the status of the request using the Check
-                        Create String Status request.
+                      description: Date when the create strings request was last modified.
                       type: string
                     processState:
                       description: State of the request
@@ -676,7 +671,7 @@ components:
                           type: string
                       type: object
                     processUid:
-                      description: Unique identifer for a create string request.
+                      description: Unique identifier for a create string request.
                       type: string
                   type: object
               type: object
@@ -684,15 +679,15 @@ components:
       description: Information on the created or updated string
       properties:
         hashcode:
-          description: The generated unique idenitfier for this created or updated string.
+          description: The generated unique identifier for this created or updated string.
           type: string
         overWritten:
-          description: Idenitfies if the string was already in the system.
+          description: Identifies whether the string already existed in the system.
           type: string
         parsedStringText:
           description: >-
             The text for this string used to define its uniqueness in the
-            Smartling system.  This is after placeholders have been processed
+            Smartling system. This is after placeholders have been processed
             and escaping normalization has been applied.
           type: string
         stringText:
@@ -703,10 +698,10 @@ components:
           type: string
       type: object
     StringInfo:
-      description: Information on string
+      description: Information on a string
       properties:
         hashcode:
-          description: The generated unique idenitfier for this created or updated string.
+          description: The generated unique identifier for this created or updated string.
           type: string
         keys:
           description: >-
@@ -725,7 +720,7 @@ components:
         parsedStringText:
           description: >-
             The text for this string used to define its uniqueness in the
-            Smartling system.  This is after placeholders have been processed
+            Smartling system. This is after placeholders have been processed
             and escaping normalization has been applied.
           type: string
         stringText:
@@ -781,7 +776,7 @@ components:
       description: Information on a translation
       properties:
         hashcode:
-          description: The generated unique idenitfier for this created or updated string.
+          description: The generated unique identifier for this created or updated string.
           type: string
         keys:
           description: >-
@@ -800,7 +795,7 @@ components:
         parsedStringText:
           description: >-
             The text for this string used to define its uniqueness in the
-            Smartling system.  This is after placeholders have been processed
+            Smartling system. This is after placeholders have been processed
             and escaping normalization has been applied.
           type: string
         stringText:
@@ -817,7 +812,7 @@ components:
                 type: string
               pluralForm:
                 description: >-
-                  Pural form of the translation.  `null` if this translation is
+                  Plural form of the translation. `null` if this translation is
                   not a plural.
                 type: string
               translation:
