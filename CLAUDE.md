@@ -42,6 +42,8 @@ The local server URL is printed to console on startup. The swagger-editor URL is
 
 ## CI/CD
 
-- Jenkins builds on every branch; non-master branches deploy a preview at `https://api-reference.smartling.com/preview/<branch-name-lowercase>`
+- Jenkins builds on every branch; non-master branches deploy a preview - the URL depends on whether a PR is open:
+  - No PR open: `https://api-reference.smartling.com/preview/<branch-name-lowercase>`
+  - PR open: `https://api-reference.smartling.com/preview/pr-<number>` (Jenkins uses the PR ref as `BRANCH_NAME`)
 - `master` deploys to the main documentation site
 - Preview branches are not auto-cleaned; stale previews must be cleaned manually via the `gh-pages` branch (see README.md)

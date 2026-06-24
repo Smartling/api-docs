@@ -7,8 +7,9 @@
 - Look full spec:
     + JSON https://api-reference.smartling.com/swagger.json
     + YAML https://api-reference.smartling.com/swagger.yaml
-- Preview spec version for branch `<branch>`: https://api-reference.smartling.com/preview/<branch>
-  (Note: use lower case name in the url for the branch)
+- Preview spec version:
+  - By branch name (before opening a PR): https://api-reference.smartling.com/preview/<branch-name-lowercase>
+  - By PR number (after opening a PR): https://api-reference.smartling.com/preview/pr-<number>
   
 **Warning:** All above links are updated only after Jenkins finishes deployment
 
