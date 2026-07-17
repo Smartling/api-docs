@@ -79,6 +79,18 @@ tags:
       }
       ```
 
+      **A note on session lifetime:**
+
+      Every access/refresh token pair belongs to a single underlying session,
+      which has a fixed maximum lifespan of 12 hours no matter how many times
+      the pair is refreshed. As a session nears that limit, refreshing returns
+      a token pair capped to whatever time is left in the session rather than
+      the usual TTLs. Refreshing past that point eventually returns a 401,
+      even though the refresh token itself hasn't expired. A shrinking
+      `refreshExpiresIn` across successive refreshes is a sign the session is
+      ending soon: call `/auth-api/v2/authenticate` again with the same
+      `userIdentifier` and `userSecret` to start a new session.
+
   - name: Account & Projects
     description: |-
       Each client within Smartling is given their own account with a designated
@@ -435,6 +447,15 @@ paths:
       description: >-
         A [renewed access token](https://help.smartling.com/hc/en-us/articles/1260805176849) that
         can be attached to the header of any API request.
+
+        Refreshing does not reset the session: it only issues a new token
+        pair within the session's remaining lifetime, which is capped to
+        12 hours. As the session nears that limit, `expiresIn` and
+        `refreshExpiresIn` shrink to whatever time is left, and can
+        eventually reach zero even though the refresh token hasn't expired.
+        A shrinking `refreshExpiresIn` across repeated refreshes is a sign
+        the session is ending: call `/auth-api/v2/authenticate` again to
+        start a new session, rather than refreshing more often.
       summary: Refresh access token
       operationId: refreshAccessToken
       requestBody:
@@ -9800,10 +9821,22 @@ components:
             the user.
           type: string
         expiresIn:
-          description: TTL (time-to-live) in seconds for the access token.
+          description: >-
+            TTL (time-to-live) in seconds for the access token. This value can be
+            smaller than usual as the underlying session approaches its maximum
+            lifespan; see `refreshExpiresIn` below.
           type: integer
         refreshExpiresIn:
-          description: TTL (time-to-live) in seconds for the refresh token.
+          description: >-
+            TTL (time-to-live) in seconds for the refresh token. This value
+            is tied to the token pair's underlying session, which has a
+            fixed maximum lifespan of 12 hours regardless of how many times
+            the pair is refreshed. As the session nears that limit,
+            `refreshExpiresIn` shrinks toward zero rather than resetting to
+            its usual value, even though the refresh token itself hasn't
+            expired. A shrinking value is a signal to call
+            `/auth-api/v2/authenticate` again and start a new session,
+            rather than continue refreshing.
           type: integer
         refreshToken:
           description: A kind of token that can be used to obtain a renewed access token.
