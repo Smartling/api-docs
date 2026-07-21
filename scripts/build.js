@@ -24,4 +24,5 @@ cp('-R', 'spec/file_translation', 'web_deploy/spec');
 cp('-R', 'spec/glossary_v3', 'web_deploy/spec');
 cp('-R', 'spec/webhooks_api', 'web_deploy/spec');
 cp('-R', 'spec/strings', 'web_deploy/spec');
+cp('-R', 'spec/tmm', 'web_deploy/spec');
 cp('-R', 'spec/api_common.yaml', 'web_deploy/spec');
