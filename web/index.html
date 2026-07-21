@@ -31,6 +31,21 @@
 <script>window.__siteChrome = { property: 'rest' };</script>
 <link rel="stylesheet" href="https://graphql-reference.smartling.com/shared/site-chrome.css">
 <script src="https://graphql-reference.smartling.com/shared/site-chrome.js" defer></script>
+<script>
+    // ReDoc's own sidebar (.menu-content, incl. its search box) is `position: sticky; top: 0`,
+    // which collides with the site-chrome header injected above at the same offset once the
+    // page is scrolled, hiding the sidebar's top edge behind the header. Site-chrome's height
+    // is owned by the graphql-docs-hub repo, so measure it instead of hardcoding it here.
+    document.addEventListener('DOMContentLoaded', function () {
+        var chrome = document.querySelector('.site-chrome');
+        if (!chrome) return;
+        var height = chrome.getBoundingClientRect().height + 'px';
+        var style = document.createElement('style');
+        style.textContent = '.menu-content { top: ' + height + ' !important; ' +
+            'height: calc(100vh - ' + height + ') !important; }';
+        document.head.appendChild(style);
+    });
+</script>
 
 <redoc spec-url="./swagger.json"></redoc>
 
