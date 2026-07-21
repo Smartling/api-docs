@@ -31,14 +31,21 @@ The local server URL is printed to console on startup. The swagger-editor URL is
   - `spec/file_translation/` - File MT upload, MT, language detection
   - `spec/strings/` - Strings API v2 (uses `x-paths` extension)
   - `spec/connectors_import_v3/` - Connectors Import API
+  - `spec/tmm/` - Translation Memory (TMX import/download) endpoints; uses `x-paths` extension
 
 ## Key conventions
 
 **Global headers**: The `headers:` top-level key (non-standard) is supported - references like `$ref: "#/headers/Rate-Limit-Limit"` are inlined and the `headers` block is removed during build so the output remains valid OpenAPI.
 
-**x-paths extension**: `spec/translation_quality/` and `spec/strings/` use a custom `x-paths` key (not the standard `paths`) with `$ref` includes. Running `npm run process-yaml` resolves these refs and merges them into `spec/openapi.yaml`. Always run this after editing TQC or Strings YAML files.
+**x-paths extension**: `spec/translation_quality/`, `spec/strings/`, and `spec/tmm/` use a custom `x-paths` key (not the standard `paths`) with `$ref` includes. Running `npm run process-yaml` resolves these refs and merges them into `spec/openapi.yaml`. Always run this after editing TQC or Strings YAML files (`spec/tmm/` does not need this step - see `spec/process-yaml.js`, which only lists `translation_quality/*.yaml`).
 
 **Build output**: `npm run build` produces `web_deploy/` containing the bundled spec (`swagger.json`, `swagger.yaml`), the static web UI, and copies of all spec subdirectories.
+
+**Adding a new domain as a standalone spec file/folder**: `swagger-repo bundle` does NOT dereference `$ref`s that point at a path item (the pattern every domain subdirectory uses, standard `paths` or the custom `x-paths` extension alike) - it leaves the `$ref` pointer in the bundled `swagger.json`/`swagger.yaml`, and ReDoc/Swagger UI fetches the referenced file client-side at render time. This means every new domain subdirectory must be added to the hardcoded `spec/` copy list in **both**:
+- `scripts/build.js` (used by `npm run build`, the main site)
+- `scripts/deploy-branch.js` (used by Jenkins for branch/PR previews, `npm run deploy-branch`)
+
+Missing either one renders the tag (tags are fully inlined, no `$ref`) with zero operations under it - `npm test`/`npm run build` still pass, and `grep -c "<new-path>" web_deploy/swagger.json` still matches (it matches the literal path key, not proof the `$ref` resolved), so this gap is easy to miss locally. It has been missed and fixed as a follow-up commit before (see `aa8992f4` → `c8609fab` for the Strings API). Verify by checking that the new `spec/<domain>` folder is copied in both scripts, not just one.
 
 ## CI/CD
 
