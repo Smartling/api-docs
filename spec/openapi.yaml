@@ -343,12 +343,11 @@ tags:
 
   - name: Attachments
     description: |-
-      The Attachments API allows for file attachment upload, download and checking linked attachments for an entity.
-      Attachment entities can be from three domains: strings, jobs or issues.
-      Each entity is referenced by an entity UID. These UIDs have a specific form for each of the domains.
+      The Attachments API allows you to upload and download file attachments, as well as check linked attachments for an entity. Attachment entities can belong to one of four domains: strings, jobs, issues, or glossaries. Each entity is referenced by an entity UID, which has a specific format for each domain:
       - jobs: `<jobUid>`
       - issues: `<accountUid>-<issueUid>` or `<accountUid>-<issueUid>-<commentUid>`
       - strings: `<projectUid>:<stringHashcode>`
+      - glossaries: `<entryUid>`
 
       **Attachments API Usage Limitations**:
       * Maximum attachment size is 500MB.
@@ -9105,6 +9104,7 @@ paths:
           - jobs
           - strings
           - issues
+          - glossaries
           type: string
       - name: attachmentUid
         in: path
@@ -9155,6 +9155,7 @@ paths:
           - jobs
           - strings
           - issues
+          - glossaries
           type: string
       - name: entityUid
         in: path
@@ -9225,6 +9226,7 @@ paths:
               - jobs
               - strings
               - issues
+              - glossaries
             type: string
       requestBody:
         content:
@@ -9238,7 +9240,7 @@ paths:
                 name:
                   type: string
                   description:
-                    Functional name of the file uploaded. This is not a unique identifier.
+                    The name of the uploaded file, including the extension (e.g., "image.png"). This is not a unique identifier.
                 entityUids:
                   type: array
                   items:
