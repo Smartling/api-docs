@@ -1,0 +1,1938 @@
+x-paths:
+
+  create_issue:
+    post:
+      summary: Create issue
+      description: >-
+        Creates a new issue for a string. Issue text is treated as plain text.
+        Smartling will save the text as provided, and will not attempt to render
+        this text with any special formatting in its UIs. It will not be
+        rendered as HTML or markdown. Users of the Issues API should be aware,
+        and escape the text as needed before attempting to render it. Maximum
+        length is 4000 characters.
+      tags:
+        - Issues
+      operationId: createIssue
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: New issue for a string
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateIssueResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        answered: false
+                        createdDate: '2015-11-10T16:01:22Z'
+                        issueSeverityLevelCode: LOW
+                        issueStateCode: OPENED
+                        issueSubTypeCode: CLARIFICATION
+                        issueText: asdfsd
+                        issueTypeCode: SOURCE
+                        issueUid: dceaa996d417
+                        projectId: e8fa915fa
+                        accountUid: 2sadsa3se
+                        issueNumber: 34
+                        reportedByUserUid: 661801f19693
+                        string:
+                          hashcode: c32c16cddafd63dfa0dc12449372a093
+                        issueCommentsCount: 0
+                        assigneeUserUid: 7c9ff09e71b2
+                        reopened: false
+                        reopenedByUserUid: null
+                        reopenedDate: null
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssueTemlateJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues
+
+  edit_issue:
+    put:
+      summary: Edit issue
+      description: >-
+        Replaces the text of an issue with new text.
+
+
+        **Note**: Only the author of the issue can perform this action. The
+        `issueTextModifiedDate` property of an issue object shows when it was
+        last updated.
+
+
+        Issue text is treated as plain text. Smartling will save the text as
+        provided and will not attempt to render this text with any special
+        formatting in its UIs; it will not be rendered as HTML or markdown. When
+        using the Issues API, you should escape the text as needed before
+        attempting to render it. Maximum length is 4000 characters.
+      tags:
+        - Issues
+      operationId: editIssue
+
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueTextRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        issueText: Edited issue text.
+                        issueTextModifiedDate: '2015-11-10T16:01:22Z'
+              schema:
+                $ref: '#/components/schemas/IssueTextResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken"
+            -H "Content-Type: application/json" -d "$smartlingIssueTextJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/issueText
+
+  issue_state:
+    put:
+      summary: Open or close issue
+      description: The state of an issue. Accepted values are `OPENED` or `RESOLVED`.
+      tags:
+        - Issues
+      operationId: openOrCloseIssue
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueStateRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        issueStateCode: RESOLVED
+                        reopened: false
+              schema:
+                $ref: '#/components/schemas/IssueStateResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssueStateJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/state
+
+  issue_details:
+    get:
+      summary: Get issue details
+      description: >-
+        Returns detailed information of a single issue.
+
+
+        **Note**: The `resolvedByUserUid` and `reportedByUserUid` values are not
+        currently usable for identifying the users who created or resolved
+        issues. In the future, a People API will be exposed for looking up user
+        details.
+      tags:
+        - Issues
+      operationId: getIssueDetails
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        answered: false
+                        createdDate: '2015-11-10T16:01:22Z'
+                        issueSeverityLevelCode: LOW
+                        issueStateCode: OPENED
+                        issueSubTypeCode: POOR_TRANSLATION
+                        issueText: This translation is incorrect. Please fix.
+                        issueTypeCode: TRANSLATION
+                        issueUid: dceaa996d417
+                        projectId: e8fa915fa
+                        accountUid: dqsd4r5vr
+                        issueNUmber: 53
+                        reportedByUserUid: 661801f19693
+                        string:
+                          hashcode: c32c16cddafd63dfa0dc12449372a093
+                          localeId: ru-RU
+                        issueCommentsCount: 5
+                        assigneeUserUid: 661801f19693
+                        reopened: true
+                        reopenedByUserUid: 661801f19693
+                        reopenedDate: '2015-11-10T16:01:22Z'
+              schema:
+                $ref: '#/components/schemas/IssueGetResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid
+
+  issue_answered:
+    put:
+      summary: Update issue attribute (answered)
+      description: >-
+        Update issue attribute (answered). "Answered" is a boolean; (true/false).
+      tags:
+        - Issues
+      operationId: updateIssueAnsweredStatus
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueAnsweredRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        answered: true
+              schema:
+                $ref: '#/components/schemas/IssueAnsweredResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssueAnsweredJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/answered
+
+  issue_assignee:
+    put:
+      summary: Update issue attribute (assigneeUserUid)
+      description: >-
+        Update issue attribute (assigneeUserUid). "assigneeUserUid" is a string.
+      tags:
+        - Issues
+      operationId: updateIssueAssignee
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueAssigneeRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        assigneeUserUid: 661801f19693
+              schema:
+                $ref: '#/components/schemas/IssueAssigneeResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssueAssigneeJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/assignee
+    delete:
+      summary: Delete issue attribute (assigneeUserUid)
+      description: >-
+        Delete issue attribute (assigneeUserUid). "assigneeUserUid" is a string.
+      tags:
+        - Issues
+      operationId: deleteIssueAssignee
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+              schema:
+                $ref: '#/components/schemas/IssueAssigneeDeleteResponse'
+          description: OK
+        x-code-samples:
+          - lang: curl
+            source: >
+              curl -X DELETE -H "Authorization: Bearer $smartlingToken" -
+              https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/assignee
+
+  issue_severity_level:
+    put:
+      summary: Update issue attribute (severity level)
+      description: Update issue attribute (severity level) (LOW / MEDIUM / HIGH)
+      tags:
+        - Issues
+      operationId: updateIssueSeverityLevel
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueSeverityLevelRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        issueSeverityLevelCode: LOW
+              schema:
+                $ref: '#/components/schemas/IssueSeverityLevelResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingSeverityLevelJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/severity-level
+
+  issue_change_type:
+    put:
+      summary: Update issue attribute (issue type)
+      description: Update issue attribute (issue type) (SOURCE / TRANSLATION)
+      tags:
+        - Issues
+      operationId: updateIssueType
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue.
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueChangedTypeRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        issueTypeCode: TRANSLATION
+                        issueSubTypeCode: POOR_TRANSLATION
+                        localeId: ru-RU
+              schema:
+                $ref: '#/components/schemas/IssueChangedTypeResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingSeverityLevelJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/change-type
+
+  find_project_issues:
+    post:
+      summary: Find project issues
+      description: >-
+        Returns a list of issues matching specified filter options. You can
+        filter based on the date issues were created, target languages, strings,
+        issue types, states, issue numbers, job unique ids, issues not associated with strings in a job, issue assignee,
+        and which user opened the issue. Unless otherwise specified, the request will return a maximum of 30 results. All
+        parameters are optional.
+      tags:
+        - Issues
+      operationId: getProjectIssuesList
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuesFindResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - answered: false
+                            createdDate: '2015-12-21T16:38:48Z'
+                            issueSeverityLevelCode: LOW
+                            issueStateCode: OPENED
+                            issueSubTypeCode: DOES_NOT_FIT_SPACE
+                            issueText: does not fit space
+                            issueTypeCode: TRANSLATION
+                            issueUid: 902372ac8e1e
+                            projectId: e8fa915fa
+                            accountUid: e3e3d44r5d
+                            issueNumber: 32
+                            reportedByUserUid: 661801f19693
+                            assigneeUserUid: 661801f19693
+                            string:
+                              hashcode: c32c16cddafd63dfa0dc12449372a093
+                              localeId: ru-RU
+                            issueCommentsCount: 4
+                            reopened: true
+                            reopenedByUserUid: 661801f19693
+                            reopenedDate: '2015-12-21T16:38:48Z'
+                        totalCount: 1
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken"
+            -H "Content-Type: application/json" -d "$smartlingIssuesFilterJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/list
+
+  count_project_issues:
+    post:
+      summary: Count project issues
+      description: >-
+        Returns a count of issues matching specified filter options. You can
+        filter based on the date issues were created, strings, target languages,
+        issue types, states, issue numbers, job unique ids, issues not associated with strings in a job, issue assignee,
+        and which user opened the issue. All parameters are optional.
+      tags:
+        - Issues
+      operationId: getIssuesCount
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CountRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        count: 2
+              schema:
+                $ref: '#/components/schemas/IssuesCountResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssuesFilterJSON"
+            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/count
+
+  find_account_issues:
+    post:
+      summary: Find account issues
+      description: >-
+        Returns a list of issues matching specified filter options. You can
+        filter based on the date issues were created, target languages, strings,
+        issue types, states, issue numbers, project ids, job unique ids, issues not associated with strings in a job, issue assignee,
+        and which user opened the issue. Unless otherwise specified, the request will return a maximum of 30 results. All
+        parameters are optional.
+      tags:
+        - Issues
+      operationId: getAccountIssuesList
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindAccountIssuesRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuesFindResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - answered: false
+                            createdDate: '2015-12-21T16:38:48Z'
+                            issueSeverityLevelCode: LOW
+                            issueStateCode: OPENED
+                            issueSubTypeCode: DOES_NOT_FIT_SPACE
+                            issueText: does not fit space
+                            issueTypeCode: TRANSLATION
+                            issueUid: 902372ac8e1e
+                            projectId: e8fa915fa
+                            accountUid: e3e3d44r5d
+                            issueNumber: 32
+                            reportedByUserUid: 661801f19693
+                            assigneeUserUid: 661801f19693
+                            string:
+                              hashcode: c32c16cddafd63dfa0dc12449372a093
+                              localeId: ru-RU
+                            issueCommentsCount: 4
+                            reopened: true
+                            reopenedByUserUid: 661801f19693
+                            reopenedDate: '2015-12-21T16:38:48Z'
+                        totalCount: 1
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken"
+            -H "Content-Type: application/json" -d "$smartlingIssuesFilterJSON"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountUid/issues/list
+
+  count_account_issues:
+    post:
+      summary: Count account issues
+      description: >-
+        Returns a count of issues matching specified filter options. You can
+        filter based on the date issues were created, target languages, strings,
+        issue types, states, issue numbers, project ids, job unique ids, issues not associated with strings in a job, issue assignee,
+        and which user opened the issue. All parameters are optional.
+      tags:
+        - Issues
+      operationId: getAccountIssuesCount
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCountRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        count: 2
+              schema:
+                $ref: '#/components/schemas/IssuesCountResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssuesFilterJSON"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountUid/issues/count
+components:
+  schemas:
+    SuccessResponse:
+      properties:
+        code:
+          description: >-
+            Indicates whether the response was successful or what error has
+            occured.
+          enum:
+            - SUCCESS
+          type: string
+      required:
+        - code
+      type: object
+    IssueRequest:
+      properties:
+        issueText:
+          description: Free text field explaining an issue.
+          example: This translation is incorrect. Please fix.
+          type: string
+        issueTypeCode:
+          description: >-
+            [Identifies the issue type](#operation/getIssueTypesByAccount). issueTypeCode is either `SOURCE` or
+            `TRANSLATION`. Each have their own set of ```issueSubType``` values.
+          enum:
+            - SOURCE
+            - TRANSLATION
+          type: string
+        issueSubTypeCode:
+          description: >-
+            For issueTypeCode=SOURCE - CLARIFICATION | MISSPELLING, For
+            issueTypeCode=TRANSLATION - POOR_TRANSLATION | DOES_NOT_FIT_SPACE |
+            PLACEHOLDER_ISSUE | REVIEW_TRANSLATION | MT_ERROR
+          enum:
+            - CLARIFICATION
+            - MISSPELLING
+            - POOR_TRANSLATION
+            - DOES_NOT_FIT_SPACE
+            - PLACEHOLDER_ISSUE
+            - REVIEW_TRANSLATION
+            - CUSTOM
+            - MT_ERROR
+          type: string
+        string:
+          properties:
+            hashcode:
+              description: >-
+                Unique identifier for a string in Smartling. Used by the Issues
+                API to attach an issue to a string. You can get the hashcode for
+                a string via String API.
+              example: c32c16cddafd63dfa0dc12449372a093
+              type: string
+            localeId:
+              description: An identifying code for a target language in Smartling.
+              example: ru-RU
+              type: string
+          required:
+            - hashcode
+            - localeId
+          type: object
+        assigneeUserUid:
+          description: User identifier who is assigned to issue
+          example: 7c9ff09e71b3
+          type: string
+        issueSeverityLevelCode:
+          description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
+          enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+          type: string
+      required:
+        - issueText
+        - issueTypeCode
+        - issueSubTypeCode
+        - string
+      type: object
+    CreateIssueResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    answered:
+                      description: Issue flag "aswered"
+                      type: boolean
+                    createdDate:
+                      description: Issue creation date
+                      type: string
+                    issueSeverityLevelCode:
+                      description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
+                      enum:
+                        - LOW
+                        - MEDIUM
+                        - HIGH
+                      type: string
+                    issueStateCode:
+                      description: '[Issue State identifier](#operation/getAllIssuesStates)'
+                      enum:
+                        - OPENED
+                        - RESOLVED
+                      type: string
+                    issueSubTypeCode:
+                      description: Issue SubType identifier
+                      enum:
+                        - CLARIFICATION
+                        - MISSPELLING
+                        - POOR_TRANSLATION
+                        - DOES_NOT_FIT_SPACE
+                        - PLACEHOLDER_ISSUE
+                        - REVIEW_TRANSLATION
+                        - CUSTOM
+                        - MT_ERROR
+                      type: string
+                    issueText:
+                      description: Issue text
+                      type: string
+                    issueTextModifiedDate:
+                      description: Issue text modification date
+                      type: string
+                    issueTypeCode:
+                      description: '[Issue Type identifier](#operation/getIssueTypesByAccount)'
+                      enum:
+                        - SOURCE
+                        - TRANSLATION
+                      type: string
+                    issueUid:
+                      description: Issue identifier
+                      type: string
+                    projectId:
+                      description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+                      type: string
+                    accountUid:
+                      description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+                      type: string
+                    issueNumber:
+                      description: Issue number
+                      type: integer
+                    reportedByUserUid:
+                      description: User identifier who created (reported) issue
+                      type: string
+                    resolvedByUserUid:
+                      description: User identifier who resolved issue
+                      type: string
+                    assigneeUserUid:
+                      description: User identifier who is assigned to issue
+                      type: string
+                    resolvedDate:
+                      description: Issue resolve date
+                      type: string
+                    reopened:
+                      description: Issue flag "reopened"
+                      type: boolean
+                    reopenedByUserUid:
+                      description: User identifier who reopened issue
+                      type: string
+                    reopenedDate:
+                      description: Issue reopen date
+                      type: string
+                    string:
+                      properties:
+                        hashcode:
+                          description: >-
+                            Unique identifier for a string in Smartling. Used by the
+                            Issues API to attach an issue to a string. You can get
+                            the hashcode for a string via String API.
+                          type: string
+                        localeId:
+                          description: An identifying code for a target language in Smartling.
+                          type: string
+                      type: object
+                    issueCommentsCount:
+                      description: Issue comments count
+                      type: integer
+
+                  type: object
+              type: object
+    IssueTextRequest:
+      properties:
+        issueText:
+          description: Free text field explaining an issue.
+          example: Edited issue text.
+          type: string
+      required:
+        - issueText
+      type: object
+    IssueTextResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    issueText:
+                      description: Issue text
+                      type: string
+                    issueTextModifiedDate:
+                      description: Issue text modification date
+                      type: string
+                  type: object
+              type: object
+    IssueStateRequest:
+      properties:
+        issueStateCode:
+          description: '[The state of the issue](#operation/getAllIssuesStates). Accepted values are `OPENED` or `RESOLVED`.'
+          enum:
+            - OPENED
+            - RESOLVED
+          type: string
+      required:
+        - issueStateCode
+      type: object
+    IssueStateResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    issueStateCode:
+                      description: '[Issue State identifier](#operation/getAllIssuesStates)'
+                      enum:
+                        - OPENED
+                        - RESOLVED
+                      type: string
+                    reopened:
+                      description: Issue flag "reopened"
+                      type: boolean
+                  type: object
+              type: object
+    IssueGetResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    answered:
+                      description: Issue flag "aswered"
+                      type: boolean
+                    createdDate:
+                      description: Issue creation date
+                      type: string
+                    issueSeverityLevelCode:
+                      description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
+                      enum:
+                        - LOW
+                        - MEDIUM
+                        - HIGH
+                      type: string
+                    issueStateCode:
+                      description: '[Issue State identifier](#operation/getAllIssuesStates)'
+                      enum:
+                        - OPENED
+                        - RESOLVED
+                      type: string
+                    issueSubTypeCode:
+                      description: Issue SubType identifier
+                      enum:
+                        - CLARIFICATION
+                        - MISSPELLING
+                        - POOR_TRANSLATION
+                        - DOES_NOT_FIT_SPACE
+                        - PLACEHOLDER_ISSUE
+                        - REVIEW_TRANSLATION
+                        - CUSTOM
+                        - MT_ERROR
+                      type: string
+                    issueText:
+                      description: Issue text
+                      type: string
+                    issueTextModifiedDate:
+                      description: Issue text modification date
+                      type: string
+                    issueTypeCode:
+                      description: '[Issue Type identifier](#operation/getIssueTypesByAccount)'
+                      enum:
+                        - SOURCE
+                        - TRANSLATION
+                      type: string
+                    issueUid:
+                      description: Issue identifier
+                      type: string
+                    projectId:
+                      description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+                      type: string
+                    accountUid:
+                      description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+                      type: string
+                    issueNumber:
+                      description: Issue number
+                      type: integer
+                    reportedByUserUid:
+                      description: User identifier who created (reported) issue
+                      type: string
+                    resolvedByUserUid:
+                      description: User identifier who resolved issue
+                      type: string
+                    assigneeUserUid:
+                      description: User identifier who is assigned to issue
+                      type: string
+                    resolvedDate:
+                      description: Issue resolve date
+                      type: string
+                    reopened:
+                      description: Issue flag "reopened"
+                      type: boolean
+                    reopenedByUserUid:
+                      description: User identifier who reopened issue
+                      type: string
+                    reopenedDate:
+                      description: Issue reopen date
+                      type: string
+                    string:
+                      properties:
+                        hashcode:
+                          description: >-
+                            Unique identifier for a string in Smartling. Used by the
+                            Issues API to attach an issue to a string. You can get
+                            the hashcode for a string via String API.
+                          type: string
+                        localeId:
+                          description: An identifying code for a target language in Smartling.
+                          type: string
+                      type: object
+                    issueCommentsCount:
+                      description: Issue comments count
+                      type: integer
+                  type: object
+              type: object
+    IssueAnsweredRequest:
+      properties:
+        answered:
+          description: Issue flag "answered"
+          type: boolean
+      required:
+        - answered
+      type: object
+    IssueAnsweredResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    answered:
+                      description: Issue flag "aswered"
+                      type: boolean
+                  type: object
+              type: object
+    IssueChangedTypeRequest:
+      properties:
+        issueTypeCode:
+          description: >-
+            [Identifies the issue type](#operation/getIssueTypesByAccount). issueTypeCode is either `SOURCE` or
+            `TRANSLATION`. Each have their own set of ```issueSubType``` values.
+          enum:
+            - SOURCE
+            - TRANSLATION
+          type: string
+        issueSubTypeCode:
+          description: >-
+            For issueTypeCode=SOURCE - CLARIFICATION | MISSPELLING, For
+            issueTypeCode=TRANSLATION - POOR_TRANSLATION | DOES_NOT_FIT_SPACE |
+            PLACEHOLDER_ISSUE | REVIEW_TRANSLATION | MT_ERROR
+          enum:
+            - CLARIFICATION
+            - MISSPELLING
+            - POOR_TRANSLATION
+            - DOES_NOT_FIT_SPACE
+            - PLACEHOLDER_ISSUE
+            - REVIEW_TRANSLATION
+            - CUSTOM
+            - MT_ERROR
+          type: string
+        localeId:
+          description: An identifying code for a target language in Smartling.
+          example: ru-RU
+          type: string
+      required:
+        - issueTypeCode
+        - issueSubTypeCode
+      type: object
+    IssueChangedTypeResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    issueTypeCode:
+                      description: '[Issue Type identifier](#operation/getIssueTypesByAccount)'
+                      enum:
+                        - SOURCE
+                        - TRANSLATION
+                      type: string
+                    issueSubTypeCode:
+                      description: Issue SubType identifier
+                      enum:
+                        - CLARIFICATION
+                        - MISSPELLING
+                        - POOR_TRANSLATION
+                        - DOES_NOT_FIT_SPACE
+                        - PLACEHOLDER_ISSUE
+                        - REVIEW_TRANSLATION
+                        - CUSTOM
+                        - MT_ERROR
+                      type: string
+                    localeId:
+                      description: An identifying code for a target language in Smartling.
+                      type: string
+                  type: object
+              type: object
+    IssueAssigneeRequest:
+      properties:
+        assigneeUserUid:
+          description: User identifier who is assigned to issue
+          type: string
+      required:
+        - assigneeUserUid
+      type: object
+    IssueAssigneeResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    assigneeUserUid:
+                      description: User identifier who is assigned to issue
+                      type: string
+                  type: object
+              type: object
+    IssueAssigneeDeleteResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          $ref: '#/components/schemas/SuccessResponse'
+    IssueSeverityLevelRequest:
+      properties:
+        issueSeverityLevelCode:
+          description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
+          enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+          type: string
+      required:
+        - issueSeverityLevelCode
+      type: object
+    IssueSeverityLevelResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    issueSeverityLevelCode:
+                      description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
+                      enum:
+                        - LOW
+                        - MEDIUM
+                        - HIGH
+                      type: string
+                  type: object
+              type: object
+    FindRequest:
+      properties:
+        createdDateBefore:
+          description: Filter issues which were created before this date.
+          example: '2015-12-23T18:14:09Z'
+          type: string
+        createdDateAfter:
+          description: Filter issues which were created after this date.
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        resolvedDateBefore:
+          description: Filter issues which were resolved before this date.
+          example: '2015-12-23T18:14:09Z'
+          type: string
+        resolvedDateAfter:
+          description: Filter issues which were resolved after this date.
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        answered:
+          description: Issue flag "answered".
+          example: false
+          type: boolean
+        reopened:
+          description: Issue flag "reopened".
+          example: true
+          type: boolean
+        issueSeverityLevelCodes:
+          items:
+            description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
+            enum:
+              - LOW
+              - MEDIUM
+              - HIGH
+            type: string
+          type: array
+        issueStateCodes:
+          items:
+            description: '[Issue State identifier.](#operation/getAllIssuesStates)'
+            enum:
+              - OPENED
+              - RESOLVED
+            type: string
+          type: array
+        issueSubTypeCodes:
+          items:
+            description: Issue SubType identifier
+            enum:
+              - CLARIFICATION
+              - MISSPELLING
+              - POOR_TRANSLATION
+              - DOES_NOT_FIT_SPACE
+              - PLACEHOLDER_ISSUE
+              - REVIEW_TRANSLATION
+              - CUSTOM
+              - MT_ERROR
+            type: string
+          type: array
+        issueTypeCodes:
+          items:
+            description: '[Issue Type identifier.](#operation/getIssueTypesByAccount)'
+            enum:
+              - SOURCE
+              - TRANSLATION
+            type: string
+          type: array
+        reportedByUserUid:
+          description: User identifier who created the issue.
+          example: 661801f19693
+          type: string
+        assigneeUserUid:
+          description: User identifier who is assigned to issue.
+          example: 661801f19693
+          type: string
+        hasComments:
+          description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
+          example: true
+          type: boolean
+        issueNumbers:
+          example:
+            - 10
+            - 11
+            - 12
+          items:
+            description: Issue Number identifier.
+            type: integer
+          maxItems: 1000
+          type: array
+        jobFilter:
+          properties:
+            jobUids:
+              example:
+                - uhtkye5amtiz
+                - h9blewayxsz9
+              items:
+                description: Job identifier.
+                type: string
+              maxItems: 1000
+              type: array
+            presence:
+              description: What kind of issues have to be presented
+              enum:
+                - HAS_ANY
+                - HAS_NOTHING
+              type: string
+          type: object
+        stringFilter:
+          properties:
+            hashcodes:
+              example:
+                - afe47cdaffe0c0226506919c291d9c1a
+                - afe37cdaffe0c0226508919c291d9c1a
+                - afe47cdaffe0c02265406919c291d2c1a
+              items:
+                description: >-
+                  Unique identifier for a string in Smartling. Used by the
+                  Issues API to attach an issue to a string. You can get the
+                  hashcode for a string via the Strings API.
+                type: string
+              type: array
+            localeIds:
+              example:
+                - ru-RU
+              items:
+                description: An identifying code for a target language in Smartling.
+                type: string
+              type: array
+          type: object
+        limit:
+          default: 30
+          description: limit
+          example: 30
+          minimum: 0
+          type: integer
+        offset:
+          default: 0
+          description: offset
+          example: 0
+          minimum: 0
+          type: integer
+        sortBy:
+          description: Sort result by fields
+          properties:
+            items:
+              items:
+                properties:
+                  direction:
+                    description: Sort direction
+                    enum:
+                      - ASC
+                      - DESC
+                    type: string
+                  fieldName:
+                    description: Sort by certain field
+                    enum:
+                      - issueTypeCode
+                      - issueSubTypeCode
+                      - issueStateCode
+                      - createdDate
+                      - resolvedDate
+                      - hashcode
+                      - issueText
+                      - issueTextModifiedDate
+                      - resolvedByUserUid
+                      - reportedByUserUid
+                      - assigneeUserUid
+                    type: string
+                type: object
+              type: array
+          type: object
+      type: object
+    IssuesFindResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          answered:
+                            description: Issue flag "aswered"
+                            type: boolean
+                          createdDate:
+                            description: Issue creation date
+                            type: string
+                          issueSeverityLevelCode:
+                            description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
+                            enum:
+                              - LOW
+                              - MEDIUM
+                              - HIGH
+                            type: string
+                          issueStateCode:
+                            description: '[Issue State identifier](#operation/getAllIssuesStates)'
+                            enum:
+                              - OPENED
+                              - RESOLVED
+                            type: string
+                          issueSubTypeCode:
+                            description: Issue SubType identifier
+                            enum:
+                              - CLARIFICATION
+                              - MISSPELLING
+                              - POOR_TRANSLATION
+                              - DOES_NOT_FIT_SPACE
+                              - PLACEHOLDER_ISSUE
+                              - REVIEW_TRANSLATION
+                              - CUSTOM
+                              - MT_ERROR
+                            type: string
+                          issueText:
+                            description: Issue text
+                            type: string
+                          issueTextModifiedDate:
+                            description: Issue text modification date
+                            type: string
+                          issueTypeCode:
+                            description: '[Issue Type identifier](#operation/getIssueTypesByAccount)'
+                            enum:
+                              - SOURCE
+                              - TRANSLATION
+                            type: string
+                          issueUid:
+                            description: Issue identifier
+                            type: string
+                          projectId:
+                            description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+                            type: string
+                          accountUid:
+                            description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+                            type: string
+                          issueNumber:
+                            description: Issue number
+                            type: integer
+                          reportedByUserUid:
+                            description: User identifier who created (reported) issue
+                            type: string
+                          resolvedByUserUid:
+                            description: User identifier who resolved issue
+                            type: string
+                          assigneeUserUid:
+                            description: User identifier who is assigned to issue
+                            type: string
+                          resolvedDate:
+                            description: Issue resolve date
+                            type: string
+                          reopened:
+                            description: Issue flag "reopened"
+                            type: boolean
+                          reopenedByUserUid:
+                            description: User identifier who reopened issue
+                            type: string
+                          reopenedDate:
+                            description: Issue reopen date
+                            type: string
+                          string:
+                            properties:
+                              hashcode:
+                                description: >-
+                                  Unique identifier for a string in Smartling. Used
+                                  by the Issues API to attach an issue to a string.
+                                  You can get the hashcode for a string via String
+                                  API.
+                                type: string
+                              localeId:
+                                description: An identifying code for a target language in Smartling.
+                                type: string
+                            type: object
+                          issueCommentsCount:
+                            description: Issue comments count
+                            type: integer
+
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object
+    CountRequest:
+      properties:
+        createdDateBefore:
+          description: Filter issues which created before this date
+          type: string
+        createdDateAfter:
+          description: Filter issues which created after this date
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        resolvedDateBefore:
+          description: Filter issues which resolved before this date
+          example: '2015-12-23T18:14:09Z'
+          type: string
+        resolvedDateAfter:
+          description: Filter issues which resolved after this date
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        answered:
+          description: Issue flag "answered"
+          example: true
+          type: boolean
+        reopened:
+          description: Issue flag "reopened".
+          example: true
+          type: boolean
+        issueSeverityLevelCodes:
+          items:
+            description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
+            enum:
+              - LOW
+              - MEDIUM
+              - HIGH
+            type: string
+          type: array
+        issueStateCodes:
+          items:
+            description: '[Issue State identifier](#operation/getAllIssuesStates)'
+            enum:
+              - OPENED
+              - RESOLVED
+            type: string
+          type: array
+        issueSubTypeCodes:
+          items:
+            description: Issue SubType identifier
+            enum:
+              - CLARIFICATION
+              - MISSPELLING
+              - POOR_TRANSLATION
+              - DOES_NOT_FIT_SPACE
+              - PLACEHOLDER_ISSUE
+              - REVIEW_TRANSLATION
+              - CUSTOM
+              - MT_ERROR
+            type: string
+          type: array
+        issueTypeCodes:
+          items:
+            description: '[Issue Type identifier](#operation/getIssueTypesByAccount)'
+            enum:
+              - SOURCE
+              - TRANSLATION
+            type: string
+          type: array
+        reportedByUserUid:
+          description: User identifier who created issue
+          example: 661801f19693
+          type: string
+        assigneeUserUid:
+          description: User identifier who is assigned to issue
+          example: 661801f19693
+          type: string
+        hasComments:
+          description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
+          example: true
+          type: boolean
+        issueNumbers:
+          example:
+            - 10
+            - 11
+            - 12
+          items:
+            description: Issue Number identifier.
+            type: integer
+          maxItems: 1000
+          type: array
+        jobFilter:
+          properties:
+            jobUids:
+              example:
+                - uhtkye5amtiz
+                - h9blewayxsz9
+              items:
+                description: Job identifier.
+                type: string
+              maxItems: 1000
+              type: array
+            presence:
+              description: What kind of issues have to be presented
+              enum:
+                - HAS_ANY
+                - HAS_NOTHING
+              type: string
+          type: object
+        stringFilter:
+          properties:
+            hashcodes:
+              example:
+                - afe47cdaffe0c0226506919c291d9c1a
+                - afe37cdaffe0c0226508919c291d9c1a
+                - afe47cdaffe0c02265406919c291d2c1a
+              items:
+                description: >-
+                  Unique identifier for a string in Smartling. Used by the
+                  Issues API to attach an issue to a string. You can get the
+                  hashcode for a string via String API.
+                type: string
+              type: array
+            localeIds:
+              example:
+                - ru-RU
+              items:
+                description: An identifying code for a target language in Smartling.
+                type: string
+              type: array
+          type: object
+      type: object
+    IssuesCountResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    count:
+                      description: Count issues
+                      type: integer
+                  type: object
+              type: object
+    FindAccountIssuesRequest:
+      properties:
+        projectIds:
+          example:
+            - c711467bs
+          items:
+            description: Optional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
+            type: string
+          description: UOptional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
+          type: array
+        createdDateBefore:
+          description: Filter issues which were created before this date.
+          example: '2015-12-23T18:14:09Z'
+          type: string
+        createdDateAfter:
+          description: Filter issues which were created after this date.
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        resolvedDateBefore:
+          description: Filter issues which were resolved before this date.
+          example: '2015-12-23T18:14:09Z'
+          type: string
+        resolvedDateAfter:
+          description: Filter issues which were resolved after this date.
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        answered:
+          description: Issue flag "answered".
+          example: false
+          type: boolean
+        reopened:
+          description: Issue flag "reopened".
+          example: true
+          type: boolean
+        issueSeverityLevelCodes:
+          items:
+            description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
+            enum:
+              - LOW
+              - MEDIUM
+              - HIGH
+            type: string
+          type: array
+        issueStateCodes:
+          items:
+            description: '[Issue State identifier.](#operation/getAllIssuesStates)'
+            enum:
+              - OPENED
+              - RESOLVED
+            type: string
+          type: array
+        issueSubTypeCodes:
+          items:
+            description: Issue SubType identifier
+            enum:
+              - CLARIFICATION
+              - MISSPELLING
+              - POOR_TRANSLATION
+              - DOES_NOT_FIT_SPACE
+              - PLACEHOLDER_ISSUE
+              - REVIEW_TRANSLATION
+              - CUSTOM
+              - MT_ERROR
+            type: string
+          type: array
+        issueTypeCodes:
+          items:
+            description: '[Issue Type identifier.](#operation/getIssueTypesByAccount)'
+            enum:
+              - SOURCE
+              - TRANSLATION
+            type: string
+          type: array
+        reportedByUserUid:
+          description: User identifier who created the issue.
+          example: 661801f19693
+          type: string
+        assigneeUserUid:
+          description: User identifier who is assigned to issue.
+          example: 661801f19693
+          type: string
+        hasComments:
+          description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
+          example: true
+          type: boolean
+        issueNumbers:
+          example:
+            - 10
+            - 11
+            - 12
+          items:
+            description: Issue Number identifier.
+            type: integer
+          maxItems: 1000
+          type: array
+        jobFilter:
+          properties:
+            jobUids:
+              example:
+                - uhtkye5amtiz
+                - h9blewayxsz9
+              items:
+                description: Job identifier.
+                type: string
+              maxItems: 1000
+              type: array
+            presence:
+              description: What kind of issues have to be presented
+              enum:
+                - HAS_ANY
+                - HAS_NOTHING
+              type: string
+          type: object
+        stringFilter:
+          properties:
+            hashcodes:
+              example:
+                - afe47cdaffe0c0226506919c291d9c1a
+                - afe37cdaffe0c0226508919c291d9c1a
+                - afe47cdaffe0c02265406919c291d2c1a
+              items:
+                description: >-
+                  Unique identifier for a string in Smartling. Used by the
+                  Issues API to attach an issue to a string. You can get the
+                  hashcode for a string via the Strings API.
+                type: string
+              type: array
+            localeIds:
+              example:
+                - ru-RU
+              items:
+                description: An identifying code for a target language in Smartling.
+                type: string
+              type: array
+          type: object
+        limit:
+          default: 30
+          description: limit
+          example: 30
+          minimum: 0
+          type: integer
+        offset:
+          default: 0
+          description: offset
+          example: 0
+          minimum: 0
+          type: integer
+        sortBy:
+          description: Sort result by fields
+          properties:
+            items:
+              items:
+                properties:
+                  direction:
+                    description: Sort direction
+                    enum:
+                      - ASC
+                      - DESC
+                    type: string
+                  fieldName:
+                    description: Sort by certain field
+                    enum:
+                      - issueTypeCode
+                      - issueSubTypeCode
+                      - issueStateCode
+                      - createdDate
+                      - resolvedDate
+                      - hashcode
+                      - issueText
+                      - issueTextModifiedDate
+                      - resolvedByUserUid
+                      - reportedByUserUid
+                      - assigneeUserUid
+                    type: string
+                type: object
+              type: array
+          type: object
+      type: object
+    AccountCountRequest:
+      properties:
+        projectIds:
+          example:
+            - c711467bs
+          items:
+            description: Optional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
+            type: string
+          description: UOptional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
+          type: array
+        createdDateBefore:
+          description: Filter issues which created before this date
+          type: string
+        createdDateAfter:
+          description: Filter issues which created after this date
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        resolvedDateBefore:
+          description: Filter issues which resolved before this date
+          example: '2015-12-23T18:14:09Z'
+          type: string
+        resolvedDateAfter:
+          description: Filter issues which resolved after this date
+          example: '2015-11-10T15:14:09Z'
+          type: string
+        answered:
+          description: Issue flag "answered"
+          example: true
+          type: boolean
+        reopened:
+          description: Issue flag "reopened".
+          example: true
+          type: boolean
+        issueSeverityLevelCodes:
+          items:
+            description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
+            enum:
+              - LOW
+              - MEDIUM
+              - HIGH
+            type: string
+          type: array
+        issueStateCodes:
+          items:
+            description: '[Issue State identifier](#operation/getAllIssuesStates)'
+            enum:
+              - OPENED
+              - RESOLVED
+            type: string
+          type: array
+        issueSubTypeCodes:
+          items:
+            description: Issue SubType identifier
+            enum:
+              - CLARIFICATION
+              - MISSPELLING
+              - POOR_TRANSLATION
+              - DOES_NOT_FIT_SPACE
+              - PLACEHOLDER_ISSUE
+              - REVIEW_TRANSLATION
+              - CUSTOM
+              - MT_ERROR
+            type: string
+          type: array
+        issueTypeCodes:
+          items:
+            description: '[Issue Type identifier](#operation/getIssueTypesByAccount)'
+            enum:
+              - SOURCE
+              - TRANSLATION
+            type: string
+          type: array
+        reportedByUserUid:
+          description: User identifier who created issue
+          example: 661801f19693
+          type: string
+        assigneeUserUid:
+          description: User identifier who is assigned to issue
+          example: 661801f19693
+          type: string
+        hasComments:
+          description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
+          example: true
+          type: boolean
+        issueNumbers:
+          example:
+            - 10
+            - 11
+            - 12
+          items:
+            description: Issue Number identifier.
+            type: integer
+          maxItems: 1000
+          type: array
+        jobFilter:
+          properties:
+            jobUids:
+              example:
+                - uhtkye5amtiz
+                - h9blewayxsz9
+              items:
+                description: Job identifier.
+                type: string
+              maxItems: 1000
+              type: array
+            presence:
+              description: What kind of issues have to be presented
+              enum:
+                - HAS_ANY
+                - HAS_NOTHING
+              type: string
+          type: object
+        stringFilter:
+          properties:
+            hashcodes:
+              example:
+                - afe47cdaffe0c0226506919c291d9c1a
+                - afe37cdaffe0c0226508919c291d9c1a
+                - afe47cdaffe0c02265406919c291d2c1a
+              items:
+                description: >-
+                  Unique identifier for a string in Smartling. Used by the
+                  Issues API to attach an issue to a string. You can get the
+                  hashcode for a string via String API.
+                type: string
+              type: array
+            localeIds:
+              example:
+                - ru-RU
+              items:
+                description: An identifying code for a target language in Smartling.
+                type: string
+              type: array
+          type: object
+      type: object

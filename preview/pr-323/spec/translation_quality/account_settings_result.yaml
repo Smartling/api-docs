@@ -1,0 +1,746 @@
+x-paths:
+  check_type_groups:
+    post:
+      deprecated: true
+      description: Create a quality check type group.
+      summary: Create quality check type group
+      tags:
+        - Translation quality checks
+      operationId: createTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - &ref_2
+          name: accountUid
+          in: path
+          type: string
+          required: true
+          description: >-
+            The account’s unique identifier. This can be found in the Smartling
+            Dashboard under Account Settings > API.
+        - &ref_3
+          name: checkTypeCode
+          in: path
+          required: true
+          schema: &ref_0
+            enum:
+              - LEADING_TRAILING_SPACES
+              - ORIGINAL_EQUALS_TARGET
+              - WHITESPACES
+              - SPELLCHECK
+              - TAG_CONSISTENCY
+              - TARGET_LENGTH_LIMIT
+              - NUMBER_CONSISTENCY
+              - REPEATED_WORD
+              - TARGET_IN_WRONG_LANGUAGE
+              - SOURCE_IN_WRONG_LANGUAGE
+              - SEGMENT_COMPLETENESS
+              - NON_TRANSLATABLE_TEXT
+              - EMOJI_CONSISTENCY
+              - INSERTABLE_CONSISTENCY
+              - TARGET_SOURCE_CONSISTENCY
+              - BLACKLISTED_TERMS
+              - GLOSSARY_COMPLIANCE
+              - TRADEMARK_CONSISTENCY
+              - GRAMMAR_CHECK
+              - GLOBAL_CAPITALISATION_CONSISTENCY
+              - PUNCTUATION_CONSISTENCY
+              - PLURALS_REPETITION
+              - REGEX_CHECK
+              - OPEN_ISSUES
+          description: '[check type code](#operation/getTranslationQualityCheckTypes)'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - &ref_4
+                        type: object
+                        required:
+                          - code
+                        properties:
+                          code:
+                            type: string
+                            enum:
+                              - SUCCESS
+                            description: >-
+                              Indicates whether the response was successful or
+                              what error has occurred.
+                      - type: object
+                        properties:
+                          data:
+                            allOf:
+                              - &ref_5
+                                type: object
+                                properties:
+                                  groupUid:
+                                    type: string
+                                    description: Unique identifier of corresponding group.
+                              - &ref_6
+                                type: object
+                                properties:
+                                  severityLevelCode: &ref_1
+                                    enum:
+                                      - DISABLED
+                                      - LOW
+                                      - MEDIUM
+                                      - HIGH
+                              - &ref_7
+                                type: object
+                                properties:
+                                  checkTypeCode: *ref_0
+                              - type: object
+                                properties:
+                                  subTypes:
+                                    type: array
+                                    items:
+                                      allOf:
+                                        - &ref_8
+                                          type: object
+                                          properties:
+                                            checkSubTypeCode:
+                                              enum:
+                                                - EMOJI_ADDED
+                                                - EMOJI_DELETED
+                                                - EMOJI_PRESENT
+                                                - INSERTABLE_ADDED
+                                                - INSERTABLE_DELETED
+                                                - PLACEABLE_ADDED
+                                                - PLACEABLE_DELETED
+                                                - SPACES_AROUND_PLACEABLE
+                                                - PLACEABLE_FORMAT
+                                                - NUMBER_ADDED
+                                                - NUMBER_DELETED
+                                                - NUMBER_INCORRECT_CONVERSION
+                                                - TARGET_IS_EMPTY
+                                                - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                                                - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                                                - TAG_ADDED
+                                                - TAG_DELETED
+                                                - SPACES_AROUND_TAGS
+                                                - TAG_ORDER_IS_CHANGED
+                                                - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+                                                - INVALID_TAG_NESTING
+                                                - TAG_IS_CHANGED
+                                                - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                                - SAME_TRANSLATION_DIFFERENT_SOURCES
+                                            name:
+                                              type: string
+                                              description: check subtype name
+                                              example: Emoji added
+                                        - &ref_9
+                                          type: object
+                                          properties:
+                                            severityLevelCode: *ref_1
+                              - type: object
+                                properties:
+                                  locales:
+                                    type: array
+                                    items:
+                                      allOf:
+                                        - &ref_10
+                                          type: object
+                                          properties:
+                                            targetLocaleId:
+                                              type: string
+                                              description: >-
+                                                Smartling ID for the language you want
+                                                to translate to.
+                                              example: it-IT
+                                          required:
+                                            - targetLocaleId
+                              - type: object
+                                properties:
+                                  ignoreSign:
+                                    type: string
+                                    example: false
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups
+    get:
+      deprecated: true
+      description: Get a quality check type group’s settings.
+      summary: Get quality check type group settings
+      tags:
+        - Translation quality checks
+      operationId: getTranslationQualityCheckTypeGroupDetails
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_2
+        - *ref_3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_4
+                      - type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              totalCount:
+                                type: integer
+                                description: Total element count
+                                example: 1
+                              items:
+                                type: array
+                                items:
+                                  allOf:
+                                    - *ref_5
+                                    - *ref_6
+                                    - *ref_7
+                                    - type: object
+                                      properties:
+                                        subTypes:
+                                          type: array
+                                          items:
+                                            allOf:
+                                              - *ref_8
+                                              - *ref_9
+                                    - type: object
+                                      properties:
+                                        locales:
+                                          type: array
+                                          items:
+                                            allOf:
+                                              - *ref_10
+                                    - type: object
+                                      properties:
+                                        ignoreSign:
+                                          type: string
+                                          example: false
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
+            application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups
+  profiles_check_type_groups:
+    get:
+      description: Get check type groups settings.
+      summary: Get check type groups settings
+      tags:
+        - Translation quality checks
+      operationId: getProfilesTranslationQualityCheckTypeGroupDetails
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_2
+        - &ref_11
+          name: profileUid
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of corresponding profile.
+        - *ref_3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_4
+                      - type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              totalCount:
+                                type: integer
+                                description: Total element count
+                                example: 1
+                              items:
+                                type: array
+                                items:
+                                  allOf:
+                                    - *ref_5
+                                    - &ref_12
+                                      type: object
+                                      properties:
+                                        profileUid:
+                                          type: string
+                                          description: >-
+                                            Unique identifier of corresponding
+                                            profile.
+                                          example: ce6d6b5dbc12
+                                    - *ref_6
+                                    - *ref_7
+                                    - type: object
+                                      properties:
+                                        subTypes:
+                                          type: array
+                                          items:
+                                            allOf:
+                                              - *ref_8
+                                              - *ref_9
+                                    - type: object
+                                      properties:
+                                        locales:
+                                          type: array
+                                          items:
+                                            allOf:
+                                              - *ref_10
+                                    - type: object
+                                      properties:
+                                        ignoreSign:
+                                          type: string
+                                          example: false
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
+            application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups
+    post:
+      description: Create check type group.
+      summary: Create check type group
+      tags:
+        - Translation quality checks
+      operationId: CreateProfilesTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_2
+        - *ref_11
+        - *ref_3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                targetLocaleIds:
+                  description: List of target locale IDs.
+                  example:
+                    - ru-RU
+                  items:
+                    type: string
+                  type: array
+              required:
+                - targetLocaleIds
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_4
+                      - type: object
+                        properties:
+                          data:
+                            allOf:
+                              - *ref_5
+                              - *ref_12
+                              - *ref_6
+                              - *ref_7
+                              - type: object
+                                properties:
+                                  subTypes:
+                                    type: array
+                                    items:
+                                      allOf:
+                                        - *ref_8
+                                        - *ref_9
+                              - type: object
+                                properties:
+                                  locales:
+                                    type: array
+                                    items:
+                                      allOf:
+                                        - *ref_10
+                              - type: object
+                                properties:
+                                  ignoreSign:
+                                    type: string
+                                    example: false
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups
+  check_type_groups_group:
+    get:
+      deprecated: true
+      description: Get a quality check type group by the group identifier.
+      summary: Get quality check type group by group identifier
+      tags:
+        - Translation quality checks
+      operationId: getTranslationQualityCheckTypeGroupDetailsByGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_2
+        - *ref_3
+        - &ref_13
+          name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_4
+                      - type: object
+                        properties:
+                          data:
+                            allOf:
+                              - *ref_5
+                              - *ref_6
+                              - *ref_7
+                              - type: object
+                                properties:
+                                  subTypes:
+                                    type: array
+                                    items:
+                                      allOf:
+                                        - *ref_8
+                                        - *ref_9
+                              - type: object
+                                properties:
+                                  locales:
+                                    type: array
+                                    items:
+                                      allOf:
+                                        - *ref_10
+                              - type: object
+                                properties:
+                                  ignoreSign:
+                                    type: string
+                                    example: false
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
+            application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid
+    delete:
+      deprecated: true
+      description: Delete a quality check type group by the group identifier.
+      summary: Delete quality check type group by group identifier
+      tags:
+        - Translation quality checks
+      operationId: deleteTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_2
+        - *ref_3
+        - *ref_13
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_4
+                      - type: object
+                        properties:
+                          data:
+                            allOf:
+                              - *ref_5
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid
+  profiles_check_type_groups_group:
+    get:
+      description: Get a quality check type group by the group identifier.
+      summary: Get quality check type group by group identifier
+      tags:
+        - Translation quality checks
+      operationId: getProfilesTranslationQualityCheckTypeGroupDetailsByGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_2
+        - *ref_11
+        - *ref_3
+        - *ref_13
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_4
+                      - type: object
+                        properties:
+                          data:
+                            allOf:
+                              - *ref_5
+                              - *ref_12
+                              - *ref_6
+                              - *ref_7
+                              - type: object
+                                properties:
+                                  subTypes:
+                                    type: array
+                                    items:
+                                      allOf:
+                                        - *ref_8
+                                        - *ref_9
+                              - type: object
+                                properties:
+                                  locales:
+                                    type: array
+                                    items:
+                                      allOf:
+                                        - *ref_10
+                              - type: object
+                                properties:
+                                  ignoreSign:
+                                    type: string
+                                    example: false
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
+            application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid
+    delete:
+      description: Delete a quality check type group by the group identifier.
+      summary: Delete quality check type group by group identifier
+      tags:
+        - Translation quality checks
+      operationId: deleteProfilesTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_2
+        - *ref_11
+        - *ref_3
+        - *ref_13
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_4
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid
+  check_type_groups_group_locales:
+    post:
+      deprecated: true
+      description: Add locale to a quality check group.
+      summary: Add locale to group
+      tags:
+        - Translation quality checks
+      operationId: addLocaleToTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_2
+        - *ref_3
+        - *ref_13
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: &ref_14
+              allOf:
+                - *ref_10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: &ref_15
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_4
+                      - type: object
+                        properties:
+                          data:
+                            allOf:
+                              - *ref_10
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales
+  profiles_check_type_groups_group_locales:
+    put:
+      description: Add locale to a quality check group.
+      summary: Add locale to group
+      tags:
+        - Translation quality checks
+      operationId: addLocaleToProfilesTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_2
+        - *ref_11
+        - *ref_3
+        - *ref_13
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: *ref_14
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_15
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales
+  check_type_groups_group_locales_locale:
+    delete:
+      deprecated: true
+      description: Delete locale from a quality check group.
+      summary: Delete locale from group
+      tags:
+        - Translation quality checks
+      operationId: deleteLocaleFromTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_2
+        - *ref_3
+        - *ref_13
+        - &ref_16
+          name: targetLocaleId
+          in: path
+          required: true
+          type: string
+          description: Smartling ID for the language you want to translate to.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_4
+                      - type: object
+                        properties:
+                          data:
+                            allOf:
+                              - *ref_10
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales/$smartlingTargetLocaleId
+  profiles_check_type_groups_group_locales_locale:
+    delete:
+      description: Delete locale from a quality check group.
+      summary: Delete locale from group
+      tags:
+        - Translation quality checks
+      operationId: deleteLocaleFromProfilesTranslationQualityCheckTypeGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_2
+        - *ref_11
+        - *ref_3
+        - *ref_13
+        - *ref_16
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_4
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/locales/$smartlingTargetLocaleId

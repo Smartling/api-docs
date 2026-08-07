@@ -1,0 +1,260 @@
+x-paths:
+  issue_sub_types:
+    post:
+      summary: Create account issue subtype
+      description: Create account issue subtype.
+      tags:
+        - Issues
+      operationId: createAccountIssuesSubtype
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: '[Unique identifier of issue type](#operation/getIssueTypesByAccount)'
+          in: path
+          name: issueType
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountIssueSubtypeModel'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        issueSubTypeCode: "TEST_CODE"
+                        description: "issue subtype code description"
+              schema:
+                $ref: '#/components/schemas/AccountIssueSubTypeResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingAccountIssueSubTypeJSON"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/issue-types/$smartlingIssueType/sub-types
+
+
+
+  issue_sub_type:
+    put:
+      summary: Update account issue subtype description
+      description:  Update account issue subtype description that is shown in the Smartling Dashboard UI and can be used for custom integrations to show a user friendly description of the subtype.
+      tags:
+        - Issues
+      operationId: updateAccountIssuesSubtype
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: '[Unique identifier of issue type](#operation/getIssueTypesByAccount)'
+          in: path
+          name: issueType
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of issue subtype
+          in: path
+          name: issueSubTypeCode
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountIssueSubtypeDescriptionField'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        issueSubTypeCode: "TEST_CODE"
+                        description: "issue subtype code description"
+              schema:
+                $ref: '#/components/schemas/AccountIssueSubTypeResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingAccountIssueSubTypeJSON"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/issue-types/$smartlingIssueType/sub-types/$smartlingIssueSubTypeCode
+    delete:
+      summary: Delete account issue subtype
+      description: Delete account issue subtype.
+      tags:
+        - Issues
+      operationId: deleteAccountIssuesSubType
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of issue type
+          in: path
+          name: issueType
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of issue subtype
+          in: path
+          name: issueSubTypeCode
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/issue-types/$smartlingIssueType/sub-types/$smartlingIssueSubTypeCode
+
+
+  issue_sub_type_state:
+    put:
+      summary: Update account issue subtype state
+      description: Default for new subtypes is 'true'.  If a subtype is updated with enabled = 'false' the subtype cannot be used for new issues. Existing issues will not be affected.
+      tags:
+        - Issues
+      operationId: updateAccountIssuesSubtypeState
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: '[Unique identifier of issue type](#operation/getIssueTypesByAccount)'
+          in: path
+          name: issueType
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of issue subtype
+          in: path
+          name: issueSubTypeCode
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountIssueSubtypeStateField'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        enabled: true
+              schema:
+                $ref: '#/components/schemas/AccountIssueSubTypeStateResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingAccountIssueSubTypeJSON"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/issue-types/$smartlingIssueType/sub-types/$smartlingIssueSubTypeCode/state
+
+components:
+  schemas:
+    AccountIssueSubtypeModel:
+      allOf:
+        - type: object
+          properties:
+            issueSubTypeCode:
+              description: Unique identifier code of issue subtype
+              maxLength: 80
+              pattern: "^[a-zA-Z0-9_]+$"
+              example: TEST_CODE
+              type: string
+        - $ref: '#/components/schemas/AccountIssueSubtypeDescriptionField'
+    AccountIssueSubtypeDescriptionField:
+      properties:
+        description:
+          description: Description of issue subtype that is shown in the Smartling Dashboard UI and can be used for custom integrations to show a user friendly description of the subtype.
+          example: issue subtype code description
+          type: string
+    AccountIssueSubtypeStateField:
+      properties:
+        enabled:
+          description: Default for new subtypes is 'true'.  If a subtype is updated with enabled = 'false' the subtype cannot be used for new issues. Existing issues will not be affected.
+          example: true
+          type: boolean
+
+    AccountIssueSubTypeResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    issueSubTypeCode:
+                      description: Unique identifier code of issue subtype
+                      type: string
+                    description:
+                      description: Description of issue subtype that is shown in the Smartling Dashboard UI and can be used for custom integrations to show a user friendly description of the subtype.
+                      type: string
+                  type: object
+              type: object
+    AccountIssueSubTypeStateResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    enabled:
+                      description: Default for new subtypes is 'true'.  If a subtype is updated with enabled = 'false' the subtype cannot be used for new issues. Existing issues will not be affected.
+                      type: boolean
+                  type: object
+              type: object

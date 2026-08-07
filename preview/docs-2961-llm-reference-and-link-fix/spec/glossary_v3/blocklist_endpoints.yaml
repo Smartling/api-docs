@@ -1,0 +1,393 @@
+x-paths:
+
+  create_blocklist:
+    post:
+      summary: Create blocklist
+      description: Create blocklist endpoint.
+      tags:
+        - Blocklist API
+      operationId: createBlocklist
+      consumes:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlocklistCommandPTO'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocklistResponsePTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  read_update_blocklist:
+    get:
+      tags:
+        - Blocklist API
+      summary: Read blocklist
+      description: Read blocklist endpoint.
+      operationId: readBlocklist
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlocklistResponsePTO"
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+    put:
+      summary: Update blocklist
+      description: Update blocklist endpoint.
+      tags:
+        - Blocklist API
+      operationId: updateBlocklist
+      consumes:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlocklistCommandPTO'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocklistResponsePTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  archive_blocklist:
+    put:
+      summary: Archive blocklist
+      description: Archive blocklist endpoint.
+      tags:
+        - Blocklist API
+      operationId: archiveBlocklist
+      consumes:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+      requestBody:
+        content:
+          application/json: { }
+
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocklistArchiveUnarchivedResponsePTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  restore_blocklist:
+    put:
+      summary: Unarchive/restore blocklist
+      description: Unarchive/restore blocklist endpoint.
+      tags:
+        - Blocklist API
+      operationId: restoreBlocklist
+      consumes:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/blocklistUidPathParameter'
+      requestBody:
+        content:
+          application/json: { }
+
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocklistArchiveUnarchivedResponsePTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  blocklists_search_by_filter:
+    post:
+      summary: Search blocklists by filter
+      description: Search blocklists by filter endpoint.
+      tags:
+        - Blocklist API
+      operationId: searchBlocklist
+      consumes:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetBlocklistByFilterCommandPTO'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlocklistSearchListResponsePTO'
+
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+components:
+
+  schemas:
+
+    BlocklistCommandPTO:
+      type: object
+      required:
+        - blocklistName
+        - glossaryUids
+      properties:
+        blocklistName:
+          type: string
+          description: Name of the blocklist. Character limit is equal to 170 characters.
+          example: My new blocklist
+        description:
+          type: string
+          description: Description of the blocklist. Character limit is equal to 250 characters.
+          example: Blocklist created for common terms in scope of 'my-project'
+        glossaryUids:
+          type: array
+          description: Associated glossary uids.
+          uniqueItems: true
+          items:
+            type: string
+          example: [ "b45df55c-a5ae-4eda-857d-9c4b00526bc5", "b45df55c-a5ae-4eda-857d-9c4b00526bc1" ]
+      description: Blocklist command.
+
+    GetBlocklistByFilterCommandPTO:
+      type: object
+      properties:
+        query:
+          type: string
+          description: >-
+            Allow to search blocklists by query in scope of name or description property.
+          example: some name / description
+        blocklistState:
+          type: string
+          description: Blocklist state.
+          enum:
+            - ACTIVE
+            - ARCHIVED
+            - BOTH
+          example: BOTH
+        glossaryUids:
+          type: array
+          description: Associated glossaryUids filter.
+          items:
+            type: string
+          example: [ "58966072-6569-4c22-930c-de906b7fb18d", "12366072-6569-4c22-930c-de906b7fb18d" ]
+        paging:
+          description: >-
+            Paging options for the filter.
+          $ref: "./g_common.yaml#/components/schemas/PaginationCommandPTO"
+        sorting:
+          description: >-
+            Sorting command. Sort fields are - 'name | createdDate | lastModifiedDate'
+          $ref: "#/components/schemas/BlocklistSortCommandPTO"
+      description: >-
+        Blocklist filter command.  
+
+    BlocklistSortCommandPTO:
+      type: object
+      properties:
+        field:
+          type: string
+          enum:
+            - name
+            - createdDate
+            - lastModifiedDate
+          description: Sorting field.
+        direction:
+          type: string
+          enum:
+            - ASC
+            - DESC
+          description: Sorting direction.
+      description: Sorting options for the filter.
+
+    BlocklistResponse:
+      type: object
+      properties:
+        blocklistUid:
+          type: string
+          description: Blocklist uid.
+          example: 98966072-6569-4c22-930c-de906b7fb18c
+        accountUid:
+          type: string
+          description: Account uid.
+          example: 56a0b220
+        blocklistName:
+          type: string
+          description: Blocklist name.
+          example: Common-terms-to-block
+        description:
+          type: string
+          description: Blocklist description.
+        glossaryUids:
+          type: array
+          description: Associated glossary uids.
+          uniqueItems: true
+          items:
+            type: string
+          example: [ "b45df55c-a5ae-4eda-857d-9c4b00526bc5", "b45df55c-a5ae-4eda-857d-9c4b00526bc1" ]
+        archived:
+          type: boolean
+          description: >-
+            Blocklist archived. In case if {@code true} set, then blocklist is archived.
+        createdByUserUid:
+          type: string
+          description: Uid of the blocklist creator.
+          example: 671b520051b2
+        modifiedByUserUid:
+          type: string
+          description: Uid of the user who had last modified blocklist.
+          example: 671b520051b2
+        createdDate:
+          type: string
+          description: Blocklist creation date.
+          example: 2021-07-20T13:19:46Z
+        modifiedDate:
+          type: string
+          description: Blocklist last modification date.
+          example: 2021-07-20T13:19:46Z
+      description: Blocklist response.
+
+    BlocklistResponsePTO:
+      allOf:
+        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/BlocklistResponse"
+
+    BlocklistArchiveUnarchivedResponsePTO:
+      type: object
+      properties:
+        code:
+          type: string
+          description: >- 
+            SUCCESS in case if operation was successfully performed, 
+            NO_CONTENT in case if  operation was not performed.
+          example: SUCCESS
+      description: Result of the archive / restore operation on blocklist.
+
+    BlocklistSearchListResponsePTO:
+      type: object
+      required:
+        - response
+      properties:
+        totalCount:
+          type: integer
+          format: int64
+          description: total blocklists amount
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlocklistSearchResponsePTO"
+
+    BlocklistSearchResponsePTO:
+      allOf:
+        - $ref: "#/components/schemas/BlocklistResponse"
+        - type: object
+          properties:
+            termsCount:
+              type: integer
+              format: int32
+              description: Amount of blocklist-terms in current blocklist.
+            associatedGlossaries:
+              type: integer
+              format: int32
+              description: Amount of glossaries associated with current blocklist.
+          description: Extends simple blocklist response with additional properties.

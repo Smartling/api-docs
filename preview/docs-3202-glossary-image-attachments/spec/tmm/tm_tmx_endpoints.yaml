@@ -1,0 +1,374 @@
+x-paths:
+  import_tmx_file:
+    post:
+      tags:
+        - Translation Memory
+      operationId: tmx_import_file
+      summary: Import a TMX file into a translation memory
+      description: |
+        Uploads a TMX file and imports its translation units into the target translation memory
+        (`tmUid`). The TM must belong to the account identified by `accountUid` and must not have a
+        machine-generated translation quality type; machine-generated TMs cannot receive TMX imports.
+        See [Import a TMX File](https://help.smartling.com/hc/en-us/articles/14320823952539-Import-a-TMX-File)
+        for more detail on this process.
+
+        TMX imports do not preserve plural information: once imported, plural form data for the
+        translations is lost. Files must follow the
+        [TMX standard](https://help.smartling.com/hc/en-us/articles/115003184114-TMX), including a
+        `<header>` tag with matching `srclang` and a supported `datatype`. Re-importing a file with
+        the same `fileUri` overwrites the previous import for that name.
+
+        The import runs asynchronously. Use the returned `jobUid` to correlate with TMX Import
+        History. Files up to 1648 MB are accepted.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TmxImportRequest'
+            encoding:
+              file:
+                contentType: application/xml, text/xml
+      responses:
+        '200':
+          description: TMX file accepted and import started.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TmxImportSuccessResponse'
+              examples:
+                accepted:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        message: null
+                        wordCount: 0
+                        stringCount: 0
+                        translationMemoryImportErrors: null
+                        parsingErrors: null
+                        jobUid: djhh73hdjsj
+                        tmxUid: jkhdjk3842k
+        '400':
+          description: |
+            The request failed validation.
+
+            <details>
+            <summary>Common causes</summary>
+
+            - A missing required field.
+            - `tmUid` does not belong to `accountUid`, or belongs to a machine-generated-quality TM.
+            - A TMX metadata location field exceeds the maximum length.
+            - `escapeSmpUnicodeParserDirective` is not a recognized value.
+            - The uploaded file is not a TMX/XML document.
+            - The uploaded file exceeds the maximum upload size.
+            </details>
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                missing_field:
+                  summary: Required field missing
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: null
+                          message: File uri is required.
+                          details: null
+                tm_not_owned_or_not_allowed:
+                  summary: tmUid does not belong to the account, or is not eligible for import
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: tm.uid.incorrect
+                          message: Incorrect tmUid field value.
+                          details:
+                            field: tmUid
+                file_too_large:
+                  summary: Uploaded file exceeds the maximum size
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: null
+                          message: The uploaded TMX file exceeds the maximum allowed size.
+                          details: null
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '423':
+          description: |
+            Another TMX import, move, or export for the same TM (or the same `tmUid` and `fileUri`
+            pair) is already in progress. Retry after the in-progress operation completes.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error423Response'
+              examples:
+                already_in_progress:
+                  value:
+                    response:
+                      code: RESOURCE_LOCKED
+                      errors:
+                        - key: null
+                          message: Operation already in progress; please try again later.
+                          details: null
+        '429':
+          description: The account has reached its limit of concurrent TMX imports.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error429Response'
+              examples:
+                limit_exceeded:
+                  value:
+                    response:
+                      code: MAX_OPERATIONS_LIMIT_EXCEEDED
+                      errors:
+                        - key: null
+                          message: The limit of 2 TMX imports running at once has been reached for this account. Please try again in a few minutes.
+                          details: null
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  download_tmx_file:
+    get:
+      tags:
+        - Translation Memory
+      operationId: tmx_download_file
+      summary: Download a previously generated TMX export
+      description: |
+        Downloads a TMX file previously generated by exporting a translation memory (see
+        [Export a TM](https://help.smartling.com/hc/en-us/articles/360008268793-Translation-Memory-Management#h_01EYJX88ZXJ3M9PNWBDS6ZBRSX)).
+        The `tmxFileKey` is the opaque key returned in the export's download link, typically
+        delivered by email once a bulk TM export completes. The key is scoped to `accountUid`; a
+        key from another account's export cannot be used here.
+
+        Export files expire 14 days after generation. After expiry, the export must be regenerated.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - name: tmxFileKey
+          in: path
+          required: true
+          description: |
+            Opaque, base64-encoded key identifying a previously generated TMX export (an
+            export job UID and version, encoded together). Treat as an opaque token; do not
+            construct or parse it manually.
+          schema:
+            type: string
+            pattern: '^[A-Za-z0-9+/]+={0,2}$'
+            maxLength: 512
+            examples:
+              - ZGpoaDczaGRqc2o6MA==
+      responses:
+        '200':
+          description: The TMX file content.
+          headers:
+            Content-Disposition:
+              description: 'Attachment filename in the form `attachment; filename="{tmName}-{accountUid}-{date}.tmx"`.'
+              schema:
+                type: string
+            Content-Length:
+              description: Size of the TMX file in bytes.
+              schema:
+                type: integer
+          content:
+            application/xml:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: No TMX export matches `tmxFileKey` for this `accountUid`.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '410':
+          description: The export's underlying file has expired and must be regenerated.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - response
+                properties:
+                  response:
+                    type: object
+                    required:
+                      - code
+                      - errors
+                    properties:
+                      code:
+                        type: string
+                        enum:
+                          - GONE
+                      errors:
+                        type: array
+                        items:
+                          $ref: '../api_common.yaml#/components/schemas/Error'
+              examples:
+                expired:
+                  value:
+                    response:
+                      code: GONE
+                      errors:
+                        - key: null
+                          message: 'TmxDownloadFile with downloadKey=ZGpoaDczaGRqc2o6MA== was expired. Please export again.'
+                          details: null
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+components:
+  schemas:
+    TmUid:
+      type: string
+      description: Unique identifier (UID) of a translation memory - 12 lowercase alphanumeric characters.
+      pattern: '^[a-z0-9]{12}$'
+      examples:
+        - j45v1uvsi3tx
+
+    TmxImportRequest:
+      type: object
+      description: Multipart form fields for a TMX import.
+      required:
+        - file
+        - fileUri
+        - tmUid
+      properties:
+        file:
+          type: string
+          format: binary
+          description: The TMX file to import. Must be a well-formed TMX/XML document, up to 1648 MB.
+        fileUri:
+          type: string
+          maxLength: 2048
+          description: |
+            Path or URI identifying this content within the target TM. Re-importing with the same
+            `fileUri` overwrites the previous import of that name.
+          examples:
+            - test/tes_file.tmx
+        tmUid:
+          allOf:
+            - $ref: '#/components/schemas/TmUid'
+          description: |
+            Target translation memory. Must belong to `accountUid` and must not be a TM whose
+            translation quality type is machine-generated.
+        description:
+          type: string
+          maxLength: 1000
+          description: Optional free-text description of this import.
+        translatorNameLocation:
+          type: string
+          maxLength: 250
+          description: |
+            Location of the translator-name metadata within the TMX file, expressed as a
+            `@tu.<attribute>` or `@prop.type.<property>` reference (see the TMX file's `<tu>` and
+            `<prop>` elements, for example `@tu.changeid`).
+          examples:
+            - '@tu.changeid'
+        translationDateLocation:
+          type: string
+          maxLength: 250
+          description: |
+            Location of the translation-date metadata within the TMX file. Recommended whenever
+            available; if omitted, imported units show the import date as their last-updated date.
+          examples:
+            - '@tu.creationdate'
+        variantLocation:
+          type: string
+          maxLength: 250
+          description: Location of the string-variant metadata within the TMX file.
+          examples:
+            - '@prop.type.x-SID:SingleString'
+        fileUriLocation:
+          type: string
+          maxLength: 250
+          description: Location of the source file/URL metadata within the TMX file.
+          examples:
+            - '@prop.type.x-idiom-source-ipath'
+        escapeSmpUnicodeParserDirective:
+          type: string
+          enum:
+            - "on"
+            - "off"
+          description: Whether to escape supplementary-multilingual-plane Unicode characters while parsing the file.
+
+    TmxParsingError:
+      type: object
+      description: A single problem found in the TMX file, such as a source locale mismatch or an unterminated element.
+      properties:
+        messages:
+          type: array
+          items:
+            type: string
+          description: Human-readable descriptions of the problem, for example a placeholder mismatch between source and translation.
+        line:
+          type: integer
+          description: 1-based line number in the TMX file where the problem occurs.
+        column:
+          type: integer
+          description: 1-based column number in the TMX file where the problem occurs.
+
+    TmxImportSummary:
+      type: object
+      description: Result of a TMX import request.
+      properties:
+        message:
+          type: string
+          nullable: true
+          description: Additional human-readable status message, when present.
+        wordCount:
+          type: integer
+          description: Total word count submitted for import.
+        stringCount:
+          type: integer
+          description: Total number of translation units submitted for import.
+        translationMemoryImportErrors:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/TmxParsingError'
+          description: Errors that blocked specific units from being imported into the translation memory. Null when there are none.
+        parsingErrors:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/TmxParsingError'
+          description: Errors encountered while parsing the TMX file itself. Null when there are none.
+        jobUid:
+          type: string
+          description: Identifier for this import, used to correlate with TMX Import History.
+        tmxUid:
+          type: string
+          description: Identifier assigned to this TMX upload.
+
+    TmxImportSuccessResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/TmxImportSummary'
