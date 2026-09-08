@@ -25,6 +25,7 @@ if (branch && branch !== 'gh-pages') {
   cp('-R', 'spec/webhooks_api', specFolder);
   cp('-R', 'spec/strings', specFolder);
   cp('-R', 'spec/tmm', specFolder);
+  cp('-R', 'spec/workflow_strings', specFolder);
   cp('-R', 'spec/api_common.yaml', specFolder);
 
   exec('deploy-to-gh-pages --update .tmp');
