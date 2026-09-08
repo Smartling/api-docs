@@ -94,52 +94,52 @@ x-paths:
                         key: api.workflow.string.validation.workflowStepAccess
                         message: Workflow step not found or not accessible
 
-  components:
-    schemas:
+components:
+  schemas:
 
-      WorkflowStringMoveCommand:
-        type: object
-        description: >-
-          Batch command to move strings to target workflow steps, across one
-          or more locales.
-        required:
-          - items
-        properties:
+    WorkflowStringMoveCommand:
+      type: object
+      description: >-
+        Batch command to move strings to target workflow steps, across one
+        or more locales.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          description: Per-locale move instructions.
+          minItems: 1
+          maxItems: 1000
           items:
-            type: array
-            description: Per-locale move instructions.
-            minItems: 1
-            maxItems: 1000
-            items:
-              $ref: '#/components/schemas/WorkflowStringMoveItem'
+            $ref: '#/components/schemas/WorkflowStringMoveItem'
 
-      WorkflowStringMoveItem:
-        type: object
-        description: Move instruction for a single locale/target-step pair.
-        required:
-          - hashcodes
-          - targetLocaleId
-          - targetWorkflowStepUid
-        properties:
-          hashcodes:
-            type: array
-            description: >-
-              String hashcodes to move. The total number of hashcodes across
-              all items in the request must not exceed 1000.
-            minItems: 1
-            maxItems: 1000
-            items:
-              $ref: '../api_common.yaml#/components/schemas/Hashcode'
-          targetLocaleId:
-            description: Target locale. Must be a locale configured in the project.
-            $ref: '../api_common.yaml#/components/schemas/LocaleId'
-          sourceWorkflowStepUid:
-            description: >-
-              Current workflow step of the strings. When omitted, strings are
-              moved regardless of their current step.
-            $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
-          targetWorkflowStepUid:
-            description: >-
-              Destination workflow step. Must exist, be accessible, and have
-              targetLocaleId configured.
-            $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+    WorkflowStringMoveItem:
+      type: object
+      description: Move instruction for a single locale/target-step pair.
+      required:
+        - hashcodes
+        - targetLocaleId
+        - targetWorkflowStepUid
+      properties:
+        hashcodes:
+          type: array
+          description: >-
+            String hashcodes to move. The total number of hashcodes across
+            all items in the request must not exceed 1000.
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '../api_common.yaml#/components/schemas/Hashcode'
+        targetLocaleId:
+          description: Target locale. Must be a locale configured in the project.
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
+        sourceWorkflowStepUid:
+          description: >-
+            Current workflow step of the strings. When omitted, strings are
+            moved regardless of their current step.
+          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+        targetWorkflowStepUid:
+          description: >-
+            Destination workflow step. Must exist, be accessible, and have
+            targetLocaleId configured.
+          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
