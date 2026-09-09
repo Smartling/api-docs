@@ -12,8 +12,8 @@ x-paths:
         Each entry in `items` must include at least one hashcode.
         `targetLocaleId` must be a locale configured in the project, and
         `targetWorkflowStepUid` must be an existing, accessible workflow step
-        that has that locale configured. When `sourceWorkflowStepUid` is
-        omitted, matching strings are moved regardless of their current step.
+        that has that locale configured. Matching strings are moved
+        regardless of their current workflow step.
 
 
         This endpoint always processes synchronously and returns a `200`
@@ -52,15 +52,6 @@ x-paths:
                         - d41d8cd98f00b204e9800998ecf8427e
                       targetLocaleId: de-DE
                       targetWorkflowStepUid: 8675fc097a86
-              with_source_step:
-                summary: Move strings only if they're currently in a specific step
-                value:
-                  items:
-                    - hashcodes:
-                        - d41d8cd98f00b204e9800998ecf8427e
-                      targetLocaleId: fr-FR
-                      sourceWorkflowStepUid: 1234fc097a11
-                      targetWorkflowStepUid: 7564fc097a85
       responses:
         200:
           description: Strings moved successfully.
@@ -133,11 +124,6 @@ components:
         targetLocaleId:
           description: Target locale. Must be a locale configured in the project.
           $ref: '../api_common.yaml#/components/schemas/LocaleId'
-        sourceWorkflowStepUid:
-          description: >-
-            Current workflow step of the strings. When omitted, strings are
-            moved regardless of their current step.
-          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
         targetWorkflowStepUid:
           description: >-
             Destination workflow step. Must exist, be accessible, and have
