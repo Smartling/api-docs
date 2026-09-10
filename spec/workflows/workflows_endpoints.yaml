@@ -1,0 +1,239 @@
+x-paths:
+
+  create_workflow:
+    post:
+      tags:
+        - workflows
+      summary: Create a workflow
+      operationId: createWorkflow
+      description: |
+        Creates a new workflow for the account, either from scratch or seeded
+        from a `workflowTemplate`. When `projectId` is supplied, the workflow
+        is created as a project-level workflow; otherwise it is account-level.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './workflows_common.yaml#/components/schemas/WorkflowAddCommand'
+            examples:
+              project_workflow:
+                summary: Project-level workflow with explicit locale pairs
+                value:
+                  projectId: 4f2d6138c
+                  workflowName: PWF-C
+                  contentTypeUid: e38e7731d
+                  paidWorkflow: false
+                  managedWorkflow: false
+                  localePairs:
+                    - sourceLocale: {localeId: en-US}
+                      targetLocale: {localeId: fr-FR}
+                    - sourceLocale: {localeId: en-US}
+                      targetLocale: {localeId: de-DE}
+              from_template:
+                summary: Account-level workflow seeded from a template
+                value:
+                  workflowName: AI Translation
+                  contentTypeUid: e38e7731d
+                  workflowTemplate: AI_TRANSLATION_WORKFLOW
+      responses:
+        '200':
+          description: Workflow created.
+          content:
+            application/json:
+              schema:
+                $ref: './workflows_common.yaml#/components/schemas/WorkflowConfigurationResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        workflowUid: b1de6d890292
+                        workflowName: PWF-C
+                        contentTypeUid: e38e7731d
+                        localePairManagementType: PROJECT
+                        canModify: true
+                        updateDate: null
+                        paidWorkflow: false
+                        managedWorkflow: false
+                        foundationWorkflow: false
+                        localePairs:
+                          - sourceLocale: {localeId: en-US, description: "English (United States)"}
+                            targetLocale: {localeId: de-DE, description: "German (Germany)"}
+                          - sourceLocale: {localeId: en-US, description: "English (United States)"}
+                            targetLocale: {localeId: fr-FR, description: "French (France)"}
+                        workflowSteps:
+                          - workflowStepUid: 8448792cfe87
+                            workflowStepName: Translation
+                            workflowStepType: TRANSLATION
+                            workflowStepOrder: 1
+                            matchScore: null
+                            autoPrePublishType: NONE
+                            claimingEnabled: false
+                            assignmentEnabled: false
+                            submitOnSaveEnabled: false
+                            translatorCanEditEnabled: true
+                            offlineTranslationEnabled: false
+                            canEditPublishStepEnabled: false
+                            configurationUid: null
+                            managedWorkflowStep: false
+                            foundationProfile: null
+                            actions:
+                              - primary: true
+                                actionType: TRANSLATION_SUBMITTED
+                                nextWorkflowStepUid: df62b629e0ab
+                          - workflowStepUid: df62b629e0ab
+                            workflowStepName: Published
+                            workflowStepType: PUBLISH
+                            workflowStepOrder: 2
+                            matchScore: null
+                            autoPrePublishType: NONE
+                            claimingEnabled: false
+                            assignmentEnabled: false
+                            submitOnSaveEnabled: false
+                            translatorCanEditEnabled: false
+                            offlineTranslationEnabled: false
+                            canEditPublishStepEnabled: false
+                            configurationUid: null
+                            managedWorkflowStep: false
+                            foundationProfile: null
+                            actions: []
+        '400':
+          $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          $ref: './workflows_common.yaml#/components/responses/Error403ResponseDefinition'
+
+  get_workflow_step:
+    get:
+      tags:
+        - workflows
+      summary: Get a single workflow step
+      operationId: getWorkflowStep
+      description: |
+        Returns details for one workflow step, identified by its UID and
+        scoped to the given account.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - name: workflowStepUid
+          in: path
+          required: true
+          description: UID of the workflow step to retrieve.
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+      responses:
+        '200':
+          description: Workflow step retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: './workflows_common.yaml#/components/schemas/WorkflowStepResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        workflowUid: b2c058cc12ac
+                        workflowName: WF-0
+                        workflowStepUid: 8312172ed60d
+                        workflowStepName: Human Translation
+                        workflowStepType: TRANSLATION
+                        workflowStepOrder: 3
+                        claimingEnabled: false
+                        assignmentEnabled: false
+                        offlineTranslationEnabled: false
+                        managedWorkflowStep: false
+                        canEditPublishStepEnabled: false
+                        foundationProfile: null
+                        actions:
+                          - primary: true
+                            actionType: TRANSLATION_SUBMITTED
+                            nextWorkflowStepUid: c94b0367942f
+                          - primary: false
+                            actionType: REJECT
+                            nextWorkflowStepUid: 83125d93629e
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          $ref: './workflows_common.yaml#/components/responses/Error403ResponseDefinition'
+        '404':
+          $ref: './workflows_common.yaml#/components/responses/Error404ResponseDefinition'
+
+  get_workflow_steps:
+    post:
+      tags:
+        - workflows
+      summary: Get multiple workflow steps by UID
+      operationId: getWorkflowSteps
+      description: |
+        Batch lookup of workflow steps by UID, scoped to the given account.
+        Every requested UID must belong to the account, or the request fails.
+
+        Maximum 1000 UIDs per request.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './workflows_common.yaml#/components/schemas/WorkflowStepUidsCommand'
+            examples:
+              lookup:
+                value:
+                  workflowStepUids: [9d7714ed14e2, 9bf480a2fe19, 725b249b020d]
+      responses:
+        '200':
+          description: Workflow steps retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: './workflows_common.yaml#/components/schemas/WorkflowStepListResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 2
+                        items:
+                          - workflowUid: 6ad801460a16
+                            workflowName: 5698b9e0-c637-4e01-8b46-c11c8b5404fd
+                            workflowStepUid: 099b789e86e0
+                            workflowStepName: Published
+                            workflowStepType: PUBLISH
+                            workflowStepOrder: 2
+                            claimingEnabled: false
+                            assignmentEnabled: false
+                            offlineTranslationEnabled: false
+                            managedWorkflowStep: false
+                            canEditPublishStepEnabled: false
+                            foundationProfile: null
+                            actions: []
+                          - workflowUid: 6ad801460a16
+                            workflowName: 5698b9e0-c637-4e01-8b46-c11c8b5404fd
+                            workflowStepUid: a605a1d35280
+                            workflowStepName: Translation
+                            workflowStepType: TRANSLATION
+                            workflowStepOrder: 1
+                            claimingEnabled: false
+                            assignmentEnabled: false
+                            offlineTranslationEnabled: false
+                            managedWorkflowStep: false
+                            canEditPublishStepEnabled: false
+                            foundationProfile: null
+                            actions:
+                              - primary: true
+                                actionType: TRANSLATION_SUBMITTED
+                                nextWorkflowStepUid: 099b789e86e0
+        '400':
+          $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          $ref: './workflows_common.yaml#/components/responses/Error403ResponseDefinition'
