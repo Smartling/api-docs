@@ -1,0 +1,421 @@
+components:
+  schemas:
+
+    # ---- Enums ----
+
+    WorkflowStepType:
+      type: string
+      description: |
+        Functional class of a workflow step. `AUTHORIZE` and `PLACEHOLDER` gate
+        content entry; `ANALYSIS` and `SYSTEM` are non-human processing steps;
+        `TRANSLATION`, `POST_TRANSLATION`, `WORK_APPROVAL`, `ADMIN_APPROVAL`, and
+        `BACK_TRANSLATION` are human work steps; `DECISION` branches the route;
+        `PUBLISH` is the terminal step of a route.
+      enum:
+        - AUTHORIZE
+        - PLACEHOLDER
+        - TRANSLATION
+        - POST_TRANSLATION
+        - PUBLISH
+        - ADMIN_APPROVAL
+        - ANALYSIS
+        - WORK_APPROVAL
+        - DECISION
+        - SYSTEM
+        - BACK_TRANSLATION
+      example: TRANSLATION
+
+    WorkflowActionType:
+      type: string
+      description: Type of transition a workflow action represents.
+      enum:
+        - TRANSLATION_SUBMITTED
+        - EDIT
+        - REVIEW
+        - MOVE
+        - REJECT
+        - POST_MACHINE_REVISION
+        - DECISION
+        - MONOLINGUAL_REVIEW
+        - TRANSCREATION_SUBMITTED
+        - TRANSCREATION_REVIEW
+        - POST_MACHINE_REVISION_PRO
+        - QUALITY_EVALUATION
+        - QUALITY_EVALUATION_PRO
+        - INTERNAL_REVIEW
+        - DESKTOP_PUBLISHING
+        - TRANSLATION_AIT_SUBMITTED
+        - POST_AIT_REVISION
+        - BACK_TRANSLATION
+        - MEDIA_EDIT
+      example: TRANSLATION_SUBMITTED
+
+    LocalePairManagementType:
+      type: string
+      description: |
+        How a workflow's locale-pair coverage is managed: `CUSTOM` (account-level
+        workflow with its own explicit locale pairs), `PROJECT` (project-level
+        workflow), or `LOCKED` (locale pairs fixed by the system).
+      enum:
+        - CUSTOM
+        - PROJECT
+        - LOCKED
+      example: CUSTOM
+
+    # ---- Shared value types ----
+
+    LocalePairGroup:
+      type: object
+      description: |
+        A source locale paired with every target locale it translates into.
+        Used where a workflow's locale coverage is grouped by source locale.
+      required:
+        - sourceLocaleId
+        - targetLocaleIds
+      properties:
+        sourceLocaleId:
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
+        targetLocaleIds:
+          type: array
+          items:
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          example: [de-DE, fr-FR, it-IT, es-ES]
+
+    WorkflowAction:
+      type: object
+      description: A transition from one workflow step to another.
+      required:
+        - primary
+        - actionType
+        - nextWorkflowStepUid
+      properties:
+        primary:
+          type: boolean
+          description: Whether this is the step's primary (default) forward action.
+        actionType:
+          $ref: '#/components/schemas/WorkflowActionType'
+        nextWorkflowStepUid:
+          description: UID of the step this action transitions to.
+          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+
+    WorkflowStepSummary:
+      type: object
+      description: A workflow step returned by direct step lookup, identifying its parent workflow.
+      required:
+        - workflowUid
+        - workflowName
+        - workflowStepUid
+        - workflowStepName
+        - workflowStepType
+        - workflowStepOrder
+        - actions
+      properties:
+        workflowUid:
+          $ref: '../api_common.yaml#/components/schemas/WorkflowUid'
+        workflowName:
+          type: string
+          example: WF-0
+        workflowStepUid:
+          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+        workflowStepName:
+          type: string
+          example: Human Translation
+        workflowStepType:
+          $ref: '#/components/schemas/WorkflowStepType'
+        workflowStepOrder:
+          type: integer
+          description: Position of the step within its route, starting at 1.
+          example: 3
+        claimingEnabled:
+          type: boolean
+          description: Whether translators must claim content before working on it.
+        assignmentEnabled:
+          type: boolean
+          description: Whether content on this step can be assigned to specific users.
+        offlineTranslationEnabled:
+          type: boolean
+          description: Whether content on this step can be translated offline.
+        managedWorkflowStep:
+          type: boolean
+          description: Whether this step is managed by Smartling and cannot be freely reconfigured.
+        canEditPublishStepEnabled:
+          type: boolean
+          description: Whether editors can edit already-published content from this step.
+        foundationProfile:
+          type: [string, "null"]
+          description: Foundation AI translation profile assigned to this step, if any.
+          example: null
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowAction'
+
+    UserWorkflowStep:
+      type: object
+      description: A workflow step as returned within the user-allowed-workflows listing.
+      required:
+        - workflowStepUid
+        - workflowStepName
+        - workflowStepType
+      properties:
+        workflowStepUid:
+          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+        workflowStepName:
+          type: string
+          example: A1
+        workflowStepType:
+          $ref: '#/components/schemas/WorkflowStepType'
+        workflowStepOrder:
+          type: [integer, "null"]
+          description: Position of the step within its route. `null` when the caller cannot see the full workflow.
+          example: 1
+        claimingEnabled:
+          type: boolean
+          description: Whether translators must claim content before working on it.
+        assignmentEnabled:
+          type: boolean
+          description: Whether content on this step can be assigned to specific users.
+        translatorCanEditEnabled:
+          type: boolean
+          description: Whether translators can edit content on this step.
+        offlineTranslationEnabled:
+          type: boolean
+          description: Whether content on this step can be translated offline.
+        mtPrepopulation:
+          type: [boolean, "null"]
+          description: Whether machine translation pre-populates this step's content.
+          example: null
+        tmPrepopulation:
+          type: [boolean, "null"]
+          description: Whether Translation Memory pre-populates this step's content.
+          example: null
+        prepopulationThreshold:
+          type: [integer, "null"]
+          description: Minimum match score for TM/MT pre-population.
+          example: 0
+        managedWorkflowStep:
+          type: boolean
+          description: Whether this step is managed by Smartling and cannot be freely reconfigured.
+        canEditPublishStepEnabled:
+          type: boolean
+          description: Whether editors can edit already-published content from this step.
+        localePairs:
+          type: [array, "null"]
+          description: Locale coverage of this step, if it differs from the workflow's own coverage. `null` when not scoped to a single project.
+          items:
+            $ref: '#/components/schemas/LocalePairGroup'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowAction'
+
+    UserWorkflow:
+      type: object
+      description: A workflow the current user is allowed to use for content assignment or authoring, with its steps.
+      required:
+        - workflowUid
+        - workflowName
+      properties:
+        workflowUid:
+          $ref: '../api_common.yaml#/components/schemas/WorkflowUid'
+        workflowName:
+          type: string
+          example: WF-0
+        managedWorkflow:
+          type: boolean
+        contentTypeUid:
+          type: [string, "null"]
+          example: e38e7731d
+        projectId:
+          type: [string, "null"]
+          description: Project this workflow belongs to. `null` for account-level workflows.
+          example: null
+        localePairs:
+          type: [array, "null"]
+          items:
+            $ref: '#/components/schemas/LocalePairGroup'
+        workflowSteps:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserWorkflowStep'
+
+    # ---- Request schemas ----
+
+    UserWorkflowFilterCommand:
+      type: object
+      description: |
+        Optional filters for listing the workflows the current user may use.
+        Regardless of which filters are supplied, each returned workflow
+        includes its full step/action snapshot.
+      properties:
+        projectId:
+          type: string
+          description: Restrict to a project-level workflow. Applies only to project-level workflows.
+          pattern: '^[a-z0-9]{9}$'
+          example: 9258d5eb4
+        keyword:
+          type: string
+          description: Filter by workflow name (case-insensitive substring match).
+          example: hello
+        localeIds:
+          type: array
+          description: Restrict to workflows covering any of these locales.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          example: [en-US, fr-FR]
+        workflowUids:
+          type: array
+          description: Restrict to these workflow UIDs.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/WorkflowUid'
+        workflowStepUids:
+          type: array
+          description: Restrict to workflows containing any of these steps.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+        localePairManagementType:
+          $ref: '#/components/schemas/LocalePairManagementType'
+        limit:
+          type: integer
+          description: Maximum number of results. Clamped to the range 1-500.
+          minimum: 1
+          maximum: 500
+          default: 100
+
+    WorkflowStepUidsCommand:
+      type: object
+      description: A batch of workflow step UIDs to look up.
+      required:
+        - workflowStepUids
+      properties:
+        workflowStepUids:
+          type: array
+          description: Workflow step UIDs to look up. Maximum 1000 entries.
+          maxItems: 1000
+          items:
+            $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+
+    # ---- Response schemas ----
+
+    UserWorkflowListResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              type: object
+              properties:
+                totalCount:
+                  type: integer
+                  example: 1
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UserWorkflow'
+
+    WorkflowStepResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              $ref: '#/components/schemas/WorkflowStepSummary'
+
+    WorkflowStepListResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              type: object
+              properties:
+                totalCount:
+                  type: integer
+                  example: 2
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/WorkflowStepSummary'
+
+    # ---- Errors not already covered by api_common.yaml ----
+
+    Error403Response:
+      type: object
+      properties:
+        response:
+          type: object
+          required:
+            - code
+            - errors
+          properties:
+            code:
+              type: string
+              enum: [ACCESS_DENIED_ERROR]
+            errors:
+              type: array
+              items:
+                $ref: '../api_common.yaml#/components/schemas/Error'
+      required:
+        - response
+
+    Error404Response:
+      type: object
+      properties:
+        response:
+          type: object
+          required:
+            - code
+            - errors
+          properties:
+            code:
+              type: string
+              enum: [NOT_FOUND_ERROR]
+            errors:
+              type: array
+              items:
+                $ref: '../api_common.yaml#/components/schemas/Error'
+      required:
+        - response
+
+  responses:
+    Error403ResponseDefinition:
+      description: The caller does not have permission to perform this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error403Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: ACCESS_DENIED_ERROR
+                  errors:
+                    key: no.access
+                    message: Access denied.
+
+    Error404ResponseDefinition:
+      description: The requested resource was not found or is not accessible.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: NOT_FOUND_ERROR
+                  errors:
+                    key: workflow.step.not.found
+                    message: Workflow step not found.
