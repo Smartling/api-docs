@@ -412,6 +412,20 @@ tags:
     description: |-
       The Webhooks API allows you to create and manage webhook subscriptions to receive real-time notifications about events in your Smartling projects. You can subscribe to various event types and receive HTTP callbacks when these events occur. See our [Events Catalog](https://help.smartling.com/hc/en-us/articles/39696685668251-Smartling-Webhooks-Overview) for a full list of events.
 
+  - name: Translation Packages
+    description: |-
+      Translation packages support offline translation with external CAT tools
+      (Trados, MemoQ, Phrase, Wordfast, etc.). A package snapshots translatable
+      content at a workflow step as an XLIFF 1.2 file, optionally alongside a
+      TMX translation memory, and lets you import the translated XLIFF back
+      into the project once work is done.
+
+      **Limitations**
+
+      - Only one translation package can be generated at a time for a given
+        locale/workflow-step/job combination.
+      - Limit calls to 6 requests per 60 seconds per user across these endpoints.
+
 paths:
   /auth-api/v2/authenticate:
     post:
@@ -8987,6 +9001,30 @@ paths:
 #
   /workflows-strings-api/v2/projects/{projectId}/movedStrings:
     $ref: './spec/workflow_strings/workflow_strings_endpoints.yaml#/x-paths/move_strings'
+
+#
+## Translation Packages API (DOCS-3238)
+#
+  /translations-api/v2/projects/{projectId}/locales/{localeId}/translation-packages:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/create_translation_package'
+
+  /translations-api/v2/projects/{projectId}/translation-packages/{translationPackageUid}:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_translation_package'
+
+  /translations-api/v2/projects/{projectId}/processes/{processUid}:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_async_progress'
+
+  /translations-api/v2/projects/{projectId}/translation-packages/{translationPackageUid}/content:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_translation_package_content'
+
+  /translations-api/v2/projects/{projectId}/translation-packages/{translationPackageUid}/tm:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_translation_package_tm'
+
+  /translations-api/v2/projects/{projectId}/locales/{localeId}/content:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/import_offline_cat_content'
+
+  /translations-api/v2/projects/{projectId}/locales/{localeId}/content/processes/last:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_recent_import_status'
 
 #
 ## Workflows API

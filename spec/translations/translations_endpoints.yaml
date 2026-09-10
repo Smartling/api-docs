@@ -1,0 +1,865 @@
+x-paths:
+
+  # ---------------------------------------------------------------------------
+  # Create translation package
+  # ---------------------------------------------------------------------------
+
+  create_translation_package:
+    post:
+      tags:
+        - Translation Packages
+      operationId: translations_create_translation_package
+      summary: Create a translation package
+      description: |
+        Creates a snapshot of translatable content at a specific workflow step for
+        offline translation with external CAT tools (Trados, MemoQ, Phrase, Wordfast,
+        etc.).
+
+        The XLIFF content is populated synchronously and is available for download
+        immediately after the response is returned. When `generateTmx` is `true`
+        (the default), a TMX translation memory file is also generated
+        asynchronously in the background. The `translationMemory` link in the
+        response carries a `processUid` while the TMX is being prepared; once
+        ready, `processUid` becomes `null` and the link's `href` is set.
+
+        Returns `202 Accepted` when the TMX job is still in progress, or `200 OK`
+        when all resources are immediately available (that is, `generateTmx` was
+        explicitly set to `false`).
+
+        **Limitations**
+
+        - Only one translation package can be generated at a time for a given
+          locale/workflow-step/job combination. A concurrent request for the same
+          combination returns `423`.
+        - Limit calls to 6 requests per 60 seconds per user. Exceeding this
+          returns `429`.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+        - $ref: '../api_common.yaml#/components/parameters/localeId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTranslationPackageCommand'
+            examples:
+              basic:
+                summary: Create package for a workflow step
+                value:
+                  workflowStepUid: 4f2e9d7c8ab1
+              with_tmx_and_job:
+                summary: Create package scoped to a job with TMX
+                value:
+                  workflowStepUid: 4f2e9d7c8ab1
+                  translationJobUid: 3e7b2f9a1c
+                  generateTmx: true
+                  hashcodes:
+                    - 763d74386a2acd3f6cc343ea50b21db6
+                    - c9dd050cbd700ce596426d20a0cb3a15
+      responses:
+        '202':
+          description: Package created. TMX generation is still in progress.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationPackageResponse'
+              examples:
+                accepted:
+                  value:
+                    response:
+                      code: ACCEPTED
+                      data:
+                        translationPackageUid: 5fffe53fa
+                        projectId: abcd12345
+                        localeId: fr-FR
+                        created: "2026-01-23T10:30:00Z"
+                        links:
+                          - href: "https://api.smartling.com/translations-api/v2/projects/abcd12345/translation-packages/5fffe53fa/content"
+                            rel: content
+                            title: null
+                            processUid: null
+                          - href: null
+                            rel: translationMemory
+                            title: null
+                            processUid: 9d2c5f1e-4b00-4a1f-8e2d-9d2c5f1e4b00
+        '200':
+          description: Package created. All resources are immediately available (`generateTmx` was `false`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationPackageResponse'
+        '400':
+          description: The request failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: The project, locale, workflow step, or job does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '423':
+          description: Package generation is already in progress for this locale/step/job combination.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error423Response'
+              examples:
+                already_in_progress:
+                  value:
+                    response:
+                      code: RESOURCE_LOCKED
+                      errors:
+                        - key: null
+                          message: Operation already in progress; please try again later.
+                          details: null
+        '429':
+          description: The caller has exceeded the limit of 6 requests per 60 seconds.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error429Response'
+              examples:
+                limit_exceeded:
+                  value:
+                    response:
+                      code: MAX_OPERATIONS_LIMIT_EXCEEDED
+                      errors:
+                        - key: null
+                          message: The limit of 6 requests per 60 seconds has been reached for this user. Please try again shortly.
+                          details: null
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  # ---------------------------------------------------------------------------
+  # Get async process progress
+  # ---------------------------------------------------------------------------
+
+  get_async_progress:
+    get:
+      tags:
+        - Translation Packages
+      operationId: translations_get_async_progress
+      summary: Get async process status
+      description: |
+        Returns detailed status and statistics for a background process (package
+        generation, import processing, etc.). Use the `processUid` from HATEOAS
+        links or import responses to track progress.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+        - name: processUid
+          in: path
+          required: true
+          description: Process identifier returned by the initiating operation.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Process status retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncProgressResponse'
+              examples:
+                in_progress:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: 3b8f7e2a-1c00-4d2e-9a1f-3b8f7e2a1c00
+                        processState: IN_PROGRESS
+                        createdDate: "2026-01-23T10:30:00Z"
+                        modifiedDate: "2026-01-23T10:30:05Z"
+                        translationJobUid: null
+                        processStatistics:
+                          requested: 100
+                          processed: 42
+                          errored: 0
+                          skipped: 0
+                completed:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: 3b8f7e2a-1c00-4d2e-9a1f-3b8f7e2a1c00
+                        processState: COMPLETED
+                        createdDate: "2026-01-23T10:30:00Z"
+                        modifiedDate: "2026-01-23T10:32:15Z"
+                        translationJobUid: 3e7b2f9a1c
+                        processStatistics:
+                          requested: 100
+                          processed: 95
+                          errored: 3
+                          skipped: 2
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: No process matches `processUid` for this project.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  # ---------------------------------------------------------------------------
+  # Get translation package
+  # ---------------------------------------------------------------------------
+
+  get_translation_package:
+    get:
+      tags:
+        - Translation Packages
+      operationId: translations_get_translation_package
+      summary: Get translation package metadata
+      description: |
+        Returns metadata and HATEOAS links for an existing translation package.
+        Use this to poll for package readiness: when all `processUid` fields in
+        the `links` array are `null`, the resources are ready for download.
+
+        Returns `202` if resources are still being prepared, `200` when ready.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+        - name: translationPackageUid
+          in: path
+          required: true
+          description: UID of the translation package.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Package resources ready for download.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationPackageResponse'
+              examples:
+                ready:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        translationPackageUid: 5fffe53fa
+                        projectId: abcd12345
+                        localeId: fr-FR
+                        created: "2026-01-23T10:30:00Z"
+                        links:
+                          - href: "https://api.smartling.com/translations-api/v2/projects/abcd12345/translation-packages/5fffe53fa/content"
+                            rel: content
+                            title: Package Content
+                            processUid: null
+        '202':
+          description: Package resources still being prepared.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationPackageResponse'
+        '400':
+          description: The request failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: No translation package matches `translationPackageUid` for this project.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  # ---------------------------------------------------------------------------
+  # Download package content (XLIFF)
+  # ---------------------------------------------------------------------------
+
+  get_translation_package_content:
+    get:
+      tags:
+        - Translation Packages
+      operationId: translations_get_translation_package_content
+      summary: Download package content as XLIFF
+      description: |
+        Downloads the translation package as an XLIFF 1.2 file for use with
+        external CAT tools (Trados, MemoQ, Phrase, Wordfast, etc.).
+
+        The XLIFF contains source strings and any existing translations at the
+        workflow step. The filename follows the pattern
+        `{sourceLocale}_{targetLocale}_{workflowStepName}.xliff`.
+
+        When `extendedMode=true`, additional Smartling-specific metadata is
+        included in the XLIFF output.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+        - name: translationPackageUid
+          in: path
+          required: true
+          description: UID of the translation package.
+          schema:
+            type: string
+        - name: extendedMode
+          in: query
+          required: false
+          description: Set to `true` to include additional Smartling metadata in the XLIFF.
+          schema:
+            type: string
+            default: ""
+        - name: userUid
+          in: query
+          required: false
+          description: User UID for service-token authentication switching.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: XLIFF file ready for download.
+          headers:
+            Content-Disposition:
+              description: Attachment filename (`{sourceLocale}_{targetLocale}_{stepName}.xliff`).
+              schema:
+                type: string
+                examples:
+                  - 'attachment; filename="en-US_fr-FR_Translation.xliff";'
+          content:
+            text/xml:
+              schema:
+                type: string
+                format: binary
+                description: XLIFF 1.2 document.
+              examples:
+                xliff_fragment:
+                  summary: XLIFF structure
+                  value: |
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+                      <file source-language="en-US" target-language="fr-FR"
+                            datatype="plaintext" original="abcd12345">
+                        <body>
+                          <trans-unit id="763d74386a2acd3f6cc343ea50b21db6">
+                            <source>Hello, world!</source>
+                            <target>Bonjour, le monde!</target>
+                          </trans-unit>
+                        </body>
+                      </file>
+                    </xliff>
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: No translation package matches `translationPackageUid` for this project.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  # ---------------------------------------------------------------------------
+  # Download package TM (TMX)
+  # ---------------------------------------------------------------------------
+
+  get_translation_package_tm:
+    get:
+      tags:
+        - Translation Packages
+      operationId: translations_get_translation_package_tm
+      summary: Download package translation memory as TMX
+      description: |
+        Downloads the translation memory for the package in TMX 1.4b format.
+        Only available when `generateTmx: true` was set during package creation.
+
+        Returns `202` if the TMX is still being generated. The filename follows
+        the pattern `{sourceLocale}_{targetLocale}_{workflowStepName}.tmx`.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+        - name: translationPackageUid
+          in: path
+          required: true
+          description: UID of the translation package.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: TMX file ready for download.
+          headers:
+            Content-Disposition:
+              description: Attachment filename (`{sourceLocale}_{targetLocale}_{stepName}.tmx`).
+              schema:
+                type: string
+                examples:
+                  - 'attachment; filename="en-US_fr-FR_Translation.tmx";'
+          content:
+            text/xml:
+              schema:
+                type: string
+                format: binary
+                description: TMX 1.4b document.
+              examples:
+                tmx_fragment:
+                  summary: TMX structure
+                  value: |
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <!DOCTYPE tmx SYSTEM "tmx14.dtd">
+                    <tmx version="1.4">
+                      <header creationtool="Smartling" srclang="en-US" datatype="plaintext"/>
+                      <body>
+                        <tu tuid="763d74386a2acd3f6cc343ea50b21db6">
+                          <tuv xml:lang="en-US"><seg>Hello, world!</seg></tuv>
+                          <tuv xml:lang="fr-FR"><seg>Bonjour, le monde!</seg></tuv>
+                        </tu>
+                      </body>
+                    </tmx>
+        '202':
+          description: Translation memory is still being generated.
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: No translation package matches `translationPackageUid` for this project, or no TMX was generated for it.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  # ---------------------------------------------------------------------------
+  # Import translations (offline CAT — XLIFF multipart)
+  # ---------------------------------------------------------------------------
+
+  import_offline_cat_content:
+    post:
+      tags:
+        - Translation Packages
+      operationId: translations_import_offline_cat_content
+      summary: Import translations from offline CAT tool (XLIFF)
+      description: |
+        Imports a translated XLIFF file from an external CAT tool (Trados, MemoQ,
+        Phrase, Wordfast, etc.). Translations are tagged with `OFFLINE_CAT` origin.
+
+        Import may partially succeed — some strings may fail validation while
+        others are imported successfully. Check `translationImportErrors` in the
+        response for per-string errors.
+
+        Use `workflowStepUid` to target a specific workflow step. When
+        `submitContent=true`, content is automatically advanced to the next
+        workflow step after import.
+
+        **Limitations**
+
+        - Limit calls to 6 requests per 60 seconds per user. Exceeding this
+          returns `429`.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+        - $ref: '../api_common.yaml#/components/parameters/localeId'
+        - name: workflowStepUid
+          in: query
+          required: false
+          description: Import translations into this specific workflow step.
+          schema:
+            type: string
+        - name: submitContent
+          in: query
+          required: false
+          description: Automatically advance content to the next workflow step after import.
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Translated XLIFF 1.2 file.
+      responses:
+        '200':
+          description: Import completed. Check `translationImportErrors` for per-string failures.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XliffImportResponse'
+              examples:
+                success:
+                  summary: Successful import with no errors
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        wordCount: 1523
+                        stringCount: 247
+                        translationImportErrors: []
+                partial:
+                  summary: Partial import with some errors
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        wordCount: 1400
+                        stringCount: 230
+                        translationImportErrors:
+                          - importKey: import-batch-001
+                            stringHashcode: 763d74386a2acd3f6cc343ea50b21db6
+                            fileUri: homepage.json
+                            messages:
+                              - Translation unit ID not found in project
+        '400':
+          description: The request failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: The project, locale, or workflow step does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '429':
+          description: The caller has exceeded the limit of 6 requests per 60 seconds.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error429Response'
+              examples:
+                limit_exceeded:
+                  value:
+                    response:
+                      code: MAX_OPERATIONS_LIMIT_EXCEEDED
+                      errors:
+                        - key: null
+                          message: The limit of 6 requests per 60 seconds has been reached for this user. Please try again shortly.
+                          details: null
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  # ---------------------------------------------------------------------------
+  # Get recent import status
+  # ---------------------------------------------------------------------------
+
+  get_recent_import_status:
+    get:
+      tags:
+        - Translation Packages
+      operationId: translations_get_recent_import_status
+      summary: Get most recent import status
+      description: |
+        Returns the status of the most recent import job for the specified
+        project locale, without requiring the caller to store the `processUid`.
+
+        Returns an empty `data` object when no import has been run for this locale.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+        - $ref: '../api_common.yaml#/components/parameters/localeId'
+      responses:
+        '200':
+          description: Most recent import status, or empty response if no imports exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecentImportStatusResponse'
+              examples:
+                completed:
+                  summary: Completed import
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: 2f9b3e7a-5c00-4b1f-8d2e-2f9b3e7a5c00
+                        processState: COMPLETED
+                        createdDate: "2026-01-23T14:30:00Z"
+                        modifiedDate: "2026-01-23T14:32:45Z"
+                        translationJobUid: null
+                        processStatistics:
+                          requested: 247
+                          processed: 245
+                          errored: 2
+                          skipped: 0
+                no_imports:
+                  summary: No imports yet for this locale
+                  value:
+                    response:
+                      code: SUCCESS
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: The project or locale does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+components:
+  schemas:
+
+    CreateTranslationPackageCommand:
+      type: object
+      description: Parameters for creating a translation package.
+      required:
+        - workflowStepUid
+      properties:
+        workflowStepUid:
+          description: UID of the workflow step to snapshot.
+          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+        translationJobUid:
+          type: string
+          description: Limit package to strings within this translation job.
+        hashcodes:
+          type: array
+          description: Limit package to these specific string hashcodes. Omit for all strings.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/Hashcode'
+        generateTmx:
+          type: boolean
+          description: Generate a TMX translation memory file alongside the XLIFF.
+          default: true
+
+    TranslationPackageLink:
+      type: object
+      description: HATEOAS link to a package resource.
+      properties:
+        href:
+          type: [string, "null"]
+          format: uri
+          description: |
+            URL of the resource. `null` while the resource is still being prepared
+            (e.g. the `translationMemory` link before TMX generation completes).
+        rel:
+          type: string
+          description: Relationship type (e.g. `content`, `translationMemory`).
+        title:
+          type: [string, "null"]
+          description: Human-readable label for this link. Currently always `null`.
+        processUid:
+          type: [string, "null"]
+          description: |
+            UID of the background job preparing this resource. When `null`, the
+            resource is ready to download. Only set on `translationMemory` links.
+
+    TranslationPackageData:
+      type: object
+      description: Translation package metadata and resource links.
+      required: [translationPackageUid, projectId, localeId, created, links]
+      properties:
+        translationPackageUid:
+          type: string
+          description: Unique identifier of the translation package.
+        projectId:
+          type: string
+          description: Project this package belongs to.
+          examples:
+            - abcd12345
+        localeId:
+          type: string
+          description: Target locale of the package.
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the package was created.
+          examples:
+            - "2026-01-23T10:30:00Z"
+        links:
+          type: array
+          description: HATEOAS links to downloadable package resources.
+          items:
+            $ref: '#/components/schemas/TranslationPackageLink'
+
+    TranslationPackageResponse:
+      type: object
+      description: Response envelope for translation package operations.
+      required: [response]
+      properties:
+        response:
+          type: object
+          required: [code, data]
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS, ACCEPTED]
+            data:
+              $ref: '#/components/schemas/TranslationPackageData'
+
+    AsyncProgressStatistics:
+      type: object
+      description: Counters describing progress through a background process.
+      properties:
+        requested:
+          type: integer
+          description: Total number of items requested for processing.
+        processed:
+          type: integer
+          description: Number of items successfully processed.
+        errored:
+          type: integer
+          description: Number of items that failed processing.
+        skipped:
+          type: integer
+          description: Number of items skipped.
+
+    AsyncProgressData:
+      type: object
+      description: Status and statistics for a background process.
+      required: [processUid, processState]
+      properties:
+        processUid:
+          type: string
+          description: Unique identifier of the process.
+        processState:
+          type: string
+          description: Current state of the process.
+          enum: [PENDING, IN_PROGRESS, COMPLETED, FAILED]
+          examples:
+            - COMPLETED
+        createdDate:
+          type: string
+          format: date-time
+          description: Timestamp when the process was created.
+        modifiedDate:
+          type: string
+          format: date-time
+          description: Timestamp of the last status update.
+        translationJobUid:
+          type: [string, "null"]
+          description: Associated translation job UID, if applicable.
+        processStatistics:
+          $ref: '#/components/schemas/AsyncProgressStatistics'
+
+    AsyncProgressResponse:
+      type: object
+      description: Response envelope for async progress queries.
+      required: [response]
+      properties:
+        response:
+          type: object
+          required: [code, data]
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              $ref: '#/components/schemas/AsyncProgressData'
+
+    XliffImportError:
+      type: object
+      description: Details of a single string that failed during XLIFF import.
+      properties:
+        importKey:
+          type: string
+          description: Internal key identifying the import batch.
+        stringHashcode:
+          description: Hashcode of the string that failed.
+          $ref: '../api_common.yaml#/components/schemas/Hashcode'
+        fileUri:
+          type: string
+          description: Source file URI of the failing string.
+        messages:
+          type: array
+          description: Human-readable error messages for this string.
+          items:
+            type: string
+
+    XliffImportData:
+      type: object
+      description: Summary of an XLIFF import operation.
+      required: [wordCount, stringCount, translationImportErrors]
+      properties:
+        wordCount:
+          type: integer
+          description: Total word count of successfully imported strings.
+        stringCount:
+          type: integer
+          description: Number of strings successfully imported.
+        translationImportErrors:
+          type: array
+          description: Per-string import failures. Empty when all strings imported successfully.
+          items:
+            $ref: '#/components/schemas/XliffImportError'
+
+    XliffImportResponse:
+      type: object
+      description: Response envelope for XLIFF import operations.
+      required: [response]
+      properties:
+        response:
+          type: object
+          required: [code, data]
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              $ref: '#/components/schemas/XliffImportData'
+
+    RecentImportStatusResponse:
+      type: object
+      description: |
+        Response envelope for the recent import status endpoint. The `data` field
+        is absent when no import has been run for this locale.
+      required: [response]
+      properties:
+        response:
+          type: object
+          required: [code]
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              oneOf:
+                - $ref: '#/components/schemas/AsyncProgressData'
+                - type: "null"
