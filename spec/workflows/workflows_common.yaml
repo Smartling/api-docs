@@ -50,15 +50,6 @@ components:
         - MEDIA_EDIT
       example: TRANSLATION_SUBMITTED
 
-    AutoPrePublishType:
-      type: string
-      description: When a step automatically pre-publishes content, if at all.
-      enum:
-        - NONE
-        - SUBMIT
-        - SAVE
-      example: NONE
-
     LocalePairManagementType:
       type: string
       description: |
@@ -71,68 +62,24 @@ components:
         - LOCKED
       example: CUSTOM
 
-    WorkflowTemplate:
-      type: string
-      description: Predefined workflow shape to seed a new workflow from.
-      enum:
-        - TRANSLATION_WORKFLOW
-        - TRANSCREATION_WORKFLOW
-        - AI_TRANSLATION_WORKFLOW
-        - AI_HUMAN_IN_LOOP_WORKFLOW
-        - MEDIA_TRANSLATION_WORKFLOW
-      example: TRANSLATION_WORKFLOW
-
     # ---- Shared value types ----
 
-    LocaleRef:
+    LocalePairGroup:
       type: object
-      description: A locale identifier with its human-readable description.
+      description: |
+        A source locale paired with every target locale it translates into.
+        Used where a workflow's locale coverage is grouped by source locale.
       required:
-        - localeId
+        - sourceLocaleId
+        - targetLocaleIds
       properties:
-        localeId:
-          type: string
-          example: en-US
-        description:
-          type: [string, "null"]
-          description: Human-readable locale name. `null` when not resolved.
-          example: English (United States)
-
-    LocalePair:
-      type: object
-      description: A source/target locale pair.
-      required:
-        - sourceLocale
-        - targetLocale
-      properties:
-        sourceLocale:
-          $ref: '#/components/schemas/LocaleRef'
-        targetLocale:
-          $ref: '#/components/schemas/LocaleRef'
-
-    LocalePairInput:
-      type: object
-      description: A source/target locale pair, identified by locale ID only.
-      required:
-        - sourceLocale
-        - targetLocale
-      properties:
-        sourceLocale:
-          type: object
-          required:
-            - localeId
-          properties:
-            localeId:
-              type: string
-              example: en-US
-        targetLocale:
-          type: object
-          required:
-            - localeId
-          properties:
-            localeId:
-              type: string
-              example: fr-FR
+        sourceLocaleId:
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
+        targetLocaleIds:
+          type: array
+          items:
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          example: [de-DE, fr-FR, it-IT, es-ES]
 
     WorkflowAction:
       type: object
@@ -150,67 +97,6 @@ components:
         nextWorkflowStepUid:
           description: UID of the step this action transitions to.
           $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
-
-    WorkflowStepConfiguration:
-      type: object
-      description: A workflow step as returned nested inside a workflow's configuration.
-      required:
-        - workflowStepUid
-        - workflowStepName
-        - workflowStepType
-        - workflowStepOrder
-        - actions
-      properties:
-        workflowStepUid:
-          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
-        workflowStepName:
-          type: string
-          example: Translation
-        workflowStepType:
-          $ref: '#/components/schemas/WorkflowStepType'
-        workflowStepOrder:
-          type: integer
-          description: Position of the step within its route, starting at 1.
-          example: 1
-        matchScore:
-          type: [number, "null"]
-          description: Minimum Translation Memory match score required to prepopulate content on this step. `null` when not applicable.
-          example: null
-        autoPrePublishType:
-          $ref: '#/components/schemas/AutoPrePublishType'
-        claimingEnabled:
-          type: boolean
-          description: Whether translators must claim content before working on it.
-        assignmentEnabled:
-          type: boolean
-          description: Whether content on this step can be assigned to specific users.
-        submitOnSaveEnabled:
-          type: boolean
-          description: Whether saving content automatically submits it to the next step.
-        translatorCanEditEnabled:
-          type: boolean
-          description: Whether translators can edit content on this step.
-        offlineTranslationEnabled:
-          type: boolean
-          description: Whether content on this step can be translated offline.
-        canEditPublishStepEnabled:
-          type: boolean
-          description: Whether editors can edit already-published content from this step.
-        configurationUid:
-          type: [string, "null"]
-          description: UID of the external provider configuration assigned to this step, if any.
-          example: null
-        managedWorkflowStep:
-          type: boolean
-          description: Whether this step is managed by Smartling and cannot be freely reconfigured.
-        foundationProfile:
-          type: [string, "null"]
-          description: Foundation AI translation profile assigned to this step, if any.
-          example: null
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowAction'
 
     WorkflowStepSummary:
       type: object
@@ -264,44 +150,137 @@ components:
           items:
             $ref: '#/components/schemas/WorkflowAction'
 
+    UserWorkflowStep:
+      type: object
+      description: A workflow step as returned within the user-allowed-workflows listing.
+      required:
+        - workflowStepUid
+        - workflowStepName
+        - workflowStepType
+      properties:
+        workflowStepUid:
+          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+        workflowStepName:
+          type: string
+          example: A1
+        workflowStepType:
+          $ref: '#/components/schemas/WorkflowStepType'
+        workflowStepOrder:
+          type: [integer, "null"]
+          description: Position of the step within its route. `null` when the caller cannot see the full workflow.
+          example: 1
+        claimingEnabled:
+          type: boolean
+          description: Whether translators must claim content before working on it.
+        assignmentEnabled:
+          type: boolean
+          description: Whether content on this step can be assigned to specific users.
+        translatorCanEditEnabled:
+          type: boolean
+          description: Whether translators can edit content on this step.
+        offlineTranslationEnabled:
+          type: boolean
+          description: Whether content on this step can be translated offline.
+        mtPrepopulation:
+          type: [boolean, "null"]
+          description: Whether machine translation pre-populates this step's content.
+          example: null
+        tmPrepopulation:
+          type: [boolean, "null"]
+          description: Whether Translation Memory pre-populates this step's content.
+          example: null
+        prepopulationThreshold:
+          type: [integer, "null"]
+          description: Minimum match score for TM/MT pre-population.
+          example: 0
+        managedWorkflowStep:
+          type: boolean
+          description: Whether this step is managed by Smartling and cannot be freely reconfigured.
+        canEditPublishStepEnabled:
+          type: boolean
+          description: Whether editors can edit already-published content from this step.
+        localePairs:
+          type: [array, "null"]
+          description: Locale coverage of this step, if it differs from the workflow's own coverage. `null` when not scoped to a single project.
+          items:
+            $ref: '#/components/schemas/LocalePairGroup'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowAction'
+
+    UserWorkflow:
+      type: object
+      description: A workflow the current user is allowed to use for content assignment or authoring, with its steps.
+      required:
+        - workflowUid
+        - workflowName
+      properties:
+        workflowUid:
+          $ref: '../api_common.yaml#/components/schemas/WorkflowUid'
+        workflowName:
+          type: string
+          example: WF-0
+        managedWorkflow:
+          type: boolean
+        contentTypeUid:
+          type: [string, "null"]
+          example: e38e7731d
+        projectId:
+          type: [string, "null"]
+          description: Project this workflow belongs to. `null` for account-level workflows.
+          example: null
+        localePairs:
+          type: [array, "null"]
+          items:
+            $ref: '#/components/schemas/LocalePairGroup'
+        workflowSteps:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserWorkflowStep'
+
     # ---- Request schemas ----
 
-    WorkflowAddCommand:
+    UserWorkflowFilterCommand:
       type: object
       description: |
-        Creates a workflow either from scratch (`workflowName` and `contentTypeUid`)
-        or seeded from a `workflowTemplate`. When `projectId` is supplied, the
-        workflow is created as a project-level workflow; otherwise it is
-        account-level.
-      required:
-        - workflowName
-        - contentTypeUid
+        Optional filters for listing the workflows the current user may use.
+        Regardless of which filters are supplied, each returned workflow
+        includes its full step/action snapshot.
       properties:
         projectId:
           type: string
-          description: Create the workflow as project-level, scoped to this project.
+          description: Restrict to a project-level workflow. Applies only to project-level workflows.
           pattern: '^[a-z0-9]{9}$'
-          example: 4f2d6138c
-        workflowName:
+          example: 9258d5eb4
+        keyword:
           type: string
-          example: PWF-C
-        contentTypeUid:
-          type: string
-          description: UID of the content type this workflow applies to.
-          example: e38e7731d
-        workflowTemplate:
-          $ref: '#/components/schemas/WorkflowTemplate'
-        paidWorkflow:
-          type: boolean
-          default: false
-        managedWorkflow:
-          type: boolean
-          default: false
-        localePairs:
+          description: Filter by workflow name (case-insensitive substring match).
+          example: hello
+        localeIds:
           type: array
-          description: Locale pairs the workflow covers.
+          description: Restrict to workflows covering any of these locales.
           items:
-            $ref: '#/components/schemas/LocalePairInput'
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          example: [en-US, fr-FR]
+        workflowUids:
+          type: array
+          description: Restrict to these workflow UIDs.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/WorkflowUid'
+        workflowStepUids:
+          type: array
+          description: Restrict to workflows containing any of these steps.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+        localePairManagementType:
+          $ref: '#/components/schemas/LocalePairManagementType'
+        limit:
+          type: integer
+          description: Maximum number of results. Clamped to the range 1-500.
+          minimum: 1
+          maximum: 500
+          default: 100
 
     WorkflowStepUidsCommand:
       type: object
@@ -318,7 +297,7 @@ components:
 
     # ---- Response schemas ----
 
-    WorkflowConfigurationResponse:
+    UserWorkflowListResponse:
       type: object
       properties:
         response:
@@ -330,36 +309,13 @@ components:
             data:
               type: object
               properties:
-                workflowUid:
-                  $ref: '../api_common.yaml#/components/schemas/WorkflowUid'
-                workflowName:
-                  type: string
-                  example: PWF-C
-                contentTypeUid:
-                  type: string
-                  example: e38e7731d
-                localePairManagementType:
-                  $ref: '#/components/schemas/LocalePairManagementType'
-                canModify:
-                  type: boolean
-                updateDate:
-                  type: [integer, "null"]
-                  description: Epoch milliseconds of the last update. `null` for a workflow that has never been updated.
-                  example: null
-                paidWorkflow:
-                  type: boolean
-                managedWorkflow:
-                  type: boolean
-                foundationWorkflow:
-                  type: boolean
-                localePairs:
+                totalCount:
+                  type: integer
+                  example: 1
+                items:
                   type: array
                   items:
-                    $ref: '#/components/schemas/LocalePair'
-                workflowSteps:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/WorkflowStepConfiguration'
+                    $ref: '#/components/schemas/UserWorkflow'
 
     WorkflowStepResponse:
       type: object
