@@ -7,7 +7,7 @@ x-paths:
   create_translation_package:
     post:
       tags:
-        - Translation Packages
+        - translations
       operationId: translations_create_translation_package
       summary: Create a translation package
       description: |
@@ -15,12 +15,15 @@ x-paths:
         offline translation with external CAT tools (Trados, MemoQ, Phrase, Wordfast,
         etc.).
 
-        The XLIFF content is populated synchronously and is available for download
-        immediately after the response is returned. When `generateTmx` is `true`
-        (the default), a TMX translation memory file is also generated
-        asynchronously in the background. The `translationMemory` link in the
-        response carries a `processUid` while the TMX is being prepared; once
-        ready, `processUid` becomes `null` and the link's `href` is set.
+        Creating a package synchronously determines which strings belong to it.
+        The XLIFF file itself is generated on demand from the current
+        translation state each time you call the content endpoint, so it's
+        available for download immediately after the package is created. When
+        `generateTmx` is `true` (the default), a TMX translation memory file is
+        also generated asynchronously in the background. The `translationMemory`
+        link in the response carries a `processUid` while the TMX is being
+        prepared; once ready, `processUid` becomes `null` and the link's `href`
+        is set.
 
         Returns `202 Accepted` when the TMX job is still in progress, or `200 OK`
         when all resources are immediately available (that is, `generateTmx` was
@@ -148,7 +151,7 @@ x-paths:
   get_async_progress:
     get:
       tags:
-        - Translation Packages
+        - translations
       operationId: translations_get_async_progress
       summary: Get async process status
       description: |
@@ -225,15 +228,19 @@ x-paths:
   get_translation_package:
     get:
       tags:
-        - Translation Packages
+        - translations
       operationId: translations_get_translation_package
       summary: Get translation package metadata
       description: |
         Returns metadata and HATEOAS links for an existing translation package.
-        Use this to poll for package readiness: when all `processUid` fields in
-        the `links` array are `null`, the resources are ready for download.
+        The `content` link is always ready for download immediately - its
+        `processUid` is always `null`. If `generateTmx` was requested, use this
+        endpoint to poll for TMX readiness: while the `translationMemory` link's
+        `processUid` is set, the TMX is still being prepared; once it's `null`,
+        the TMX is ready too.
 
-        Returns `202` if resources are still being prepared, `200` when ready.
+        Returns `202` while the TMX is still being prepared, `200` once
+        everything requested is ready.
       parameters:
         - $ref: '../api_common.yaml#/components/parameters/projectId'
         - name: translationPackageUid
@@ -300,38 +307,24 @@ x-paths:
   get_translation_package_content:
     get:
       tags:
-        - Translation Packages
+        - translations
       operationId: translations_get_translation_package_content
       summary: Download package content as XLIFF
       description: |
         Downloads the translation package as an XLIFF 1.2 file for use with
         external CAT tools (Trados, MemoQ, Phrase, Wordfast, etc.).
 
-        The XLIFF contains source strings and any existing translations at the
-        workflow step. The filename follows the pattern
+        The XLIFF is generated on demand from the current translation state on
+        every call, reflecting any translation changes made since the package
+        was created. It contains source strings and any existing translations
+        at the workflow step. The filename follows the pattern
         `{sourceLocale}_{targetLocale}_{workflowStepName}.xliff`.
-
-        When `extendedMode=true`, additional Smartling-specific metadata is
-        included in the XLIFF output.
       parameters:
         - $ref: '../api_common.yaml#/components/parameters/projectId'
         - name: translationPackageUid
           in: path
           required: true
           description: UID of the translation package.
-          schema:
-            type: string
-        - name: extendedMode
-          in: query
-          required: false
-          description: Set to `true` to include additional Smartling metadata in the XLIFF.
-          schema:
-            type: string
-            default: ""
-        - name: userUid
-          in: query
-          required: false
-          description: User UID for service-token authentication switching.
           schema:
             type: string
       responses:
@@ -390,7 +383,7 @@ x-paths:
   get_translation_package_tm:
     get:
       tags:
-        - Translation Packages
+        - translations
       operationId: translations_get_translation_package_tm
       summary: Download package translation memory as TMX
       description: |
@@ -464,7 +457,7 @@ x-paths:
   import_offline_cat_content:
     post:
       tags:
-        - Translation Packages
+        - translations
       operationId: translations_import_offline_cat_content
       summary: Import translations from offline CAT tool (XLIFF)
       description: |
@@ -491,7 +484,7 @@ x-paths:
           required: false
           description: Import translations into this specific workflow step.
           schema:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
         - name: submitContent
           in: query
           required: false
@@ -587,7 +580,7 @@ x-paths:
   get_recent_import_status:
     get:
       tags:
-        - Translation Packages
+        - translations
       operationId: translations_get_recent_import_status
       summary: Get most recent import status
       description: |
@@ -657,8 +650,8 @@ components:
           description: UID of the workflow step to snapshot.
           $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
         translationJobUid:
-          type: string
           description: Limit package to strings within this translation job.
+          $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
         hashcodes:
           type: array
           description: Limit package to these specific string hashcodes. Omit for all strings.
@@ -666,7 +659,10 @@ components:
             $ref: '../api_common.yaml#/components/schemas/Hashcode'
         generateTmx:
           type: boolean
-          description: Generate a TMX translation memory file alongside the XLIFF.
+          description: |
+            Generate a TMX translation memory file alongside the XLIFF. If your
+            integration doesn't need the TMX file, we recommend passing `false`
+            to avoid the extra background generation work.
           default: true
 
     TranslationPackageLink:
@@ -774,8 +770,10 @@ components:
           format: date-time
           description: Timestamp of the last status update.
         translationJobUid:
-          type: [string, "null"]
           description: Associated translation job UID, if applicable.
+          oneOf:
+            - $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
+            - type: "null"
         processStatistics:
           $ref: '#/components/schemas/AsyncProgressStatistics'
 
