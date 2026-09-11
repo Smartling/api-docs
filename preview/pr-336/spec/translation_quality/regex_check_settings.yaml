@@ -1,0 +1,481 @@
+x-paths:
+
+  profiles_regex_check_type_rules:
+    post:
+      description: >-
+        Create a custom quality check.
+      summary: Create a custom quality check
+      tags:
+        - Translation quality checks
+      operationId: createTQCRegexRule
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TQCRegexRuleRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules
+
+  profiles_regex_check_type_rule:
+    get:
+      description: >-
+        Get a custom quality check.
+      summary: Get a custom quality check
+      tags:
+        - Translation quality checks
+      operationId: getTQCRegexRule
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid
+    put:
+      description: >-
+        Update a custom quality check.
+      summary: Update a custom quality check
+      tags:
+        - Translation quality checks
+      operationId: updateTQCRegexRule
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TQCRegexRuleRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid
+    delete:
+      description: >-
+        Delete a custom quality check.
+      summary: Delete a custom quality check
+      tags:
+        - Translation quality checks
+      operationId: deleteTQCRegexRule
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid
+
+  profiles_regex_check_type_rule_groups:
+    post:
+      description: >-
+        Create a custom quality check group
+      summary: Create a custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: createTQCRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                targetLocaleIds:
+                  description: >-
+                    List of target locale IDs.
+                  example:
+                    - "ru-RU"
+
+                  items:
+                    type: string
+                  type: array
+              required:
+                - targetLocaleIds
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleGroupResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups
+    get:
+      description: >-
+        Get a custom quality check groups.
+      summary: Get a custom quality check groups
+      tags:
+        - Translation quality checks
+      operationId: getTQCRegexRuleGroups
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleGroupsResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups
+
+  profiles_regex_check_type_rule_group:
+    get:
+      description: >-
+        Get a custom quality check group.
+      summary: Get a custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: getTQCRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleGroupResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X GET -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid
+
+    delete:
+      description: >-
+        Delete a custom quality check group.
+      summary: Delete a custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: deleteTQCRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid
+
+
+  profiles_regex_check_type_rule_severity_level:
+    put:
+      description: >-
+        Update severity level for custom quality check.
+      summary: Update severity level for custom quality check
+      tags:
+        - Translation quality checks
+      operationId: updateProfilesCheckRuleSeverityLevel
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckTypeSeverityLevelPutRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/severity-level
+
+  profiles_regex_check_type_rule_group_locales:
+    put:
+      description: >-
+        Add locale to custom quality check group.
+      summary: Add locale custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: addLocaleToProfilesTranslationQualityCheckTypeRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCheckTypeGroupAddLocaleRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleGroupResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid/locales
+
+  profiles_regex_check_type_rule_group_locale:
+    delete:
+      description: >-
+        Delete locale from custom quality check group.
+      summary: Delete locale from custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: deleteLocaleFromTranslationQualityCheckTypeRegexRuleGroup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/targetLocaleIdPathParameter'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid/locales/{targetLocaleId}
+
+  profiles_regex_check_type_rule_group_severity_level:
+    put:
+      description: >-
+        Update the severity level for custom quality check group.
+      summary: Update severity level for custom quality check group
+      tags:
+        - Translation quality checks
+      operationId: updateProfilesCheckRuleGroupSeverityLevel
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/regexRuleUidPathParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/groupUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckTypeSeverityLevelPutRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCRegexRuleGroupResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d "$smartlingStringTQCJSON" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/REGEX_CHECK/settings/rules/$smartlingCheckRuleUid/groups/$smartlingCheckRuleGroupUid/severity-level
+
+components:
+  schemas:
+    CheckTypeSeverityLevelPutRequest:
+      allOf:
+        - $ref: './tqc_common.yaml#/components/requestBodies/severityLevelCode'
+
+    AccountCheckTypeGroupAddLocaleRequest:
+      allOf:
+        - $ref: './tqc_common.yaml#/components/requestBodies/targetLocaleId'
+
+    TQCRegexRuleRequest:
+      allOf:
+        - $ref: './tqc_common.yaml#/components/schemas/regexRuleModel'
+
+    TQCRegexRuleResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: './tqc_common.yaml#/components/schemas/regexRuleWithRuleUid'
+
+    TQCRegexRuleGroupResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: './tqc_common.yaml#/components/schemas/regexRuleGroupModel'
+
+    TQCRegexRuleGroupsResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                      example: 1
+                    items:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: './tqc_common.yaml#/components/schemas/regexRuleGroupModel'

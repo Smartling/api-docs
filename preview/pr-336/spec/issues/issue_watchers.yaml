@@ -1,0 +1,477 @@
+x-paths:
+  issue_watchers:
+    get:
+      summary: List account watchers
+      description: Get a list of all issue watchers for the entire account.
+      tags:
+        - Issues
+      operationId: getIssuesWatchersListByAccount
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: Watcher email
+          in: query
+          name: email
+          required: false
+          schema:
+            type: string
+        - description: limit
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 100
+            type: number
+        - description: offset
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            type: number
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - created: '2015-12-21T16:38:48Z'
+                            email: my@mail.com
+                            enabled: true
+                            modified: '2015-12-21T16:38:48Z'
+                            name: Mike Albert
+                            uid: 323323wsss
+                        totalCount: 1
+              schema:
+                $ref: '#/components/schemas/IssueGetWatchersResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/watchers
+    post:
+      summary: Create watcher
+      description: Create a new watcher.
+      tags:
+        - Issues
+      operationId: addIssuesWatcher
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WatcherRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        created: '2015-12-21T16:38:48Z'
+                        email: my@mail.com
+                        enabled: true
+                        modified: '2015-12-21T16:38:48Z'
+                        name: Mike Albert
+                        uid: 323323wsss
+              schema:
+                $ref: '#/components/schemas/IssueWatcherResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssueWatcherJSON"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/watchers
+
+  edit_watcher:
+    put:
+      summary: Update watcher
+      description: Update the attributes of a watcher.
+      tags:
+        - Issues
+      operationId: updateIssuesWatcher
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of the corresponding watcher.
+          in: path
+          name: watcherUid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WatcherRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        created: '2015-12-21T16:38:48Z'
+                        email: my@mail.com
+                        enabled: true
+                        modified: '2015-12-21T16:38:48Z'
+                        name: Mike Albert
+                        uid: 323323wsss
+              schema:
+                $ref: '#/components/schemas/IssueWatcherResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingIssueWatcherJSON"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/watchers/$issueWatcherUid
+
+  issues_watchers:
+    put:
+      summary: Link watcher to issue
+      description: >-
+        Associate or assign the watcher to an issue. The watcher will then begin
+        receiving email notifications.  Emails do not have to have access to the
+        Smartling account to be added as a Watcher. If they have access to the
+        account the emails include links to view the issue in the dashboard.
+      tags:
+        - Issues
+      operationId: addWatcherToIssue
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+        - description: ''
+          in: path
+          name: watcherUid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+              schema:
+                $ref: '#/components/schemas/IssueWatcherAssignResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/projects/$smartlingProjectId/issues/$issueUid/watchers/$issueWatcherUid
+    delete:
+      summary: Remove watcher from issue
+      description: >-
+        An update to an issue is sent to the associated/linked watcher. Once
+        watchers are removed from an issue, email notifications will no longer
+        be received by them.
+      tags:
+        - Issues
+      operationId: deleteWatcherFromIssue
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding watcher
+          in: path
+          name: watcherUid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+              schema:
+                $ref: '#/components/schemas/IssueWatcherDeleteResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/projects/$smartlingProjectId/issues/$issueUid/watchers/$issueWatcherUid
+
+
+  get_issue_watchers:
+    get:
+      summary: List watchers linked to issue
+      description: Get a list of watchers that are linked to the issue.
+      tags:
+        - Issues
+      operationId: getWatchersListLinkedToIssue
+      parameters:
+        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: accountUid
+          required: true
+          schema:
+            type: string
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            type: string
+        - description: Unique identifier of corresponding issue
+          in: path
+          name: issueUid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - created: '2015-12-21T16:38:48Z'
+                            email: my@mail.com
+                            enabled: true
+                            modified: '2015-12-21T16:38:48Z'
+                            name: Mike Albert
+                            uid: 323323wsss
+                        totalCount: 1
+              schema:
+                $ref: '#/components/schemas/IssueWatcherGetListResponse'
+          description: OK
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X GET -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json"
+            https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountId/projects/$smartlingProjectId/issues/$issueUid/watchers
+
+
+
+
+components:
+  schemas:
+    IssueGetWatchersResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          created:
+                            description: Watcher creation date
+                            type: string
+                          email:
+                            description: Watcher email
+                            type: string
+                          enabled:
+                            description: Should send email notification to this email
+                            type: boolean
+                          modified:
+                            description: Watcher modification date
+                            type: string
+                          name:
+                            description: Watcher name
+                            type: string
+                          uid:
+                            description: Watcher identifier
+                            type: string
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object
+    WatcherRequest:
+      properties:
+        email:
+          description: watcher email
+          example: my@maul.com
+          type: string
+        enabled:
+          description: Should send email notification to this email.
+          example: true
+          type: boolean
+        name:
+          description: watcher name
+          example: Alonso
+          type: string
+      required:
+        - email
+        - name
+      type: object
+    IssueWatcherResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    created:
+                      description: Watcher creation date
+                      type: string
+                    email:
+                      description: Watcher email
+                      type: string
+                    enabled:
+                      description: Should send email notification to this email
+                      type: boolean
+                    modified:
+                      description: Watcher modification date
+                      type: string
+                    name:
+                      description: Watcher name
+                      type: string
+                    uid:
+                      description: Watcher identifier
+                      type: string
+                  type: object
+              type: object
+    IssueWatcherAssignResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  type: object
+              type: object
+    IssueWatcherDeleteResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  type: object
+              type: object
+    IssueWatcherGetListResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './issues_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        properties:
+                          created:
+                            description: Watcher creation date
+                            type: string
+                          email:
+                            description: Watcher email
+                            type: string
+                          enabled:
+                            description: Should send email notification to this email
+                            type: boolean
+                          modified:
+                            description: Watcher modification date
+                            type: string
+                          name:
+                            description: Watcher name
+                            type: string
+                          uid:
+                            description: Watcher identifier
+                            type: string
+                        type: object
+                      type: array
+                    totalCount:
+                      description: Total element count
+                      type: integer
+                  type: object
+              type: object

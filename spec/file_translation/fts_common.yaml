@@ -1,0 +1,128 @@
+components:
+  parameters:
+    accountUidPathParameter:
+      name: accountUid
+      in: path
+      schema:
+        type: string
+      required: true
+      description: A unique account identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+
+    fileUidPathParameter:
+      name: fileUid
+      in: path
+      schema:
+        type: string
+      required: true
+      description: Unique identifier of the uploaded file.
+
+    mtUidPathParameter:
+      name: mtUid
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Unique identifier of machine translation action triggered on a file.
+
+    languageDetectionUidPathParameter:
+      name: languageDetectionUid
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Unique identifier of language detection action triggered on a file.
+
+  schemas:
+    SuccessResponse:
+      properties:
+        code:
+          description: >-
+            Indicates whether the response was successful or what error has occurred.
+          enum:
+            - SUCCESS
+          type: string
+      required:
+        - code
+      type: object
+    EmptyResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  description: Always empty.
+                  type: object
+                  example: {}
+              type: object
+    AcceptedResponse:
+      properties:
+        code:
+          description: >-
+            Indicates whether the response was successful or what error has occurred.
+          enum:
+            - ACCEPTED
+          type: string
+      required:
+        - code
+      type: object
+    Error400Response:
+      type: object
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occurred.
+              enum:
+                - VALIDATION_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+    Error:
+      type: object
+      properties:
+        key:
+          description: Error key
+          example: generalError
+          type: string
+        message:
+          description: Human readable description of the error
+          example: 'Sorry, something went wrong. We notified the responsible team. If you still need to contact us please provide this error code: jtcorrr3'
+          type: string
+        details:
+          description: Details of the occurred error.
+          example: '{"errorId": "jtcorrr3"}'
+          type: object
+      required:
+        - key
+        - message
+  responses:
+    Error400ResponseDefinition:
+      description: Provided request parameters are invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: VALIDATION_ERROR
+                  errors:
+                    key: not.found
+                    message: >-
+                      mtUid jtcorrr3 not found
+                    details:
+                      mtUid: jtcorrr3

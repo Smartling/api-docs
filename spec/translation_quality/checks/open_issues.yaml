@@ -1,0 +1,187 @@
+components:
+  schemas:
+
+    OpenIssuesSettingsDTO:
+      type: object
+      properties:
+        sourceIssuesMustBeResolved:
+          type: boolean
+          description: All source issues must be resolved
+          example: false
+        translationIssuesMustBeResolved:
+          type: boolean
+          description: All translation issues must be resolved
+          example: true
+
+    AccountCheckTypeApplySettingsRequest:
+      title: OPEN_ISSUES
+      allOf:
+        - $ref: '#/components/schemas/OpenIssuesSettingsDTO'
+        - type: object
+          required:
+            - sourceIssuesMustBeResolved
+            - translationIssuesMustBeResolved
+
+    AccountCheckTypeApplySettingsDTOResponse:
+      title: OPEN_ISSUES
+      allOf:
+        - $ref: '#/components/schemas/OpenIssuesSettingsDTO'
+
+    AccountCheckTypeEffectiveDTO:
+      title: OPEN_ISSUES
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/OpenIssuesSettingsDTO'
+        - type: object
+          required:
+            - checkTypeCode
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - OPEN_ISSUES
+              description: check type code
+              example: "OPEN_ISSUES"
+
+    ProfilesAccountCheckTypeEffectiveDTO:
+      title: OPEN_ISSUES
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/profileUidResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective'
+        - $ref: '#/components/schemas/OpenIssuesSettingsDTO'
+        - type: object
+          required:
+            - checkTypeCode
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - OPEN_ISSUES
+              description: check type code
+              example: "OPEN_ISSUES"
+
+    ProfilesAccountCheckTypeEffectiveResponse:
+      allOf:
+        - $ref: '../../api_common.yaml#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ProfilesAccountCheckTypeEffectiveDTO'
+
+    TqcCheckMistakeDTO:
+      title: OPEN_ISSUES
+      allOf:
+        - $ref: '../tqc_common.yaml#/components/schemas/severityLevelCodeResponse'
+        - $ref: '../tqc_common.yaml#/components/schemas/PositionsTqcCheckDTO'
+        - type: object
+          properties:
+            checkTypeCode:
+              type: string
+              enum:
+                - OPEN_ISSUES
+              description: check type code
+              example: "OPEN_ISSUES"
+            details:
+              type: object
+              properties:
+                sourceIssuesCount:
+                  type: integer
+                  description: text
+                  example: 2
+                translationIssuesCount:
+                  type: integer
+                  description: message
+                  example: 3
+            positionTypeCode:
+              type: string
+              enum:
+                - TARGET
+              description: position type code
+              example: "TARGET"
+
+  examples:
+
+    accounts_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "OPEN_ISSUES"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "sourceIssuesMustBeResolved": true
+      "translationIssuesMustBeResolved": true
+
+    projects_check_types_settings_example:
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "OPEN_ISSUES"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "sourceIssuesMustBeResolved": true
+      "translationIssuesMustBeResolved": true
+
+    profiles_accounts_check_types_settings_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "OPEN_ISSUES"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "sourceIssuesMustBeResolved": true
+      "translationIssuesMustBeResolved": true
+
+    profiles_account_check_types_settings_effective_example:
+      "profileUid": "ce6d6b5dbc12"
+      "severityLevelCode": "LOW"
+      "checkTypeCode": "OPEN_ISSUES"
+      "subTypes": []
+      "localeSeverityLevels": []
+      "groups": []
+      "sourceIssuesMustBeResolved": true
+      "translationIssuesMustBeResolved": true
+
+    accounts_check_types_checkType_settings_example:
+      sourceIssuesMustBeResolved: true
+      translationIssuesMustBeResolved: true
+
+    profiles_accounts_check_types_checkType_settings_example:
+      sourceIssuesMustBeResolved: true
+      translationIssuesMustBeResolved: true
+
+    accounts_check_types_checkType_group_settings_example:
+      sourceIssuesMustBeResolved: true
+      translationIssuesMustBeResolved: true
+
+    profiles_accounts_check_types_checkType_group_settings_example:
+      sourceIssuesMustBeResolved: true
+      translationIssuesMustBeResolved: true
+
+    tqc_check_response_example:
+      "response":
+        "code": "SUCCESS"
+        "data":
+          "results":
+            - "string":
+                "originalString": "hello"
+                "translation": "hello"
+                "hashcode": "a0b1acda22fc97da9c2b9ae5f3b25888"
+                "stringUid": null
+                "pluralFormGroupUid": null
+                "pluralForm": null
+              "mistakes":
+                - "checkTypeCode": "OPEN_ISSUES"
+                  "severityLevelCode": "LOW"
+                  "positions":
+                    "from": 0
+                    "to": 5
+                  "details":
+                    "sourceIssuesCount": 5
+                    "translationIssuesCount": 3
+                  "positionTypeCode": "TARGET"
+
+    dictionary_checkTypes_response_example:
+      "checkTypeCode": "OPEN_ISSUES"
+      "name": "Open Issues"
+      "description": "Check that strings do not have open issues"
+      "checkSubTypes": []
+
