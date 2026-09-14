@@ -366,6 +366,16 @@ tags:
   - name: Translation quality checks
     description: The translation quality check service is an API endpoint at which you can check the quality of your translations.
 
+  - name: translations
+    x-displayName: Translations
+    description: |-
+      Endpoints for working with translated content outside the standard job
+      workflow. Currently this covers translation packages: snapshotting
+      translatable content at a workflow step for offline translation with
+      external CAT tools, as XLIFF 1.2 optionally alongside a TMX translation
+      memory, and importing the
+      translated XLIFF back into the project once work is done.
+
   - name: Glossary API
     description: |-
       During translation process, text may contain specific words, which are very important to has 
@@ -8987,6 +8997,30 @@ paths:
 #
   /workflows-strings-api/v2/projects/{projectId}/movedStrings:
     $ref: './spec/workflow_strings/workflow_strings_endpoints.yaml#/x-paths/move_strings'
+
+#
+## Translation Packages API (DOCS-3238)
+#
+  /translations-api/v2/projects/{projectId}/locales/{localeId}/translation-packages:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/create_translation_package'
+
+  /translations-api/v2/projects/{projectId}/translation-packages/{translationPackageUid}:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_translation_package'
+
+  /translations-api/v2/projects/{projectId}/processes/{processUid}:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_async_progress'
+
+  /translations-api/v2/projects/{projectId}/translation-packages/{translationPackageUid}/content:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_translation_package_content'
+
+  /translations-api/v2/projects/{projectId}/translation-packages/{translationPackageUid}/tm:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_translation_package_tm'
+
+  /translations-api/v2/projects/{projectId}/locales/{localeId}/content:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/import_offline_cat_content'
+
+  /translations-api/v2/projects/{projectId}/locales/{localeId}/content/processes/last:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_recent_import_status'
 
 #
 ## Workflows API
