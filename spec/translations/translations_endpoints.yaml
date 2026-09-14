@@ -471,6 +471,12 @@ x-paths:
         `submitContent=true`, content is automatically advanced to the next
         workflow step after import.
 
+        When `mtContent=true`, imported translations are tagged with
+        `OFFLINE_CAT_MT` origin instead of `OFFLINE_CAT`, and are saved with
+        `EXTERNAL` translation quality instead of the default human quality.
+        Use this to isolate machine-translated test content from TM matching
+        against human translations.
+
         **Limitations**
 
         - Limit calls to 6 requests per 60 seconds per user. Exceeding this
@@ -488,6 +494,16 @@ x-paths:
           in: query
           required: false
           description: Automatically advance content to the next workflow step after import.
+          schema:
+            type: boolean
+            default: false
+        - name: mtContent
+          in: query
+          required: false
+          description: |
+            Tag the imported translations as machine-translated
+            (`OFFLINE_CAT_MT` origin, `EXTERNAL` quality) instead of the
+            default human-translated (`OFFLINE_CAT` origin) tagging.
           schema:
             type: boolean
             default: false
