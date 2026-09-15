@@ -366,6 +366,16 @@ tags:
   - name: Translation quality checks
     description: The translation quality check service is an API endpoint at which you can check the quality of your translations.
 
+  - name: translations
+    x-displayName: Translations
+    description: |-
+      Endpoints for working with translated content outside the standard job
+      workflow. Currently this covers translation packages: snapshotting
+      translatable content at a workflow step for offline translation with
+      external CAT tools, as XLIFF 1.2 optionally alongside a TMX translation
+      memory, and importing the
+      translated XLIFF back into the project once work is done.
+
   - name: Glossary API
     description: |-
       During translation process, text may contain specific words, which are very important to has 
@@ -6437,6 +6447,58 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  /jobs-api/v3/projects/{projectId}/jobs/processes:
+    post:
+      summary: Get jobs with an active process
+      description: >-
+        Given a list of translation job UIDs, returns the subset of those jobs
+        that currently have an active asynchronous process (for example, an
+        in-progress authorization or batch operation).
+      tags:
+      - Jobs
+      operationId: getJobsWithProcesses
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetJobsWithProcessesRequest'
+        description: >-
+          The translation job UIDs to check for an active process. Accepts
+          between 1 and 500 UIDs.
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListJobsWithProcessesResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 1
+                        items:
+                        - translationJobUid: gh3cychkttgi
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}:
     get:
       summary: Check for an async process for job
@@ -8996,6 +9058,30 @@ paths:
 #
   /workflows-strings-api/v2/projects/{projectId}/movedStrings:
     $ref: './spec/workflow_strings/workflow_strings_endpoints.yaml#/x-paths/move_strings'
+
+#
+## Translation Packages API (DOCS-3238)
+#
+  /translations-api/v2/projects/{projectId}/locales/{localeId}/translation-packages:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/create_translation_package'
+
+  /translations-api/v2/projects/{projectId}/translation-packages/{translationPackageUid}:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_translation_package'
+
+  /translations-api/v2/projects/{projectId}/processes/{processUid}:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_async_progress'
+
+  /translations-api/v2/projects/{projectId}/translation-packages/{translationPackageUid}/content:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_translation_package_content'
+
+  /translations-api/v2/projects/{projectId}/translation-packages/{translationPackageUid}/tm:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_translation_package_tm'
+
+  /translations-api/v2/projects/{projectId}/locales/{localeId}/content:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/import_offline_cat_content'
+
+  /translations-api/v2/projects/{projectId}/locales/{localeId}/content/processes/last:
+    $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_recent_import_status'
 
 #
 ## Workflows API
@@ -12218,6 +12304,33 @@ components:
           example: CustomerReferenceNum1
           type: string
       type: object
+    ListJobsWithProcessesResponse:
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/ListJobsWithProcessesResponseItem'
+                      type: array
+                    totalCount:
+                      type: number
+                  type: object
+              required:
+                - data
+              type: object
+      required:
+        - response
+      type: object
+    ListJobsWithProcessesResponseItem:
+      properties:
+        translationJobUid:
+          description: The unique identifier of a job that currently has an active asynchronous process.
+          type: string
+      type: object
     LocaleApiItem:
       example:
         country:
@@ -12701,6 +12814,22 @@ components:
             example:
               - ru-RU
             type: string
+          type: array
+      type: object
+    GetJobsWithProcessesRequest:
+      description: The translation job UIDs to check for an active asynchronous process.
+      required:
+      - translationJobUids
+      properties:
+        translationJobUids:
+          description: >-
+            The `translationJobUid`s to check. Accepts between 1 and 500
+            values.
+          example: ["gh3cychkttgi"]
+          items:
+            type: string
+          minItems: 1
+          maxItems: 500
           type: array
       type: object
     SearchJobRequest:
