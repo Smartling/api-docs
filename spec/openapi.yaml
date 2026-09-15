@@ -6447,6 +6447,58 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  /jobs-api/v3/projects/{projectId}/jobs/processes:
+    post:
+      summary: Get jobs with an active process
+      description: >-
+        Given a list of translation job UIDs, returns the subset of those jobs
+        that currently have an active asynchronous process (for example, an
+        in-progress authorization or batch operation).
+      tags:
+      - Jobs
+      operationId: getJobsWithProcesses
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetJobsWithProcessesRequest'
+        description: >-
+          The translation job UIDs to check for an active process. Accepts
+          between 1 and 500 UIDs.
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListJobsWithProcessesResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 1
+                        items:
+                        - translationJobUid: gh3cychkttgi
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/processes/{processUid}:
     get:
       summary: Check for an async process for job
@@ -12243,6 +12295,33 @@ components:
           example: CustomerReferenceNum1
           type: string
       type: object
+    ListJobsWithProcessesResponse:
+      properties:
+        response:
+          allOf:
+            - $ref: '#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/ListJobsWithProcessesResponseItem'
+                      type: array
+                    totalCount:
+                      type: number
+                  type: object
+              required:
+                - data
+              type: object
+      required:
+        - response
+      type: object
+    ListJobsWithProcessesResponseItem:
+      properties:
+        translationJobUid:
+          description: The unique identifier of a job that currently has an active asynchronous process.
+          type: string
+      type: object
     LocaleApiItem:
       example:
         country:
@@ -12726,6 +12805,22 @@ components:
             example:
               - ru-RU
             type: string
+          type: array
+      type: object
+    GetJobsWithProcessesRequest:
+      description: The translation job UIDs to check for an active asynchronous process.
+      required:
+      - translationJobUids
+      properties:
+        translationJobUids:
+          description: >-
+            The `translationJobUid`s to check. Accepts between 1 and 500
+            values.
+          example: ["gh3cychkttgi"]
+          items:
+            type: string
+          minItems: 1
+          maxItems: 500
           type: array
       type: object
     SearchJobRequest:
