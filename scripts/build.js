@@ -28,4 +28,5 @@ cp('-R', 'spec/tmm', 'web_deploy/spec');
 cp('-R', 'spec/workflow_strings', 'web_deploy/spec');
 cp('-R', 'spec/workflows', 'web_deploy/spec');
 cp('-R', 'spec/translations', 'web_deploy/spec');
+cp('-R', 'spec/content_assignments', 'web_deploy/spec');
 cp('-R', 'spec/api_common.yaml', 'web_deploy/spec');
