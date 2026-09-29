@@ -18,13 +18,22 @@ x-paths:
         The operation runs asynchronously. Poll the process status
         endpoint with the returned `processUid` for progress and outcome.
 
+        The target user must have a workflow assignment for the step and
+        locale before they can be assigned to content in that step.
+
+        Translation Resource Managers (TRMs), Agency Account Owners (AAOs),
+        and other roles with access to the endpoint can assign any user who
+        has that workflow assignment. A Translation Resource (TR) can only
+        assign content to themselves, and only when claiming is enabled for
+        the account.
+
         Returns `400` when: `hashCodes` is empty or exceeds `500` entries;
         `localeId` or `workflowStepUid` is missing or not accessible to
         the caller; `userUid` is missing or does not resolve to a known
-        user; the target user has no ACL entry for the workflow step
-        (they must be invited to the step first); the caller holds only
-        `ROLE_TRANSLATION_RESOURCE` and `userUid` is not the caller's own
-        UID; or the workflow is not configured for the locale.
+        user; the target user has no workflow assignment for the step and
+        locale; the caller is a TR and `userUid` is not the caller's own
+        UID; the caller is a TR and claiming is not enabled for the
+        account; or the workflow is not configured for the locale.
       parameters:
         - $ref: '../api_common.yaml#/components/parameters/projectId'
       requestBody:
@@ -284,8 +293,9 @@ components:
               allOf:
                 - $ref: '../api_common.yaml#/components/schemas/UserUid'
               description: |
-                UID of the user to assign the strings to. When the caller
-                holds only `ROLE_TRANSLATION_RESOURCE`, this must be the
+                UID of the user to assign the strings to. The user must have
+                a workflow assignment for the step and locale. When the
+                caller is a Translation Resource (TR), this must be the
                 caller's own UID.
 
     # -- Response bodies --
