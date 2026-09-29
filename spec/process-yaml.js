@@ -32,7 +32,12 @@ try {
         console.log(resolved);
         console.log("before resolved.result");
         let destinationJson = {"x-paths": resolved.result}
-        fs.writeFileSync(destinationFilePath, yaml.dump(destinationJson));
+        let destinationYaml = yaml.dump(destinationJson);
+        if (!baseFilePath.endsWith("/checks")) {
+            // checks/*.yaml refer to ../tqc_common.yaml. Inlined into a file next to tqc_common.yaml that path is wrong.
+            destinationYaml = destinationYaml.replace(/\.\.\/tqc_common\.yaml/g, "tqc_common.yaml");
+        }
+        fs.writeFileSync(destinationFilePath, destinationYaml);
         console.log("after resolved.result");
         console.log("processed sourceFilePath=" + sourceFilePath);
         console.log("-----------------------------------------------------------");
