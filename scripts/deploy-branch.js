@@ -29,6 +29,7 @@ if (branch && branch !== 'gh-pages') {
   cp('-R', 'spec/workflows', specFolder);
   cp('-R', 'spec/translations', specFolder);
   cp('-R', 'spec/content_assignments', specFolder);
+  cp('-R', 'spec/people', specFolder);
   cp('-R', 'spec/api_common.yaml', specFolder);
 
   exec('deploy-to-gh-pages --update .tmp');

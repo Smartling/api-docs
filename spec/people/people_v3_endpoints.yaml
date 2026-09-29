@@ -1,0 +1,853 @@
+x-paths:
+
+  # ---------------------------------------------------------------------------
+  # Async process status
+  # ---------------------------------------------------------------------------
+
+  get_process:
+    get:
+      tags:
+        - Workflow Assignment
+      operationId: people_get_process
+      summary: Get the status of an async process
+      description: |
+        Returns the current state of an async process started by another
+        People API v3 operation, such as removing workflow step assignments.
+
+        `processState` is one of `RUNNING`, `FAILED`, or `COMPLETED`, derived
+        from the state of every worker task belonging to the process.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - name: processUid
+          in: path
+          required: true
+          description: UID of the async process to look up.
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/ProcessUid'
+      responses:
+        '200':
+          description: Process status retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncProcessEnvelope'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: 3f6b6e2e-df0a-4a9a-9e2a-6f0a6e2e0a1a
+                        processState: COMPLETED
+                        createdDate: "2026-01-15T10:00:00Z"
+                        requested: 3
+                        processed: 3
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  # ---------------------------------------------------------------------------
+  # Workflow step assignments
+  # ---------------------------------------------------------------------------
+
+  search_account_assignments:
+    post:
+      tags:
+        - Workflow Assignment
+      operationId: people_search_workflow_assignments
+      summary: Search workflow step assignments across the account
+      description: |
+        Returns the workflow step assignments held by users in the account,
+        optionally filtered to a set of workflow steps or a single user.
+
+        `workflowStepUids` is required and capped at `1000` entries. `limit`
+        is required and must be between `1` and `5000`. To fetch the next
+        page, pass the `offsetToken` from the previous response. Omit
+        `offsetToken` to fetch the first page. The response has no total
+        count.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowAssignmentSearchCommand'
+            examples:
+              by_steps:
+                value:
+                  workflowStepUids: [8abc5f913c17, 311a062024ea]
+                  limit: 500
+      responses:
+        '200':
+          description: Workflow step assignments retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAssignmentSearchResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        offsetToken: A62623439C40319E167275B10FC30F80D55372C4F932C915E720E9F357DE89A4
+                        workflowStepUserAssignments:
+                          - userUid: 5698b9e0c637
+                            roleValue: ROLE_TRANSLATION_RESOURCE
+                            agencyUid: null
+                            workflowStepAssignments:
+                              - workflowStepUid: 8abc5f913c17
+                                localePairs:
+                                  - sourceLocaleId: en-US
+                                    targetLocaleIds: [fr-FR, de-DE]
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  search_user_assignments:
+    post:
+      tags:
+        - Workflow Assignment
+      operationId: people_search_user_workflow_assignments
+      summary: Search workflow step assignments for a single user
+      description: |
+        Returns the workflow step assignments held by one user. Each result
+        groups the user's assigned locale pairs by workflow step.
+
+        `limit` is required and must be between `1` and `5000`. To fetch
+        the next page, pass the `offsetToken` from the previous response.
+        Omit `offsetToken` to fetch the first page. The response has no
+        total count.
+
+        Available only to `ROLE_ACCOUNT_OWNER` and `ROLE_PROJECT_MANAGER`.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: '#/components/parameters/userUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowAssignmentScrollCommand'
+            examples:
+              first_page:
+                value:
+                  limit: 500
+      responses:
+        '200':
+          description: Workflow step assignments retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAssignmentSearchResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        offsetToken: A62623439C40319E167275B10FC30F80D55372C4F932C915E720E9F357DE89A4
+                        workflowStepUserAssignments:
+                          - userUid: 5698b9e0c637
+                            roleValue: ROLE_TRANSLATION_RESOURCE
+                            agencyUid: null
+                            workflowStepAssignments:
+                              - workflowStepUid: 8abc5f913c17
+                                localePairs:
+                                  - sourceLocaleId: en-US
+                                    targetLocaleIds: [fr-FR, de-DE]
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  assign_user_workflow_steps:
+    post:
+      tags:
+        - Workflow Assignment
+      operationId: people_create_user_workflow_assignments
+      summary: Assign a user to workflow steps
+      description: |
+        Grants a user a workflow-level role and assigns them to one or more
+        workflow steps for the given locale pairs.
+
+        `roleValue` must be `ROLE_TRANSLATION_RESOURCE` or
+        `ROLE_TRANSLATION_RESOURCE_MANAGER`. Each assigned step's type must be
+        allowed for that role: `ROLE_TRANSLATION_RESOURCE` allows
+        `TRANSLATION` and `POST_TRANSLATION` steps; `ROLE_TRANSLATION_RESOURCE_MANAGER`
+        additionally allows `ADMIN_APPROVAL`, `ANALYSIS`, and `WORK_APPROVAL`
+        steps. Every workflow step must belong to the given account.
+
+        The assignments are added to those the user already holds.
+        Assignments the user already has are left unchanged. Workflow steps
+        or locale pairs that do not exist are skipped without an error, so
+        compare the response with your request to confirm what was created.
+
+        If the user does not yet belong to the account, they are added to
+        it. The user receives a notification email about the new access,
+        and each new assignment is recorded in the audit log.
+
+        Available only to `ROLE_ACCOUNT_OWNER` and `ROLE_PROJECT_MANAGER`.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: '#/components/parameters/userUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowAssignmentCreateCommand'
+            examples:
+              assign:
+                value:
+                  roleValue: ROLE_TRANSLATION_RESOURCE
+                  workflowStepAssignments:
+                    - workflowStepUid: 8abc5f913c17
+                      localePairs:
+                        - sourceLocaleId: en-US
+                          targetLocaleIds: [fr-FR, de-DE]
+      responses:
+        '200':
+          description: Workflow step assignments created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAssignmentCreateResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 1
+                        items:
+                          - workflowStepUid: 8abc5f913c17
+                            localePairs:
+                              - sourceLocaleId: en-US
+                                targetLocaleIds: [fr-FR, de-DE]
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  remove_user_workflow_steps:
+    post:
+      tags:
+        - Workflow Assignment
+      operationId: people_remove_user_workflow_assignments
+      summary: Remove a user's workflow step assignments
+      description: |
+        Removes a user's assignment to one or more workflow steps for the
+        given locale pairs. The removal is processed asynchronously. Poll
+        the returned `processUid` with `GET /people-api/v3/accounts/{accountUid}/processes/{processUid}`
+        for completion status.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: '#/components/parameters/userUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowAssignmentRemoveCommand'
+            examples:
+              remove:
+                value:
+                  workflowStepAssignments:
+                    - workflowStepUid: 8abc5f913c17
+                      localePairs:
+                        - sourceLocaleId: en-US
+                          targetLocaleIds: [fr-FR]
+      responses:
+        '200':
+          description: Removal process started.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncProcessEnvelope'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: 3f6b6e2e-df0a-4a9a-9e2a-6f0a6e2e0a1a
+                        processState: RUNNING
+                        createdDate: "2026-01-15T10:00:00Z"
+                        requested: 1
+                        processed: 0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  # ---------------------------------------------------------------------------
+  # Users
+  # ---------------------------------------------------------------------------
+
+  list_users:
+    post:
+      tags:
+        - Workflow Assignment
+      operationId: people_list_users
+      summary: List and filter account users
+      description: |
+        Returns a page of users in the account matching the given filter.
+        All filter fields are optional.
+
+        Callers whose highest role is workflow-level and who belong to an
+        agency see only the users of that agency, regardless of any
+        `agencyUid` in the request. `sourceLocales`, `targetLocales`,
+        `workflowUid`, and `workflowStepUids` apply only to workflow-level
+        roles. `projectUids` applies only to project-level roles. A single
+        `userRoles` filter cannot mix roles from different levels
+        (account, project, and workflow).
+
+        Set `pending` to `true` to return only users who have not yet
+        accepted their invitation, or to `false` to return only users who
+        have. Omit it to return both.
+
+        Results are paged with `offsetToken`. The response has no total
+        count.
+
+        `limit` above `20` is not rejected. The response is silently
+        capped at `20` items regardless of the requested value.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamViewFilterCommand'
+            examples:
+              by_keyword:
+                value:
+                  keyword: jane
+                  sortProperty: lastName
+                  sortDirection: ASC
+                  limit: 20
+              unfiltered:
+                value: {}
+      responses:
+        '200':
+          description: Users retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamViewListResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        offsetToken: A62623439C40319E167275B10FC30F80D55372C4F932C915E720E9F357DE89A4
+                        items:
+                          - userUid: 5698b9e0c637
+                            firstName: Jane
+                            lastName: Doe
+                            email: translator@example.com
+                            lastLogin: "2026-01-14T09:30:00Z"
+                            payable: true
+                            pending: false
+                            agency: null
+                            userRoles:
+                              - name: ROLE_TRANSLATION_RESOURCE
+                                level: WORKFLOW
+                            containsAllLocales: false
+                            localePairs:
+                              - sourceLocaleId: en-US
+                                targetLocaleIds: [fr-FR]
+                            runningActions: []
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+components:
+
+  parameters:
+
+    userUid:
+      name: userUid
+      in: path
+      required: true
+      description: UID of the user.
+      schema:
+        $ref: '../api_common.yaml#/components/schemas/UserUid'
+
+  responses:
+
+    BadRequest:
+      description: The request failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/Error400Response'
+
+    Forbidden:
+      description: Caller does not have access to the requested resource.
+      content:
+        application/json:
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/Error401Response'
+
+    NotFound:
+      description: Requested resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/Error404Response'
+
+  schemas:
+
+    OffsetToken:
+      type: string
+      description: >-
+        Opaque, server-generated pagination cursor. Do not attempt to parse
+        or construct one. Pass back exactly what a previous response
+        returned.
+      example: A62623439C40319E167275B10FC30F80D55372C4F932C915E720E9F357DE89A4
+
+    LocalePairs:
+      type: object
+      description: A source locale paired with one or more target locales.
+      required:
+        - sourceLocaleId
+        - targetLocaleIds
+      properties:
+        sourceLocaleId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          description: Source locale of the pair.
+        targetLocaleIds:
+          type: array
+          description: Target locales of the pair.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
+
+    WorkflowStepAssignment:
+      type: object
+      description: A workflow step and the locale pairs assigned on it.
+      required:
+        - workflowStepUid
+        - localePairs
+      properties:
+        workflowStepUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+          description: UID of the workflow step being assigned.
+        localePairs:
+          type: array
+          description: Source/target locale pairs assigned on this workflow step.
+          items:
+            $ref: '#/components/schemas/LocalePairs'
+
+    WorkflowStepUserAssignment:
+      type: object
+      description: The workflow step assignments held by one user.
+      properties:
+        userUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
+          description: UID of the assigned user.
+        roleValue:
+          type: string
+          description: Workflow-level role the user holds for these assignments.
+        agencyUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/AgencyUid'
+          nullable: true
+          description: UID of the agency the user belongs to, if any.
+        workflowStepAssignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowStepAssignment'
+
+    WorkflowAssignmentScrollCommand:
+      type: object
+      description: Cursor pagination for a workflow-assignment scroll.
+      required:
+        - limit
+      properties:
+        offsetToken:
+          allOf:
+            - $ref: '#/components/schemas/OffsetToken'
+          description: Pagination cursor from a previous response. Omit to fetch the first page.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 5000
+          description: Maximum number of results to return, between `1` and `5000`.
+
+    WorkflowAssignmentSearchCommand:
+      description: Filter for searching workflow step assignments across the account.
+      allOf:
+        - $ref: '#/components/schemas/WorkflowAssignmentScrollCommand'
+        - type: object
+          required:
+            - workflowStepUids
+          properties:
+            workflowStepUids:
+              type: array
+              maxItems: 1000
+              description: Workflow steps to return assignments for.
+              items:
+                $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+            userUid:
+              allOf:
+                - $ref: '../api_common.yaml#/components/schemas/UserUid'
+              description: Restrict results to this user's assignments.
+
+    WorkflowAssignmentCreateCommand:
+      type: object
+      description: Grants a user a workflow-level role and one or more step assignments.
+      required:
+        - roleValue
+        - workflowStepAssignments
+      properties:
+        roleValue:
+          type: string
+          description: Workflow-level role to grant.
+          enum: [ROLE_TRANSLATION_RESOURCE, ROLE_TRANSLATION_RESOURCE_MANAGER]
+        workflowStepAssignments:
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/WorkflowStepAssignment'
+
+    WorkflowAssignmentRemoveCommand:
+      type: object
+      description: Removes one or more of a user's workflow step assignments.
+      required:
+        - workflowStepAssignments
+      properties:
+        workflowStepAssignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowStepAssignment'
+
+    AsyncProcess:
+      type: object
+      description: Status and counters for an async People API process.
+      properties:
+        processUid:
+          $ref: '../api_common.yaml#/components/schemas/ProcessUid'
+        processState:
+          type: string
+          enum: [RUNNING, FAILED, COMPLETED]
+          description: |
+            `RUNNING` if any worker task is still in progress, `FAILED` if
+            none are running but at least one failed, otherwise `COMPLETED`.
+        createdDate:
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
+        requested:
+          type: integer
+          description: Total number of worker tasks in the process.
+        processed:
+          type: integer
+          description: Number of worker tasks that completed successfully.
+
+    AsyncProcessEnvelope:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          type: object
+          required:
+            - code
+            - data
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              $ref: '#/components/schemas/AsyncProcess'
+
+    WorkflowAssignmentSearchResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          type: object
+          required:
+            - code
+            - data
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              type: object
+              properties:
+                offsetToken:
+                  allOf:
+                    - $ref: '#/components/schemas/OffsetToken'
+                  description: Pass back on the next request to fetch the next page.
+                workflowStepUserAssignments:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/WorkflowStepUserAssignment'
+
+    WorkflowAssignmentCreateResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          type: object
+          required:
+            - code
+            - data
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              type: object
+              properties:
+                totalCount:
+                  type: integer
+                  description: Number of created workflow step assignments.
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/WorkflowStepAssignment'
+
+    Agency:
+      type: object
+      description: Agency identity.
+      properties:
+        agencyUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/AgencyUid'
+          description: UID of the agency.
+        agencyName:
+          type: string
+          description: Display name of the agency.
+
+    Role:
+      type: object
+      description: A Smartling role, optionally scoped to an ACL level.
+      properties:
+        name:
+          type: string
+          description: Role name, e.g. `ROLE_PROJECT_MANAGER`.
+        level:
+          type: string
+          nullable: true
+          description: |
+            ACL level the role is scoped to, typically `ACCOUNT`, `PROJECT`,
+            or `WORKFLOW`. Can be `null` for a role that carries no ACL level.
+
+    ActionState:
+      type: object
+      description: The outcome of a single team-view action.
+      properties:
+        action:
+          type: string
+          description: The action that was performed, e.g. `REMOVE_USER`, `RESEND_INVITE`.
+        status:
+          type: string
+          description: |
+            Status of the action:
+
+            1. `RUNNING` - accepted and in progress.
+            2. `ASYNC_WAIT` - waiting for a background step to finish.
+            3. `PULL_WAIT` - waiting for a scheduled step to be picked up.
+            4. `COMPLETED` - finished successfully.
+            5. `FAILED` - failed or could not be started. See `lastError`.
+            6. `CANCELED` - canceled before it finished.
+            7. `EXPIRED` - not completed in time.
+          enum: [RUNNING, ASYNC_WAIT, PULL_WAIT, COMPLETED, FAILED, CANCELED, EXPIRED]
+        lastError:
+          type: string
+          nullable: true
+          description: Error message from the most recent failed attempt, if any.
+
+    TeamViewItem:
+      type: object
+      description: A user row as returned by the user listing.
+      properties:
+        userUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
+          description: UID of the user.
+        firstName:
+          type: string
+          description: User's first name.
+        lastName:
+          type: string
+          description: User's last name.
+        email:
+          type: string
+          description: User's email address.
+        lastLogin:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
+          description: When the user last logged in.
+        payable:
+          type: boolean
+          nullable: true
+          description: Whether the user counts as a billable seat on the account.
+        pending:
+          type: boolean
+          nullable: true
+          description: Whether the user's invite is still pending acceptance.
+        agency:
+          allOf:
+            - $ref: '#/components/schemas/Agency'
+          nullable: true
+          description: Agency the user belongs to, if any.
+        userRoles:
+          type: array
+          description: Roles the user holds.
+          items:
+            $ref: '#/components/schemas/Role'
+        containsAllLocales:
+          type: boolean
+          description: Whether the user's workflow assignments cover every locale pair in the account.
+        localePairs:
+          type: array
+          description: Source/target locale pairs the user is assigned to via workflow steps.
+          items:
+            $ref: '#/components/schemas/LocalePairs'
+        runningActions:
+          type: array
+          description: Bulk actions currently in progress or recently completed for this user.
+          items:
+            $ref: '#/components/schemas/ActionState'
+
+    TeamViewFilterCommand:
+      type: object
+      description: |
+        Filter for listing account users. `sourceLocales`, `targetLocales`,
+        `workflowUid`, and `workflowStepUids` apply only to workflow-ACL-level
+        roles. `projectUids` applies only to project-ACL-level roles.
+      properties:
+        keyword:
+          type: string
+          description: Case-insensitive substring match against name and email.
+        userUids:
+          type: array
+          description: Restrict results to these user UIDs.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/UserUid'
+        pending:
+          type: boolean
+          description: Restrict to users with a pending invite.
+        userRoles:
+          type: array
+          description: |
+            Restrict results to users holding one of these roles. All roles in
+            one request must belong to the same level (account, project, or
+            workflow).
+          items:
+            type: string
+        projectUids:
+          type: array
+          description: Restrict results to project-ACL-level users with access to one of these projects.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/ProjectUid'
+        agencyUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/AgencyUid'
+          description: Restrict results to users belonging to this agency.
+        sourceLocales:
+          type: array
+          description: Restrict results to workflow-ACL-level users assigned to one of these source locales.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
+        targetLocales:
+          type: array
+          description: Restrict results to workflow-ACL-level users assigned to one of these target locales.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
+        workflowUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/WorkflowUid'
+          description: Restrict results to workflow-ACL-level users assigned within this workflow.
+        workflowStepUids:
+          type: array
+          description: Restrict results to workflow-ACL-level users assigned to one of these workflow steps.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+        limit:
+          type: integer
+          minimum: 1
+          description: >-
+            Requested page size. Requests above `20` are not rejected. The
+            response is silently capped at `20` items.
+        offsetToken:
+          allOf:
+            - $ref: '#/components/schemas/OffsetToken'
+          description: Pagination cursor from a previous response.
+        sortProperty:
+          type: string
+          description: Field to sort by.
+          enum: [default, firstName, lastName, email, lastLogin]
+        sortDirection:
+          type: string
+          description: Sort direction.
+          enum: [ASC, DESC]
+
+    TeamViewListResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          type: object
+          required:
+            - code
+            - data
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              type: object
+              properties:
+                offsetToken:
+                  $ref: '#/components/schemas/OffsetToken'
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TeamViewItem'
