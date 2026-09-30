@@ -322,21 +322,19 @@ x-paths:
         - People
       operationId: people_list_users
       summary: List and filter account users
+      x-badges:
+        - name: Beta
+          color: orange
       description: |
+        > **Beta**. This endpoint is available for early use and is not yet covered by our stability commitment for generally available APIs. We may change it based on feedback, including changes that are not backward compatible. We will announce changes in the release notes and notify affected customers at least 30 days in advance.
+
         Returns a page of users in the account matching the given filter.
         All filter fields are optional.
 
         Callers whose highest role is workflow-level and who belong to an
-        agency see only the users of that agency, regardless of any
-        `agencyUid` in the request. `sourceLocales`, `targetLocales`,
-        `workflowUid`, and `workflowStepUids` apply only to workflow-level
-        roles. `projectUids` applies only to project-level roles. A single
-        `userRoles` filter cannot mix roles from different levels
-        (account, project, and workflow).
-
-        Set `pending` to `true` to return only users who have not yet
-        accepted their invitation, or to `false` to return only users who
-        have. Omit it to return both.
+        agency see only the users of that agency, regardless of the
+        request. `sourceLocales`, `targetLocales`, `workflowUid`, and
+        `workflowStepUids` apply only to workflow-level roles.
 
         Results are paged with `offsetToken`. The response has no total
         count.
@@ -355,8 +353,6 @@ x-paths:
               by_keyword:
                 value:
                   keyword: jane
-                  sortProperty: lastName
-                  sortDirection: ASC
                   limit: 20
               unfiltered:
                 value: {}
@@ -760,7 +756,7 @@ components:
       description: |
         Filter for listing account users. `sourceLocales`, `targetLocales`,
         `workflowUid`, and `workflowStepUids` apply only to workflow-ACL-level
-        roles. `projectUids` applies only to project-ACL-level roles.
+        roles.
       properties:
         keyword:
           type: string
@@ -770,26 +766,6 @@ components:
           description: Restrict results to these user UIDs.
           items:
             $ref: '../api_common.yaml#/components/schemas/UserUid'
-        pending:
-          type: boolean
-          description: Restrict to users with a pending invite.
-        userRoles:
-          type: array
-          description: |
-            Restrict results to users holding one of these roles. All roles in
-            one request must belong to the same level (account, project, or
-            workflow).
-          items:
-            type: string
-        projectUids:
-          type: array
-          description: Restrict results to project-ACL-level users with access to one of these projects.
-          items:
-            $ref: '../api_common.yaml#/components/schemas/ProjectUid'
-        agencyUid:
-          allOf:
-            - $ref: '../api_common.yaml#/components/schemas/AgencyUid'
-          description: Restrict results to users belonging to this agency.
         sourceLocales:
           type: array
           description: Restrict results to workflow-ACL-level users assigned to one of these source locales.
@@ -819,14 +795,6 @@ components:
           allOf:
             - $ref: '#/components/schemas/OffsetToken'
           description: Pagination cursor from a previous response.
-        sortProperty:
-          type: string
-          description: Field to sort by.
-          enum: [default, firstName, lastName, email, lastLogin]
-        sortDirection:
-          type: string
-          description: Sort direction.
-          enum: [ASC, DESC]
 
     TeamViewListResponse:
       type: object
