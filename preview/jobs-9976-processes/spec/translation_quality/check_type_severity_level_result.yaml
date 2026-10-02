@@ -1,0 +1,264 @@
+x-paths:
+  profiles_check_type_severity_level:
+    put:
+      description: Update the severity level for a quality check type.
+      summary: Update severity level for quality check type
+      tags:
+        - Translation quality checks
+      operationId: profilesUpdateCheckTypeSeverityLevel
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - &ref_0
+          name: accountUid
+          in: path
+          type: string
+          required: true
+          description: >-
+            The account’s unique identifier. This can be found in the Smartling
+            Dashboard under Account Settings > API.
+        - &ref_1
+          name: profileUid
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of corresponding profile.
+        - &ref_4
+          name: checkTypeCode
+          in: path
+          required: true
+          schema:
+            enum:
+              - LEADING_TRAILING_SPACES
+              - ORIGINAL_EQUALS_TARGET
+              - WHITESPACES
+              - SPELLCHECK
+              - TAG_CONSISTENCY
+              - TARGET_LENGTH_LIMIT
+              - NUMBER_CONSISTENCY
+              - REPEATED_WORD
+              - TARGET_IN_WRONG_LANGUAGE
+              - SOURCE_IN_WRONG_LANGUAGE
+              - SEGMENT_COMPLETENESS
+              - NON_TRANSLATABLE_TEXT
+              - EMOJI_CONSISTENCY
+              - INSERTABLE_CONSISTENCY
+              - TARGET_SOURCE_CONSISTENCY
+              - BLACKLISTED_TERMS
+              - GLOSSARY_COMPLIANCE
+              - TRADEMARK_CONSISTENCY
+              - GRAMMAR_CHECK
+              - GLOBAL_CAPITALISATION_CONSISTENCY
+              - PUNCTUATION_CONSISTENCY
+              - PLURALS_REPETITION
+              - REGEX_CHECK
+              - OPEN_ISSUES
+          description: '[check type code](#operation/getTranslationQualityCheckTypes)'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: &ref_2
+              allOf:
+                - type: object
+                  properties:
+                    severityLevelCode:
+                      enum:
+                        - DISABLED
+                        - LOW
+                        - MEDIUM
+                        - HIGH
+                  required:
+                    - severityLevelCode
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: &ref_3
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - type: object
+                        required:
+                          - code
+                        properties:
+                          code:
+                            type: string
+                            enum:
+                              - SUCCESS
+                            description: >-
+                              Indicates whether the response was successful or
+                              what error has occurred.
+                      - type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              severityLevelCode:
+                                enum:
+                                  - DISABLED
+                                  - LOW
+                                  - MEDIUM
+                                  - HIGH
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/severity-level
+  profiles_check_type_subtype_severity_level:
+    put:
+      description: Update the severity level for a quality check subtype.
+      summary: Update severity level for quality check subtype
+      tags:
+        - Translation quality checks
+      operationId: profilesUpdateCheckSubTypeSeverityLevel
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+        - *ref_1
+        - &ref_5
+          name: checkTypeCode
+          in: path
+          required: true
+          schema:
+            enum:
+              - TAG_CONSISTENCY
+              - NUMBER_CONSISTENCY
+              - SEGMENT_COMPLETENESS
+              - NON_TRANSLATABLE_TEXT
+              - EMOJI_CONSISTENCY
+              - INSERTABLE_CONSISTENCY
+              - TARGET_SOURCE_CONSISTENCY
+          description: '[check type code](#operation/getTranslationQualityCheckTypes)'
+        - &ref_7
+          name: checkSubTypeCode
+          in: path
+          required: true
+          schema:
+            enum:
+              - EMOJI_ADDED
+              - EMOJI_DELETED
+              - EMOJI_PRESENT
+              - INSERTABLE_ADDED
+              - INSERTABLE_DELETED
+              - PLACEABLE_ADDED
+              - PLACEABLE_DELETED
+              - SPACES_AROUND_PLACEABLE
+              - PLACEABLE_FORMAT
+              - NUMBER_ADDED
+              - NUMBER_DELETED
+              - NUMBER_INCORRECT_CONVERSION
+              - TARGET_IS_EMPTY
+              - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+              - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+              - TAG_ADDED
+              - TAG_DELETED
+              - SPACES_AROUND_TAGS
+              - TAG_ORDER_IS_CHANGED
+              - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+              - INVALID_TAG_NESTING
+              - TAG_IS_CHANGED
+              - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+              - SAME_TRANSLATION_DIFFERENT_SOURCES
+          description: '[check subtype code](#operation/getTranslationQualityCheckSubTypes)'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: *ref_2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_3
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/sub-types/$smartlingCheckSubTypeCode/severity-level
+  profiles_check_type_group_severity_level:
+    put:
+      description: Update the severity level for a quality check group.
+      summary: Update severity level for group
+      tags:
+        - Translation quality checks
+      operationId: updateProfilesCheckGroupSeverityLevel
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+        - *ref_1
+        - *ref_4
+        - &ref_6
+          name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: *ref_2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_3
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d
+            "$smartlingStringTQCJSON" -H "Content-Type: application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/severity-level
+  profiles_check_type_group_subtype_severity_level:
+    put:
+      description: Update the severity level for a quality check subtype and group.
+      summary: Update severity level for quality check subtype and group
+      tags:
+        - Translation quality checks
+      operationId: updateSeverityLevelForProfilesGroupAndSubType
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+        - *ref_1
+        - *ref_5
+        - *ref_6
+        - *ref_7
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema: *ref_2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_3
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H
+            "Content-Type: application/json" -d "$smartlingStringTQCJSON"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/sub-types/$smartlingCheckSubTypeCode/severity-level

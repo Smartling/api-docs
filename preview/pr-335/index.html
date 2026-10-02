@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-11307836-5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-11307836-5');
+    </script>
+
+    <title>Smartling API Specification</title>
+    <!-- needed for adaptive design -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+
+    <!--
+    ReDoc doesn't change outer page styles
+    -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<script>window.__siteChrome = { property: 'rest' };</script>
+<link rel="stylesheet" href="https://graphql-reference.smartling.com/shared/site-chrome.css">
+<script src="https://graphql-reference.smartling.com/shared/site-chrome.js" defer></script>
+<script>
+    // ReDoc's own sidebar (.menu-content, incl. its search box) is `position: sticky; top: 0`,
+    // which collides with the site-chrome header injected above at the same offset once the
+    // page is scrolled, hiding the sidebar's top edge behind the header. Site-chrome's height
+    // is owned by the graphql-docs-hub repo, so measure it instead of hardcoding it here.
+    document.addEventListener('DOMContentLoaded', function () {
+        var chrome = document.querySelector('.site-chrome');
+        if (!chrome) return;
+        var height = chrome.getBoundingClientRect().height + 'px';
+        var style = document.createElement('style');
+        style.textContent = '.menu-content { top: ' + height + ' !important; ' +
+            'height: calc(100vh - ' + height + ') !important; }';
+        document.head.appendChild(style);
+    });
+</script>
+
+<redoc spec-url="./swagger.json"></redoc>
+
+<script src="https://cdn.jsdelivr.net/npm/redoc@latest/bundles/redoc.standalone.js"> </script>
+</body>
+</html>
