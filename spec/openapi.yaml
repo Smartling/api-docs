@@ -582,7 +582,7 @@ paths:
           name: projectTypeCode
           required: false
           schema:
-            type: String
+            type: string
         - description: >-
             Indicator list for the type of the projects.
           in: query
@@ -1079,7 +1079,6 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uid
           type: string
 
       requestBody:
@@ -1143,7 +1142,7 @@ paths:
                 callbackUrl:
                   type: string
                   maxLength: 255
-                  format: url
+                  format: uri
                   description: |
                     A GET request that creates a callback to a URL when all authorized strings from a file are 100%
                     published for a locale.* The callback gives the
@@ -2466,25 +2465,23 @@ paths:
                     language strings that are already uploaded to Smartling.
                   type: string
                 fileType:
-                  description: >-
-                    A unique identifier for the file type. To allow translation
-                    imports, XML and JSON files must be uploaded with
-                    `source_key_paths` defined.
-                  enum:
-                    $ref: '#/components/schemas/ImportTranslationsFileType/enum'
-                  type: string
+                  $ref: '#/components/schemas/ImportTranslationsFileType'
                 translationState:
                   description: |
                     Value indicating the workflow state to import the translations into.
                     Content will be imported into the language's default workflow.
+                    If omitted, `PUBLISHED` is used.
 
                     | Value | Description |
                     |-------|-------------|
                     | PUBLISHED | The translated content is published. |
                     | POST_TRANSLATION | The translated content is imported into the first step after translation - if there is none, it will be published. |
+                    | POST_TRANSLATION_PREPUBLISH | Same as `POST_TRANSLATION`, but the import also forces the prepublish action. |
                   enum:
                   - PUBLISHED
                   - POST_TRANSLATION
+                  - POST_TRANSLATION_PREPUBLISH
+                  default: PUBLISHED
                   type: string
                 overwrite:
                   description: Whether or not to overwrite existing translations.
@@ -2494,7 +2491,6 @@ paths:
               - file
               - fileUri
               - fileType
-              - translationState
               type: object
         required: true
       responses:
@@ -9818,7 +9814,6 @@ components:
       properties:
         attachmentJobUid:
           description: The unique identifier of the attachment.
-          format: uid
           type: string
         name:
           description: The name of the attachemnt.
@@ -9833,7 +9828,6 @@ components:
           type: string
         createdByUserUid:
           description: The unique identifier of user whom upload attachment
-          format: uid
           example: c297ff10f584
           type: string
       type: object
@@ -9848,7 +9842,6 @@ components:
                   properties:
                     attachmentUid:
                       description: The unique identifier of the attachment.
-                      format: uid
                       type: string
                     name:
                       description: The name of the attachment.
@@ -9863,7 +9856,6 @@ components:
                       type: string
                     createdByUserUid:
                       description: The unique identifier of user whom upload attachment.
-                      format: uid
                       example: c297ff10f584
                       type: string
                   type: object
@@ -10766,20 +10758,26 @@ components:
             type: string
     ImportTranslationsFileType:
       type: string
-      description: A unique identifier for the file type.
+      description: >-
+        A unique identifier for the file type. To allow translation
+        imports, XML and JSON files must be uploaded with
+        `source_key_paths` defined.
       enum:
         - android
         - arb
         - csv
         - gettext
         - ios
-        - stringsdict
         - java_properties
         - json
+        - pres
         - qt
         - resx
         - srt
+        - stringsdict
         - vtt
+        - xliff
+        - xliff2
         - xml
         - yaml
     TranslationJobFile:
@@ -11379,7 +11377,7 @@ components:
           description: The text to translate
           example: Text to translate
           type: string
-          maxLength: 64kb
+          maxLength: 65536
       required:
         - key
         - sourceText
@@ -12588,7 +12586,6 @@ components:
                         properties:
                           translationJobUid:
                             description: The UID of the translationJob
-                            format: uid
                             type: string
                           jobName:
                             description: Name of the translation job
