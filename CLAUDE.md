@@ -9,10 +9,11 @@ OpenAPI 3.0 specification for the Smartling REST API, published at https://api-r
 ## Commands
 
 ```bash
-npm install          # install dependencies (Node 17+ required)
+npm install          # install dependencies (Node 26 LTS, same as the Jenkins image node:26-trixie; see .nvmrc)
 npm start            # build, start local server + swagger-editor (live reload)
 npm test             # validate the OpenAPI spec (swagger-repo validate)
-npm run build        # bundle spec into web_deploy/
+npm run build        # bundle spec into web_deploy/ (swagger-repo, then redocly via scripts/bundle-refs.js)
+npm run lint:spec    # redocly lint of web_deploy/swagger.json (run after npm run build)
 npm run process-yaml # re-generate TQC x-paths (required after editing TQC YAML files)
 ```
 
@@ -41,11 +42,11 @@ The local server URL is printed to console on startup. The swagger-editor URL is
 
 **Build output**: `npm run build` produces `web_deploy/` containing the bundled spec (`swagger.json`, `swagger.yaml`), the static web UI, and copies of all spec subdirectories.
 
-**Adding a new domain as a standalone spec file/folder**: `swagger-repo bundle` does NOT dereference `$ref`s that point at a path item (the pattern every domain subdirectory uses, standard `paths` or the custom `x-paths` extension alike) - it leaves the `$ref` pointer in the bundled `swagger.json`/`swagger.yaml`, and ReDoc/Swagger UI fetches the referenced file client-side at render time. This means every new domain subdirectory must be added to the hardcoded `spec/` copy list in **both**:
+**Adding a new domain as a standalone spec file/folder**: after `swagger-repo bundle`, `scripts/bundle-refs.js` runs `redocly bundle` on `swagger.json` and `swagger.yaml` and inlines every path-item `$ref` (the pattern every domain subdirectory uses, standard `paths` or the custom `x-paths` extension alike), so the published spec is self-contained. Redocly resolves the refs against the copied `spec/` folders in the output directory, so every new domain subdirectory must be added to the hardcoded `spec/` copy list in **both**:
 - `scripts/build.js` (used by `npm run build`, the main site)
 - `scripts/deploy-branch.js` (used by Jenkins for branch/PR previews, `npm run deploy-branch`)
 
-Missing either one renders the tag (tags are fully inlined, no `$ref`) with zero operations under it - `npm test`/`npm run build` still pass, and `grep -c "<new-path>" web_deploy/swagger.json` still matches (it matches the literal path key, not proof the `$ref` resolved), so this gap is easy to miss locally. It has been missed and fixed as a follow-up commit before (see `aa8992f4` → `c8609fab` for the Strings API). Verify by checking that the new `spec/<domain>` folder is copied in both scripts, not just one.
+A missing copy-list entry now fails the build (`Can't resolve $ref`) instead of silently rendering a tag with zero operations. Sub-files must reference shared components through `../api_common.yaml#/components/...`. A root-relative `#/components/...` ref in a sub-file fails the bundle. `npm run lint:spec` lints the bundled `web_deploy/swagger.json` with Redocly (config in `redocly.yaml`).
 
 ## CI/CD
 

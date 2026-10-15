@@ -8,10 +8,8 @@ x-paths:
       tags:
         - File Machine Translations (MT)
       operationId: detectFileSourceLanguage
-      produces:
-        - application/json
       parameters:
-        - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - $ref: './fts_common.yaml#/components/parameters/fileUidPathParameter'
       responses:
         '202':
@@ -28,28 +26,29 @@ x-paths:
                 $ref: '#/components/schemas/LanguageDetectionResponse'
           description: OK
         '400':
+          description: Provided request parameters are invalid.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
                     response:
                       code: VALIDATION_ERROR
                       errors:
-                        key: not.found
-                        message: >-
-                          fileUid h5dhjbg1ganp not found
-                        details:
-                          field: "fileUid"
+                        - key: not.found
+                          message: >-
+                            fileUid h5dhjbg1ganp not found
+                          details:
+                            field: "fileUid"
 
         '401':
-          $ref: '#/components/responses/Error401ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         '429':
-          $ref: '#/components/responses/Error429ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error429ResponseDefinition'
         '500':
-          $ref: '#/components/responses/Error500ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: >
@@ -65,10 +64,8 @@ x-paths:
       tags:
         - File Machine Translations (MT)
       operationId: getLanguageDetectionStatus
-      produces:
-        - application/json
       parameters:
-        - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - $ref: './fts_common.yaml#/components/parameters/fileUidPathParameter'
         - $ref: './fts_common.yaml#/components/parameters/languageDetectionUidPathParameter'
       responses:
@@ -92,13 +89,13 @@ x-paths:
                 $ref: '#/components/schemas/LanguageDetectionStatusResponse'
           description: OK
         '400':
-          $ref: './fts_common.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './fts_common.yaml#/components/responses/FileTranslationError400ResponseDefinition'
         '401':
-          $ref: '#/components/responses/Error401ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         '429':
-          $ref: '#/components/responses/Error429ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error429ResponseDefinition'
         '500':
-          $ref: '#/components/responses/Error500ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: >
@@ -131,24 +128,25 @@ components:
       properties:
         response:
           allOf:
-            - $ref: './fts_common.yaml#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     state:
                       $ref: '#/components/schemas/LanguageDetectionState'
                     error:
-                      $ref: './fts_common.yaml#/components/schemas/Error'
+                      $ref: '../api_common.yaml#/components/schemas/Error'
                     detectedSourceLanguages:
                       type: array
                       items:
                         type: object
-                      languageId:
-                        type: string
-                        description: Detected source language of the file
-                      defaultLocaleId:
-                        type: string
-                        description: Smartling's default locale that corresponds to languageId
+                        properties:
+                          languageId:
+                            type: string
+                            description: Detected source language of the file
+                          defaultLocaleId:
+                            type: string
+                            description: Smartling's default locale that corresponds to languageId
                   type: object
 
               type: object    

@@ -16,10 +16,8 @@ x-paths:
       tags:
         - Glossary API
       operationId: exportGlossary
-      consumes:
-        - application/json
       parameters:
-        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
       requestBody:
         description: ''
@@ -37,17 +35,17 @@ x-paths:
                 type: string
                 format: binary
         400:
-          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError400ResponseDefinition'
         401:
-          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError401ResponseDefinition'
         403:
-          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError403ResponseDefinition'
         404:
-          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError404ResponseDefinition'
         429:
-          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError429ResponseDefinition'
         500:
-          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError500ResponseDefinition'
 
   initialize_import:
     post:
@@ -59,12 +57,8 @@ x-paths:
         ( No changes will be done during this method call ). In case of success
         glossary import will be created with 'PENDING' status.
       operationId: initializeGlossaryImport
-      consumes:
-        - multipart/form-data
-      produces:
-        - application/json
       parameters:
-        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
       requestBody:
         description: ''
@@ -106,17 +100,17 @@ x-paths:
                           - key: warning.key2
                             message: message-2
         400:
-          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError400ResponseDefinition'
         401:
-          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError401ResponseDefinition'
         403:
-          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError403ResponseDefinition'
         404:
-          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError404ResponseDefinition'
         429:
-          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError429ResponseDefinition'
         500:
-          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError500ResponseDefinition'
 
   import_status:
     get:
@@ -126,12 +120,8 @@ x-paths:
       description: >-
         Read import process status
       operationId: importStatus
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
-        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
         - $ref: '#/components/parameters/importUidPathParameter'
       responses:
@@ -151,17 +141,17 @@ x-paths:
                         importUid: '939a4439-2ed0-4123-bc68-d188e4d664ab'
                         importStatus: 'PENDING'
         400:
-          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError400ResponseDefinition'
         401:
-          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError401ResponseDefinition'
         403:
-          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError403ResponseDefinition'
         404:
-          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError404ResponseDefinition'
         429:
-          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError429ResponseDefinition'
         500:
-          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError500ResponseDefinition'
 
   confirm_import:
     post:
@@ -172,12 +162,8 @@ x-paths:
       description: >-
         Confirm previously created glossary import. Only imports in status : 'PENDING' may be confirmed.
       operationId: confirmGlossaryImport
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
-        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
         - $ref: '#/components/parameters/importUidPathParameter'
       responses:
@@ -187,26 +173,27 @@ x-paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GlossaryImportPTO'
-              response:
-                value:
-                  response:
-                    code: SUCCESS
-                    data:
-                      glossaryUid: 'bad90990-4be1-4570-81da-b719cddd5352'
-                      importUid: '939a4439-2ed0-4123-bc68-d188e4d664ab'
-                      importStatus: 'IN_PROGRESS'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        glossaryUid: 'bad90990-4be1-4570-81da-b719cddd5352'
+                        importUid: '939a4439-2ed0-4123-bc68-d188e4d664ab'
+                        importStatus: 'IN_PROGRESS'
         400:
-          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError400ResponseDefinition'
         401:
-          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError401ResponseDefinition'
         403:
-          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError403ResponseDefinition'
         404:
-          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError404ResponseDefinition'
         429:
-          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError429ResponseDefinition'
         500:
-          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: >
@@ -267,8 +254,6 @@ components:
       type: object
       required:
         - importFile
-        - importFileName
-        - importFileMediaType
       properties:
         archiveMode:
           type: boolean
@@ -278,17 +263,15 @@ components:
           format: binary
           description: Binary file data to upload.
         importFileName:
-          required: true
           type: string
-          description: Name and extension of the import file.
+          description: Name and extension of the import file. Only needed when the file name of the uploaded file part has no supported extension.
         importFileMediaType:
-          required: true
           type: string
           enum:
             - text/csv
             - text/xml
             - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-          description: Import file media type. One of 'text/csv |  text/xml | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          description: Import file media type. One of 'text/csv |  text/xml | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'. Only needed when the file name of the uploaded file part has no supported extension.
       description: Glossary import command.
 
     GlossaryImportResponse:
@@ -385,7 +368,7 @@ components:
 
     GlossaryImportResponsePTO:
       allOf:
-        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
         - type: object
           properties:
             data:
@@ -393,7 +376,7 @@ components:
 
     GlossaryImportPTO:
       allOf:
-        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
         - type: object
           properties:
             data:

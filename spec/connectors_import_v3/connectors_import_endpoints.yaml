@@ -382,9 +382,9 @@ x-paths:
                         - key: validation.field.error
                           message: "'workflowUid' must be exactly 12 lowercase alphanumeric characters."
         401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
 
 components:
   schemas:
@@ -432,10 +432,10 @@ components:
             mappings between Smartling and your external system can be used. For example, if your Smartling project 
             has 5 languages but only 3 are configured in Language Configuration, only those 3 can be used with this endpoint.
           items:
-            $ref: '#/components/schemas/LocaleWorkflow'
+            $ref: '#/components/schemas/ConnectorsImportLocaleWorkflow'
         translationJobUid:
-          type: string
-          pattern: '^[a-z0-9]{12}$'
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
           description: |
             Unique identifier for the translation job. Must be exactly 12 lowercase alphanumeric characters.
             
@@ -511,14 +511,14 @@ components:
             and easier tracking across both systems.
           example: "Getting Started Guide"
 
-    LocaleWorkflow:
+    ConnectorsImportLocaleWorkflow:
       type: object
       required:
         - smartlingLocaleId
       properties:
         smartlingLocaleId:
-          type: string
-          pattern: '^[a-z]{2}(-[A-Z]{2})?$'
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: |
             Target locale identifier in Smartling format. Must be a valid, enabled, and configured locale.
             

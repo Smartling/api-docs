@@ -142,7 +142,8 @@ components:
           type: boolean
           description: Whether editors can edit already-published content from this step.
         foundationProfile:
-          type: [string, "null"]
+          type: string
+          nullable: true
           description: Foundation AI translation profile assigned to this step, if any.
           example: null
         actions:
@@ -166,7 +167,8 @@ components:
         workflowStepType:
           $ref: '#/components/schemas/WorkflowStepType'
         workflowStepOrder:
-          type: [integer, "null"]
+          type: integer
+          nullable: true
           description: Position of the step within its route. `null` when the caller cannot see the full workflow.
           example: 1
         claimingEnabled:
@@ -182,15 +184,18 @@ components:
           type: boolean
           description: Whether content on this step can be translated offline.
         mtPrepopulation:
-          type: [boolean, "null"]
+          type: boolean
+          nullable: true
           description: Whether machine translation pre-populates this step's content.
           example: null
         tmPrepopulation:
-          type: [boolean, "null"]
+          type: boolean
+          nullable: true
           description: Whether Translation Memory pre-populates this step's content.
           example: null
         prepopulationThreshold:
-          type: [integer, "null"]
+          type: integer
+          nullable: true
           description: Minimum match score for TM/MT pre-population.
           example: 0
         managedWorkflowStep:
@@ -200,7 +205,8 @@ components:
           type: boolean
           description: Whether editors can edit already-published content from this step.
         localePairs:
-          type: [array, "null"]
+          type: array
+          nullable: true
           description: Locale coverage of this step, if it differs from the workflow's own coverage. `null` when not scoped to a single project.
           items:
             $ref: '#/components/schemas/LocalePairGroup'
@@ -224,14 +230,17 @@ components:
         managedWorkflow:
           type: boolean
         contentTypeUid:
-          type: [string, "null"]
+          type: string
+          nullable: true
           example: e38e7731d
         projectId:
-          type: [string, "null"]
+          type: string
+          nullable: true
           description: Project this workflow belongs to. `null` for account-level workflows.
           example: null
         localePairs:
-          type: [array, "null"]
+          type: array
+          nullable: true
           items:
             $ref: '#/components/schemas/LocalePairGroup'
         workflowSteps:
@@ -349,53 +358,13 @@ components:
                   items:
                     $ref: '#/components/schemas/WorkflowStepSummary'
 
-    # ---- Errors not already covered by api_common.yaml ----
-
-    Error403Response:
-      type: object
-      properties:
-        response:
-          type: object
-          required:
-            - code
-            - errors
-          properties:
-            code:
-              type: string
-              enum: [ACCESS_DENIED_ERROR]
-            errors:
-              type: array
-              items:
-                $ref: '../api_common.yaml#/components/schemas/Error'
-      required:
-        - response
-
-    Error404Response:
-      type: object
-      properties:
-        response:
-          type: object
-          required:
-            - code
-            - errors
-          properties:
-            code:
-              type: string
-              enum: [NOT_FOUND_ERROR]
-            errors:
-              type: array
-              items:
-                $ref: '../api_common.yaml#/components/schemas/Error'
-      required:
-        - response
-
   responses:
     Error403ResponseDefinition:
       description: The caller does not have permission to perform this operation.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error403Response'
+            $ref: '../api_common.yaml#/components/schemas/Error403Response'
           examples:
             response:
               value:
@@ -410,7 +379,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error404Response'
+            $ref: '../api_common.yaml#/components/schemas/Error404Response'
           examples:
             response:
               value:

@@ -16,7 +16,7 @@
 ## Working on specification
 ### Install
 
-1. Install [Node JS](https://nodejs.org/)
+1. Install [Node JS](https://nodejs.org/) 26 LTS (see `.nvmrc`, the same major version as the Jenkins image)
 2. Clone repo and `cd`
     + Run `npm install`
 

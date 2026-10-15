@@ -11,6 +11,9 @@ info:
 servers:
   - url: 'https://api.smartling.com'
 
+security:
+  - BearerAuth: []
+
 externalDocs:
   description: Smartling Help Center
   url: 'https://help.smartling.com'
@@ -438,6 +441,7 @@ paths:
       tags:
         - Authentication
       operationId: authenticate
+      security: []
       requestBody:
         content:
           application/json:
@@ -497,6 +501,7 @@ paths:
         start a new session, rather than refreshing more often.
       summary: Refresh access token
       operationId: refreshAccessToken
+      security: []
       requestBody:
         content:
           application/json:
@@ -582,7 +587,7 @@ paths:
           name: projectTypeCode
           required: false
           schema:
-            type: String
+            type: string
         - description: >-
             Indicator list for the type of the projects.
           in: query
@@ -1079,7 +1084,6 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uid
           type: string
 
       requestBody:
@@ -1104,7 +1108,7 @@ paths:
                     Example: `/myproject/i18n/ui.properties`
                   maxLength: 512
                 fileType:
-                  $ref: '#/components/schemas/FileType'
+                  $ref: './spec/api_common.yaml#/components/schemas/FileType'
                 smartling.namespace:
                   type: string
                   description: |
@@ -1143,7 +1147,7 @@ paths:
                 callbackUrl:
                   type: string
                   maxLength: 255
-                  format: url
+                  format: uri
                   description: |
                     A GET request that creates a callback to a URL when all authorized strings from a file are 100%
                     published for a locale.* The callback gives the
@@ -1277,7 +1281,7 @@ paths:
         in: query
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       responses:
         200:
           description: OK
@@ -1328,7 +1332,7 @@ paths:
         in: query
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       responses:
         '200':
           description: OK
@@ -1406,7 +1410,7 @@ paths:
         name: fileUri
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       responses:
         '200':
           description: OK
@@ -1512,7 +1516,7 @@ paths:
         in: query
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       - name: retrievalType
         description: |
           Determines the desired format for the download. Applies to translated files only.
@@ -1607,7 +1611,7 @@ paths:
         in: query
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       - name: retrievalType
         description: |
           Determines the desired format for the download. Applies to translated files only.
@@ -1903,8 +1907,7 @@ paths:
                       - localeIds
                     properties:
                       fileUri:
-                        type: string
-                        description: Smartling value that uniquely identifies a file.
+                        $ref: './spec/api_common.yaml#/components/schemas/FileUri'
                       localeIds:
                         type: array
                         description: List of locales to download for the given file. Must contain at least one element.
@@ -2034,7 +2037,7 @@ paths:
         required: false
         schema:
           items:
-            $ref: '#/components/schemas/FileType'
+            $ref: './spec/api_common.yaml#/components/schemas/FileType'
           type: array
       - name: lastUploadedAfter
         description: Returns all files uploaded after the specified date.
@@ -2212,7 +2215,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmptyResponse'
+                $ref: './spec/api_common.yaml#/components/schemas/EmptyResponse'
               examples:
                 response:
                   value:
@@ -2264,8 +2267,7 @@ paths:
             schema:
               properties:
                 fileUri:
-                  description: Smartling value that uniquely identifies a file in Smartling
-                  type: string
+                  $ref: './spec/api_common.yaml#/components/schemas/FileUri'
               required:
               - fileUri
               type: object
@@ -2275,7 +2277,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmptyResponse'
+                $ref: './spec/api_common.yaml#/components/schemas/EmptyResponse'
               examples:
                 response:
                   value:
@@ -2323,7 +2325,7 @@ paths:
         name: fileUri
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       - description: >-
           Limits the return to only those file and locale combinations that
           have a ```lastModified``` date after the
@@ -2386,7 +2388,7 @@ paths:
         name: fileUri
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       - description: >-
           Limits the return to only those file and locale combinations that
           have a ```lastModified``` date after the parameter
@@ -2466,25 +2468,23 @@ paths:
                     language strings that are already uploaded to Smartling.
                   type: string
                 fileType:
-                  description: >-
-                    A unique identifier for the file type. To allow translation
-                    imports, XML and JSON files must be uploaded with
-                    `source_key_paths` defined.
-                  enum:
-                    $ref: '#/components/schemas/ImportTranslationsFileType/enum'
-                  type: string
+                  $ref: '#/components/schemas/ImportTranslationsFileType'
                 translationState:
                   description: |
                     Value indicating the workflow state to import the translations into.
                     Content will be imported into the language's default workflow.
+                    If omitted, `PUBLISHED` is used.
 
                     | Value | Description |
                     |-------|-------------|
                     | PUBLISHED | The translated content is published. |
                     | POST_TRANSLATION | The translated content is imported into the first step after translation - if there is none, it will be published. |
+                    | POST_TRANSLATION_PREPUBLISH | Same as `POST_TRANSLATION`, but the import also forces the prepublish action. |
                   enum:
                   - PUBLISHED
                   - POST_TRANSLATION
+                  - POST_TRANSLATION_PREPUBLISH
+                  default: PUBLISHED
                   type: string
                 overwrite:
                   description: Whether or not to overwrite existing translations.
@@ -2494,7 +2494,6 @@ paths:
               - file
               - fileUri
               - fileType
-              - translationState
               type: object
         required: true
       responses:
@@ -2822,7 +2821,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -2975,7 +2974,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -3026,7 +3025,7 @@ paths:
                 - response
                 properties:
                   response:
-                    $ref: '#/components/schemas/SuccessResponse'
+                    $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
               examples:
                 response:
                   value:
@@ -3042,7 +3041,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -3164,7 +3163,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -3250,7 +3249,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -3387,7 +3386,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -3473,7 +3472,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -3508,8 +3507,7 @@ paths:
           name: processUid
           required: true
           schema:
-            format: uuid
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
         responses:
           200:
             description: OK
@@ -3555,7 +3553,7 @@ paths:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/Error404Response'
+                  $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
                 examples:
                   response:
                     value:
@@ -3698,7 +3696,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -3764,7 +3762,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -3812,14 +3810,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
           description: OK
         400:
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -3959,6 +3957,8 @@ paths:
         required: true
         content:
           application/json:
+            schema:
+              type: object
             example:
               variables:
                 searchStringsFilter:
@@ -4736,7 +4736,7 @@ paths:
               content:
                 application/json:
                   schema:
-                    $ref: '#/components/schemas/EmptyResponse'
+                    $ref: './spec/api_common.yaml#/components/schemas/EmptyResponse'
                   examples:
                     response:
                       value:
@@ -5238,7 +5238,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5333,7 +5333,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5421,7 +5421,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -5510,7 +5510,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5646,7 +5646,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5730,7 +5730,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5745,7 +5745,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error401Response'
               examples:
                 response:
                   value:
@@ -5810,7 +5810,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5903,7 +5903,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -5994,7 +5994,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -6012,7 +6012,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -6070,7 +6070,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -6083,7 +6083,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error401Response'
               examples:
                 response:
                   value:
@@ -6369,7 +6369,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -6486,6 +6486,8 @@ paths:
           description: Not found validation error
           content:
             application/json:
+              schema:
+                type: object
               examples:
                 response:
                   value:
@@ -6747,7 +6749,7 @@ paths:
           name: fileUri
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       responses:
         200:
           description: OK
@@ -6947,7 +6949,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -7012,7 +7014,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -7078,7 +7080,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -7200,7 +7202,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -7242,7 +7244,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmptyResponse'
+                $ref: './spec/api_common.yaml#/components/schemas/EmptyResponse'
               examples:
                 response:
                   value:
@@ -7321,7 +7323,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -7666,7 +7668,7 @@ paths:
                 - response
                 properties:
                   response:
-                    $ref: '#/components/schemas/SuccessResponse'
+                    $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
       x-code-samples:
       - lang: curl
         source: >
@@ -7702,7 +7704,7 @@ paths:
                 - response
                 properties:
                   response:
-                    $ref: '#/components/schemas/SuccessResponse'
+                    $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
       x-code-samples:
       - lang: curl
         source: >
@@ -7751,7 +7753,7 @@ paths:
                 - response
                 properties:
                   response:
-                    $ref: '#/components/schemas/SuccessResponse'
+                    $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
       x-code-samples:
       - lang: curl
         source: >
@@ -8931,7 +8933,7 @@ paths:
   /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups/{groupUid}/severity-level:
     $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_group_severity_level'
 
-  /translation-quality-api/v2/projects/{projectId}/locales/{localeId}/check-types/:
+  /translation-quality-api/v2/projects/{projectId}/locales/{localeId}/check-types:
     $ref: './spec/translation_quality/checks/accounts_result.yaml#/x-paths/get_project_check_types_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/projects/{projectId}/check:
@@ -9260,7 +9262,7 @@ paths:
   ## BlocklistTerms manage endpoints END
 
   ### Blocklist ImportExport (ie) Start
-  /glossary-api/v3//accounts/{accountUid}/blocklists/{blocklistUid}/download:
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/download:
     $ref: './spec/glossary_v3/blocklist_ie_endpoints.yaml#/x-paths/blocklist_export_terms'
 
   /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/import:
@@ -9269,7 +9271,7 @@ paths:
   /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/import/{importUid}:
     $ref: './spec/glossary_v3/blocklist_ie_endpoints.yaml#/x-paths/blocklist_import_status'
 
-  /glossary-api/v3/accounts/accounts/{accountUid}/blocklists/{blocklistUid}/import/{importUid}/confirm:
+  /glossary-api/v3/accounts/{accountUid}/blocklists/{blocklistUid}/import/{importUid}/confirm:
     $ref: './spec/glossary_v3/blocklist_ie_endpoints.yaml#/x-paths/blocklist_confirm_import'
   ### Blocklist ImportExport (ie) End
 
@@ -9319,6 +9321,14 @@ paths:
 
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        Access token returned by `/auth-api/v2/authenticate` (or
+        `/auth-api/v2/authenticate/refresh`), sent as
+        `Authorization: Bearer <accessToken>`.
   requestBodies:
     TagsWithStrings:
       content:
@@ -9346,51 +9356,51 @@ components:
 
   schemas:
     LEADING_TRAILING_SPACES:
-      $ref: './spec/translation_quality/checks/leading_trailing_spaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/leading_trailing_spaces.yaml#/components/schemas/LeadingTrailingSpacesAccountCheckTypeEffectiveDTO'
     ORIGINAL_EQUALS_TARGET:
-      $ref: './spec/translation_quality/checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/original_equals_target.yaml#/components/schemas/OriginalEqualsTargetAccountCheckTypeEffectiveDTO'
     WHITESPACES:
-      $ref: './spec/translation_quality/checks/whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/whitespaces.yaml#/components/schemas/WhitespacesAccountCheckTypeEffectiveDTO'
     SPELLCHECK:
-      $ref: './spec/translation_quality/checks/spellcheck.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/spellcheck.yaml#/components/schemas/SpellcheckAccountCheckTypeEffectiveDTO'
     TAG_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/tag_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/tag_consistency.yaml#/components/schemas/TagConsistencyAccountCheckTypeEffectiveDTO'
     TARGET_LENGTH_LIMIT:
-      $ref: './spec/translation_quality/checks/target_length_limit.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/target_length_limit.yaml#/components/schemas/TargetLengthLimitAccountCheckTypeEffectiveDTO'
     NUMBER_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/number_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/number_consistency.yaml#/components/schemas/NumberConsistencyAccountCheckTypeEffectiveDTO'
     REPEATED_WORD:
-      $ref: './spec/translation_quality/checks/repeated_word.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/repeated_word.yaml#/components/schemas/RepeatedWordAccountCheckTypeEffectiveDTO'
     TARGET_IN_WRONG_LANGUAGE:
-      $ref: './spec/translation_quality/checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/target_in_wrong_language.yaml#/components/schemas/TargetInWrongLanguageAccountCheckTypeEffectiveDTO'
     SOURCE_IN_WRONG_LANGUAGE:
-      $ref: './spec/translation_quality/checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/source_in_wrong_language.yaml#/components/schemas/SourceInWrongLanguageAccountCheckTypeEffectiveDTO'
     SEGMENT_COMPLETENESS:
-      $ref: './spec/translation_quality/checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/segment_completeness.yaml#/components/schemas/SegmentCompletenessAccountCheckTypeEffectiveDTO'
     NON_TRANSLATABLE_TEXT:
-      $ref: './spec/translation_quality/checks/non_translatable_text.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/non_translatable_text.yaml#/components/schemas/NonTranslatableTextAccountCheckTypeEffectiveDTO'
     EMOJI_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/emoji_consistency.yaml#/components/schemas/EmojiConsistencyAccountCheckTypeEffectiveDTO'
     INSERTABLE_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/insertable_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/insertable_consistency.yaml#/components/schemas/InsertableConsistencyAccountCheckTypeEffectiveDTO'
     TARGET_SOURCE_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/target_source_consistency.yaml#/components/schemas/TargetSourceConsistencyAccountCheckTypeEffectiveDTO'
     BLACKLISTED_TERMS:
-      $ref: './spec/translation_quality/checks/blacklisted_terms.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/blacklisted_terms.yaml#/components/schemas/BlacklistedTermsAccountCheckTypeEffectiveDTO'
     GLOSSARY_COMPLIANCE:
-      $ref: './spec/translation_quality/checks/glossary_compliance.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/glossary_compliance.yaml#/components/schemas/GlossaryComplianceAccountCheckTypeEffectiveDTO'
     TRADEMARK_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/trademark_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/trademark_consistency.yaml#/components/schemas/TrademarkConsistencyAccountCheckTypeEffectiveDTO'
     GRAMMAR_CHECK:
-      $ref: './spec/translation_quality/checks/grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/grammar_check.yaml#/components/schemas/GrammarCheckAccountCheckTypeEffectiveDTO'
     GLOBAL_CAPITALISATION_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/global_capitalisation_consistency.yaml#/components/schemas/GlobalCapitalisationConsistencyAccountCheckTypeEffectiveDTO'
     PUNCTUATION_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/punctuation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/punctuation_consistency.yaml#/components/schemas/PunctuationConsistencyAccountCheckTypeEffectiveDTO'
     PLURALS_REPETITION:
-      $ref: './spec/translation_quality/checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/plurals_repetition.yaml#/components/schemas/PluralsRepetitionAccountCheckTypeEffectiveDTO'
     OPEN_ISSUES:
-      $ref: './spec/translation_quality/checks/open_issues.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/open_issues.yaml#/components/schemas/OpenIssuesAccountCheckTypeEffectiveDTO'
 
     AccountAPIListProjectItem:
       example:
@@ -9447,7 +9457,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -9552,9 +9562,7 @@ components:
             data:
               properties:
                 processUid:
-                  description: Identifier of the started asynchronous process.
-                  format: uuid
-                  type: string
+                  $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
               type: object
           type: object
       type: object
@@ -9598,11 +9606,9 @@ components:
                 - FAILED
               type: string
             createdDate:
-              format: date-time
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/DateTime'
             modifiedDate:
-              format: date-time
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/DateTime'
             errorMessage:
               type: string
             processType:
@@ -9652,8 +9658,7 @@ components:
                     $ref: '#/components/schemas/Binding'
                   type: array
                 createdDate:
-                  format: date-time
-                  type: string
+                  $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                 matchId:
                   description: >-
                     Identifier of the started match operation. Should be
@@ -9661,8 +9666,7 @@ components:
                   format: uuid
                   type: string
                 modifiedDate:
-                  format: date-time
-                  type: string
+                  $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                 status:
                   enum:
                     - IN_PROGRESS
@@ -9762,7 +9766,7 @@ components:
       properties:
         response:
           allOf:
-          - $ref: '#/components/schemas/SuccessResponse'
+          - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
           - properties:
               data:
                 $ref: '#/components/schemas/Authentication'
@@ -9794,7 +9798,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -9818,7 +9822,6 @@ components:
       properties:
         attachmentJobUid:
           description: The unique identifier of the attachment.
-          format: uid
           type: string
         name:
           description: The name of the attachemnt.
@@ -9827,13 +9830,9 @@ components:
           description: The description of the attachment.
           type: string
         createdDate:
-          description: The UTC value of the date the attachemnt was uploaded.
-          example: '2018-03-30T12:58:22Z'
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         createdByUserUid:
           description: The unique identifier of user whom upload attachment
-          format: uid
           example: c297ff10f584
           type: string
       type: object
@@ -9842,13 +9841,12 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     attachmentUid:
                       description: The unique identifier of the attachment.
-                      format: uid
                       type: string
                     name:
                       description: The name of the attachment.
@@ -9857,13 +9855,9 @@ components:
                       description: The description of the attachment.
                       type: string
                     createdDate:
-                      description: The UTC value of the date the attachment was uploaded.
-                      example: '2018-03-30T12:58:22Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     createdByUserUid:
                       description: The unique identifier of user whom upload attachment.
-                      format: uid
                       example: c297ff10f584
                       type: string
                   type: object
@@ -9944,7 +9938,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -10007,7 +10001,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -10076,7 +10070,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -10116,11 +10110,7 @@ components:
                   description: Unique identifier for the context.
                   type: string
                 created:
-                  description: >-
-                    A date when the context was created. Format: ISO8601 date
-                    and time string
-                  format: date-time
-                  type: string
+                  $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                 name:
                   description: >-
                     File name for IMAGE context, URL for HTML Context and video
@@ -10164,7 +10154,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -10424,7 +10414,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   type: object
@@ -10453,7 +10443,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -10469,28 +10459,16 @@ components:
                       description: The userUid of whom created the job.
                       type: string
                     createdDate:
-                      description: The UTC value of the date the job was created.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     description:
                       description: The description of the job.
                       type: string
                     dueDate:
-                      description: The UTC value of the due date for the job.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     firstCompletedDate:
-                      description: The UTC value of when the job was first completed.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     firstAuthorizedDate:
-                      description: The UTC value of when the job was first authorized.
-                      example: '2015-01-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     jobName:
                       description: The name of the job.
                       type: string
@@ -10517,23 +10495,14 @@ components:
                         - DELETED
                       type: string
                     lastCompletedDate:
-                      description: The UTC value of when the job was last completed.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     lastAuthorizedDate:
-                      description: The UTC value of when the job was last authorized.
-                      example: '2015-12-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     modifiedByUserUid:
                       description: The userUid of whom last modified the job.
                       type: string
                     modifiedDate:
-                      description: The UTC value of the date the job was modified.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     sourceFiles:
                       description: >-
                         List of source files of the job. Limited to **300** unordered entries.
@@ -10564,108 +10533,13 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - VALIDATION_ERROR
               type: string
             errors:
               items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    EmptyResponse:
-      type: object
-      required:
-      - response
-      properties:
-        response:
-          allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
-            - properties:
-                data:
-                  description: Always null.
-                  type: object
-              type: object
-
-    Error:
-      type: object
-      properties:
-        key:
-          example: general_error
-          type: string
-        message:
-          example: Unexpected server error
-          type: string
-        details:
-          example: {}
-          type: object
-      required:
-        - key
-        - message
-
-    Error400Response:
-      type: object
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occured.
-              enum:
-                - VALIDATION_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-
-    Error401Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occured.
-              enum:
-                - AUTHENTICATION_ERROR
-                - AUTHORIZATION_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    Error404Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occured.
-              enum:
-                - NOT_FOUND_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
+                $ref: './spec/api_common.yaml#/components/schemas/Error'
               type: array
           required:
             - code
@@ -10680,56 +10554,13 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - RESOURCE_LOCKED
               type: string
             errors:
               items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    Error429Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occured.
-              enum:
-                - MAX_OPERATIONS_LIMIT_EXCEEDED
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    Error500Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occured.
-              enum:
-                - GENERAL_ERROR
-                - MAINTENANCE_MODE_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
+                $ref: './spec/api_common.yaml#/components/schemas/Error'
               type: array
           required:
             - code
@@ -10744,7 +10575,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - GENERAL_ERROR
                 - MAINTENANCE_MODE_ERROR
@@ -10814,7 +10645,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - GENERAL_ERROR
                 - MAINTENANCE_MODE_ERROR
@@ -10845,7 +10676,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - GENERAL_ERROR
                 - MAINTENANCE_MODE_ERROR
@@ -10881,7 +10712,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - GENERAL_ERROR
                 - MAINTENANCE_MODE_ERROR
@@ -10902,52 +10733,30 @@ components:
           type: array
           items:
             type: string
-    FileType:
-      type: string
-      description: A unique identifier for the file type.
-      enum:
-        - android
-        - csv
-        - doc
-        - docx
-        - gettext
-        - html
-        - idml
-        - ios
-        - java_properties
-        - json
-        - madcap
-        - markdown
-        - plain_text
-        - ppt
-        - pptx
-        - pres
-        - qt
-        - resx
-        - srt
-        - stringsdict
-        - xls
-        - xlsx
-        - xlsxTemplate
-        - xliff
-        - xml
-        - yaml
     ImportTranslationsFileType:
       type: string
-      description: A unique identifier for the file type.
+      description: >-
+        A unique identifier for the file type. Translations are matched to the
+        source strings by string key. For JSON and XML files, which have no
+        implicit keys, upload the source file with `source_key_paths` (or
+        inline key paths for JSON) so that keys exist. Strings without a
+        matching key are skipped and listed in `translationImportErrors`.
       enum:
         - android
         - arb
         - csv
         - gettext
         - ios
-        - stringsdict
-        - java_properties
+        - javaProperties
         - json
+        - pres
         - qt
         - resx
         - srt
+        - stringsdict
         - vtt
+        - xliff
+        - xliff2
         - xml
         - yaml
     TranslationJobFile:
@@ -10974,7 +10783,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11010,7 +10819,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   $ref: '#/components/schemas/FilesAPILastModifiedResponseItem'
@@ -11028,10 +10837,9 @@ components:
           format: 'YYYY-MM-DDThh:mm:ssZ'
           type: string
         fileType:
-          $ref: '#/components/schemas/FileType'
+          $ref: './spec/api_common.yaml#/components/schemas/FileType'
         fileUri:
-          description: A unique identifier for the uploaded file
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
         hasInstructions:
           description: Whether translator instructions have been captured for the file.
           type: boolean
@@ -11053,13 +10861,13 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     items:
                       items:
-                        $ref: '#/components/schemas/FileType'
+                        $ref: './spec/api_common.yaml#/components/schemas/FileType'
                       type: array
                   required:
                     - items
@@ -11082,7 +10890,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11140,7 +10948,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11149,10 +10957,9 @@ components:
                       format: 'YYYY-MM-DDThh:mm:ssZ'
                       type: string
                     fileType:
-                      $ref: '#/components/schemas/FileType'
+                      $ref: './spec/api_common.yaml#/components/schemas/FileType'
                     fileUri:
-                      description: A unique identifier for the uploaded file
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/FileUri'
                     hasInstructions:
                       description: >-
                         Whether translator instructions have been captured for the
@@ -11222,7 +11029,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11253,10 +11060,9 @@ components:
                       description: The number of excluded words in the uploaded file
                       type: integer
                     fileType:
-                      $ref: '#/components/schemas/FileType'
+                      $ref: './spec/api_common.yaml#/components/schemas/FileType'
                     fileUri:
-                      description: A unique identifier for the uploaded file
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/FileUri'
                     hasInstructions:
                       description: >-
                         Whether translator instructions have been captured for the
@@ -11324,7 +11130,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11368,7 +11174,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11392,8 +11198,7 @@ components:
     FilesApiTranslationImportErrorItem:
       properties:
         fileUri:
-          description: A unique identifier for the uploaded file
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
         importKey:
           description: Key for an imported string affected by the error
           type: string
@@ -11418,7 +11223,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   $ref: '#/components/schemas/PublishedFilesAPIRecentlyPublishedFilesResponseItem'
@@ -11444,7 +11249,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11465,7 +11270,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11486,7 +11291,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11547,7 +11352,7 @@ components:
           description: The text to translate
           example: Text to translate
           type: string
-          maxLength: 64kb
+          maxLength: 65536
       required:
         - key
         - sourceText
@@ -11559,7 +11364,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11638,7 +11443,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11687,10 +11492,7 @@ components:
         data:
           properties:
             completionDate:
-              description: The UTC value of when the locale was last completed.
-              example: '2015-11-21T01:51:17.000Z'
-              format: date-time
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/DateTime'
             targetLocaleId:
               description: The locale identidier.
               example: de-DE
@@ -11866,7 +11668,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11887,7 +11689,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11908,7 +11710,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11928,18 +11730,12 @@ components:
     AccountListJobsResponseItem:
       properties:
         createdDate:
-          description: The UTC value of the date the job was created.
-          example: '2015-11-21T01:51:17.000Z'
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         description:
           description: The description of the job.
           type: string
         dueDate:
-          description: The UTC value of the due date for the job.
-          example: '2015-11-21T01:51:17.000Z'
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         jobName:
           description: The name of the job.
           type: string
@@ -11979,7 +11775,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11999,18 +11795,12 @@ components:
     ListJobsResponseItem:
       properties:
         createdDate:
-          description: The UTC value of the date the job was created.
-          example: '2015-11-21T01:51:17.000Z'
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         description:
           description: The description of the job.
           type: string
         dueDate:
-          description: The UTC value of the due date for the job.
-          example: '2015-11-21T01:51:17.000Z'
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         jobName:
           description: The name of the job.
           type: string
@@ -12042,7 +11832,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12140,7 +11930,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12241,7 +12031,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12256,20 +12046,14 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     createdDate:
-                      description: The UTC value of when the process was created.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     modifiedDate:
-                      description: The UTC value of when the process was last modified.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     processState:
                       description: >-
                         The current state of the process. Values returned are
@@ -12297,7 +12081,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12325,16 +12109,14 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     createdDate:
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     modifiedDate:
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     newProjectUid:
                       description: >-
                         A unique identifier for the newly created project. This is
@@ -12385,7 +12167,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12423,7 +12205,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   example:
@@ -12602,7 +12384,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12618,28 +12400,16 @@ components:
                       description: The userUid of who created the job.
                       type: string
                     createdDate:
-                      description: The UTC value of the date the job was created.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     description:
                       description: The description of the job.
                       type: string
                     dueDate:
-                      description: The UTC value of the due date for the job.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     firstCompletedDate:
-                      description: The UTC value of when the job was first completed.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     firstAuthorizedDate:
-                      description: The UTC value of when the job was first authorized.
-                      example: '2015-01-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     jobName:
                       description: The name of the job.
                       type: string
@@ -12654,23 +12424,14 @@ components:
                         CANCELLED | CLOSED
                       type: string
                     lastCompletedDate:
-                      description: The UTC value of when the job was last completed.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     lastAuthorizedDate:
-                      description: The UTC value of when the job was last authorized.
-                      example: '2015-12-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     modifiedByUserUid:
                       description: The userUid of who last modified the job.
                       type: string
                     modifiedDate:
-                      description: The UTC value of the date the job was modified.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     targetLocaleIds:
                       description: The array of localeIds for the job.
                       items:
@@ -12722,7 +12483,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12742,7 +12503,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   type: object
@@ -12756,7 +12517,6 @@ components:
                         properties:
                           translationJobUid:
                             description: The UID of the translationJob
-                            format: uid
                             type: string
                           jobName:
                             description: Name of the translation job
@@ -12778,7 +12538,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12792,18 +12552,6 @@ components:
                       type: integer
                   type: object
               type: object
-    SuccessResponse:
-      properties:
-        code:
-          description: >-
-            Indicates whether the response was successful or what error has
-            occured.
-          enum:
-            - SUCCESS
-          type: string
-      required:
-        - code
-      type: object
     TagInfo:
       properties:
         tag:
@@ -12939,11 +12687,9 @@ components:
     VendorsAPIJobsListAgencyItemTranslationJobItem:
       properties:
         translationJobAuthorizedDate:
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         translationJobDueDate:
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         translationJobName:
           type: string
         translationJobRisk:
@@ -12969,7 +12715,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13022,7 +12768,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13061,11 +12807,9 @@ components:
         translationJobName:
           type: string
         translationJobWorkflowStepDueDate:
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         translationJobOverallDueDate:
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         userUid:
           type: string
           nullable: true
@@ -13127,7 +12871,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13185,7 +12929,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13235,7 +12979,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13332,7 +13076,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13370,7 +13114,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13536,7 +13280,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13560,7 +13304,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error400Response'
+            $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
           examples:
             response:
               value:
@@ -13579,7 +13323,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error401Response'
+            $ref: './spec/api_common.yaml#/components/schemas/Error401Response'
           examples:
             response:
               value:
@@ -13595,7 +13339,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error429Response'
+            $ref: './spec/api_common.yaml#/components/schemas/Error429Response'
           examples:
             response:
               value:
@@ -13612,4 +13356,4 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error500Response'
+            $ref: './spec/api_common.yaml#/components/schemas/Error500Response'

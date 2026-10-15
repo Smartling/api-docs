@@ -6,14 +6,11 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: runStringTranslationQualityCheck
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: accountUid
           in: path
-          type: string
+          schema:
+            type: string
           required: true
           description: >-
             The account’s unique identifier. This can be found in the Smartling
@@ -21,10 +18,16 @@ x-paths:
         - name: projectId
           in: path
           required: true
-          type: string
           description: >-
             A unique project identifier. This can be found in the Smartling
             Dashboard under Account Settings > API.
+          schema:
+            type: string
+            pattern: ^[a-z0-9]{9}$
+          examples:
+            typical:
+              summary: Typical project ID
+              value: abcd12345
       requestBody:
         description: ''
         required: true
@@ -609,6 +612,8 @@ x-paths:
                                                     oneOf:
                                                       - type: object
                                                         title: NUMBER_ADDED
+                                                        required:
+                                                          - type
                                                         properties:
                                                           type:
                                                             type: string
@@ -621,6 +626,8 @@ x-paths:
                                                             example: '1000'
                                                       - type: object
                                                         title: NUMBER_DELETED
+                                                        required:
+                                                          - type
                                                         properties:
                                                           type:
                                                             type: string
@@ -633,6 +640,8 @@ x-paths:
                                                             example: '1000'
                                                       - type: object
                                                         title: NUMBER_INCORRECT_CONVERSION
+                                                        required:
+                                                          - type
                                                         properties:
                                                           type:
                                                             type: string
@@ -1043,8 +1052,8 @@ x-paths:
                                                     description: check type code
                                                     example: REGEX_CHECK
                                                   details:
-                                                    - ref: >-
-                                                        tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
+                                                    $ref: >-
+                                                      tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
                                                   positionTypeCode:
                                                     type: string
                                                     enum:

@@ -11,13 +11,7 @@ x-paths:
       operationId: createJobBatchV2
 
       parameters:
-        - name: projectId
-          in: path
-          required: true
-          schema:
-            format: uid
-            type: string
-          description: Unique identifier of the project within an account.
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
 
       requestBody:
         content:
@@ -46,7 +40,7 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
               examples:
                 duplicate_file_uris:
                   value:
@@ -93,9 +87,9 @@ x-paths:
                         - key: dueDate
                           message: "Wrong due date format"
         401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: >
@@ -112,18 +106,11 @@ x-paths:
       operationId: getJobBatchesListV2
 
       parameters:
-        - name: projectId
-          in: path
-          required: true
-          schema:
-            format: uid
-            type: string
-          description: Unique identifier of the project within an account.
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - description: A unique identifier for a translationJob.
           in: query
           name: translationJobUid
           schema:
-            format: uid
             type: string
         - description: The status of the Batch
           in: query
@@ -185,7 +172,7 @@ x-paths:
                             createdDate: '2015-11-21T11:51:17Z'
                             hasError: 'false'
                             modifiedDate: '2015-11-21T11:51:17Z'
-                            projectId: asf53fds34
+                            projectId: asf53fds3
                             status: DRAFT
                             translationJobUid: 635gf40f9846
                           - authorized: 'true'
@@ -193,16 +180,16 @@ x-paths:
                             createdDate: '2015-11-21T11:51:17Z'
                             hasError: 'false'
                             modifiedDate: '2015-11-22T10:24:14Z'
-                            projectId: asf53fds34
+                            projectId: asf53fds3
                             status: EXECUTING
                             translationJobUid: 635gf40f9846
                         totalCount: 2
         400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
         401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: |
@@ -221,18 +208,11 @@ x-paths:
       operationId: getJobBatchStatusV2
 
       parameters:
-        - name: projectId
-          in: path
-          required: true
-          schema:
-            format: uid
-            type: string
-          description: Unique identifier of the project within an account.
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - name: batchUid
           in: path
           required: true
           schema:
-            format: uid
             type: string
           description: A unique identifier for a batch.
 
@@ -277,11 +257,11 @@ x-paths:
         404:
           $ref: '../job_batches_v1/job_batches_endpoints.yaml#/components/responses/BatchNotFoundResponse'
         400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
         401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
 
     put:
       summary: Process batch action
@@ -298,18 +278,11 @@ x-paths:
       operationId: processBatchActionV2
 
       parameters:
-        - name: projectId
-          in: path
-          required: true
-          schema:
-            format: uid
-            type: string
-          description: Unique identifier of the project within an account.
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - name: batchUid
           in: path
           required: true
           schema:
-            format: uid
             type: string
           description: A unique identifier for a batch.
 
@@ -324,7 +297,7 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmptyResponse'
+                $ref: '../api_common.yaml#/components/schemas/EmptyResponse'
               examples:
                 response:
                   value:
@@ -337,7 +310,7 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
               examples:
                 file_not_registered:
                   value:
@@ -368,9 +341,9 @@ x-paths:
                         - key: fileUri
                           message: "File URI must not exceed 512 characters"
         401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: |
@@ -413,18 +386,11 @@ x-paths:
       operationId: uploadFileToJobBatchV2
 
       parameters:
-        - name: projectId
-          in: path
-          required: true
-          schema:
-            format: uid
-            type: string
-          description: Unique identifier of the project within an account.
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - name: batchUid
           in: path
           required: true
           schema:
-            format: uid
             type: string
           description: A unique identifier for a batch.
 
@@ -453,7 +419,7 @@ x-paths:
                   minLength: 1
                   maxLength: 512
                 fileType:
-                  $ref: '#/components/schemas/FileType'
+                  $ref: '../api_common.yaml#/components/schemas/FileType'
                 authorize:
                   default: false
                   description: >
@@ -537,7 +503,7 @@ x-paths:
 
                     If the upload has begun but is taking more than a minute to
                     complete, it responds with status `202`.
-                  format: url
+                  format: uri
                   type: string
               required:
                 - file
@@ -552,7 +518,7 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmptyResponse'
+                $ref: '../api_common.yaml#/components/schemas/EmptyResponse'
               examples:
                 response:
                   value:
@@ -562,13 +528,13 @@ x-paths:
         404:
           $ref: '../job_batches_v1/job_batches_endpoints.yaml#/components/responses/BatchNotFoundResponse'
         429:
-          $ref: '#/components/responses/Error429ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error429ResponseDefinition'
         400:
-          $ref: '#/components/responses/Error400ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
         401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: |
@@ -690,13 +656,7 @@ x-paths:
       operationId: createJobV2
 
       parameters:
-        - name: projectId
-          in: path
-          required: true
-          schema:
-            format: uid
-            type: string
-          description: Unique identifier of the project within an account.
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
 
       requestBody:
         content:
@@ -731,7 +691,7 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
               examples:
                 missing_name_template:
                   value:
@@ -748,9 +708,9 @@ x-paths:
                         - key: job.name.evaluation.failed
                           message: "Failed to evaluate job name from template"
         401:
-          $ref: '#/components/responses/Error401ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         500:
-          $ref: '#/components/responses/Error500ResponseDefinition'
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
       x-code-samples:
         - lang: curl
           source: >
@@ -895,7 +855,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -913,17 +873,12 @@ components:
                       type: string
                     projectId:
                       description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-                      format: uid
                       type: string
                     translationJobUid:
                       description: The UID of the translationJob
-                      format: uid
                       type: string
                     updatedDate:
-                      description: The UTC value of the date the batch was updated.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: '../api_common.yaml#/components/schemas/DateTime'
                     files:
                       description: Array of files included in this batch with their processing status
                       items:
@@ -951,10 +906,7 @@ components:
           enum: [UPLOADING, UPLOADED, PROCESSING, COMPLETED, FAILED, CANCELED]
           example: UPLOADING
         updatedDate:
-          description: Last update date of the batch item in ISO 8601 format
-          type: string
-          format: date-time
-          example: '2015-11-21T11:53:17Z'
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
         errors:
           description: JSON string containing error details if any occurred
           type: string
@@ -1047,7 +999,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:

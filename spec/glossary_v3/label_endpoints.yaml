@@ -7,12 +7,8 @@ x-paths:
       summary: Read account glossary labels
       description: Read all glossary labels endpoint.
       operationId: readAllGlossaryLabels
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
       parameters:
-        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
       responses:
         '200':
           description: ''
@@ -21,13 +17,13 @@ x-paths:
               schema:
                 $ref: "#/components/schemas/AccountGlossaryLabelsSuccessResponse"
         401:
-          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError401ResponseDefinition'
         403:
-          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError403ResponseDefinition'
         429:
-          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError429ResponseDefinition'
         500:
-          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError500ResponseDefinition'
 
     post:
       summary: Create glossary label
@@ -35,10 +31,8 @@ x-paths:
       tags:
         - Glossary API
       operationId: createGlossaryLabel
-      consumes:
-        - application/json
       parameters:
-        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
       requestBody:
         description: ''
         required: true
@@ -53,25 +47,26 @@ x-paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GlossaryLabelPTO'
-              response:
-                value:
-                  response:
-                    code: SUCCESS
-                    data:
-                      labelUid: bad90990-4be1-4570-81da-b719cddd5352
-                      labelText: text of the label
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        labelUid: bad90990-4be1-4570-81da-b719cddd5352
+                        labelText: text of the label
         400:
-          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError400ResponseDefinition'
         401:
-          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError401ResponseDefinition'
         403:
-          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError403ResponseDefinition'
         404:
-          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError404ResponseDefinition'
         429:
-          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError429ResponseDefinition'
         500:
-          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError500ResponseDefinition'
 
   update_remove_label:
     put:
@@ -80,12 +75,8 @@ x-paths:
       summary: Update glossary label
       description: Update glossary label endpoint.
       operationId: updateGlossaryLabel
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
-        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - $ref: '#/components/parameters/labelPathParameter'
       requestBody:
         description: ''
@@ -101,37 +92,34 @@ x-paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GlossaryLabelPTO'
-              response:
-                value:
-                  response:
-                    code: SUCCESS
-                    data:
-                      labelUid: bad90990-4be1-4570-81da-b719cddd5352
-                      labelText: text of the label
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        labelUid: bad90990-4be1-4570-81da-b719cddd5352
+                        labelText: text of the label
         400:
-          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError400ResponseDefinition'
         401:
-          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError401ResponseDefinition'
         403:
-          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError403ResponseDefinition'
         404:
-          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError404ResponseDefinition'
         429:
-          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError429ResponseDefinition'
         500:
-          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError500ResponseDefinition'
     delete:
       tags:
         - Glossary API
       summary: Delete glossary label
       description: Delete glossary label endpoint.
       operationId: deleteGlossaryLabel
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
-        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - $ref: '#/components/parameters/labelPathParameter'
       responses:
         '200':
@@ -139,22 +127,23 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmptyResponse'
-              response:
-                value:
-                  response:
-                    code: SUCCESS
-                    data: {}
+                $ref: '../api_common.yaml#/components/schemas/EmptyResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: {}
         401:
-          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError401ResponseDefinition'
         403:
-          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError403ResponseDefinition'
         404:
-          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError404ResponseDefinition'
         429:
-          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError429ResponseDefinition'
         500:
-          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './g_common.yaml#/components/responses/GlossaryError500ResponseDefinition'
 
 
 components:
@@ -172,8 +161,6 @@ components:
   schemas:
     AccountGlossaryLabelsSuccessResponse:
       type: object
-      required:
-        - response
       properties:
         totalCount:
           type: integer
@@ -200,7 +187,7 @@ components:
 
     GlossaryLabelPTO:
       allOf:
-        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
         - type: object
           properties:
             data:
@@ -216,16 +203,3 @@ components:
           type: string
           description: Text of the label. Text max size is 50 characters.
       description: Glossary label manage command.
-    EmptyResponse:
-      type: object
-      required:
-        - response
-      properties:
-        response:
-          allOf:
-            - $ref: './g_common.yaml#/components/schemas/SuccessResponse'
-            - properties:
-                data:
-                  description: Always null.
-                  type: object
-              type: object
