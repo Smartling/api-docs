@@ -32,6 +32,8 @@ pipeline {
             environment {
                 // 'data team jenkins' credentials
                 GH_TOKEN = credentials('b7544320-e084-4912-a1c5-b330585aa8ee')
+                // shelljs 0.x prints circular dependency warnings on Node 26
+                NODE_OPTIONS = '--no-warnings'
             }
             when {
                 expression {
@@ -46,6 +48,8 @@ pipeline {
             environment {
                 // 'data team jenkins' credentials
                 GH_TOKEN = credentials('b7544320-e084-4912-a1c5-b330585aa8ee')
+                // shelljs 0.x prints circular dependency warnings on Node 26
+                NODE_OPTIONS = '--no-warnings'
             }
             when {
                 branch 'master'
