@@ -77,7 +77,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_8
+                                        - &ref_9
                                           type: object
                                           properties:
                                             noEmojisAllowedInTarget:
@@ -126,7 +126,7 @@ x-paths:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
                                         - allOf:
-                                            - &ref_14
+                                            - &ref_15
                                               type: object
                                               properties:
                                                 matchMethod:
@@ -145,7 +145,7 @@ x-paths:
                                                   minimum: 0
                                                   maximum: 100
                                                   example: 10
-                                            - &ref_15
+                                            - &ref_16
                                               type: object
                                               properties:
                                                 sameTermCount:
@@ -254,7 +254,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_12
+                                        - &ref_13
                                           type: object
                                           properties:
                                             ignoreSign:
@@ -288,7 +288,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_16
+                                        - &ref_17
                                           type: object
                                           properties:
                                             mustHaveIdenticalTags:
@@ -329,7 +329,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_17
+                                        - &ref_18
                                           type: object
                                           properties:
                                             lowerLengthThreshold:
@@ -371,7 +371,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_10
+                                        - &ref_11
                                           type: object
                                           properties:
                                             minTextLengthLimit:
@@ -393,7 +393,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_9
+                                        - &ref_10
                                           type: object
                                           properties:
                                             skipIfWordInUserDictionary:
@@ -458,7 +458,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_11
+                                        - &ref_12
                                           type: object
                                           properties:
                                             minTextLengthLimit:
@@ -494,7 +494,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_13
+                                        - &ref_14
                                           type: object
                                           properties:
                                             ignoreTagsAndPlaceholders:
@@ -606,7 +606,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_18
+                                        - &ref_19
                                           type: object
                                           properties:
                                             sourceIssuesMustBeResolved:
@@ -968,17 +968,22 @@ x-paths:
                                                   type: object
                                                   properties:
                                                     targetLocaleId: &ref_6
-                                                      type: string
-                                                      pattern: ^[a-z]{2}(-[A-Z]{2})?$
-                                                      description: >
-                                                        Locale identifier. Either a 2-letter
-                                                        language code (`en`) or a
+                                                      allOf:
+                                                        - &ref_8
+                                                          type: string
+                                                          pattern: ^[a-z]{2}(-[A-Z]{2})?$
+                                                          description: >
+                                                            Locale identifier. Either a 2-letter
+                                                            language code (`en`) or a
 
-                                                        language-region pair (`en-US`). The
-                                                        language part is always lowercase;
+                                                            language-region pair (`en-US`). The
+                                                            language part is always lowercase;
 
-                                                        the region part is always uppercase.
-                                                      example: fr-FR
+                                                            the region part is always uppercase.
+                                                          example: fr-FR
+                                                      description: >-
+                                                        Smartling locale identifier of the
+                                                        translation
                                                     severityLevelCode: *ref_3
                                           - &ref_7
                                             type: object
@@ -1876,7 +1881,7 @@ x-paths:
                                                                 description: The list of target locales.
                                                                 example:
                                                                   - ru-RU
-                                                                items: *ref_6
+                                                                items: *ref_8
                                                                 type: array
                                                               severityLevelCode: *ref_3
                                   - title: OPEN_ISSUES
@@ -2195,7 +2200,7 @@ x-paths:
       parameters:
         - *ref_0
         - *ref_1
-        - &ref_20
+        - &ref_21
           name: checkTypeCode
           in: path
           required: true
@@ -2221,11 +2226,11 @@ x-paths:
               oneOf:
                 - title: EMOJI_CONSISTENCY
                   allOf:
-                    - *ref_8
-                    - &ref_21
+                    - *ref_9
+                    - &ref_22
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_22
+                    - &ref_23
                       type: object
                       required:
                         - noEmojisAllowedInTarget
@@ -2234,11 +2239,11 @@ x-paths:
                           type: boolean
                 - title: SPELLCHECK
                   allOf:
-                    - *ref_9
-                    - &ref_23
+                    - *ref_10
+                    - &ref_24
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_24
+                    - &ref_25
                       type: object
                       required:
                         - skipIfWordInUserDictionary
@@ -2259,11 +2264,11 @@ x-paths:
                           type: boolean
                 - title: SOURCE_IN_WRONG_LANGUAGE
                   allOf:
-                    - *ref_10
-                    - &ref_25
+                    - *ref_11
+                    - &ref_26
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_26
+                    - &ref_27
                       type: object
                       required:
                         - minTextLengthLimit
@@ -2272,28 +2277,28 @@ x-paths:
                           type: integer
                 - title: TARGET_IN_WRONG_LANGUAGE
                   allOf:
-                    - &ref_27
+                    - &ref_28
                       type: object
                       required:
                         - minTextLengthLimit
                       properties:
                         minTextLengthLimit:
                           type: integer
-                    - &ref_28
+                    - &ref_29
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - *ref_11
-                - &ref_29
+                    - *ref_12
+                - &ref_30
                   title: NUMBER_CONSISTENCY
                   allOf:
-                    - *ref_12
+                    - *ref_13
                 - title: TARGET_SOURCE_CONSISTENCY
                   allOf:
-                    - *ref_13
-                    - &ref_30
+                    - *ref_14
+                    - &ref_31
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_31
+                    - &ref_32
                       type: object
                       required:
                         - ignoreTagsAndPlaceholders
@@ -2303,13 +2308,13 @@ x-paths:
                           type: boolean
                         ignoreCase:
                           type: boolean
-                - &ref_32
+                - &ref_33
                   title: GLOSSARY_COMPLIANCE
                   allOf:
-                    - &ref_19
+                    - &ref_20
                       allOf:
-                        - *ref_14
                         - *ref_15
+                        - *ref_16
                     - type: object
                       required:
                         - matchMethod
@@ -2321,11 +2326,11 @@ x-paths:
                           type: integer
                 - title: ORIGINAL_EQUALS_TARGET
                   allOf:
-                    - *ref_16
-                    - &ref_33
+                    - *ref_17
+                    - &ref_34
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_34
+                    - &ref_35
                       type: object
                       required:
                         - mustHaveIdenticalTags
@@ -2337,14 +2342,14 @@ x-paths:
                           type: boolean
                 - title: SEGMENT_COMPLETENESS
                   allOf:
-                    - *ref_17
-                    - &ref_35
+                    - *ref_18
+                    - &ref_36
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                - &ref_36
+                - &ref_37
                   title: OPEN_ISSUES
                   allOf:
-                    - *ref_18
+                    - *ref_19
                     - type: object
                       required:
                         - sourceIssuesMustBeResolved
@@ -2367,38 +2372,38 @@ x-paths:
                       - *ref_2
                       - type: object
                         properties:
-                          data: &ref_37
+                          data: &ref_38
                             oneOf:
                               - title: EMOJI_CONSISTENCY
                                 allOf:
-                                  - *ref_8
+                                  - *ref_9
                               - title: SPELLCHECK
                                 allOf:
-                                  - *ref_9
+                                  - *ref_10
                               - title: SOURCE_IN_WRONG_LANGUAGE
                                 allOf:
-                                  - *ref_10
+                                  - *ref_11
                               - title: TARGET_IN_WRONG_LANGUAGE
                                 allOf:
-                                  - *ref_11
+                                  - *ref_12
                               - title: NUMBER_CONSISTENCY
                                 allOf:
-                                  - *ref_12
+                                  - *ref_13
                               - title: TARGET_SOURCE_CONSISTENCY
                                 allOf:
-                                  - *ref_13
+                                  - *ref_14
                               - title: GLOSSARY_COMPLIANCE
                                 allOf:
-                                  - *ref_19
+                                  - *ref_20
                               - title: ORIGINAL_EQUALS_TARGET
                                 allOf:
-                                  - *ref_16
+                                  - *ref_17
                               - title: SEGMENT_COMPLETENESS
                                 allOf:
-                                  - *ref_17
+                                  - *ref_18
                               - title: OPEN_ISSUES
                                 allOf:
-                                  - *ref_18
+                                  - *ref_19
               examples:
                 EMOJI_CONSISTENCY:
                   value:
@@ -2457,7 +2462,7 @@ x-paths:
       parameters:
         - *ref_0
         - *ref_1
-        - *ref_20
+        - *ref_21
         - name: groupUid
           in: path
           schema:
@@ -2473,41 +2478,41 @@ x-paths:
               oneOf:
                 - title: EMOJI_CONSISTENCY
                   allOf:
-                    - *ref_8
-                    - *ref_21
+                    - *ref_9
                     - *ref_22
+                    - *ref_23
                 - title: SPELLCHECK
                   allOf:
-                    - *ref_9
-                    - *ref_23
+                    - *ref_10
                     - *ref_24
+                    - *ref_25
                 - title: SOURCE_IN_WRONG_LANGUAGE
                   allOf:
-                    - *ref_10
-                    - *ref_25
+                    - *ref_11
                     - *ref_26
+                    - *ref_27
                 - title: TARGET_IN_WRONG_LANGUAGE
                   allOf:
-                    - *ref_27
                     - *ref_28
-                    - *ref_11
-                - *ref_29
+                    - *ref_29
+                    - *ref_12
+                - *ref_30
                 - title: TARGET_SOURCE_CONSISTENCY
                   allOf:
-                    - *ref_13
-                    - *ref_30
+                    - *ref_14
                     - *ref_31
-                - *ref_32
+                    - *ref_32
+                - *ref_33
                 - title: ORIGINAL_EQUALS_TARGET
                   allOf:
-                    - *ref_16
-                    - *ref_33
+                    - *ref_17
                     - *ref_34
+                    - *ref_35
                 - title: SEGMENT_COMPLETENESS
                   allOf:
-                    - *ref_17
-                    - *ref_35
-                - *ref_36
+                    - *ref_18
+                    - *ref_36
+                - *ref_37
       responses:
         '200':
           description: OK
@@ -2521,7 +2526,7 @@ x-paths:
                       - *ref_2
                       - type: object
                         properties:
-                          data: *ref_37
+                          data: *ref_38
               examples:
                 EMOJI_CONSISTENCY:
                   value:
@@ -2605,7 +2610,7 @@ x-paths:
             lowercase;
 
             the region part is always uppercase.
-          schema: *ref_6
+          schema: *ref_8
           examples:
             language_only:
               summary: Language code only
@@ -2652,7 +2657,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_8
+                                        - *ref_9
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2690,7 +2695,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_14
+                                        - *ref_15
                                         - type: object
                                           properties:
                                             sameTermCount:
@@ -2789,7 +2794,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_12
+                                        - *ref_13
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2815,7 +2820,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_16
+                                        - *ref_17
                                         - type: object
                                           required:
                                             - checkTypeCode
@@ -2842,7 +2847,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_17
+                                        - *ref_18
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2868,7 +2873,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_10
+                                        - *ref_11
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2881,7 +2886,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_9
+                                        - *ref_10
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2920,7 +2925,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_11
+                                        - *ref_12
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2945,7 +2950,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_13
+                                        - *ref_14
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -3035,7 +3040,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_18
+                                        - *ref_19
                                         - type: object
                                           required:
                                             - checkTypeCode

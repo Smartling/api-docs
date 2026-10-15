@@ -2197,7 +2197,9 @@ paths:
             schema:
               properties:
                 fileUri:
-                  $ref: './spec/api_common.yaml#/components/schemas/FileUri'
+                  allOf:
+                    - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
+                  description: Current value that uniquely identifies the file
                 newFileUri:
                   allOf:
                     - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
@@ -9813,7 +9815,9 @@ components:
         createdDate:
           $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         createdByUserUid:
-          $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+          description: The unique identifier of user whom upload attachment
       type: object
 
     CreateAttachmentResponse:
@@ -9836,7 +9840,9 @@ components:
                     createdDate:
                       $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     createdByUserUid:
-                      $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+                      description: The unique identifier of user whom upload attachment.
                   type: object
               required:
                 - data
@@ -9867,7 +9873,9 @@ components:
         coordinates:
           $ref: '#/components/schemas/Coordinates'
         stringHashcode:
-          $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
+          description: Unique identifier for the translatable.
         timecode:
           $ref: '#/components/schemas/Timecode'
       required:
@@ -9886,7 +9894,9 @@ components:
                 format: uuid
                 type: string
               stringHashcode:
-                $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
+                allOf:
+                  - $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
+                description: Unique identifier for the translatable.
               coordinates:
                 $ref: '#/components/schemas/Coordinates'
               selector:
@@ -10345,7 +10355,9 @@ components:
                         type: object
                         properties:
                           hashcode:
-                            $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
+                            allOf:
+                              - $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
+                            description: Unique hash identifier for the source string
                       translations:
                         type: array
                         description: Array of translations for the source string
@@ -10402,7 +10414,9 @@ components:
                           targetLocaleId:
                             $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
                           hashcode:
-                            $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
+                            allOf:
+                              - $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
+                            description: Unique identifier for the translatable.
               type: object
     DetailedJobResponse:
       type: object
@@ -10424,7 +10438,9 @@ components:
                       description: The callback URL to invoke when a job is completed.
                       type: string
                     createdByUserUid:
-                      $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+                      description: The userUid of whom created the job.
                     createdDate:
                       $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     description:
@@ -10466,7 +10482,9 @@ components:
                     lastAuthorizedDate:
                       $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     modifiedByUserUid:
-                      $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+                      description: The userUid of whom last modified the job.
                     modifiedDate:
                       $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     sourceFiles:
@@ -10750,7 +10768,9 @@ components:
             - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
           description: The date the file was last modified for the specified locale
         localeId:
-          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          description: A unique identifier for the uploaded file
       required:
         - localeId
         - lastModified
@@ -10776,7 +10796,9 @@ components:
         lastUploaded: '2016-01-01T00:00:00Z'
       properties:
         created:
-          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+          description: The time and date of the first upload
         fileType:
           $ref: './spec/api_common.yaml#/components/schemas/FileType'
         fileUri:
@@ -10785,7 +10807,9 @@ components:
           description: Whether translator instructions have been captured for the file.
           type: boolean
         lastUploaded:
-          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+          description: The time and date of the last upload
       required:
         - fileUri
         - created
@@ -10892,7 +10916,9 @@ components:
                 data:
                   properties:
                     created:
-                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                      description: The time and date of the first upload
                     fileType:
                       $ref: './spec/api_common.yaml#/components/schemas/FileType'
                     fileUri:
@@ -10907,7 +10933,9 @@ components:
                         $ref: '#/components/schemas/FilesAPIStatusAllLocalesItem'
                       type: array
                     lastUploaded:
-                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                      description: The time and date of the last upload
                     parserVersion:
                       description: >-
                         Records the version of Smartling's File Parser used to parse
@@ -10985,7 +11013,9 @@ components:
                       description: The number of published words in the uploaded file
                       type: integer
                     created:
-                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                      description: The time and date of the first upload
                     excludedStringCount:
                       description: The number of excluded strings in the uploaded file
                       type: integer
@@ -11002,7 +11032,9 @@ components:
                         file
                       type: integer
                     lastUploaded:
-                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                      description: The time and date of the last upload
                     parserVersion:
                       description: >-
                         Records the version of Smartling's File Parser used to parse
@@ -11124,7 +11156,9 @@ components:
             type: string
           type: array
         stringHashcode:
-          $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
+          description: The hashcode of a string affected by the error
       required:
         - importKey
         - stringHashcode
@@ -11146,7 +11180,9 @@ components:
     PublishedFilesAPIRecentlyPublishedFilesResponseItem:
       properties:
         fileUri:
-          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
+          description: The URI of the file that was published
         publishDate:
           allOf:
             - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
@@ -11233,9 +11269,13 @@ components:
     MTTranslateRequest:
       properties:
         sourceLocaleId:
-          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          description: Locale ID of the original text
         targetLocaleId:
-          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          description: Locale ID of the requested translation
         profileUid:
           type: string
           description: Optional Profile UID to use for translation. Will override the default/preconfigured in the settings profile.
@@ -12051,7 +12091,9 @@ components:
                           type: string
                       type: object
                     processUid:
-                      $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
+                      description: A unique identifier for a long running process
                   required:
                     - processUid
                     - newProjectUid
@@ -12073,7 +12115,9 @@ components:
                 data:
                   properties:
                     processUid:
-                      $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
+                      description: A unique identifier for a long running process
                   required:
                     - processUid
                   type: object
@@ -12091,7 +12135,9 @@ components:
           description: Boolean indicator of the locale is enabled for the project.
           type: boolean
         localeId:
-          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          description: The identifier for the specific locale configured for the project.
       required:
         - localeId
         - description
@@ -12290,7 +12336,9 @@ components:
                       description: The callback URL to invoke when a job is completed.
                       type: string
                     createdByUserUid:
-                      $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+                      description: The userUid of who created the job.
                     createdDate:
                       $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     description:
@@ -12320,7 +12368,9 @@ components:
                     lastAuthorizedDate:
                       $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     modifiedByUserUid:
-                      $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
+                      description: The userUid of who last modified the job.
                     modifiedDate:
                       $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     targetLocaleIds:
@@ -12777,7 +12827,9 @@ components:
                                   type: string
                                 type: array
                               created:
-                                $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                                allOf:
+                                  - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                                description: capture url date
                               stringCount:
                                 description: string count
                                 example: 10
@@ -12830,7 +12882,9 @@ components:
                             type: string
                           type: array
                         created:
-                          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                          allOf:
+                            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+                          description: capture url date
                         stringCount:
                           description: string count
                           example: 10
@@ -12939,7 +12993,9 @@ components:
           description: The date after which the URL was captured.
           example: '2020-11-21T01:51:17Z'
         urlCaptureDateBefore:
-          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+          description: The date by which the URL was captured.
         urlPath:
           description: url
           example: /home/page.htm
@@ -13072,7 +13128,9 @@ components:
                               the words transitioned through
                             type: string
                           workflowStepUid:
-                            $ref: './spec/api_common.yaml#/components/schemas/WorkflowStepUid'
+                            allOf:
+                              - $ref: './spec/api_common.yaml#/components/schemas/WorkflowStepUid'
+                            description: Unique identifier of the workflow step the words transitioned through
                           workflowStepName:
                             description: >-
                               Name of the workflow step the words transitioned through

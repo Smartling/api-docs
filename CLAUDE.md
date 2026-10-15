@@ -52,6 +52,7 @@ A missing copy-list entry now fails the build (`Can't resolve $ref`) instead of 
 
 - Reuse the `api_common.yaml` schemas and parameters for IDs, UIDs, locales, hashcodes, file URIs, file types, dates and error envelopes instead of declaring inline `type: string` copies.
 - Match by property meaning, not only by shape: `sourceLocaleId` and `targetLocaleId` use `LocaleId`, `projectId` uses `ProjectUid`, `*UserUid` uses `UserUid`, `*WorkflowStepUid` uses `WorkflowStepUid`, date-time strings use `DateTime`.
+- Keep a property's `description` when it adds meaning beyond the shared schema (role, owning entity, relationship), using `allOf` with the `$ref` plus a sibling `description`. Drop it only when it restates the type, for example "Locale id.".
 - Give array `items` a `$ref` or a fully typed schema. Never leave `items` empty or use bare `type: string` when a shared schema fits (for example `localeIds` items are `LocaleId`).
 - Add `minItems`, `maxItems` and `uniqueItems` only when the API enforces the limit and the description or code says so. Do not invent limits.
 - Check `api_common.yaml` before declaring a new inline schema. Keep an inline definition only when the shared constraint conflicts with real values, and nullable fields stay inline because `allOf` with a `$ref` cannot express `null` in OAS 3.0.
