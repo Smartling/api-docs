@@ -412,9 +412,9 @@ components:
       type: object
       properties:
         localeId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: Translation locale id.
-          example: en
         term:
           type: string
           description: Translation term. Max term length is equal to 250 characters.
@@ -436,6 +436,7 @@ components:
           description: Translation disabled.
         variants:
           type: array
+          maxItems: 50
           description: >-
             Translation synonyms/variations. Max length of single variation entry is 250 characters.
             Max amount of variations in current array is 50.
@@ -535,32 +536,33 @@ components:
           type: boolean
           description: Archived flag.
         createdByUserUid:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: Uid of the creator.
-          example: 671b520051b2
         modifiedByUserUid:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: Uid of the user who has performed latest modification.
-          example: 671b520051b2
         createdDate:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
           description: Date of creation of the entry.
-          example: 2021-07-20T13:19:46Z
         modifiedDate:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
           description: Entry last modification date.
-          example: 2021-07-20T13:22:46Z
       description: Glossary entry response.
 
     GlossaryEntryTranslationPTO:
       type: object
       properties:
         localeId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: Translation locale id.
-          example: en
         fallbackLocaleId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: >-
             Translation fallback locale id. Present only in case if fallback rules are configured, and current was mapped from the fallback.
         term:
@@ -597,21 +599,21 @@ components:
           description: Status/progress of the translation, in case if was requested.
           $ref: "#/components/schemas/EntryTranslationInProgressPTO"
         createdByUserUid:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: Uid of the creator.
-          example: 671b520051b2
         modifiedByUserUid:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: Uid of the user who has performed latest modification.
-          example: 671b520051b2
         createdDate:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
           description: Date of creation of the entry.
-          example: 2021-07-20T13:19:46Z
         modifiedDate:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
           description: Entry last modification date.
-          example: 2021-07-20T13:22:00Z
       description: Glossary entry translation.
 
     EntryCustomFieldValuePTO:
@@ -637,7 +639,8 @@ components:
         - type: object
           properties:
             localeId:
-              type: string
+              allOf:
+                - $ref: '../api_common.yaml#/components/schemas/LocaleId'
               description: Translation locale id, for which current custom filed value  belongs.
           description: Translation level custom field value.
 
@@ -679,17 +682,15 @@ components:
       type: object
       properties:
         localeId:
-          type: string
-          description: Locale id.
-          example: uk-UA
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
         requestDateTime:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
           description: Translation request date-time.
-          example: 2022-07-20T16:11:00Z
         requestUserUid:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: Translation request user uid.
-          example: 671b520051b2
       description: Holds meta-information about translation that is in progress.
 
     EntryTranslationInProgressFullPTO:
@@ -698,15 +699,17 @@ components:
         - type: object
           properties:
             projectId:
-              type: string
+              allOf:
+                - $ref: '../api_common.yaml#/components/schemas/ProjectUid'
               description: Project identifier. Project where translation has been submitted.
               example: b488e1b42
             hashCode:
-              type: string
-              example: 7c364d1b2a22bce260027d6bc61580aa
+              allOf:
+                - $ref: '../api_common.yaml#/components/schemas/Hashcode'
               description: Hash code of the submitted original string.
             jobUid:
-              type: string
+              allOf:
+                - $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
               description: Translation jobUid. Uid of the job where translation is taking place.
           description: Extends translation in progress data with additional properties ( projectId, hashcode, jobUid).
 

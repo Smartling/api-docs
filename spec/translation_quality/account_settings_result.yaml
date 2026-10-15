@@ -146,7 +146,19 @@ x-paths:
                                           type: object
                                           properties:
                                             targetLocaleId:
-                                              type: string
+                                              allOf:
+                                                - &ref_12
+                                                  type: string
+                                                  pattern: ^[a-z]{2}(-[A-Z]{2})?$
+                                                  description: >
+                                                    Locale identifier. Either a 2-letter
+                                                    language code (`en`) or a
+
+                                                    language-region pair (`en-US`). The
+                                                    language part is always lowercase;
+
+                                                    the region part is always uppercase.
+                                                  example: fr-FR
                                               description: >-
                                                 Smartling ID for the language you want
                                                 to translate to.
@@ -269,7 +281,7 @@ x-paths:
                                 items:
                                   allOf:
                                     - *ref_5
-                                    - &ref_12
+                                    - &ref_13
                                       type: object
                                       properties:
                                         profileUid:
@@ -325,8 +337,7 @@ x-paths:
                   description: List of target locale IDs.
                   example:
                     - ru-RU
-                  items:
-                    type: string
+                  items: *ref_12
                   type: array
               required:
                 - targetLocaleIds
@@ -346,7 +357,7 @@ x-paths:
                           data:
                             allOf:
                               - *ref_5
-                              - *ref_12
+                              - *ref_13
                               - *ref_6
                               - *ref_7
                               - type: object
@@ -386,7 +397,7 @@ x-paths:
       parameters:
         - *ref_2
         - *ref_3
-        - &ref_13
+        - &ref_14
           name: groupUid
           in: path
           schema:
@@ -447,7 +458,7 @@ x-paths:
       parameters:
         - *ref_2
         - *ref_3
-        - *ref_13
+        - *ref_14
       responses:
         '200':
           description: OK
@@ -481,7 +492,7 @@ x-paths:
         - *ref_2
         - *ref_11
         - *ref_3
-        - *ref_13
+        - *ref_14
       responses:
         '200':
           description: OK
@@ -498,7 +509,7 @@ x-paths:
                           data:
                             allOf:
                               - *ref_5
-                              - *ref_12
+                              - *ref_13
                               - *ref_6
                               - *ref_7
                               - type: object
@@ -537,7 +548,7 @@ x-paths:
         - *ref_2
         - *ref_11
         - *ref_3
-        - *ref_13
+        - *ref_14
       responses:
         '200':
           description: OK
@@ -567,13 +578,13 @@ x-paths:
       parameters:
         - *ref_2
         - *ref_3
-        - *ref_13
+        - *ref_14
       requestBody:
         description: ''
         required: true
         content:
           application/json:
-            schema: &ref_14
+            schema: &ref_15
               allOf:
                 - *ref_10
       responses:
@@ -581,7 +592,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: &ref_15
+              schema: &ref_16
                 type: object
                 properties:
                   response:
@@ -609,19 +620,19 @@ x-paths:
         - *ref_2
         - *ref_11
         - *ref_3
-        - *ref_13
+        - *ref_14
       requestBody:
         description: ''
         required: true
         content:
           application/json:
-            schema: *ref_14
+            schema: *ref_15
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_15
+              schema: *ref_16
       x-code-samples:
         - lang: curl
           source: >
@@ -639,8 +650,8 @@ x-paths:
       parameters:
         - *ref_2
         - *ref_3
-        - *ref_13
-        - &ref_16
+        - *ref_14
+        - &ref_17
           name: targetLocaleId
           in: path
           required: true
@@ -680,8 +691,8 @@ x-paths:
         - *ref_2
         - *ref_11
         - *ref_3
-        - *ref_13
-        - *ref_16
+        - *ref_14
+        - *ref_17
       responses:
         '200':
           description: OK

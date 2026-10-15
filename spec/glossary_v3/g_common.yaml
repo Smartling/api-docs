@@ -47,7 +47,7 @@ components:
           type: array
           description: Locales list for translation filtering.
           items:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
           example:
             [ "uk-UA","en","en-US" ]
         entryUids:
@@ -69,15 +69,18 @@ components:
             - BOTH
           example: ACTIVE
         missingTranslationLocaleId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: Additional locale id filter, which allow to find missing/empty translations.
           example: uk-UA
         presentTranslationLocaleId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: Additional locale id filter, which allow to find only present  translations.
           example: uk-UA
         dntLocaleId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: Additional locale id filter, which allow to find only DNT-marked translations.
           example: uk-UA
         returnFallbackTranslations:
@@ -201,9 +204,7 @@ components:
             - ANY
           example: ANY
         date:
-          type: string
-          description: Date-time value.
-          example: '2023-02-01T11:45:00.000Z'
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
         type:
           type: string
           example: after
@@ -223,9 +224,7 @@ components:
             - ANY
           example: ANY
         date:
-          type: string
-          description: Date-time value.
-          example: '2023-02-01T11:45:00.000Z'
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
         type:
           type: string
           example: before
@@ -246,11 +245,13 @@ components:
             - ANY
           example: ANY
         from:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
           description: From date-time / range start.
           example: '2023-02-01T11:45:00.000Z'
         to:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
           description: To date-time / range end.
           example: '2023-02-11T11:45:00.000Z'
         type:
@@ -272,9 +273,7 @@ components:
             - ANY
           example: ANY
         date:
-          type: string
-          description: Date-time value.
-          example: '2023-02-01T11:45:00.000Z'
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
         type:
           type: string
           example: exact
@@ -330,7 +329,8 @@ components:
             - DESC
           example: DESC
         localeId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: Locale identifier - for case when 'term' sort field is selected.
           example: uk-UA
       description: Sorting options.

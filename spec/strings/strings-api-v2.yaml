@@ -612,13 +612,14 @@ components:
                         $ref: '#/components/schemas/CreatedString'
                       type: array
                     processUid:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/ProcessUid'
                       description: >-
                         If the request takes longer than 60 seconds to process, a
                         `202` response will be returned, indicating the request has
                         not failed, but is not yet complete. Use the processUid
                         value to check the status of the request using the Check
                         Create String Status request.
-                      type: string
                     stringCount:
                       description: Total number of strings captured as a result of the request.
                       type: number
@@ -670,16 +671,18 @@ components:
                           type: string
                       type: object
                     processUid:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/ProcessUid'
                       description: Unique identifier for a create string request.
-                      type: string
                   type: object
               type: object
     CreatedString:
       description: Information on the created or updated string
       properties:
         hashcode:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/Hashcode'
           description: The generated unique identifier for this created or updated string.
-          type: string
         overWritten:
           description: Identifies whether the string already existed in the system.
           type: string
@@ -700,8 +703,9 @@ components:
       description: Information on a string
       properties:
         hashcode:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/Hashcode'
           description: The generated unique identifier for this created or updated string.
-          type: string
         keys:
           description: >-
             If this string is associated with one or more resource files this is
@@ -743,8 +747,9 @@ components:
           items:
             properties:
               fileUri:
+                allOf:
+                  - $ref: '../api_common.yaml#/components/schemas/FileUri'
                 description: URI of the file that contained the instruction.
-                type: string
               contentFileStringInstruction:
                 description: The text of the instruction.
                 type: string
@@ -774,8 +779,9 @@ components:
       description: Information on a translation
       properties:
         hashcode:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/Hashcode'
           description: The generated unique identifier for this created or updated string.
-          type: string
         keys:
           description: >-
             If this string is associated with one or more resource files this is
@@ -799,8 +805,9 @@ components:
           description: The text for this string.
           type: string
         targetLocaleId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: Locale ID of this translation
-          type: string
         translations:
           items:
             properties:
@@ -821,9 +828,9 @@ components:
           description: String variant
           type: string
         workflowStepUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
           description: Current workflow step for this translation
-          format: uuid
-          type: string
       type: object
     TranslationResponse:
       type: object

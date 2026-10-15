@@ -111,7 +111,7 @@ x-paths:
           in: query
           name: translationJobUid
           schema:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
         - description: The status of the Batch
           in: query
           name: status
@@ -135,14 +135,7 @@ x-paths:
               - asc
               - desc
             type: string
-        - description: >-
-            Standard Smartling limit and offset to paginate through results. 0
-            if not specified.
-          in: query
-          name: offset
-          schema:
-            default: 0
-            type: integer
+        - $ref: '../api_common.yaml#/components/parameters/offset'
         - description: >-
             Standard Smartling limit and offset to paginate through results. 20
             batches are returned by default if not specified.
@@ -438,7 +431,7 @@ x-paths:
                     it is uploaded. Authorization happens only when a job is
                     authorized.
                   items:
-                    type: string
+                    $ref: '../api_common.yaml#/components/schemas/LocaleId'
                   type: array
                 smartling.namespace:
                   description: >
@@ -734,8 +727,9 @@ components:
             processes are completed for all files in the batch.
           type: boolean
         translationJobUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
           description: The UID of the previously created translation job.
-          type: string
         fileUris:
           description: >-
             A list of File URI's to be uploaded later. Must be a non-empty array with unique values.
@@ -764,13 +758,14 @@ components:
       description: Workflow configuration for a specific target locale in batch processing
       properties:
         targetLocaleId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: A valid Smartling Locale ID that the workflow applies to. Must be a non-empty string.
-          type: string
-          minLength: 1
           example: cy-GB
         workflowUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/WorkflowUid'
           description: Optional unique identifier for the workflow. If not provided, default workflow is used.
-          type: string
           example: 9422471c2202
         contentAssignments:
           description: Optional content assignments for specific workflow steps
@@ -793,8 +788,9 @@ components:
       description: Content assignment for a specific workflow step
       properties:
         workflowStepUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
           description: Unique identifier of the workflow step to assign content to
-          type: string
           example: e5c049862da1
         userUids:
           description: Array of user UIDs to assign to this workflow step. Must contain exactly 1 user UID (minimum 1, maximum 1).
@@ -802,7 +798,7 @@ components:
           maxItems: 1
           minItems: 1
           items:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/UserUid'
           example: ["7f3b8d2a9c6e"]
       required:
         - workflowStepUid
@@ -812,16 +808,17 @@ components:
       description: Due date configuration for a specific workflow step
       properties:
         workflowStepUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
           description: Unique identifier of the workflow step to set due date for
-          type: string
           example: e5c049862da1
         dueDate:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
           description: |
             Due date for the workflow step. Must be in one of these ISO 8601 formats:
             - ISO Instant format: "2024-12-31T23:59:59Z" 
             - ISO Offset DateTime format: "2024-12-31T23:59:59+01:00"
-          type: string
-          format: date-time
           example: "2024-12-31T23:59:59Z"
       required:
         - workflowStepUid
@@ -872,11 +869,11 @@ components:
                         processing
                       type: string
                     projectId:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/ProjectUid'
                       description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-                      type: string
                     translationJobUid:
-                      description: The UID of the translationJob
-                      type: string
+                      $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
                     updatedDate:
                       $ref: '../api_common.yaml#/components/schemas/DateTime'
                     files:
@@ -891,8 +888,7 @@ components:
       description: A smartling locale which the file should be authorized and translated into
       properties:
         localeId:
-          description: Smartling locale identifier
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
         stringsAdded:
           description: Number of strings added to the translationJob from this file
           type: integer
@@ -912,9 +908,9 @@ components:
           type: string
           example: ''
         fileUri:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/FileUri'
           description: URI of the file in the batch
-          type: string
-          example: files/example1.json
         targetLocales:
           description: Array of target locales for this file
           type: array
@@ -929,9 +925,7 @@ components:
       description: Locale-specific information for a batch item (V2)
       properties:
         localeId:
-          description: The locale identifier
-          type: string
-          example: fr-FR
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
         stringsAdded:
           description: Number of strings added for this locale
           type: integer
@@ -979,7 +973,7 @@ components:
           description: List of target locale IDs for the job.
           type: array
           items:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
         mode:
           $ref: '#/components/schemas/JobBatchJobCreationMode'
         salt:
@@ -1004,8 +998,7 @@ components:
                 data:
                   properties:
                     translationJobUid:
-                      description: The unique identifier of the translation job.
-                      type: string
+                      $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
                     jobName:
                       description: The name of the job.
                       type: string
@@ -1019,7 +1012,7 @@ components:
                       description: List of target locale IDs for the job.
                       type: array
                       items:
-                        type: string
+                        $ref: '../api_common.yaml#/components/schemas/LocaleId'
                     createdDate:
                       description: The creation date of the job in ISO 8601 format.
                       type: string

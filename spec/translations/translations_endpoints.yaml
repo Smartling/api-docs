@@ -164,7 +164,7 @@ x-paths:
           required: true
           description: Process identifier returned by the initiating operation.
           schema:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/ProcessUid'
       responses:
         '200':
           description: Process status retrieved.
@@ -712,11 +712,13 @@ components:
           type: string
           description: Unique identifier of the translation package.
         projectId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/ProjectUid'
           description: Project this package belongs to.
           example: abcd12345
         localeId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: Target locale of the package.
         created:
           $ref: '../api_common.yaml#/components/schemas/DateTime'
@@ -764,8 +766,7 @@ components:
       required: [processUid, processState]
       properties:
         processUid:
-          type: string
-          description: Unique identifier of the process.
+          $ref: '../api_common.yaml#/components/schemas/ProcessUid'
         processState:
           type: string
           description: Current state of the process.
@@ -810,7 +811,8 @@ components:
           description: Hashcode of the string that failed.
           $ref: '../api_common.yaml#/components/schemas/Hashcode'
         fileUri:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/FileUri'
           description: Source file URI of the failing string.
         messages:
           type: array
