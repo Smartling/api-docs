@@ -1,8 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'node:lts-bullseye' // node 18 lts & debian 11 based image with git clie
-            args '-p 3000:3000'
+            image 'node:26-trixie' // node 26 lts & debian 13 based image with git client
         }
     }
     stages {
@@ -14,7 +13,19 @@ pipeline {
                 }
             }
             steps {
-                sh 'npm install'
+                sh 'npm ci'
+            }
+        }
+        stage('Validate') {
+            when {
+                expression {
+                    return env.BRANCH_NAME != 'gh-pages';
+                }
+            }
+            steps {
+                sh 'npm test'
+                sh 'npm run build'
+                sh 'npm run lint:spec'
             }
         }
         stage('Build & Deploy Branch') {
