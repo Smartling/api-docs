@@ -11,6 +11,9 @@ info:
 servers:
   - url: 'https://api.smartling.com'
 
+security:
+  - BearerAuth: []
+
 externalDocs:
   description: Smartling Help Center
   url: 'https://help.smartling.com'
@@ -438,6 +441,7 @@ paths:
       tags:
         - Authentication
       operationId: authenticate
+      security: []
       requestBody:
         content:
           application/json:
@@ -497,6 +501,7 @@ paths:
         start a new session, rather than refreshing more often.
       summary: Refresh access token
       operationId: refreshAccessToken
+      security: []
       requestBody:
         content:
           application/json:
@@ -9315,6 +9320,14 @@ paths:
 
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        Access token returned by `/auth-api/v2/authenticate` (or
+        `/auth-api/v2/authenticate/refresh`), sent as
+        `Authorization: Bearer <accessToken>`.
   requestBodies:
     TagsWithStrings:
       content:
