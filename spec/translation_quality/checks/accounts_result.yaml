@@ -77,7 +77,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_10
+                                        - &ref_8
                                           type: object
                                           properties:
                                             noEmojisAllowedInTarget:
@@ -126,7 +126,7 @@ x-paths:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
                                         - allOf:
-                                            - &ref_16
+                                            - &ref_14
                                               type: object
                                               properties:
                                                 matchMethod:
@@ -145,7 +145,7 @@ x-paths:
                                                   minimum: 0
                                                   maximum: 100
                                                   example: 10
-                                            - &ref_17
+                                            - &ref_15
                                               type: object
                                               properties:
                                                 sameTermCount:
@@ -254,7 +254,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_14
+                                        - &ref_12
                                           type: object
                                           properties:
                                             ignoreSign:
@@ -288,7 +288,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_18
+                                        - &ref_16
                                           type: object
                                           properties:
                                             mustHaveIdenticalTags:
@@ -329,7 +329,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_19
+                                        - &ref_17
                                           type: object
                                           properties:
                                             lowerLengthThreshold:
@@ -371,7 +371,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_12
+                                        - &ref_10
                                           type: object
                                           properties:
                                             minTextLengthLimit:
@@ -393,7 +393,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_11
+                                        - &ref_9
                                           type: object
                                           properties:
                                             skipIfWordInUserDictionary:
@@ -458,7 +458,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_13
+                                        - &ref_11
                                           type: object
                                           properties:
                                             minTextLengthLimit:
@@ -494,7 +494,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_15
+                                        - &ref_13
                                           type: object
                                           properties:
                                             ignoreTagsAndPlaceholders:
@@ -606,7 +606,7 @@ x-paths:
                                             ../tqc_common.yaml#/components/schemas/profileUidResponse
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - &ref_20
+                                        - &ref_18
                                           type: object
                                           properties:
                                             sourceIssuesMustBeResolved:
@@ -939,10 +939,8 @@ x-paths:
                                               Unique identifier of corresponding
                                               profile.
                                             example: ce6d6b5dbc12
-                                      - &ref_5
-                                        allOf:
-                                          - &ref_6
-                                            type: object
+                                      - allOf:
+                                          - type: object
                                             properties:
                                               severityLevelCode: &ref_3
                                                 enum:
@@ -950,7 +948,8 @@ x-paths:
                                                   - LOW
                                                   - MEDIUM
                                                   - HIGH
-                                          - type: object
+                                          - &ref_5
+                                            type: object
                                             properties:
                                               subTypes:
                                                 type: array
@@ -961,22 +960,27 @@ x-paths:
                                                       type: string
                                                       description: check subtype code
                                                       example: ''
-                                          - &ref_7
-                                            type: object
+                                          - type: object
                                             properties:
                                               localeSeverityLevels:
                                                 type: array
                                                 items:
                                                   type: object
                                                   properties:
-                                                    targetLocaleId:
+                                                    targetLocaleId: &ref_6
                                                       type: string
-                                                      description: >-
-                                                        Smartling locale identifier of the
-                                                        translation
-                                                      example: it-IT
+                                                      pattern: ^[a-z]{2}(-[A-Z]{2})?$
+                                                      description: >
+                                                        Locale identifier. Either a 2-letter
+                                                        language code (`en`) or a
+
+                                                        language-region pair (`en-US`). The
+                                                        language part is always lowercase;
+
+                                                        the region part is always uppercase.
+                                                      example: fr-FR
                                                     severityLevelCode: *ref_3
-                                          - &ref_8
+                                          - &ref_7
                                             type: object
                                             properties:
                                               groups:
@@ -1001,7 +1005,21 @@ x-paths:
                                   - title: WHITESPACES
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1013,7 +1031,21 @@ x-paths:
                                   - title: ORIGINAL_EQUALS_TARGET
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           mustHaveIdenticalTags:
@@ -1037,7 +1069,21 @@ x-paths:
                                   - title: SPELLCHECK
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           skipIfWordInUserDictionary:
@@ -1071,11 +1117,20 @@ x-paths:
                                   - title: TAG_CONSISTENCY
                                     allOf:
                                       - *ref_4
-                                      - &ref_9
-                                        allOf:
-                                          - *ref_6
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
                                           - *ref_7
-                                          - *ref_8
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1101,7 +1156,21 @@ x-paths:
                                   - title: TARGET_LENGTH_LIMIT
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1113,7 +1182,20 @@ x-paths:
                                   - title: NUMBER_CONSISTENCY
                                     allOf:
                                       - *ref_4
-                                      - *ref_9
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           ignoreSign:
@@ -1144,7 +1226,21 @@ x-paths:
                                   - title: REPEATED_WORD
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1156,7 +1252,21 @@ x-paths:
                                   - title: TARGET_IN_WRONG_LANGUAGE
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           minTextLengthLimit:
@@ -1175,7 +1285,21 @@ x-paths:
                                   - title: SOURCE_IN_WRONG_LANGUAGE
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           minTextLengthLimit:
@@ -1194,7 +1318,20 @@ x-paths:
                                   - title: SEGMENT_COMPLETENESS
                                     allOf:
                                       - *ref_4
-                                      - *ref_9
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           lowerLengthThreshold:
@@ -1233,7 +1370,21 @@ x-paths:
                                   - title: NON_TRANSLATABLE_TEXT
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1259,7 +1410,20 @@ x-paths:
                                   - title: EMOJI_CONSISTENCY
                                     allOf:
                                       - *ref_4
-                                      - *ref_9
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           noEmojisAllowedInTarget:
@@ -1290,7 +1454,20 @@ x-paths:
                                   - title: INSERTABLE_CONSISTENCY
                                     allOf:
                                       - *ref_4
-                                      - *ref_9
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1314,7 +1491,20 @@ x-paths:
                                   - title: TARGET_SOURCE_CONSISTENCY
                                     allOf:
                                       - *ref_4
-                                      - *ref_9
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           ignoreTagsAndPlaceholders:
@@ -1348,7 +1538,21 @@ x-paths:
                                   - title: BLACKLISTED_TERMS
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1360,7 +1564,21 @@ x-paths:
                                   - title: GLOSSARY_COMPLIANCE
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - allOf:
                                           - type: object
                                             properties:
@@ -1401,7 +1619,21 @@ x-paths:
                                   - title: TRADEMARK_CONSISTENCY
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1413,7 +1645,21 @@ x-paths:
                                   - title: GRAMMAR_CHECK
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1425,7 +1671,21 @@ x-paths:
                                   - title: GLOBAL_CAPITALISATION_CONSISTENCY
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1437,7 +1697,21 @@ x-paths:
                                   - title: PUNCTUATION_CONSISTENCY
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1449,7 +1723,21 @@ x-paths:
                                   - title: PLURALS_REPETITION
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1461,7 +1749,21 @@ x-paths:
                                   - title: REGEX_CHECK
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           checkTypeCode:
@@ -1581,7 +1883,21 @@ x-paths:
                                   - title: OPEN_ISSUES
                                     allOf:
                                       - *ref_4
-                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              severityLevelCode: *ref_3
+                                          - *ref_5
+                                          - type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId: *ref_6
+                                                    severityLevelCode: *ref_3
+                                          - *ref_7
                                       - type: object
                                         properties:
                                           sourceIssuesMustBeResolved:
@@ -1880,7 +2196,7 @@ x-paths:
       parameters:
         - *ref_0
         - *ref_1
-        - &ref_22
+        - &ref_20
           name: checkTypeCode
           in: path
           required: true
@@ -1906,11 +2222,11 @@ x-paths:
               oneOf:
                 - title: EMOJI_CONSISTENCY
                   allOf:
-                    - *ref_10
-                    - &ref_23
+                    - *ref_8
+                    - &ref_21
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_24
+                    - &ref_22
                       type: object
                       required:
                         - noEmojisAllowedInTarget
@@ -1919,11 +2235,11 @@ x-paths:
                           type: boolean
                 - title: SPELLCHECK
                   allOf:
-                    - *ref_11
-                    - &ref_25
+                    - *ref_9
+                    - &ref_23
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_26
+                    - &ref_24
                       type: object
                       required:
                         - skipIfWordInUserDictionary
@@ -1944,11 +2260,11 @@ x-paths:
                           type: boolean
                 - title: SOURCE_IN_WRONG_LANGUAGE
                   allOf:
-                    - *ref_12
-                    - &ref_27
+                    - *ref_10
+                    - &ref_25
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_28
+                    - &ref_26
                       type: object
                       required:
                         - minTextLengthLimit
@@ -1957,28 +2273,28 @@ x-paths:
                           type: integer
                 - title: TARGET_IN_WRONG_LANGUAGE
                   allOf:
-                    - &ref_29
+                    - &ref_27
                       type: object
                       required:
                         - minTextLengthLimit
                       properties:
                         minTextLengthLimit:
                           type: integer
+                    - &ref_28
+                      $ref: >-
+                        ../tqc_common.yaml#/components/requestBodies/targetLocaleId
+                    - *ref_11
+                - &ref_29
+                  title: NUMBER_CONSISTENCY
+                  allOf:
+                    - *ref_12
+                - title: TARGET_SOURCE_CONSISTENCY
+                  allOf:
+                    - *ref_13
                     - &ref_30
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - *ref_13
-                - &ref_31
-                  title: NUMBER_CONSISTENCY
-                  allOf:
-                    - *ref_14
-                - title: TARGET_SOURCE_CONSISTENCY
-                  allOf:
-                    - *ref_15
-                    - &ref_32
-                      $ref: >-
-                        ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_33
+                    - &ref_31
                       type: object
                       required:
                         - ignoreTagsAndPlaceholders
@@ -1988,13 +2304,13 @@ x-paths:
                           type: boolean
                         ignoreCase:
                           type: boolean
-                - &ref_34
+                - &ref_32
                   title: GLOSSARY_COMPLIANCE
                   allOf:
-                    - &ref_21
+                    - &ref_19
                       allOf:
-                        - *ref_16
-                        - *ref_17
+                        - *ref_14
+                        - *ref_15
                     - type: object
                       required:
                         - matchMethod
@@ -2006,11 +2322,11 @@ x-paths:
                           type: integer
                 - title: ORIGINAL_EQUALS_TARGET
                   allOf:
-                    - *ref_18
-                    - &ref_35
+                    - *ref_16
+                    - &ref_33
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                    - &ref_36
+                    - &ref_34
                       type: object
                       required:
                         - mustHaveIdenticalTags
@@ -2022,14 +2338,14 @@ x-paths:
                           type: boolean
                 - title: SEGMENT_COMPLETENESS
                   allOf:
-                    - *ref_19
-                    - &ref_37
+                    - *ref_17
+                    - &ref_35
                       $ref: >-
                         ../tqc_common.yaml#/components/requestBodies/targetLocaleId
-                - &ref_38
+                - &ref_36
                   title: OPEN_ISSUES
                   allOf:
-                    - *ref_20
+                    - *ref_18
                     - type: object
                       required:
                         - sourceIssuesMustBeResolved
@@ -2052,38 +2368,38 @@ x-paths:
                       - *ref_2
                       - type: object
                         properties:
-                          data: &ref_39
+                          data: &ref_37
                             oneOf:
                               - title: EMOJI_CONSISTENCY
                                 allOf:
-                                  - *ref_10
+                                  - *ref_8
                               - title: SPELLCHECK
                                 allOf:
-                                  - *ref_11
+                                  - *ref_9
                               - title: SOURCE_IN_WRONG_LANGUAGE
                                 allOf:
-                                  - *ref_12
+                                  - *ref_10
                               - title: TARGET_IN_WRONG_LANGUAGE
                                 allOf:
-                                  - *ref_13
+                                  - *ref_11
                               - title: NUMBER_CONSISTENCY
                                 allOf:
-                                  - *ref_14
+                                  - *ref_12
                               - title: TARGET_SOURCE_CONSISTENCY
                                 allOf:
-                                  - *ref_15
+                                  - *ref_13
                               - title: GLOSSARY_COMPLIANCE
                                 allOf:
-                                  - *ref_21
+                                  - *ref_19
                               - title: ORIGINAL_EQUALS_TARGET
                                 allOf:
-                                  - *ref_18
+                                  - *ref_16
                               - title: SEGMENT_COMPLETENESS
                                 allOf:
-                                  - *ref_19
+                                  - *ref_17
                               - title: OPEN_ISSUES
                                 allOf:
-                                  - *ref_20
+                                  - *ref_18
               examples:
                 EMOJI_CONSISTENCY:
                   value:
@@ -2142,7 +2458,7 @@ x-paths:
       parameters:
         - *ref_0
         - *ref_1
-        - *ref_22
+        - *ref_20
         - name: groupUid
           in: path
           schema:
@@ -2158,41 +2474,41 @@ x-paths:
               oneOf:
                 - title: EMOJI_CONSISTENCY
                   allOf:
-                    - *ref_10
-                    - *ref_23
-                    - *ref_24
+                    - *ref_8
+                    - *ref_21
+                    - *ref_22
                 - title: SPELLCHECK
                   allOf:
-                    - *ref_11
-                    - *ref_25
-                    - *ref_26
+                    - *ref_9
+                    - *ref_23
+                    - *ref_24
                 - title: SOURCE_IN_WRONG_LANGUAGE
                   allOf:
-                    - *ref_12
-                    - *ref_27
-                    - *ref_28
+                    - *ref_10
+                    - *ref_25
+                    - *ref_26
                 - title: TARGET_IN_WRONG_LANGUAGE
                   allOf:
-                    - *ref_29
-                    - *ref_30
-                    - *ref_13
-                - *ref_31
+                    - *ref_27
+                    - *ref_28
+                    - *ref_11
+                - *ref_29
                 - title: TARGET_SOURCE_CONSISTENCY
                   allOf:
-                    - *ref_15
-                    - *ref_32
-                    - *ref_33
-                - *ref_34
+                    - *ref_13
+                    - *ref_30
+                    - *ref_31
+                - *ref_32
                 - title: ORIGINAL_EQUALS_TARGET
                   allOf:
-                    - *ref_18
-                    - *ref_35
-                    - *ref_36
+                    - *ref_16
+                    - *ref_33
+                    - *ref_34
                 - title: SEGMENT_COMPLETENESS
                   allOf:
-                    - *ref_19
-                    - *ref_37
-                - *ref_38
+                    - *ref_17
+                    - *ref_35
+                - *ref_36
       responses:
         '200':
           description: OK
@@ -2206,7 +2522,7 @@ x-paths:
                       - *ref_2
                       - type: object
                         properties:
-                          data: *ref_39
+                          data: *ref_37
               examples:
                 EMOJI_CONSISTENCY:
                   value:
@@ -2271,7 +2587,11 @@ x-paths:
             Dashboard under Account Settings > API.
           schema:
             type: string
+            description: >-
+              Unique identifier of a Smartling project — 9 lowercase
+              alphanumeric characters.
             pattern: ^[a-z0-9]{9}$
+            example: 84c012a33
           examples:
             typical:
               summary: Typical project ID
@@ -2286,17 +2606,7 @@ x-paths:
             lowercase;
 
             the region part is always uppercase.
-          schema:
-            type: string
-            pattern: ^[a-z]{2}(-[A-Z]{2})?$
-            description: >
-              Locale identifier. Either a 2-letter language code (`en`) or a
-
-              language-region pair (`en-US`). The language part is always
-              lowercase;
-
-              the region part is always uppercase.
-            example: fr-FR
+          schema: *ref_6
           examples:
             language_only:
               summary: Language code only
@@ -2343,7 +2653,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_10
+                                        - *ref_8
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2381,7 +2691,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_16
+                                        - *ref_14
                                         - type: object
                                           properties:
                                             sameTermCount:
@@ -2480,7 +2790,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_14
+                                        - *ref_12
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2506,7 +2816,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_18
+                                        - *ref_16
                                         - type: object
                                           required:
                                             - checkTypeCode
@@ -2533,7 +2843,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_19
+                                        - *ref_17
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2559,7 +2869,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_12
+                                        - *ref_10
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2572,7 +2882,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_11
+                                        - *ref_9
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2611,7 +2921,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_13
+                                        - *ref_11
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2636,7 +2946,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_15
+                                        - *ref_13
                                         - type: object
                                           properties:
                                             checkTypeCode:
@@ -2726,7 +3036,7 @@ x-paths:
                                       allOf:
                                         - $ref: >-
                                             ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
-                                        - *ref_20
+                                        - *ref_18
                                         - type: object
                                           required:
                                             - checkTypeCode

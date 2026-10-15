@@ -62,7 +62,7 @@ x-paths:
           description: A unique identifier for a translationJob.
           in: query
           schema:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
         - name: status
           description: The status of the Batch
           in: query
@@ -86,14 +86,7 @@ x-paths:
               - asc
               - desc
             type: string
-        - name: offset
-          description: >-
-            Standard Smartling limit and offset to paginate through results. 0
-            if not specified.
-          in: query
-          schema:
-            default: 0
-            type: integer
+        - $ref: '../api_common.yaml#/components/parameters/offset'
         - name: limit
           description: >-
             Standard Smartling limit and offset to paginate through results. 20
@@ -741,11 +734,9 @@ components:
           description: The flag showing if authorizing job is requested for this Batch
           type: boolean
         translationJobUid:
-          description: The UID of the translationJob
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
         projectId:
-          description: The UID of the project
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/ProjectUid'
         createdDate:
           $ref: '../api_common.yaml#/components/schemas/DateTime'
         modifiedDate:
@@ -801,8 +792,7 @@ components:
             processes completed for all files in the batch.
           type: boolean
         translationJobUid:
-          description: The UID of the previously created translation job.
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
       type: object
     BatchActionRequestV1:
       description: Describes the action to be done with the Batch
@@ -819,13 +809,9 @@ components:
     LocaleWorkflow:
       properties:
         targetLocaleId:
-          description: A valid Smartling Locale ID
-          example: cy-GB
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
         workflowUid:
-          description: Unique identifier for workflow
-          example: 9422471c2202
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/WorkflowUid'
       required:
         - targetLocaleId
         - workflowUid
@@ -854,11 +840,9 @@ components:
                         processing
                       type: string
                     projectId:
-                      description: The UID of the project
-                      type: string
+                      $ref: '../api_common.yaml#/components/schemas/ProjectUid'
                     translationJobUid:
-                      description: The UID of the translationJob
-                      type: string
+                      $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
                     updatedDate:
                       $ref: '../api_common.yaml#/components/schemas/DateTime'
                     files:
@@ -877,8 +861,9 @@ components:
             this batchItem
           type: string
         fileUri:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/FileUri'
           description: Uri of the file linked to the Batch
-          type: string
         status:
           $ref: '#/components/schemas/BatchItemStatus'
         targetLocales:
@@ -893,8 +878,7 @@ components:
       description: A smartling locale which file should be authorized to
       properties:
         localeId:
-          description: Smartling locale identifier
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
         stringsAdded:
           description: Number of strings added to the translationJob from this file
           type: integer
