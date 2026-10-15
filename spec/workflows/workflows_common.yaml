@@ -349,53 +349,13 @@ components:
                   items:
                     $ref: '#/components/schemas/WorkflowStepSummary'
 
-    # ---- Errors not already covered by api_common.yaml ----
-
-    Error403Response:
-      type: object
-      properties:
-        response:
-          type: object
-          required:
-            - code
-            - errors
-          properties:
-            code:
-              type: string
-              enum: [ACCESS_DENIED_ERROR]
-            errors:
-              type: array
-              items:
-                $ref: '../api_common.yaml#/components/schemas/Error'
-      required:
-        - response
-
-    Error404Response:
-      type: object
-      properties:
-        response:
-          type: object
-          required:
-            - code
-            - errors
-          properties:
-            code:
-              type: string
-              enum: [NOT_FOUND_ERROR]
-            errors:
-              type: array
-              items:
-                $ref: '../api_common.yaml#/components/schemas/Error'
-      required:
-        - response
-
   responses:
     Error403ResponseDefinition:
       description: The caller does not have permission to perform this operation.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error403Response'
+            $ref: '../api_common.yaml#/components/schemas/Error403Response'
           examples:
             response:
               value:
@@ -410,7 +370,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error404Response'
+            $ref: '../api_common.yaml#/components/schemas/Error404Response'
           examples:
             response:
               value:

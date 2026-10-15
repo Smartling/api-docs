@@ -358,21 +358,9 @@ components:
           type: string
           description: Uid of the async operation.
 
-    SuccessResponse:
-      properties:
-        code:
-          description: >-
-            Indicates whether the response was successful or what error has occurred.
-          enum:
-            - SUCCESS
-          type: string
-      required:
-        - code
-      type: object
-
     AsyncOperationResponsePTO:
       allOf:
-        - $ref: "#/components/schemas/SuccessResponse"
+        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
         - type: object
           properties:
             data:
@@ -385,7 +373,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   description: Always empty.
@@ -403,113 +391,7 @@ components:
       required:
         - code
       type: object
-    Error400Response:
-      type: object
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occurred.
-              enum:
-                - VALIDATION_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '../api_common.yaml#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-    Error401Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occurred.
-              enum:
-                - AUTHENTICATION_ERROR
-                - AUTHORIZATION_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '../api_common.yaml#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    Error403Response:
-      type: object
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occurred.
-              enum:
-                - ACCESS_DENIED_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '../api_common.yaml#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-    Error404Response:
-      type: object
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occurred.
-              enum:
-                - NOT_FOUND_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '../api_common.yaml#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-    Error429Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occurred.
-              enum:
-                - MAX_OPERATIONS_LIMIT_EXCEEDED
-              type: string
-            errors:
-              items:
-                $ref: '../api_common.yaml#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    Error500Response:
+    GlossaryError500Response:
       properties:
         response:
           properties:
@@ -537,7 +419,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error400Response'
+            $ref: '../api_common.yaml#/components/schemas/Error400Response'
           examples:
             response:
               value:
@@ -552,7 +434,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error401Response'
+            $ref: '../api_common.yaml#/components/schemas/Error401Response'
           examples:
             response:
               value:
@@ -567,7 +449,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error403Response'
+            $ref: '../api_common.yaml#/components/schemas/Error403Response'
           examples:
             response:
               value:
@@ -582,7 +464,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error404Response'
+            $ref: '../api_common.yaml#/components/schemas/Error404Response'
           examples:
             response:
               value:
@@ -597,7 +479,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error429Response'
+            $ref: '../api_common.yaml#/components/schemas/Error429Response'
           examples:
             response:
               value:
@@ -612,4 +494,4 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error500Response'
+            $ref: '#/components/schemas/GlossaryError500Response'

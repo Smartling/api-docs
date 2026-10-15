@@ -33,25 +33,14 @@ components:
       description: Unique identifier of language detection action triggered on a file.
 
   schemas:
-    SuccessResponse:
-      properties:
-        code:
-          description: >-
-            Indicates whether the response was successful or what error has occurred.
-          enum:
-            - SUCCESS
-          type: string
-      required:
-        - code
-      type: object
-    EmptyResponse:
+    FileTranslationEmptyResponse:
       type: object
       required:
         - response
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   description: Always empty.
@@ -69,7 +58,7 @@ components:
       required:
         - code
       type: object
-    Error400Response:
+    FileTranslationError400Response:
       type: object
       properties:
         response:
@@ -82,7 +71,7 @@ components:
               type: string
             errors:
               items:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/FileTranslationError'
               type: array
           required:
             - code
@@ -90,7 +79,7 @@ components:
           type: object
       required:
         - response
-    Error:
+    FileTranslationError:
       type: object
       properties:
         key:
@@ -114,7 +103,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error400Response'
+            $ref: '#/components/schemas/FileTranslationError400Response'
           examples:
             response:
               value:
