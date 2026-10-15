@@ -9,7 +9,7 @@ OpenAPI 3.0 specification for the Smartling REST API, published at https://api-r
 ## Commands
 
 ```bash
-npm install          # install dependencies (Node 17+ required)
+npm install          # install dependencies (Node 20.19+ or 22.12+ required)
 npm start            # build, start local server + swagger-editor (live reload)
 npm test             # validate the OpenAPI spec (swagger-repo validate)
 npm run build        # bundle spec into web_deploy/ (swagger-repo, then redocly via scripts/bundle-refs.js)
