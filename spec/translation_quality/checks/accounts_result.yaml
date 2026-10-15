@@ -12,7 +12,8 @@ x-paths:
         - &ref_0
           name: accountUid
           in: path
-          type: string
+          schema:
+            type: string
           required: true
           description: >-
             The account’s unique identifier. This can be found in the Smartling
@@ -21,7 +22,8 @@ x-paths:
           name: profileUid
           in: path
           required: true
-          type: string
+          schema:
+            type: string
           description: Unique identifier of corresponding profile.
       responses:
         '200':
@@ -2115,7 +2117,8 @@ x-paths:
         - *ref_22
         - name: groupUid
           in: path
-          type: string
+          schema:
+            type: string
           required: true
           description: Unique identifier of corresponding group.
       requestBody:
@@ -2237,15 +2240,44 @@ x-paths:
         - name: projectId
           in: path
           required: true
-          type: string
           description: >-
             A unique project identifier. This can be found in the Smartling
             Dashboard under Account Settings > API.
+          schema:
+            type: string
+            pattern: ^[a-z0-9]{9}$
+          examples:
+            typical:
+              summary: Typical project ID
+              value: abcd12345
         - name: localeId
           in: path
           required: true
-          type: string
-          description: A valid Smartling Locale ID.
+          description: >
+            Locale identifier. Either a 2-letter language code (`en`) or a
+
+            language-region pair (`en-US`). The language part is always
+            lowercase;
+
+            the region part is always uppercase.
+          schema:
+            type: string
+            pattern: ^[a-z]{2}(-[A-Z]{2})?$
+            description: >
+              Locale identifier. Either a 2-letter language code (`en`) or a
+
+              language-region pair (`en-US`). The language part is always
+              lowercase;
+
+              the region part is always uppercase.
+            example: fr-FR
+          examples:
+            language_only:
+              summary: Language code only
+              value: en
+            language_region:
+              summary: Language and region
+              value: fr-FR
       responses:
         '200':
           description: OK

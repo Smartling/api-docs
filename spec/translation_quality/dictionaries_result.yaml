@@ -163,9 +163,7 @@ x-paths:
                             name: Tag order changed
                       - checkTypeCode: TARGET_LENGTH_LIMIT
                         name: Target length limit
-                        description: >-
-                          Check that the translation is within the length
-                          limit
+                        description: Check that the translation is within the length limit
                         checkSubTypes: []
                       - checkTypeCode: NUMBER_CONSISTENCY
                         name: Number consistency
@@ -580,8 +578,31 @@ x-paths:
           name: localeId
           in: path
           required: true
-          type: string
-          description: A valid Smartling Locale ID.
+          description: >
+            Locale identifier. Either a 2-letter language code (`en`) or a
+
+            language-region pair (`en-US`). The language part is always
+            lowercase;
+
+            the region part is always uppercase.
+          schema:
+            type: string
+            pattern: ^[a-z]{2}(-[A-Z]{2})?$
+            description: >
+              Locale identifier. Either a 2-letter language code (`en`) or a
+
+              language-region pair (`en-US`). The language part is always
+              lowercase;
+
+              the region part is always uppercase.
+            example: fr-FR
+          examples:
+            language_only:
+              summary: Language code only
+              value: en
+            language_region:
+              summary: Language and region
+              value: fr-FR
       responses:
         '200':
           description: OK
@@ -690,7 +711,8 @@ x-paths:
         - name: wordUid
           in: path
           required: true
-          type: string
+          schema:
+            type: string
           description: Word unique identifier.
       responses:
         '200':
