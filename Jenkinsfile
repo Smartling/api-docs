@@ -13,7 +13,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'npm ci'
+                sh 'npm ci --no-audit --no-fund --loglevel=error'
             }
         }
         stage('Validate') {
