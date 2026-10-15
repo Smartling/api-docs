@@ -683,7 +683,8 @@ components:
       description: HATEOAS link to a package resource.
       properties:
         href:
-          type: [string, "null"]
+          type: string
+          nullable: true
           format: uri
           description: |
             URL of the resource. `null` while the resource is still being prepared
@@ -692,10 +693,12 @@ components:
           type: string
           description: Relationship type (e.g. `content`, `translationMemory`).
         title:
-          type: [string, "null"]
+          type: string
+          nullable: true
           description: Human-readable label for this link. Currently always `null`.
         processUid:
-          type: [string, "null"]
+          type: string
+          nullable: true
           description: |
             UID of the background job preparing this resource. When `null`, the
             resource is ready to download. Only set on `translationMemory` links.
@@ -781,9 +784,10 @@ components:
           description: Timestamp of the last status update.
         translationJobUid:
           description: Associated translation job UID, if applicable.
-          oneOf:
+          type: string
+          nullable: true
+          allOf:
             - $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
-            - type: "null"
         processStatistics:
           $ref: '#/components/schemas/AsyncProgressStatistics'
 
@@ -868,6 +872,7 @@ components:
               type: string
               enum: [SUCCESS]
             data:
-              oneOf:
+              type: object
+              nullable: true
+              allOf:
                 - $ref: '#/components/schemas/AsyncProgressData'
-                - type: "null"
