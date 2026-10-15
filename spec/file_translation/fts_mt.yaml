@@ -22,6 +22,8 @@ x-paths:
                   example: "en-US"
                 targetLocaleIds:
                   type: array
+                  minItems: 1
+                  maxItems: 10
                   items:
                     type: string
                   description: List of target locales that the file needs to be translated into.
@@ -51,6 +53,8 @@ x-paths:
               schema:
                 $ref: '#/components/schemas/MtResponse'
           description: OK
+        '400':
+          $ref: './fts_common.yaml#/components/responses/Error400ResponseDefinition'
         '401':
           $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         '429':
@@ -203,6 +207,11 @@ x-paths:
       responses:
         200:
           description: OK
+          headers:
+            Content-Disposition:
+              description: Attachment file name of the downloaded file.
+              schema:
+                type: string
           content:
             '*/*':
               schema:
@@ -220,11 +229,11 @@ x-paths:
                     response:
                       code: VALIDATION_ERROR
                       errors:
-                        key: locale.not.requested
-                        message: >-
-                          Processing request did not contain locale de-DE
-                        details:
-                          field: "localeId"
+                        - key: locale.not.requested
+                          message: >-
+                            Processing request did not contain locale de-DE
+                          details:
+                            field: "localeId"
         '401':
           $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         '429':
@@ -272,8 +281,13 @@ x-paths:
       responses:
         200:
           description: OK
+          headers:
+            Content-Disposition:
+              description: Attachment file name of the downloaded ZIP archive.
+              schema:
+                type: string
           content:
-            '*/*':
+            application/zip:
               schema:
                 type: string
                 format: binary
@@ -289,11 +303,11 @@ x-paths:
                     response:
                       code: VALIDATION_ERROR
                       errors:
-                        key: mt.not.completed
-                        message: >-
-                          State of processing is QUEUED. Only COMPLETED,CANCELED allow final file to be downloaded
-                        details:
-                          field: "mtUid"
+                        - key: mt.not.completed
+                          message: >-
+                            State of processing is QUEUED. Only COMPLETED,CANCELED allow final file to be downloaded
+                          details:
+                            field: "mtUid"
         '401':
           $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         '429':
@@ -337,6 +351,9 @@ components:
             - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
+                  required:
+                    - state
+                    - localeProcessStatuses
                   properties:
                     state:
                       $ref: '#/components/schemas/MTState'
@@ -346,18 +363,20 @@ components:
                     error:
                       $ref: '../api_common.yaml#/components/schemas/Error'
                     localeProcessStatuses:
-                      type: object
-                      properties:
-                        localeId:
-                          type: string
-                          description: Locale, requested for translation
-                        state:
-                          $ref: '#/components/schemas/MTState'
-                        processedStringCount:
-                          type: integer
-                          description: Amount of strings translated for the locale
-                        error:
-                          $ref: '../api_common.yaml#/components/schemas/Error'
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          localeId:
+                            type: string
+                            description: Locale, requested for translation
+                          state:
+                            $ref: '#/components/schemas/MTState'
+                          processedStringCount:
+                            type: integer
+                            description: Amount of strings translated for the locale
+                          error:
+                            $ref: '../api_common.yaml#/components/schemas/Error'
                   type: object
 
               type: object    
