@@ -42,11 +42,11 @@ The local server URL is printed to console on startup. The swagger-editor URL is
 
 **Build output**: `npm run build` produces `web_deploy/` containing the bundled spec (`swagger.json`, `swagger.yaml`), the static web UI, and copies of all spec subdirectories.
 
-**Adding a new domain as a standalone spec file/folder**: after `swagger-repo bundle`, `scripts/bundle-refs.js` runs `redocly bundle --remove-unused-components` on `swagger.json` and `swagger.yaml` and inlines every path-item `$ref` (the pattern every domain subdirectory uses, standard `paths` or the custom `x-paths` extension alike), so the published spec is self-contained. Redocly resolves the refs against the copied `spec/` folders in the output directory, so every new domain subdirectory must be added to the hardcoded `spec/` copy list in **both**:
+**Adding a new domain as a standalone spec file/folder**: after `swagger-repo bundle`, `scripts/bundle-refs.js` runs `redocly bundle` on `swagger.json` and `swagger.yaml` and inlines every path-item `$ref` (the pattern every domain subdirectory uses, standard `paths` or the custom `x-paths` extension alike), so the published spec is self-contained. Redocly resolves the refs against the copied `spec/` folders in the output directory, so every new domain subdirectory must be added to the hardcoded `spec/` copy list in **both**:
 - `scripts/build.js` (used by `npm run build`, the main site)
 - `scripts/deploy-branch.js` (used by Jenkins for branch/PR previews, `npm run deploy-branch`)
 
-A missing copy-list entry now fails the build (`Can't resolve $ref`) instead of silently rendering a tag with zero operations. Sub-files must reference shared components through `../api_common.yaml#/components/...`. A root-relative `#/components/...` ref in a sub-file fails the bundle. Components that nothing references are dropped from the published spec. `npm run lint:spec` lints the bundled `web_deploy/swagger.json` with Redocly (config in `redocly.yaml`).
+A missing copy-list entry now fails the build (`Can't resolve $ref`) instead of silently rendering a tag with zero operations. Sub-files must reference shared components through `../api_common.yaml#/components/...`. A root-relative `#/components/...` ref in a sub-file fails the bundle. `npm run lint:spec` lints the bundled `web_deploy/swagger.json` with Redocly (config in `redocly.yaml`).
 
 ## CI/CD
 

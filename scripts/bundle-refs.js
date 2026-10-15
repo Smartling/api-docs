@@ -8,14 +8,12 @@ require('shelljs/global');
 // $refs, which resolve relative to the bundle file. Sub-files must reference
 // shared components through ../api_common.yaml. A root-relative
 // `#/components/...` ref fails the bundle.
-// --remove-unused-components drops components that nothing references, so
-// unused definitions are not published.
 module.exports = function bundleRefs(dir) {
   ['swagger.json', 'swagger.yaml'].forEach(function (name) {
     var file = path.join(dir, name);
     if (!fs.existsSync(file)) {
       return;
     }
-    exec('npx redocly bundle ' + file + ' --remove-unused-components -o ' + file);
+    exec('npx redocly bundle ' + file + ' -o ' + file);
   });
 };
