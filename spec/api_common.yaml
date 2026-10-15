@@ -323,6 +323,71 @@ components:
       required:
         - response
       type: object
+    FileType:
+      type: string
+      description: A unique identifier for the file type.
+      enum:
+        - android
+        - csv
+        - doc
+        - docx
+        - gettext
+        - html
+        - idml
+        - ios
+        - java_properties
+        - json
+        - madcap
+        - markdown
+        - plain_text
+        - ppt
+        - pptx
+        - pres
+        - qt
+        - resx
+        - srt
+        - stringsdict
+        - xls
+        - xlsx
+        - xlsxTemplate
+        - xliff
+        - xml
+        - yaml
+    FilesAPIUploadAcceptedResponse:
+      properties:
+        code:
+          enum:
+            - ACCEPTED
+          type: string
+        data:
+          properties:
+            message:
+              type: string
+          required:
+            - message
+          type: object
+      required:
+        - code
+        - data
+      type: object
+    AsyncProcessResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: Code of the completed operation.
+              enum:
+                - SUCCESS
+              type: string
+            data:
+              properties:
+                processUid:
+                  description: Identifier of the started asynchronous process.
+                  format: uuid
+                  type: string
+              type: object
+          type: object
+      type: object
   responses:
     Error400ResponseDefinition:
       description: Provided request parameters are invalid.
@@ -336,12 +401,12 @@ components:
                 response:
                   code: VALIDATION_ERROR
                   errors:
-                    key: unknown.field
-                    message: >-
-                      The field unknown.parameter was not expected. Please
-                      consult the documentation to verify the fields you are
-                      submitting.
-                    details: unknown.parameter
+                    - key: unknown.field
+                      message: >-
+                        The field unknown.parameter was not expected. Please
+                        consult the documentation to verify the fields you are
+                        submitting.
+                      details: unknown.parameter
 
     Error401ResponseDefinition:
       description: Provided credentials are not valid.
@@ -355,9 +420,9 @@ components:
                 response:
                   code: AUTHENTICATION_ERROR
                   errors:
-                    details: {}
-                    key: invalid_token
-                    message: Invalid token
+                    - details: {}
+                      key: invalid_token
+                      message: Invalid token
 
     Error429ResponseDefinition:
       description: Too many simultaneous API requests.
@@ -371,10 +436,10 @@ components:
                 response:
                   code: MAX_OPERATIONS_LIMIT_EXCEEDED
                   errors:
-                    key: too.many.requests
-                    message: >-
-                      The limit of 10 concurrent Smartling file API
-                      operations for this project has been exceeded.
+                    - key: too.many.requests
+                      message: >-
+                        The limit of 10 concurrent Smartling file API
+                        operations for this project has been exceeded.
 
     Error500ResponseDefinition:
       description: Unexpected error
