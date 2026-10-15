@@ -37,7 +37,7 @@ x-paths:
                       type: string
                       description: Rule name
                       example: ruleName
-                    severityLevelCode: &ref_10
+                    severityLevelCode: &ref_14
                       enum:
                         - DISABLED
                         - LOW
@@ -137,29 +137,38 @@ x-paths:
                                     type: array
                                     items:
                                       allOf:
-                                        - &ref_7
-                                          type: object
+                                        - type: object
                                           properties:
-                                            groupUid:
+                                            groupUid: &ref_8
                                               type: string
                                               description: >-
                                                 Smartling rule group identifier of the
                                                 translation
                                               example: ce6d6b5dbc12
-                                            ruleUid:
+                                            ruleUid: &ref_9
                                               type: string
                                               description: >-
                                                 Smartling rule identifier of the
                                                 translation
                                               example: ce6d6b5dbcs2
-                                            targetLocaleIds:
+                                            targetLocaleIds: &ref_10
                                               description: The list of target locales.
                                               example:
                                                 - ru-RU
-                                              items:
+                                              items: &ref_7
                                                 type: string
+                                                pattern: ^[a-z]{2}(-[A-Z]{2})?$
+                                                description: >
+                                                  Locale identifier. Either a 2-letter
+                                                  language code (`en`) or a
+
+                                                  language-region pair (`en-US`). The
+                                                  language part is always lowercase;
+
+                                                  the region part is always uppercase.
+                                                example: fr-FR
                                               type: array
-                                            severityLevelCode:
+                                            severityLevelCode: &ref_11
                                               enum:
                                                 - DISABLED
                                                 - LOW
@@ -274,8 +283,7 @@ x-paths:
                   description: List of target locale IDs.
                   example:
                     - ru-RU
-                  items:
-                    type: string
+                  items: *ref_7
                   type: array
               required:
                 - targetLocaleIds
@@ -284,7 +292,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: &ref_8
+              schema: &ref_12
                 type: object
                 properties:
                   response:
@@ -292,7 +300,13 @@ x-paths:
                       - *ref_6
                       - type: object
                         properties:
-                          data: *ref_7
+                          data:
+                            type: object
+                            properties:
+                              groupUid: *ref_8
+                              ruleUid: *ref_9
+                              targetLocaleIds: *ref_10
+                              severityLevelCode: *ref_11
         x-code-samples:
           - lang: curl
             source: >
@@ -333,7 +347,12 @@ x-paths:
                                 type: array
                                 items:
                                   allOf:
-                                    - *ref_7
+                                    - type: object
+                                      properties:
+                                        groupUid: *ref_8
+                                        ruleUid: *ref_9
+                                        targetLocaleIds: *ref_10
+                                        severityLevelCode: *ref_11
         x-code-samples:
           - lang: curl
             source: >
@@ -351,7 +370,7 @@ x-paths:
         - *ref_1
         - *ref_2
         - *ref_4
-        - &ref_9
+        - &ref_13
           name: groupUid
           in: path
           schema:
@@ -363,7 +382,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_12
         x-code-samples:
           - lang: curl
             source: >
@@ -380,7 +399,7 @@ x-paths:
         - *ref_1
         - *ref_2
         - *ref_4
-        - *ref_9
+        - *ref_13
       responses:
         '200':
           description: OK
@@ -415,11 +434,11 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: &ref_11
+            schema: &ref_15
               allOf:
                 - type: object
                   properties:
-                    severityLevelCode: *ref_10
+                    severityLevelCode: *ref_14
                   required:
                     - severityLevelCode
       responses:
@@ -445,7 +464,7 @@ x-paths:
         - *ref_1
         - *ref_2
         - *ref_4
-        - *ref_9
+        - *ref_13
       requestBody:
         description: ''
         required: true
@@ -457,17 +476,7 @@ x-paths:
                   properties:
                     targetLocaleId:
                       allOf:
-                        - type: string
-                          pattern: ^[a-z]{2}(-[A-Z]{2})?$
-                          description: >
-                            Locale identifier. Either a 2-letter language code
-                            (`en`) or a
-
-                            language-region pair (`en-US`). The language part is
-                            always lowercase;
-
-                            the region part is always uppercase.
-                          example: fr-FR
+                        - *ref_7
                       description: Smartling ID for the language you want to translate to.
                       example: it-IT
                   required:
@@ -477,7 +486,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_12
       x-code-samples:
         - lang: curl
           source: >
@@ -495,7 +504,7 @@ x-paths:
         - *ref_1
         - *ref_2
         - *ref_4
-        - *ref_9
+        - *ref_13
         - name: targetLocaleId
           in: path
           required: true
@@ -531,19 +540,19 @@ x-paths:
         - *ref_1
         - *ref_2
         - *ref_4
-        - *ref_9
+        - *ref_13
       requestBody:
         description: ''
         required: true
         content:
           application/json:
-            schema: *ref_11
+            schema: *ref_15
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_12
       x-code-samples:
         - lang: curl
           source: >
