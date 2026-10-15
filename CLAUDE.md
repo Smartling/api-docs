@@ -22,7 +22,7 @@ The local server URL is printed to console on startup. The swagger-editor URL is
 ## Spec structure
 
 - `spec/openapi.yaml` - root file: server, global tags (with long descriptions), and `$ref` paths to all sub-specs
-- `spec/api_common.yaml` - shared reusable components: parameters (`accountUid`, `projectId`, `localeId`), request bodies, and common schemas (`SuccessResponse`, `EmptyResponse`, etc.)
+- `spec/api_common.yaml` - shared reusable components: parameters (`accountUid`, `projectId`, `projectUid`, `localeId`, `offset`, `limit`), request bodies, reusable error responses (`Error400ResponseDefinition`, `Error401ResponseDefinition`, `Error429ResponseDefinition`, `Error500ResponseDefinition`), and common schemas (ID and UID types such as `LocaleId`, `ProjectUid`, `UserUid`, `TranslationJobUid`; `Hashcode`, `FileUri`, `FileType`, `DateTime`; `SuccessResponse`, `EmptyResponse` and the `Error*Response` envelopes)
 - Each API domain lives in its own subdirectory:
   - `spec/translation_quality/` - TQC endpoints split across many files; uses `x-paths` extension and requires `npm run process-yaml` after edits
   - `spec/issues/` - Issues, issue comments, watchers, dictionaries, sub-types
@@ -47,6 +47,15 @@ The local server URL is printed to console on startup. The swagger-editor URL is
 - `scripts/deploy-branch.js` (used by Jenkins for branch/PR previews, `npm run deploy-branch`)
 
 A missing copy-list entry now fails the build (`Can't resolve $ref`) instead of silently rendering a tag with zero operations. Sub-files must reference shared components through `../api_common.yaml#/components/...`. A root-relative `#/components/...` ref in a sub-file fails the bundle. `npm run lint:spec` lints the bundled `web_deploy/swagger.json` with Redocly (config in `redocly.yaml`).
+
+## Schema reuse and strict typing
+
+- Reuse the `api_common.yaml` schemas and parameters for IDs, UIDs, locales, hashcodes, file URIs, file types, dates and error envelopes instead of declaring inline `type: string` copies.
+- Match by property meaning, not only by shape: `sourceLocaleId` and `targetLocaleId` use `LocaleId`, `projectId` uses `ProjectUid`, `*UserUid` uses `UserUid`, `*WorkflowStepUid` uses `WorkflowStepUid`, date-time strings use `DateTime`.
+- Give array `items` a `$ref` or a fully typed schema. Never leave `items` empty or use bare `type: string` when a shared schema fits (for example `localeIds` items are `LocaleId`).
+- Add `minItems`, `maxItems` and `uniqueItems` only when the API enforces the limit and the description or code says so. Do not invent limits.
+- Check `api_common.yaml` before declaring a new inline schema. Keep an inline definition only when the shared constraint conflicts with real values, and nullable fields stay inline because `allOf` with a `$ref` cannot express `null` in OAS 3.0.
+- Sub-files reference shared components as `../api_common.yaml#/components/...` (adjust the relative path to the file depth). `spec/openapi.yaml` uses `./spec/api_common.yaml#/...` for schemas, but keeps shared parameters and responses inline because `npm test` cannot resolve an external `$ref` in those positions.
 
 ## CI/CD
 
