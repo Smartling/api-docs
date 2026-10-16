@@ -95,8 +95,9 @@ components:
         actionType:
           $ref: '#/components/schemas/WorkflowActionType'
         nextWorkflowStepUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
           description: UID of the step this action transitions to.
-          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
 
     WorkflowStepSummary:
       type: object
@@ -371,8 +372,8 @@ components:
                 response:
                   code: ACCESS_DENIED_ERROR
                   errors:
-                    key: no.access
-                    message: Access denied.
+                    - key: no.access
+                      message: Access denied.
 
     Error404ResponseDefinition:
       description: The requested resource was not found or is not accessible.
@@ -386,5 +387,5 @@ components:
                 response:
                   code: NOT_FOUND_ERROR
                   errors:
-                    key: workflow.step.not.found
-                    message: Workflow step not found.
+                    - key: workflow.step.not.found
+                      message: Workflow step not found.
