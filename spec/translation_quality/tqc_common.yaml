@@ -21,7 +21,6 @@ components:
       in: path
       required: true
       schema:
-        type: string
         $ref: '#/components/schemas/enum/checkTypeCodeEnum'
       description: '[check type code](#operation/getTranslationQualityCheckTypes)'
 
@@ -30,7 +29,6 @@ components:
       in: path
       required: true
       schema:
-        type: string
         $ref: '#/components/schemas/enum/checkTypeCodeWithSettingsEnum'
       description: '[check type code](#operation/getTranslationQualityCheckTypes)'
 
@@ -39,7 +37,6 @@ components:
       in: path
       required: true
       schema:
-        type: string
         $ref: '#/components/schemas/enum/checkTypeCodeOnlyWithSubtypesEnum'
       description: '[check type code](#operation/getTranslationQualityCheckTypes)'
 
@@ -48,7 +45,6 @@ components:
       in: path
       required: true
       schema:
-        type: string
         $ref: '#/components/schemas/enum/checkSubtypeEnum'
       description: '[check subtype code](#operation/getTranslationQualityCheckSubTypes)'
 
@@ -125,8 +121,8 @@ components:
       type: object
       properties:
         severityLevelCode:
-          type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnumCopyForRequest'
+          allOf:
+            - $ref: '#/components/schemas/enum/severityLevelCodeEnumCopyForRequest'
           description: '[severity level code](#operation/getTranslationQualityCheckSeverityLevels)'
           example: "MEDIUM"
       required:
@@ -167,8 +163,8 @@ components:
       type: object
       properties:
         checkTypeCode:
-          type: string
-          $ref: '#/components/schemas/enum/checkTypeCodeEnum'
+          allOf:
+            - $ref: '#/components/schemas/enum/checkTypeCodeEnum'
           description: '[check type code](#operation/getTranslationQualityCheckTypes)'
           example: "LEADING_TRAILING_SPACES"
 
@@ -200,8 +196,8 @@ components:
             $ref: '../api_common.yaml#/components/schemas/LocaleId'
           type: array
         severityLevelCode:
-          type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          allOf:
+            - $ref: '#/components/schemas/enum/severityLevelCodeEnum'
           description: severity level code
           example: "MEDIUM"
 
@@ -213,18 +209,18 @@ components:
           description: Rule name
           example: "ruleName"
         severityLevelCode:
-          type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnumCopyForRequest'
+          allOf:
+            - $ref: '#/components/schemas/enum/severityLevelCodeEnumCopyForRequest'
           description: '[Severity level code](#operation/getTranslationQualityCheckSeverityLevels)'
           example: "MEDIUM"
         ruleTypeCode:
-          type: string
-          $ref: '#/components/schemas/enum/ruleTypeCodeEnumCopyForRequest'
+          allOf:
+            - $ref: '#/components/schemas/enum/ruleTypeCodeEnumCopyForRequest'
           description: '[Rule type code](#operation/getRegexQualityCheckRuleTypes)'
           example: "FORBIDDEN"
         flavorCode:
-          type: string
-          $ref: '#/components/schemas/enum/flavorCodeEnum'
+          allOf:
+            - $ref: '#/components/schemas/enum/flavorCodeEnum'
           description: Flavor code
           example: "JAVA"
         originalPattern:
@@ -275,15 +271,14 @@ components:
             groups:
               type: array
               items:
-                allOf:
-                  - $ref: '#/components/schemas/regexRuleGroupModel'
+                $ref: '#/components/schemas/regexRuleGroupModel'
 
     regexCheckRuleTypeCodeResponse:
       type: object
       properties:
         ruleTypeCode:
-          type: string
-          $ref: '#/components/schemas/enum/ruleTypeCodeEnum'
+          allOf:
+            - $ref: '#/components/schemas/enum/ruleTypeCodeEnum'
           description: rule type code
           example: "FORBIDDEN"
 
@@ -291,8 +286,8 @@ components:
       type: object
       properties:
         flavorCode:
-          type: string
-          $ref: '#/components/schemas/enum/flavorCodeEnum'
+          allOf:
+            - $ref: '#/components/schemas/enum/flavorCodeEnum'
           description: flavor code
           example: "JAVA"
 
@@ -308,8 +303,8 @@ components:
       type: object
       properties:
         checkTypeCode:
-          type: string
-          $ref: '#/components/schemas/enum/checkTypeCodeEnum'
+          allOf:
+            - $ref: '#/components/schemas/enum/checkTypeCodeEnum'
           description: check type code
 
     profileResponse:
@@ -340,8 +335,8 @@ components:
       type: object
       properties:
         checkSubTypeCode:
-          type: string
-          $ref: '#/components/schemas/enum/checkSubtypeEnum'
+          allOf:
+            - $ref: '#/components/schemas/enum/checkSubtypeEnum'
           description: check subtype code
           example: "EMOJI_ADDED"
         name:
@@ -365,8 +360,8 @@ components:
       type: object
       properties:
         severityLevelCode:
-          type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          allOf:
+            - $ref: '#/components/schemas/enum/severityLevelCodeEnum'
           description: severity level code
           example: "MEDIUM"
 
@@ -374,8 +369,8 @@ components:
       type: object
       properties:
         severityLevelCode:
-          type: string
-          $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+          allOf:
+            - $ref: '#/components/schemas/enum/severityLevelCodeEnum'
           description: severity level code
           example: "MEDIUM"
 
@@ -431,8 +426,8 @@ components:
                   - $ref: '../api_common.yaml#/components/schemas/LocaleId'
                 description: Smartling locale identifier of the translation
               severityLevelCode:
-                type: string
-                $ref: '#/components/schemas/enum/severityLevelCodeEnum'
+                allOf:
+                  - $ref: '#/components/schemas/enum/severityLevelCodeEnum'
                 description: severity level code
                 example: "MEDIUM"
 
@@ -662,7 +657,7 @@ components:
       $ref: '#/components/schemas/ProfilesAccountCheckTypeApplySettingsDTOResponseOneOfCommon'
 
     AccountCheckTypeApplySettingsDTOResponseOneOfCommon:
-      oneOf:
+      anyOf:
         - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
@@ -675,7 +670,7 @@ components:
         - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
 
     ProfilesAccountCheckTypeApplySettingsDTOResponseOneOfCommon:
-      oneOf:
+      anyOf:
         - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
         - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeApplySettingsDTOResponse'
@@ -727,6 +722,7 @@ components:
 
     enum:
       checkTypeCodeEnum:
+        type: string
         enum:
           - LEADING_TRAILING_SPACES
           - ORIGINAL_EQUALS_TARGET
@@ -754,6 +750,7 @@ components:
           - OPEN_ISSUES
 
       checkSubtypeEnum:
+        type: string
         enum:
           - EMOJI_ADDED
           - EMOJI_DELETED
@@ -781,6 +778,7 @@ components:
           - SAME_TRANSLATION_DIFFERENT_SOURCES
 
       severityLevelCodeEnum:
+        type: string
         enum:
           - DISABLED
           - LOW
@@ -788,6 +786,7 @@ components:
           - HIGH
 
       severityLevelCodeEnumCopyForRequest:
+        type: string
         enum:
           - DISABLED
           - LOW
@@ -795,6 +794,7 @@ components:
           - HIGH
 
       checkTypeCodeWithSettingsEnum:
+        type: string
         enum:
           - ORIGINAL_EQUALS_TARGET
           - SPELLCHECK
@@ -808,6 +808,7 @@ components:
           - OPEN_ISSUES
 
       checkTypeCodeOnlyWithSubtypesEnum:
+        type: string
         enum:
           - TAG_CONSISTENCY
           - NUMBER_CONSISTENCY
@@ -818,18 +819,21 @@ components:
           - TARGET_SOURCE_CONSISTENCY
 
       ruleTypeCodeEnum:
+        type: string
         enum:
           - FORBIDDEN
           - MISSING
           - COUNT_MISMATCH
 
       ruleTypeCodeEnumCopyForRequest:
+        type: string
         enum:
           - FORBIDDEN
           - MISSING
           - COUNT_MISMATCH
 
       flavorCodeEnum:
+        type: string
         enum:
           - JAVA
           - DOT_NET

@@ -17,11 +17,16 @@ x-paths:
           description: >-
             The account’s unique identifier. This can be found in the Smartling
             Dashboard under Account Settings > API.
+          examples:
+            typical:
+              summary: Typical account UID
+              value: 4f23eabe9
         - &ref_3
           name: checkTypeCode
           in: path
           required: true
           schema: &ref_0
+            type: string
             enum:
               - LEADING_TRAILING_SPACES
               - ORIGINAL_EQUALS_TARGET
@@ -83,16 +88,24 @@ x-paths:
                               - &ref_6
                                 type: object
                                 properties:
-                                  severityLevelCode: &ref_1
-                                    enum:
-                                      - DISABLED
-                                      - LOW
-                                      - MEDIUM
-                                      - HIGH
+                                  severityLevelCode:
+                                    allOf:
+                                      - &ref_1
+                                        type: string
+                                        enum:
+                                          - DISABLED
+                                          - LOW
+                                          - MEDIUM
+                                          - HIGH
+                                    description: severity level code
+                                    example: MEDIUM
                               - &ref_7
                                 type: object
                                 properties:
-                                  checkTypeCode: *ref_0
+                                  checkTypeCode:
+                                    allOf:
+                                      - *ref_0
+                                    description: check type code
                               - type: object
                                 properties:
                                   subTypes:
@@ -103,31 +116,35 @@ x-paths:
                                           type: object
                                           properties:
                                             checkSubTypeCode:
-                                              enum:
-                                                - EMOJI_ADDED
-                                                - EMOJI_DELETED
-                                                - EMOJI_PRESENT
-                                                - INSERTABLE_ADDED
-                                                - INSERTABLE_DELETED
-                                                - PLACEABLE_ADDED
-                                                - PLACEABLE_DELETED
-                                                - SPACES_AROUND_PLACEABLE
-                                                - PLACEABLE_FORMAT
-                                                - NUMBER_ADDED
-                                                - NUMBER_DELETED
-                                                - NUMBER_INCORRECT_CONVERSION
-                                                - TARGET_IS_EMPTY
-                                                - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
-                                                - TARGET_IS_MUCH_LONGER_THAN_SOURCE
-                                                - TAG_ADDED
-                                                - TAG_DELETED
-                                                - SPACES_AROUND_TAGS
-                                                - TAG_ORDER_IS_CHANGED
-                                                - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
-                                                - INVALID_TAG_NESTING
-                                                - TAG_IS_CHANGED
-                                                - SAME_SOURCE_DIFFERENT_TRANSLATIONS
-                                                - SAME_TRANSLATION_DIFFERENT_SOURCES
+                                              allOf:
+                                                - type: string
+                                                  enum:
+                                                    - EMOJI_ADDED
+                                                    - EMOJI_DELETED
+                                                    - EMOJI_PRESENT
+                                                    - INSERTABLE_ADDED
+                                                    - INSERTABLE_DELETED
+                                                    - PLACEABLE_ADDED
+                                                    - PLACEABLE_DELETED
+                                                    - SPACES_AROUND_PLACEABLE
+                                                    - PLACEABLE_FORMAT
+                                                    - NUMBER_ADDED
+                                                    - NUMBER_DELETED
+                                                    - NUMBER_INCORRECT_CONVERSION
+                                                    - TARGET_IS_EMPTY
+                                                    - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                                                    - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                                                    - TAG_ADDED
+                                                    - TAG_DELETED
+                                                    - SPACES_AROUND_TAGS
+                                                    - TAG_ORDER_IS_CHANGED
+                                                    - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+                                                    - INVALID_TAG_NESTING
+                                                    - TAG_IS_CHANGED
+                                                    - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                                    - SAME_TRANSLATION_DIFFERENT_SOURCES
+                                              description: check subtype code
+                                              example: EMOJI_ADDED
                                             name:
                                               type: string
                                               description: check subtype name
@@ -135,41 +152,43 @@ x-paths:
                                         - &ref_9
                                           type: object
                                           properties:
-                                            severityLevelCode: *ref_1
+                                            severityLevelCode:
+                                              allOf:
+                                                - *ref_1
+                                              description: severity level code
+                                              example: MEDIUM
                               - type: object
                                 properties:
                                   locales:
                                     type: array
-                                    items:
-                                      allOf:
-                                        - &ref_10
-                                          type: object
-                                          properties:
-                                            targetLocaleId:
-                                              allOf:
-                                                - &ref_12
-                                                  type: string
-                                                  pattern: ^[a-z]{2}(-[A-Z]{2})?$
-                                                  description: >
-                                                    Locale identifier. Either a 2-letter
-                                                    language code (`en`) or a
+                                    items: &ref_10
+                                      type: object
+                                      properties:
+                                        targetLocaleId:
+                                          allOf:
+                                            - &ref_12
+                                              type: string
+                                              pattern: ^[a-z]{2}(-[A-Z]{2})?$
+                                              description: >
+                                                Locale identifier. Either a 2-letter
+                                                language code (`en`) or a
 
-                                                    language-region pair (`en-US`). The
-                                                    language part is always lowercase;
+                                                language-region pair (`en-US`). The
+                                                language part is always lowercase;
 
-                                                    the region part is always uppercase.
-                                                  example: fr-FR
-                                              description: >-
-                                                Smartling ID for the language you want
-                                                to translate to.
-                                              example: it-IT
-                                          required:
-                                            - targetLocaleId
+                                                the region part is always uppercase.
+                                              example: fr-FR
+                                          description: >-
+                                            Smartling ID for the language you want
+                                            to translate to.
+                                          example: it-IT
+                                      required:
+                                        - targetLocaleId
                               - type: object
                                 properties:
                                   ignoreSign:
                                     type: string
-                                    example: false
+                                    example: 'false'
       x-code-samples:
         - lang: curl
           source: >
@@ -225,14 +244,12 @@ x-paths:
                                       properties:
                                         locales:
                                           type: array
-                                          items:
-                                            allOf:
-                                              - *ref_10
+                                          items: *ref_10
                                     - type: object
                                       properties:
                                         ignoreSign:
                                           type: string
-                                          example: false
+                                          example: 'false'
       x-code-samples:
         - lang: curl
           source: >
@@ -304,14 +321,12 @@ x-paths:
                                       properties:
                                         locales:
                                           type: array
-                                          items:
-                                            allOf:
-                                              - *ref_10
+                                          items: *ref_10
                                     - type: object
                                       properties:
                                         ignoreSign:
                                           type: string
-                                          example: false
+                                          example: 'false'
       x-code-samples:
         - lang: curl
           source: >
@@ -372,14 +387,12 @@ x-paths:
                                 properties:
                                   locales:
                                     type: array
-                                    items:
-                                      allOf:
-                                        - *ref_10
+                                    items: *ref_10
                               - type: object
                                 properties:
                                   ignoreSign:
                                     type: string
-                                    example: false
+                                    example: 'false'
       x-code-samples:
         - lang: curl
           source: >
@@ -434,14 +447,12 @@ x-paths:
                                 properties:
                                   locales:
                                     type: array
-                                    items:
-                                      allOf:
-                                        - *ref_10
+                                    items: *ref_10
                               - type: object
                                 properties:
                                   ignoreSign:
                                     type: string
-                                    example: false
+                                    example: 'false'
       x-code-samples:
         - lang: curl
           source: >
@@ -472,9 +483,7 @@ x-paths:
                       - *ref_4
                       - type: object
                         properties:
-                          data:
-                            allOf:
-                              - *ref_5
+                          data: *ref_5
       x-code-samples:
         - lang: curl
           source: >
@@ -524,14 +533,12 @@ x-paths:
                                 properties:
                                   locales:
                                     type: array
-                                    items:
-                                      allOf:
-                                        - *ref_10
+                                    items: *ref_10
                               - type: object
                                 properties:
                                   ignoreSign:
                                     type: string
-                                    example: false
+                                    example: 'false'
       x-code-samples:
         - lang: curl
           source: >
@@ -558,9 +565,7 @@ x-paths:
               examples:
                 response:
                   value:
-                    response:
-                      code: SUCCESS
-                      data: null
+                    code: SUCCESS
       x-code-samples:
         - lang: curl
           source: >
@@ -584,15 +589,13 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: &ref_15
-              allOf:
-                - *ref_10
+            schema: *ref_10
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: &ref_16
+              schema: &ref_15
                 type: object
                 properties:
                   response:
@@ -600,9 +603,7 @@ x-paths:
                       - *ref_4
                       - type: object
                         properties:
-                          data:
-                            allOf:
-                              - *ref_10
+                          data: *ref_10
       x-code-samples:
         - lang: curl
           source: >
@@ -626,13 +627,13 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: *ref_15
+            schema: *ref_10
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_16
+              schema: *ref_15
       x-code-samples:
         - lang: curl
           source: >
@@ -651,7 +652,7 @@ x-paths:
         - *ref_2
         - *ref_3
         - *ref_14
-        - &ref_17
+        - &ref_16
           name: targetLocaleId
           in: path
           required: true
@@ -671,9 +672,7 @@ x-paths:
                       - *ref_4
                       - type: object
                         properties:
-                          data:
-                            allOf:
-                              - *ref_10
+                          data: *ref_10
       x-code-samples:
         - lang: curl
           source: >
@@ -692,7 +691,7 @@ x-paths:
         - *ref_11
         - *ref_3
         - *ref_14
-        - *ref_17
+        - *ref_16
       responses:
         '200':
           description: OK
@@ -702,9 +701,7 @@ x-paths:
               examples:
                 response:
                   value:
-                    response:
-                      code: SUCCESS
-                      data: null
+                    code: SUCCESS
       x-code-samples:
         - lang: curl
           source: >

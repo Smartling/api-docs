@@ -88,30 +88,37 @@ components:
           description: For all translations, if they are missing, appropriate fallback locales will be used.
           example: false
         labels:
+          allOf:
+            - $ref: '#/components/schemas/FilterByLabelsPTO'
           description: Labels filter.
-          $ref: '#/components/schemas/FilterByLabelsPTO'
         dntTermSet:
           type: boolean
           description: Return entries where dnt term is set.
           example: false
         created:
+          allOf:
+            - $ref: '#/components/schemas/AuditionDateCommandPTO'
           description: Created date filter.
-          $ref: '#/components/schemas/AuditionDateCommandPTO'
         lastModified:
+          allOf:
+            - $ref: '#/components/schemas/AuditionDateCommandPTO'
           description: Modified date filter.
-          $ref: '#/components/schemas/AuditionDateCommandPTO'
         createdBy:
+          allOf:
+            - $ref: '#/components/schemas/AuditorCommandPTO'
           description: Created by user filter.
-          $ref: '#/components/schemas/AuditorCommandPTO'
         lastModifiedBy:
+          allOf:
+            - $ref: '#/components/schemas/AuditorCommandPTO'
           description: modified by user filter
-          $ref: '#/components/schemas/AuditorCommandPTO'
         paging:
+          allOf:
+            - $ref: '#/components/schemas/PaginationCommandPTO'
           description: Paging command.
-          $ref: '#/components/schemas/PaginationCommandPTO'
         sorting:
+          allOf:
+            - $ref: '#/components/schemas/GlossaryEntriesSortCommandPTO'
           description: Sorting command.
-          $ref: '#/components/schemas/GlossaryEntriesSortCommandPTO'
       description: Glossary entries filter command.
     FilterByLabelsPTO:
       type: object
@@ -410,9 +417,9 @@ components:
                 response:
                   code: VALIDATION_ERROR
                   errors:
-                    key: error.key
-                    message: >-
-                      message that describes the error
+                    - key: error.key
+                      message: >-
+                        message that describes the error
     GlossaryError401ResponseDefinition:
       description: Provided credentials are not valid.
       content:
@@ -425,9 +432,9 @@ components:
                 response:
                   code: AUTHENTICATION_ERROR
                   errors:
-                    details: { }
-                    key: invalid_token
-                    message: Invalid token
+                    - details: { }
+                      key: invalid_token
+                      message: Invalid token
     GlossaryError403ResponseDefinition:
       description: Access denied.
       content:
@@ -440,9 +447,9 @@ components:
                 response:
                   code: ACCESS_DENIED_ERROR
                   errors:
-                    key: no.access
-                    message: >-
-                      access denied message
+                    - key: no.access
+                      message: >-
+                        access denied message
     GlossaryError404ResponseDefinition:
       description: Resource not found.
       content:
@@ -455,9 +462,9 @@ components:
                 response:
                   code: NOT_FOUND_ERROR
                   errors:
-                    key: not.found
-                    message: >-
-                      message describing not found resource
+                    - key: not.found
+                      message: >-
+                        message describing not found resource
     GlossaryError429ResponseDefinition:
       description: Too many simultaneous API requests.
       content:
@@ -470,9 +477,9 @@ components:
                 response:
                   code: MAX_OPERATIONS_LIMIT_EXCEEDED
                   errors:
-                    key: too.many.requests
-                    message: >-
-                      limitation message
+                    - key: too.many.requests
+                      message: >-
+                        limitation message
     GlossaryError500ResponseDefinition:
       description: Unexpected error.
       content:

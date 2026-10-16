@@ -53,7 +53,7 @@ x-paths:
                 summary: Create package scoped to a job with TMX
                 value:
                   workflowStepUid: 4f2e9d7c8ab1
-                  translationJobUid: 3e7b2f9a1c
+                  translationJobUid: 3e7b2f9a1c4d
                   generateTmx: true
                   hashcodes:
                     - 763d74386a2acd3f6cc343ea50b21db6
@@ -122,8 +122,8 @@ x-paths:
                     response:
                       code: RESOURCE_LOCKED
                       errors:
-                        - key: null
-                          message: Operation already in progress; please try again later.
+                        - key: resource.locked
+                          message: The file is currently being processed and will be available in a few minutes.
                           details: null
         '429':
           description: The caller has exceeded the limit of 6 requests per 60 seconds.
@@ -137,8 +137,8 @@ x-paths:
                     response:
                       code: MAX_OPERATIONS_LIMIT_EXCEEDED
                       errors:
-                        - key: null
-                          message: The limit of 6 requests per 60 seconds has been reached for this user. Please try again shortly.
+                        - key: too.many.requests
+                          message: The limit of 50 concurrent Smartling file API operations for a single file has been exceeded.
                           details: null
         '500':
           $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
@@ -182,7 +182,7 @@ x-paths:
                         processState: IN_PROGRESS
                         createdDate: "2026-01-23T10:30:00Z"
                         modifiedDate: "2026-01-23T10:30:05Z"
-                        translationJobUid: null
+                        translationJobUid: 3e7b2f9a1c4d
                         processStatistics:
                           requested: 100
                           processed: 42
@@ -197,7 +197,7 @@ x-paths:
                         processState: COMPLETED
                         createdDate: "2026-01-23T10:30:00Z"
                         modifiedDate: "2026-01-23T10:32:15Z"
-                        translationJobUid: 3e7b2f9a1c
+                        translationJobUid: 3e7b2f9a1c4d
                         processStatistics:
                           requested: 100
                           processed: 95
@@ -580,8 +580,8 @@ x-paths:
                     response:
                       code: MAX_OPERATIONS_LIMIT_EXCEEDED
                       errors:
-                        - key: null
-                          message: The limit of 6 requests per 60 seconds has been reached for this user. Please try again shortly.
+                        - key: too.many.requests
+                          message: The limit of 50 concurrent Smartling file API operations for a single file has been exceeded.
                           details: null
         '500':
           $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
@@ -622,7 +622,7 @@ x-paths:
                         processState: COMPLETED
                         createdDate: "2026-01-23T14:30:00Z"
                         modifiedDate: "2026-01-23T14:32:45Z"
-                        translationJobUid: null
+                        translationJobUid: 3e7b2f9a1c4d
                         processStatistics:
                           requested: 247
                           processed: 245
@@ -660,11 +660,13 @@ components:
         - workflowStepUid
       properties:
         workflowStepUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
           description: UID of the workflow step to snapshot.
-          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
         translationJobUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
           description: Limit package to strings within this translation job.
-          $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
         hashcodes:
           type: array
           description: Limit package to these specific string hashcodes. Omit for all strings.
@@ -808,8 +810,9 @@ components:
           type: string
           description: Internal key identifying the import batch.
         stringHashcode:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/Hashcode'
           description: Hashcode of the string that failed.
-          $ref: '../api_common.yaml#/components/schemas/Hashcode'
         fileUri:
           allOf:
             - $ref: '../api_common.yaml#/components/schemas/FileUri'

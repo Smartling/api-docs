@@ -16,6 +16,10 @@ x-paths:
           description: >-
             The account’s unique identifier. This can be found in the Smartling
             Dashboard under Account Settings > API.
+          examples:
+            typical:
+              summary: Typical account UID
+              value: 4f23eabe9
         - &ref_1
           name: profileUid
           in: path
@@ -28,6 +32,7 @@ x-paths:
           in: path
           required: true
           schema:
+            type: string
             enum:
               - LEADING_TRAILING_SPACES
               - ORIGINAL_EQUALS_TARGET
@@ -60,17 +65,22 @@ x-paths:
         content:
           application/json:
             schema: &ref_2
-              allOf:
-                - type: object
-                  properties:
-                    severityLevelCode:
+              type: object
+              properties:
+                severityLevelCode:
+                  allOf:
+                    - type: string
                       enum:
                         - DISABLED
                         - LOW
                         - MEDIUM
                         - HIGH
-                  required:
-                    - severityLevelCode
+                  description: >-
+                    [severity level
+                    code](#operation/getTranslationQualityCheckSeverityLevels)
+                  example: MEDIUM
+              required:
+                - severityLevelCode
       responses:
         '200':
           description: OK
@@ -98,11 +108,15 @@ x-paths:
                             type: object
                             properties:
                               severityLevelCode:
-                                enum:
-                                  - DISABLED
-                                  - LOW
-                                  - MEDIUM
-                                  - HIGH
+                                allOf:
+                                  - type: string
+                                    enum:
+                                      - DISABLED
+                                      - LOW
+                                      - MEDIUM
+                                      - HIGH
+                                description: severity level code
+                                example: MEDIUM
       x-code-samples:
         - lang: curl
           source: >
@@ -124,6 +138,7 @@ x-paths:
           in: path
           required: true
           schema:
+            type: string
             enum:
               - TAG_CONSISTENCY
               - NUMBER_CONSISTENCY
@@ -138,6 +153,7 @@ x-paths:
           in: path
           required: true
           schema:
+            type: string
             enum:
               - EMOJI_ADDED
               - EMOJI_DELETED

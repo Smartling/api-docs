@@ -111,18 +111,18 @@ x-paths:
                       code: SUCCESS
                       data:
                         items:
-                          - authorized: 'true'
+                          - authorized: true
                             batchUid: 559ce40f2789
                             createdDate: '2015-11-21T11:51:17Z'
-                            hasError: 'false'
+                            hasError: false
                             modifiedDate: '2015-11-21T11:51:17Z'
                             projectId: asf53fds3
                             status: DRAFT
                             translationJobUid: 635gf40f9846
-                          - authorized: 'true'
+                          - authorized: true
                             batchUid: 456dv32d0934
                             createdDate: '2015-11-21T11:51:17Z'
-                            hasError: 'false'
+                            hasError: false
                             modifiedDate: '2015-11-22T10:24:14Z'
                             projectId: asf53fds3
                             status: EXECUTING
@@ -170,9 +170,9 @@ x-paths:
                 response:
                   value:
                     response:
-                      code: OK
+                      code: SUCCESS
                       data:
-                        authorized: 'true'
+                        authorized: true
                         files:
                           - errors: ''
                             fileUri: files/example1.json
@@ -199,7 +199,7 @@ x-paths:
                         generalErrors: ''
                         projectId: dg63gkb4v
                         status: ADDING_FILES
-                        translationJobUid: sjhs782hdb4djf
+                        translationJobUid: sjhs782hdb4d
                         updatedDate: '2015-11-21T11:51:17Z'
         404:
           $ref: '#/components/responses/BatchNotFoundResponse'
@@ -431,12 +431,11 @@ x-paths:
               examples:
                 response:
                   value:
-                    response:
-                      code: SUCCESS
-                      data:
-                        message: >-
-                          Your file was successfully uploaded. Word and string
-                          counts are not available right now.
+                    code: ACCEPTED
+                    data:
+                      message: >-
+                        Your file was successfully uploaded. Word and string
+                        counts are not available right now.
         404:
           $ref: '#/components/responses/BatchNotFoundResponse'
         400:
@@ -457,10 +456,10 @@ x-paths:
                     response:
                       code: RESOURCE_LOCKED
                       errors:
-                        key: resource.locked
-                        message: >-
-                          The file is currently being processed and will be
-                          available in a few minutes.
+                        - key: resource.locked
+                          message: >-
+                            The file is currently being processed and will be
+                            available in a few minutes.
         429:
           $ref: '../api_common.yaml#/components/responses/Error429ResponseDefinition'
         500:
@@ -642,8 +641,8 @@ x-paths:
                 response:
                   value:
                     response:
-                      code: ACCEPTED
-                      data:
+                      code: SUCCESS
+                      data: {}
         404:
           $ref: '#/components/responses/BatchNotFoundResponse'
         429:
@@ -680,10 +679,10 @@ components:
                 response:
                   code: VALIDATION_ERROR
                   errors:
-                    key: batch.not.found
-                    message: >-
-                      Batch with uid={batchUid} and projectId={projectId}
-                      not found.
+                    - key: batch.not.found
+                      message: >-
+                        Batch with uid={batchUid} and projectId={projectId}
+                        not found.
     BatchJobNotFoundResponse:
       description: provided translationJobUid is not found in the TMS
       content:
@@ -696,9 +695,9 @@ components:
                 response:
                   code: VALIDATION_ERROR
                   errors:
-                    key: job.not.found
-                    message: >-
-                      Job {translationJobUid} not found for project {projectId}.
+                    - key: job.not.found
+                      message: >-
+                        Job {translationJobUid} not found for project {projectId}.
 
   schemas:
     BatchStatus:

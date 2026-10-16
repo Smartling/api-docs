@@ -16,6 +16,10 @@ x-paths:
           description: >-
             The account’s unique identifier. This can be found in the Smartling
             Dashboard under Account Settings > API.
+          examples:
+            typical:
+              summary: Typical account UID
+              value: 4f23eabe9
         - &ref_2
           name: profileUid
           in: path
@@ -28,74 +32,83 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: &ref_5
-              allOf:
-                - &ref_0
-                  type: object
-                  properties:
-                    ruleName:
+            schema: &ref_0
+              type: object
+              properties:
+                ruleName:
+                  type: string
+                  description: Rule name
+                  example: ruleName
+                severityLevelCode:
+                  allOf:
+                    - &ref_13
                       type: string
-                      description: Rule name
-                      example: ruleName
-                    severityLevelCode: &ref_14
                       enum:
                         - DISABLED
                         - LOW
                         - MEDIUM
                         - HIGH
-                    ruleTypeCode:
+                  description: >-
+                    [Severity level
+                    code](#operation/getTranslationQualityCheckSeverityLevels)
+                  example: MEDIUM
+                ruleTypeCode:
+                  allOf:
+                    - type: string
                       enum:
                         - FORBIDDEN
                         - MISSING
                         - COUNT_MISMATCH
-                    flavorCode:
+                  description: '[Rule type code](#operation/getRegexQualityCheckRuleTypes)'
+                  example: FORBIDDEN
+                flavorCode:
+                  allOf:
+                    - type: string
                       enum:
                         - JAVA
                         - DOT_NET
-                    originalPattern:
-                      type: string
-                      description: >-
-                        Regular expression to evaluate against the source
-                        string.
-                      example: '@mail'
-                    translationPattern:
-                      type: string
-                      description: Regular expression to evaluate against the translation.
-                      example: '@gmail'
-                    caseInsensitive:
-                      type: boolean
-                      description: Enable case insensitive search
-                      example: true
-                    multiLine:
-                      type: boolean
-                      description: >-
-                        Enables multine search. If true then search will span
-                        newlines in a string. Users can use ^ and $ characters
-                        with special meaning for beginning of line and end of
-                        line match.
-                      example: true
-                    description:
-                      type: string
-                      description: >-
-                        Human readable description of the role; shown in the the
-                        dashboard UI.
-                      example: rule description
-                    warningMessage:
-                      type: string
-                      description: >-
-                        Human readable warning message appended to the standard
-                        message that is shown in the CAT tool when the check
-                        fails.
-                      example: ' test warning message'
-                  required:
-                    - ruleName
-                    - severityLevelCode
-                    - ruleTypeCode
-                    - flavorCode
-                    - originalPattern
-                    - translationPattern
-                    - caseInsensitive
-                    - multiLine
+                  description: Flavor code
+                  example: JAVA
+                originalPattern:
+                  type: string
+                  description: Regular expression to evaluate against the source string.
+                  example: '@mail'
+                translationPattern:
+                  type: string
+                  description: Regular expression to evaluate against the translation.
+                  example: '@gmail'
+                caseInsensitive:
+                  type: boolean
+                  description: Enable case insensitive search
+                  example: true
+                multiLine:
+                  type: boolean
+                  description: >-
+                    Enables multine search. If true then search will span
+                    newlines in a string. Users can use ^ and $ characters with
+                    special meaning for beginning of line and end of line match.
+                  example: true
+                description:
+                  type: string
+                  description: >-
+                    Human readable description of the role; shown in the the
+                    dashboard UI.
+                  example: rule description
+                warningMessage:
+                  type: string
+                  description: >-
+                    Human readable warning message appended to the standard
+                    message that is shown in the CAT tool when the check fails.
+                  example: ' test warning message'
+              required:
+                - ruleName
+                - severityLevelCode
+                - ruleTypeCode
+                - flavorCode
+                - originalPattern
+                - translationPattern
+                - caseInsensitive
+                - multiLine
       responses:
         '200':
           description: OK
@@ -106,7 +119,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - &ref_6
+                      - &ref_5
                         type: object
                         required:
                           - code
@@ -136,44 +149,48 @@ x-paths:
                                   groups:
                                     type: array
                                     items:
-                                      allOf:
-                                        - type: object
-                                          properties:
-                                            groupUid: &ref_8
-                                              type: string
-                                              description: >-
-                                                Smartling rule group identifier of the
-                                                translation
-                                              example: ce6d6b5dbc12
-                                            ruleUid: &ref_9
-                                              type: string
-                                              description: >-
-                                                Smartling rule identifier of the
-                                                translation
-                                              example: ce6d6b5dbcs2
-                                            targetLocaleIds: &ref_10
-                                              description: The list of target locales.
-                                              example:
-                                                - ru-RU
-                                              items: &ref_7
-                                                type: string
-                                                pattern: ^[a-z]{2}(-[A-Z]{2})?$
-                                                description: >
-                                                  Locale identifier. Either a 2-letter
-                                                  language code (`en`) or a
+                                      type: object
+                                      properties:
+                                        groupUid: &ref_7
+                                          type: string
+                                          description: >-
+                                            Smartling rule group identifier of the
+                                            translation
+                                          example: ce6d6b5dbc12
+                                        ruleUid: &ref_8
+                                          type: string
+                                          description: >-
+                                            Smartling rule identifier of the
+                                            translation
+                                          example: ce6d6b5dbcs2
+                                        targetLocaleIds: &ref_9
+                                          description: The list of target locales.
+                                          example:
+                                            - ru-RU
+                                          items: &ref_6
+                                            type: string
+                                            pattern: ^[a-z]{2}(-[A-Z]{2})?$
+                                            description: >
+                                              Locale identifier. Either a 2-letter
+                                              language code (`en`) or a
 
-                                                  language-region pair (`en-US`). The
-                                                  language part is always lowercase;
+                                              language-region pair (`en-US`). The
+                                              language part is always lowercase;
 
-                                                  the region part is always uppercase.
-                                                example: fr-FR
-                                              type: array
-                                            severityLevelCode: &ref_11
+                                              the region part is always uppercase.
+                                            example: fr-FR
+                                          type: array
+                                        severityLevelCode:
+                                          allOf:
+                                            - &ref_10
+                                              type: string
                                               enum:
                                                 - DISABLED
                                                 - LOW
                                                 - MEDIUM
                                                 - HIGH
+                                          description: severity level code
+                                          example: MEDIUM
       x-code-samples:
         - lang: curl
           source: >
@@ -223,7 +240,7 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: *ref_5
+            schema: *ref_0
       responses:
         '200':
           description: OK
@@ -251,13 +268,11 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: *ref_6
+              schema: *ref_5
               examples:
                 response:
                   value:
-                    response:
-                      code: SUCCESS
-                      data: null
+                    code: SUCCESS
       x-code-samples:
         - lang: curl
           source: >
@@ -283,7 +298,7 @@ x-paths:
                   description: List of target locale IDs.
                   example:
                     - ru-RU
-                  items: *ref_7
+                  items: *ref_6
                   type: array
               required:
                 - targetLocaleIds
@@ -292,21 +307,25 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: &ref_12
+              schema: &ref_11
                 type: object
                 properties:
                   response:
                     allOf:
-                      - *ref_6
+                      - *ref_5
                       - type: object
                         properties:
                           data:
                             type: object
                             properties:
-                              groupUid: *ref_8
-                              ruleUid: *ref_9
-                              targetLocaleIds: *ref_10
-                              severityLevelCode: *ref_11
+                              groupUid: *ref_7
+                              ruleUid: *ref_8
+                              targetLocaleIds: *ref_9
+                              severityLevelCode:
+                                allOf:
+                                  - *ref_10
+                                description: severity level code
+                                example: MEDIUM
         x-code-samples:
           - lang: curl
             source: >
@@ -333,7 +352,7 @@ x-paths:
                 properties:
                   response:
                     allOf:
-                      - *ref_6
+                      - *ref_5
                       - type: object
                         properties:
                           data:
@@ -346,13 +365,16 @@ x-paths:
                               items:
                                 type: array
                                 items:
-                                  allOf:
-                                    - type: object
-                                      properties:
-                                        groupUid: *ref_8
-                                        ruleUid: *ref_9
-                                        targetLocaleIds: *ref_10
-                                        severityLevelCode: *ref_11
+                                  type: object
+                                  properties:
+                                    groupUid: *ref_7
+                                    ruleUid: *ref_8
+                                    targetLocaleIds: *ref_9
+                                    severityLevelCode:
+                                      allOf:
+                                        - *ref_10
+                                      description: severity level code
+                                      example: MEDIUM
         x-code-samples:
           - lang: curl
             source: >
@@ -370,7 +392,7 @@ x-paths:
         - *ref_1
         - *ref_2
         - *ref_4
-        - &ref_13
+        - &ref_12
           name: groupUid
           in: path
           schema:
@@ -382,7 +404,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: *ref_12
+              schema: *ref_11
         x-code-samples:
           - lang: curl
             source: >
@@ -399,19 +421,17 @@ x-paths:
         - *ref_1
         - *ref_2
         - *ref_4
-        - *ref_13
+        - *ref_12
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_6
+              schema: *ref_5
               examples:
                 response:
                   value:
-                    response:
-                      code: SUCCESS
-                      data: null
+                    code: SUCCESS
         x-code-samples:
           - lang: curl
             source: >
@@ -434,13 +454,18 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: &ref_15
-              allOf:
-                - type: object
-                  properties:
-                    severityLevelCode: *ref_14
-                  required:
-                    - severityLevelCode
+            schema: &ref_14
+              type: object
+              properties:
+                severityLevelCode:
+                  allOf:
+                    - *ref_13
+                  description: >-
+                    [severity level
+                    code](#operation/getTranslationQualityCheckSeverityLevels)
+                  example: MEDIUM
+              required:
+                - severityLevelCode
       responses:
         '200':
           description: OK
@@ -464,29 +489,28 @@ x-paths:
         - *ref_1
         - *ref_2
         - *ref_4
-        - *ref_13
+        - *ref_12
       requestBody:
         description: ''
         required: true
         content:
           application/json:
             schema:
-              allOf:
-                - type: object
-                  properties:
-                    targetLocaleId:
-                      allOf:
-                        - *ref_7
-                      description: Smartling ID for the language you want to translate to.
-                      example: it-IT
-                  required:
-                    - targetLocaleId
+              type: object
+              properties:
+                targetLocaleId:
+                  allOf:
+                    - *ref_6
+                  description: Smartling ID for the language you want to translate to.
+                  example: it-IT
+              required:
+                - targetLocaleId
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_12
+              schema: *ref_11
       x-code-samples:
         - lang: curl
           source: >
@@ -504,7 +528,7 @@ x-paths:
         - *ref_1
         - *ref_2
         - *ref_4
-        - *ref_13
+        - *ref_12
         - name: targetLocaleId
           in: path
           required: true
@@ -516,13 +540,11 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: *ref_6
+              schema: *ref_5
               examples:
                 response:
                   value:
-                    response:
-                      code: SUCCESS
-                      data: null
+                    code: SUCCESS
       x-code-samples:
         - lang: curl
           source: >
@@ -540,19 +562,19 @@ x-paths:
         - *ref_1
         - *ref_2
         - *ref_4
-        - *ref_13
+        - *ref_12
       requestBody:
         description: ''
         required: true
         content:
           application/json:
-            schema: *ref_15
+            schema: *ref_14
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_12
+              schema: *ref_11
       x-code-samples:
         - lang: curl
           source: >
