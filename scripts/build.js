@@ -5,6 +5,10 @@ var Path = require('path');
 require('shelljs/global');
 set('-e');
 
+// deploy-to-gh-pages merges the live gh-pages content in with a no-overwrite copy, so any
+// file left over from an earlier build in a reused CI workspace would be force-pushed back
+// to the live site in place of the current one. Always start from an empty folder.
+rm('-rf', 'web_deploy');
 mkdir('-p', 'web_deploy');
 
 cp('-R', 'web/*', 'web_deploy/');
