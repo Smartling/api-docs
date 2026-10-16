@@ -16,6 +16,10 @@ x-paths:
           description: >-
             The account’s unique identifier. This can be found in the Smartling
             Dashboard under Account Settings > API.
+          examples:
+            typical:
+              summary: Typical account UID
+              value: 4f23eabe9
         - name: nameMask
           in: query
           required: false
@@ -118,22 +122,20 @@ x-paths:
         content:
           application/json:
             schema: &ref_4
-              allOf:
-                - &ref_5
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                      description: profile name.
-                      example: default name
-                  required:
-                    - name
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: profile name.
+                  example: default name
+              required:
+                - name
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: &ref_7
+              schema: &ref_6
                 type: object
                 properties:
                   response:
@@ -157,7 +159,7 @@ x-paths:
       operationId: updateTQCProfile
       parameters:
         - *ref_1
-        - &ref_6
+        - &ref_5
           name: profileUid
           in: path
           required: true
@@ -183,7 +185,7 @@ x-paths:
                       - *ref_2
                       - type: object
                         properties:
-                          data: *ref_5
+                          data: *ref_4
       x-code-samples:
         - lang: curl
           source: >
@@ -199,13 +201,13 @@ x-paths:
       operationId: getTQCProfile
       parameters:
         - *ref_1
-        - *ref_6
+        - *ref_5
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_7
+              schema: *ref_6
       x-code-samples:
         - lang: curl
           source: >
@@ -219,7 +221,7 @@ x-paths:
       operationId: deleteTQCProfile
       parameters:
         - *ref_1
-        - *ref_6
+        - *ref_5
       responses:
         '200':
           description: OK
@@ -229,9 +231,7 @@ x-paths:
               examples:
                 response:
                   value:
-                    response:
-                      code: SUCCESS
-                      data: null
+                    code: SUCCESS
       x-code-samples:
         - lang: curl
           source: >
@@ -252,7 +252,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: *ref_7
+              schema: *ref_6
       x-code-samples:
         - lang: curl
           source: >
@@ -272,21 +272,20 @@ x-paths:
         content:
           application/json:
             schema:
-              allOf:
-                - type: object
-                  properties:
-                    profileUid:
-                      type: string
-                      description: Unique identifier of corresponding profile.
-                      example: ce6d6b5dbc12
-                  required:
-                    - profileUid
+              type: object
+              properties:
+                profileUid:
+                  type: string
+                  description: Unique identifier of corresponding profile.
+                  example: ce6d6b5dbc12
+              required:
+                - profileUid
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_7
+              schema: *ref_6
         x-code-samples:
           - lang: curl
             source: >
@@ -319,7 +318,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: *ref_7
+              schema: *ref_6
       x-code-samples:
         - lang: curl
           source: >

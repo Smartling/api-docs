@@ -16,6 +16,10 @@ x-paths:
           description: >-
             The account’s unique identifier. This can be found in the Smartling
             Dashboard under Account Settings > API.
+          examples:
+            typical:
+              summary: Typical account UID
+              value: 4f23eabe9
         - &ref_1
           name: profileUid
           in: path
@@ -918,1010 +922,1009 @@ x-paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - type: object
-                    properties:
-                      response:
-                        allOf:
-                          - *ref_2
-                          - type: object
-                            properties:
-                              data:
-                                anyOf:
-                                  - title: LEADING_TRAILING_SPACES
-                                    allOf:
-                                      - &ref_4
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_2
+                      - type: object
+                        properties:
+                          data:
+                            anyOf:
+                              - title: LEADING_TRAILING_SPACES
+                                allOf:
+                                  - &ref_4
+                                    type: object
+                                    properties:
+                                      profileUid:
+                                        type: string
+                                        description: >-
+                                          Unique identifier of corresponding
+                                          profile.
+                                        example: ce6d6b5dbc12
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: &ref_3
+                                            enum:
+                                              - DISABLED
+                                              - LOW
+                                              - MEDIUM
+                                              - HIGH
+                                      - &ref_5
                                         type: object
                                         properties:
-                                          profileUid:
+                                          subTypes:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                checkSubTypeCode:
+                                                  type: string
+                                                  description: check subtype code
+                                                  example: ''
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: &ref_6
+                                                  allOf:
+                                                    - &ref_8
+                                                      type: string
+                                                      pattern: ^[a-z]{2}(-[A-Z]{2})?$
+                                                      description: >
+                                                        Locale identifier. Either a 2-letter
+                                                        language code (`en`) or a
+
+                                                        language-region pair (`en-US`). The
+                                                        language part is always lowercase;
+
+                                                        the region part is always uppercase.
+                                                      example: fr-FR
+                                                  description: >-
+                                                    Smartling locale identifier of the
+                                                    translation
+                                                severityLevelCode: *ref_3
+                                      - &ref_7
+                                        type: object
+                                        properties:
+                                          groups:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                groupUid:
+                                                  type: string
+                                                  description: unique identifier of group
+                                                  example: 12dsd344ds
+                                  - type: object
+                                    required:
+                                      - checkTypeCode
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - LEADING_TRAILING_SPACES
+                                        description: check type code
+                                        example: LEADING_TRAILING_SPACES
+                              - title: WHITESPACES
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - WHITESPACES
+                                        description: check type code
+                                        example: WHITESPACES
+                              - title: ORIGINAL_EQUALS_TARGET
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      mustHaveIdenticalTags:
+                                        type: boolean
+                                        description: Must have identical tags
+                                        example: false
+                                      mustHaveIdenticalCapitalization:
+                                        type: boolean
+                                        description: Must have identical capitalization
+                                        example: true
+                                  - type: object
+                                    required:
+                                      - checkTypeCode
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - ORIGINAL_EQUALS_TARGET
+                                        description: check type code
+                                        example: ORIGINAL_EQUALS_TARGET
+                              - title: SPELLCHECK
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      skipIfWordInUserDictionary:
+                                        type: boolean
+                                        description: Skip if word is in user dictionary.
+                                        example: false
+                                      skipIfWordStartsWithCapitalLetter:
+                                        type: boolean
+                                        description: Skip if word starts with capital letter.
+                                        example: false
+                                      skipIfWordAppearsInSourceString:
+                                        type: boolean
+                                        description: Skip if word appears in source string.
+                                        example: false
+                                      skipIfWordValidInSourceLocale:
+                                        type: boolean
+                                        description: Skip if word is valid in source locale.
+                                        example: false
+                                      runSpellcheckForSubWords:
+                                        type: boolean
+                                        description: Run spellchek for sub words.
+                                        example: true
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - SPELLCHECK
+                                        description: check type code
+                                        example: SPELLCHECK
+                              - title: TAG_CONSISTENCY
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - TAG_CONSISTENCY
+                                        description: check type code
+                                        example: TAG_CONSISTENCY
+                                      subTypes:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            checkSubTypeCode:
+                                              type: string
+                                              enum:
+                                                - TAG_ADDED
+                                                - TAG_DELETED
+                                                - SPACES_AROUND_TAGS
+                                                - TAG_ORDER_IS_CHANGED
+                                              description: check subtype code
+                                              example: TAG_ADDED
+                              - title: TARGET_LENGTH_LIMIT
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - TARGET_LENGTH_LIMIT
+                                        description: check type code
+                                        example: TARGET_LENGTH_LIMIT
+                              - title: NUMBER_CONSISTENCY
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      ignoreSign:
+                                        type: boolean
+                                        description: Ignore sign.
+                                        example: true
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - NUMBER_CONSISTENCY
+                                        description: check type code
+                                        example: NUMBER_CONSISTENCY
+                                      subTypes:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            checkSubTypeCode:
+                                              type: string
+                                              enum:
+                                                - NUMBER_ADDED
+                                                - NUMBER_DELETED
+                                                - NUMBER_INCORRECT_CONVERSION
+                                              description: check subtype code
+                                              example: NUMBER_ADDED
+                              - title: REPEATED_WORD
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - REPEATED_WORD
+                                        description: check type code
+                                        example: REPEATED_WORD
+                              - title: TARGET_IN_WRONG_LANGUAGE
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      minTextLengthLimit:
+                                        type: integer
+                                        minimum: 0
+                                        description: Minimal text length limit.
+                                        example: 10
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - TARGET_IN_WRONG_LANGUAGE
+                                        description: check type code
+                                        example: TARGET_IN_WRONG_LANGUAGE
+                              - title: SOURCE_IN_WRONG_LANGUAGE
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      minTextLengthLimit:
+                                        type: integer
+                                        minimum: 0
+                                        description: Minimal text length limit.
+                                        example: 10
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - SOURCE_IN_WRONG_LANGUAGE
+                                        description: check type code
+                                        example: SOURCE_IN_WRONG_LANGUAGE
+                              - title: SEGMENT_COMPLETENESS
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      lowerLengthThreshold:
+                                        type: integer
+                                        description: Lower length threshould
+                                        example: 10
+                                      upperLengthThreshold:
+                                        type: integer
+                                        description: Upper length threshould
+                                        example: 20
+                                      minLengthThreshold:
+                                        type: integer
+                                        description: Minimal lenght threshould
+                                        example: 15
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - SEGMENT_COMPLETENESS
+                                        description: check type code
+                                        example: SEGMENT_COMPLETENESS
+                                      subTypes:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            checkSubTypeCode:
+                                              type: string
+                                              enum:
+                                                - TARGET_IS_EMPTY
+                                                - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                                                - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                                              description: check subtype code
+                                              example: TARGET_IS_EMPTY
+                              - title: NON_TRANSLATABLE_TEXT
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - NON_TRANSLATABLE_TEXT
+                                        description: check type code
+                                        example: NON_TRANSLATABLE_TEXT
+                                      subTypes:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            checkSubTypeCode:
+                                              type: string
+                                              enum:
+                                                - PLACEABLE_ADDED
+                                                - PLACEABLE_DELETED
+                                                - SPACES_AROUND_PLACEABLE
+                                                - PLACEABLE_FORMAT
+                                              description: check subtype code
+                                              example: PLACEABLE_ADDED
+                              - title: EMOJI_CONSISTENCY
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      noEmojisAllowedInTarget:
+                                        type: boolean
+                                        description: No emoji is allowed in target
+                                        example: false
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - EMOJI_CONSISTENCY
+                                        description: check type code
+                                        example: EMOJI_CONSISTENCY
+                                      subTypes:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            checkSubTypeCode:
+                                              type: string
+                                              enum:
+                                                - EMOJI_ADDED
+                                                - EMOJI_DELETED
+                                                - EMOJI_PRESENT
+                                              description: check subtype code
+                                              example: EMOJI_ADDED
+                              - title: INSERTABLE_CONSISTENCY
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - INSERTABLE_CONSISTENCY
+                                        description: check type code
+                                        example: INSERTABLE_CONSISTENCY
+                                      subTypes:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            checkSubTypeCode:
+                                              type: string
+                                              enum:
+                                                - INSERTABLE_ADDED
+                                                - INSERTABLE_DELETED
+                                              description: check subtype code
+                                              example: INSERTABLE_ADDED
+                              - title: TARGET_SOURCE_CONSISTENCY
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      ignoreTagsAndPlaceholders:
+                                        type: boolean
+                                        description: Ignore tags and placeholders.
+                                        example: true
+                                      ignoreCase:
+                                        type: boolean
+                                        description: Ignore case.
+                                        example: false
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - TARGET_SOURCE_CONSISTENCY
+                                        description: check type code
+                                        example: TARGET_SOURCE_CONSISTENCY
+                                      subTypes:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            checkSubTypeCode:
+                                              type: string
+                                              enum:
+                                                - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                                - SAME_TRANSLATION_DIFFERENT_SOURCES
+                                              description: check subtype code
+                                              example: SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                              - title: BLACKLISTED_TERMS
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - BLACKLISTED_TERMS
+                                        description: check type code
+                                        example: BLACKLISTED_TERMS
+                              - title: GLOSSARY_COMPLIANCE
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - allOf:
+                                      - type: object
+                                        properties:
+                                          matchMethod:
                                             type: string
+                                            enum:
+                                              - MATCH_BY_PERCENTAGE
+                                              - EXACT_MATCH
+                                              - LEXICAL_ANALYSIS
                                             description: >-
-                                              Unique identifier of corresponding
-                                              profile.
-                                            example: ce6d6b5dbc12
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: &ref_3
-                                                enum:
-                                                  - DISABLED
-                                                  - LOW
-                                                  - MEDIUM
-                                                  - HIGH
-                                          - &ref_5
-                                            type: object
-                                            properties:
-                                              subTypes:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    checkSubTypeCode:
-                                                      type: string
-                                                      description: check subtype code
-                                                      example: ''
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: &ref_6
-                                                      allOf:
-                                                        - &ref_8
-                                                          type: string
-                                                          pattern: ^[a-z]{2}(-[A-Z]{2})?$
-                                                          description: >
-                                                            Locale identifier. Either a 2-letter
-                                                            language code (`en`) or a
-
-                                                            language-region pair (`en-US`). The
-                                                            language part is always lowercase;
-
-                                                            the region part is always uppercase.
-                                                          example: fr-FR
-                                                      description: >-
-                                                        Smartling locale identifier of the
-                                                        translation
-                                                    severityLevelCode: *ref_3
-                                          - &ref_7
-                                            type: object
-                                            properties:
-                                              groups:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    groupUid:
-                                                      type: string
-                                                      description: unique identifier of group
-                                                      example: 12dsd344ds
-                                      - type: object
-                                        required:
-                                          - checkTypeCode
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - LEADING_TRAILING_SPACES
-                                            description: check type code
-                                            example: LEADING_TRAILING_SPACES
-                                  - title: WHITESPACES
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - WHITESPACES
-                                            description: check type code
-                                            example: WHITESPACES
-                                  - title: ORIGINAL_EQUALS_TARGET
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          mustHaveIdenticalTags:
-                                            type: boolean
-                                            description: Must have identical tags
-                                            example: false
-                                          mustHaveIdenticalCapitalization:
-                                            type: boolean
-                                            description: Must have identical capitalization
-                                            example: true
-                                      - type: object
-                                        required:
-                                          - checkTypeCode
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - ORIGINAL_EQUALS_TARGET
-                                            description: check type code
-                                            example: ORIGINAL_EQUALS_TARGET
-                                  - title: SPELLCHECK
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          skipIfWordInUserDictionary:
-                                            type: boolean
-                                            description: Skip if word is in user dictionary.
-                                            example: false
-                                          skipIfWordStartsWithCapitalLetter:
-                                            type: boolean
-                                            description: Skip if word starts with capital letter.
-                                            example: false
-                                          skipIfWordAppearsInSourceString:
-                                            type: boolean
-                                            description: Skip if word appears in source string.
-                                            example: false
-                                          skipIfWordValidInSourceLocale:
-                                            type: boolean
-                                            description: Skip if word is valid in source locale.
-                                            example: false
-                                          runSpellcheckForSubWords:
-                                            type: boolean
-                                            description: Run spellchek for sub words.
-                                            example: true
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - SPELLCHECK
-                                            description: check type code
-                                            example: SPELLCHECK
-                                  - title: TAG_CONSISTENCY
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - TAG_CONSISTENCY
-                                            description: check type code
-                                            example: TAG_CONSISTENCY
-                                          subTypes:
-                                            type: array
-                                            items:
-                                              type: object
-                                              properties:
-                                                checkSubTypeCode:
-                                                  type: string
-                                                  enum:
-                                                    - TAG_ADDED
-                                                    - TAG_DELETED
-                                                    - SPACES_AROUND_TAGS
-                                                    - TAG_ORDER_IS_CHANGED
-                                                  description: check subtype code
-                                                  example: TAG_ADDED
-                                  - title: TARGET_LENGTH_LIMIT
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - TARGET_LENGTH_LIMIT
-                                            description: check type code
-                                            example: TARGET_LENGTH_LIMIT
-                                  - title: NUMBER_CONSISTENCY
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          ignoreSign:
-                                            type: boolean
-                                            description: Ignore sign.
-                                            example: true
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - NUMBER_CONSISTENCY
-                                            description: check type code
-                                            example: NUMBER_CONSISTENCY
-                                          subTypes:
-                                            type: array
-                                            items:
-                                              type: object
-                                              properties:
-                                                checkSubTypeCode:
-                                                  type: string
-                                                  enum:
-                                                    - NUMBER_ADDED
-                                                    - NUMBER_DELETED
-                                                    - NUMBER_INCORRECT_CONVERSION
-                                                  description: check subtype code
-                                                  example: NUMBER_ADDED
-                                  - title: REPEATED_WORD
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - REPEATED_WORD
-                                            description: check type code
-                                            example: REPEATED_WORD
-                                  - title: TARGET_IN_WRONG_LANGUAGE
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          minTextLengthLimit:
+                                              [Match
+                                              method.](#operation/getGlossaryComplianceMatchMethods)
+                                            example: MATCH_BY_PERCENTAGE
+                                          matchThreshold:
                                             type: integer
+                                            description: Match threshold.
                                             minimum: 0
-                                            description: Minimal text length limit.
+                                            maximum: 100
                                             example: 10
                                       - type: object
                                         properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - TARGET_IN_WRONG_LANGUAGE
-                                            description: check type code
-                                            example: TARGET_IN_WRONG_LANGUAGE
-                                  - title: SOURCE_IN_WRONG_LANGUAGE
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
+                                          sameTermCount:
+                                            type: boolean
+                                            description: >-
+                                              If true the translation should have the
+                                              glossary term the same number of times
+                                              as in the source. If false the
+                                              translation only requires the
+                                              translation of the term at least once.
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - GLOSSARY_COMPLIANCE
+                                        description: check type code
+                                        example: GLOSSARY_COMPLIANCE
+                              - title: TRADEMARK_CONSISTENCY
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
                                       - type: object
                                         properties:
-                                          minTextLengthLimit:
-                                            type: integer
-                                            minimum: 0
-                                            description: Minimal text length limit.
-                                            example: 10
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
                                       - type: object
                                         properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - SOURCE_IN_WRONG_LANGUAGE
-                                            description: check type code
-                                            example: SOURCE_IN_WRONG_LANGUAGE
-                                  - title: SEGMENT_COMPLETENESS
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          lowerLengthThreshold:
-                                            type: integer
-                                            description: Lower length threshould
-                                            example: 10
-                                          upperLengthThreshold:
-                                            type: integer
-                                            description: Upper length threshould
-                                            example: 20
-                                          minLengthThreshold:
-                                            type: integer
-                                            description: Minimal lenght threshould
-                                            example: 15
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - SEGMENT_COMPLETENESS
-                                            description: check type code
-                                            example: SEGMENT_COMPLETENESS
-                                          subTypes:
+                                          localeSeverityLevels:
                                             type: array
                                             items:
                                               type: object
                                               properties:
-                                                checkSubTypeCode:
-                                                  type: string
-                                                  enum:
-                                                    - TARGET_IS_EMPTY
-                                                    - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
-                                                    - TARGET_IS_MUCH_LONGER_THAN_SOURCE
-                                                  description: check subtype code
-                                                  example: TARGET_IS_EMPTY
-                                  - title: NON_TRANSLATABLE_TEXT
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - TRADEMARK_CONSISTENCY
+                                        description: check type code
+                                        example: TRADEMARK_CONSISTENCY
+                              - title: GRAMMAR_CHECK
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
                                       - type: object
                                         properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - NON_TRANSLATABLE_TEXT
-                                            description: check type code
-                                            example: NON_TRANSLATABLE_TEXT
-                                          subTypes:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
                                             type: array
                                             items:
                                               type: object
                                               properties:
-                                                checkSubTypeCode:
-                                                  type: string
-                                                  enum:
-                                                    - PLACEABLE_ADDED
-                                                    - PLACEABLE_DELETED
-                                                    - SPACES_AROUND_PLACEABLE
-                                                    - PLACEABLE_FORMAT
-                                                  description: check subtype code
-                                                  example: PLACEABLE_ADDED
-                                  - title: EMOJI_CONSISTENCY
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - GRAMMAR_CHECK
+                                        description: check type code
+                                        example: GRAMMAR_CHECK
+                              - title: GLOBAL_CAPITALISATION_CONSISTENCY
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
                                       - type: object
                                         properties:
-                                          noEmojisAllowedInTarget:
-                                            type: boolean
-                                            description: No emoji is allowed in target
-                                            example: false
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
                                       - type: object
                                         properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - EMOJI_CONSISTENCY
-                                            description: check type code
-                                            example: EMOJI_CONSISTENCY
-                                          subTypes:
+                                          localeSeverityLevels:
                                             type: array
                                             items:
                                               type: object
                                               properties:
-                                                checkSubTypeCode:
-                                                  type: string
-                                                  enum:
-                                                    - EMOJI_ADDED
-                                                    - EMOJI_DELETED
-                                                    - EMOJI_PRESENT
-                                                  description: check subtype code
-                                                  example: EMOJI_ADDED
-                                  - title: INSERTABLE_CONSISTENCY
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - GLOBAL_CAPITALISATION_CONSISTENCY
+                                        description: check type code
+                                        example: GLOBAL_CAPITALISATION_CONSISTENCY
+                              - title: PUNCTUATION_CONSISTENCY
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
                                       - type: object
                                         properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - INSERTABLE_CONSISTENCY
-                                            description: check type code
-                                            example: INSERTABLE_CONSISTENCY
-                                          subTypes:
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          localeSeverityLevels:
                                             type: array
                                             items:
                                               type: object
                                               properties:
-                                                checkSubTypeCode:
-                                                  type: string
-                                                  enum:
-                                                    - INSERTABLE_ADDED
-                                                    - INSERTABLE_DELETED
-                                                  description: check subtype code
-                                                  example: INSERTABLE_ADDED
-                                  - title: TARGET_SOURCE_CONSISTENCY
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - PUNCTUATION_CONSISTENCY
+                                        description: check type code
+                                        example: PUNCTUATION_CONSISTENCY
+                              - title: PLURALS_REPETITION
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
                                       - type: object
                                         properties:
-                                          ignoreTagsAndPlaceholders:
-                                            type: boolean
-                                            description: Ignore tags and placeholders.
-                                            example: true
-                                          ignoreCase:
-                                            type: boolean
-                                            description: Ignore case.
-                                            example: false
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
                                       - type: object
                                         properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - TARGET_SOURCE_CONSISTENCY
-                                            description: check type code
-                                            example: TARGET_SOURCE_CONSISTENCY
-                                          subTypes:
+                                          localeSeverityLevels:
                                             type: array
                                             items:
                                               type: object
                                               properties:
-                                                checkSubTypeCode:
-                                                  type: string
-                                                  enum:
-                                                    - SAME_SOURCE_DIFFERENT_TRANSLATIONS
-                                                    - SAME_TRANSLATION_DIFFERENT_SOURCES
-                                                  description: check subtype code
-                                                  example: SAME_SOURCE_DIFFERENT_TRANSLATIONS
-                                  - title: BLACKLISTED_TERMS
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - PLURALS_REPETITION
+                                        description: check type code
+                                        example: PLURALS_REPETITION
+                              - title: REGEX_CHECK
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
                                       - type: object
                                         properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - BLACKLISTED_TERMS
-                                            description: check type code
-                                            example: BLACKLISTED_TERMS
-                                  - title: GLOSSARY_COMPLIANCE
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              matchMethod:
-                                                type: string
-                                                enum:
-                                                  - MATCH_BY_PERCENTAGE
-                                                  - EXACT_MATCH
-                                                  - LEXICAL_ANALYSIS
-                                                description: >-
-                                                  [Match
-                                                  method.](#operation/getGlossaryComplianceMatchMethods)
-                                                example: MATCH_BY_PERCENTAGE
-                                              matchThreshold:
-                                                type: integer
-                                                description: Match threshold.
-                                                minimum: 0
-                                                maximum: 100
-                                                example: 10
-                                          - type: object
-                                            properties:
-                                              sameTermCount:
-                                                type: boolean
-                                                description: >-
-                                                  If true the translation should have the
-                                                  glossary term the same number of times
-                                                  as in the source. If false the
-                                                  translation only requires the
-                                                  translation of the term at least once.
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
                                       - type: object
                                         properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - GLOSSARY_COMPLIANCE
-                                            description: check type code
-                                            example: GLOSSARY_COMPLIANCE
-                                  - title: TRADEMARK_CONSISTENCY
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - TRADEMARK_CONSISTENCY
-                                            description: check type code
-                                            example: TRADEMARK_CONSISTENCY
-                                  - title: GRAMMAR_CHECK
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - GRAMMAR_CHECK
-                                            description: check type code
-                                            example: GRAMMAR_CHECK
-                                  - title: GLOBAL_CAPITALISATION_CONSISTENCY
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - GLOBAL_CAPITALISATION_CONSISTENCY
-                                            description: check type code
-                                            example: GLOBAL_CAPITALISATION_CONSISTENCY
-                                  - title: PUNCTUATION_CONSISTENCY
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - PUNCTUATION_CONSISTENCY
-                                            description: check type code
-                                            example: PUNCTUATION_CONSISTENCY
-                                  - title: PLURALS_REPETITION
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - PLURALS_REPETITION
-                                            description: check type code
-                                            example: PLURALS_REPETITION
-                                  - title: REGEX_CHECK
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
-                                      - type: object
-                                        properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - REGEX_CHECK
-                                            description: check type code
-                                            example: REGEX_CHECK
-                                          rules:
+                                          localeSeverityLevels:
                                             type: array
                                             items:
-                                              allOf:
-                                                - type: object
-                                                  properties:
-                                                    ruleUid:
-                                                      type: string
-                                                      description: >-
-                                                        Unique identifier of corresponding check
-                                                        rule
-                                                      example: ce6d6b5dbc12
-                                                - type: object
-                                                  properties:
-                                                    ruleName:
-                                                      type: string
-                                                      description: Rule name
-                                                      example: ruleName
-                                                    severityLevelCode:
-                                                      enum:
-                                                        - DISABLED
-                                                        - LOW
-                                                        - MEDIUM
-                                                        - HIGH
-                                                    ruleTypeCode:
-                                                      enum:
-                                                        - FORBIDDEN
-                                                        - MISSING
-                                                        - COUNT_MISMATCH
-                                                    flavorCode:
-                                                      enum:
-                                                        - JAVA
-                                                        - DOT_NET
-                                                    originalPattern:
-                                                      type: string
-                                                      description: >-
-                                                        Regular expression to evaluate against
-                                                        the source string.
-                                                      example: '@mail'
-                                                    translationPattern:
-                                                      type: string
-                                                      description: >-
-                                                        Regular expression to evaluate against
-                                                        the translation.
-                                                      example: '@gmail'
-                                                    caseInsensitive:
-                                                      type: boolean
-                                                      description: Enable case insensitive search
-                                                      example: true
-                                                    multiLine:
-                                                      type: boolean
-                                                      description: >-
-                                                        Enables multine search. If true then
-                                                        search will span newlines in a string.
-                                                        Users can use ^ and $ characters with
-                                                        special meaning for beginning of line
-                                                        and end of line match.
-                                                      example: true
-                                                    description:
-                                                      type: string
-                                                      description: >-
-                                                        Human readable description of the role;
-                                                        shown in the the dashboard UI.
-                                                      example: rule description
-                                                    warningMessage:
-                                                      type: string
-                                                      description: >-
-                                                        Human readable warning message appended
-                                                        to the standard message that is shown in
-                                                        the CAT tool when the check fails.
-                                                      example: ' test warning message'
-                                                  required:
-                                                    - ruleName
-                                                    - severityLevelCode
-                                                    - ruleTypeCode
-                                                    - flavorCode
-                                                    - originalPattern
-                                                    - translationPattern
-                                                    - caseInsensitive
-                                                    - multiLine
-                                                - type: object
-                                                  properties:
-                                                    groups:
-                                                      type: array
-                                                      items:
-                                                        allOf:
-                                                          - type: object
-                                                            properties:
-                                                              groupUid:
-                                                                type: string
-                                                                description: >-
-                                                                  Smartling rule group identifier of the
-                                                                  translation
-                                                                example: ce6d6b5dbc12
-                                                              ruleUid:
-                                                                type: string
-                                                                description: >-
-                                                                  Smartling rule identifier of the
-                                                                  translation
-                                                                example: ce6d6b5dbcs2
-                                                              targetLocaleIds:
-                                                                description: The list of target locales.
-                                                                example:
-                                                                  - ru-RU
-                                                                items: *ref_8
-                                                                type: array
-                                                              severityLevelCode: *ref_3
-                                  - title: OPEN_ISSUES
-                                    allOf:
-                                      - *ref_4
-                                      - allOf:
-                                          - type: object
-                                            properties:
-                                              severityLevelCode: *ref_3
-                                          - *ref_5
-                                          - type: object
-                                            properties:
-                                              localeSeverityLevels:
-                                                type: array
-                                                items:
-                                                  type: object
-                                                  properties:
-                                                    targetLocaleId: *ref_6
-                                                    severityLevelCode: *ref_3
-                                          - *ref_7
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - REGEX_CHECK
+                                        description: check type code
+                                        example: REGEX_CHECK
+                                      rules:
+                                        type: array
+                                        items:
+                                          allOf:
+                                            - type: object
+                                              properties:
+                                                ruleUid:
+                                                  type: string
+                                                  description: >-
+                                                    Unique identifier of corresponding check
+                                                    rule
+                                                  example: ce6d6b5dbc12
+                                            - type: object
+                                              properties:
+                                                ruleName:
+                                                  type: string
+                                                  description: Rule name
+                                                  example: ruleName
+                                                severityLevelCode:
+                                                  enum:
+                                                    - DISABLED
+                                                    - LOW
+                                                    - MEDIUM
+                                                    - HIGH
+                                                ruleTypeCode:
+                                                  enum:
+                                                    - FORBIDDEN
+                                                    - MISSING
+                                                    - COUNT_MISMATCH
+                                                flavorCode:
+                                                  enum:
+                                                    - JAVA
+                                                    - DOT_NET
+                                                originalPattern:
+                                                  type: string
+                                                  description: >-
+                                                    Regular expression to evaluate against
+                                                    the source string.
+                                                  example: '@mail'
+                                                translationPattern:
+                                                  type: string
+                                                  description: >-
+                                                    Regular expression to evaluate against
+                                                    the translation.
+                                                  example: '@gmail'
+                                                caseInsensitive:
+                                                  type: boolean
+                                                  description: Enable case insensitive search
+                                                  example: true
+                                                multiLine:
+                                                  type: boolean
+                                                  description: >-
+                                                    Enables multine search. If true then
+                                                    search will span newlines in a string.
+                                                    Users can use ^ and $ characters with
+                                                    special meaning for beginning of line
+                                                    and end of line match.
+                                                  example: true
+                                                description:
+                                                  type: string
+                                                  description: >-
+                                                    Human readable description of the role;
+                                                    shown in the the dashboard UI.
+                                                  example: rule description
+                                                warningMessage:
+                                                  type: string
+                                                  description: >-
+                                                    Human readable warning message appended
+                                                    to the standard message that is shown in
+                                                    the CAT tool when the check fails.
+                                                  example: ' test warning message'
+                                              required:
+                                                - ruleName
+                                                - severityLevelCode
+                                                - ruleTypeCode
+                                                - flavorCode
+                                                - originalPattern
+                                                - translationPattern
+                                                - caseInsensitive
+                                                - multiLine
+                                            - type: object
+                                              properties:
+                                                groups:
+                                                  type: array
+                                                  items:
+                                                    allOf:
+                                                      - type: object
+                                                        properties:
+                                                          groupUid:
+                                                            type: string
+                                                            description: >-
+                                                              Smartling rule group identifier of the
+                                                              translation
+                                                            example: ce6d6b5dbc12
+                                                          ruleUid:
+                                                            type: string
+                                                            description: >-
+                                                              Smartling rule identifier of the
+                                                              translation
+                                                            example: ce6d6b5dbcs2
+                                                          targetLocaleIds:
+                                                            description: The list of target locales.
+                                                            example:
+                                                              - ru-RU
+                                                            items: *ref_8
+                                                            type: array
+                                                          severityLevelCode: *ref_3
+                              - title: OPEN_ISSUES
+                                allOf:
+                                  - *ref_4
+                                  - allOf:
                                       - type: object
                                         properties:
-                                          sourceIssuesMustBeResolved:
-                                            type: boolean
-                                            description: All source issues must be resolved
-                                            example: false
-                                          translationIssuesMustBeResolved:
-                                            type: boolean
-                                            description: All translation issues must be resolved
-                                            example: true
+                                          severityLevelCode: *ref_3
+                                      - *ref_5
                                       - type: object
-                                        required:
-                                          - checkTypeCode
                                         properties:
-                                          checkTypeCode:
-                                            type: string
-                                            enum:
-                                              - OPEN_ISSUES
-                                            description: check type code
-                                            example: OPEN_ISSUES
+                                          localeSeverityLevels:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                targetLocaleId: *ref_6
+                                                severityLevelCode: *ref_3
+                                      - *ref_7
+                                  - type: object
+                                    properties:
+                                      sourceIssuesMustBeResolved:
+                                        type: boolean
+                                        description: All source issues must be resolved
+                                        example: false
+                                      translationIssuesMustBeResolved:
+                                        type: boolean
+                                        description: All translation issues must be resolved
+                                        example: true
+                                  - type: object
+                                    required:
+                                      - checkTypeCode
+                                    properties:
+                                      checkTypeCode:
+                                        type: string
+                                        enum:
+                                          - OPEN_ISSUES
+                                        description: check type code
+                                        example: OPEN_ISSUES
               examples:
                 ORIGINAL_EQUALS_TARGET:
                   value:
@@ -2599,7 +2602,7 @@ x-paths:
           examples:
             typical:
               summary: Typical project ID
-              value: abcd12345
+              value: 84c012a33
         - name: localeId
           in: path
           required: true
