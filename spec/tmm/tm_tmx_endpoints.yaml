@@ -76,12 +76,11 @@ x-paths:
                     response:
                       code: VALIDATION_ERROR
                       errors:
-                        - key: file.uri.required
+                        - key: null
                           message: File uri is required.
-                          details:
-                            field: fileUri
-                tm_not_owned_or_not_allowed:
-                  summary: tmUid does not belong to the account, or is not eligible for import
+                          details: null
+                tm_not_owned:
+                  summary: tmUid is blank, unknown, or does not belong to the account
                   value:
                     response:
                       code: VALIDATION_ERROR
@@ -90,15 +89,25 @@ x-paths:
                           message: Incorrect tmUid field value.
                           details:
                             field: tmUid
+                tm_import_not_allowed:
+                  summary: tmUid belongs to a translation memory that does not accept imports
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: import.not.allowed.translationQuality
+                          message: Import is not allowed into translation memory of this translation quality type.
+                          details:
+                            field: tmUid
                 file_too_large:
                   summary: Uploaded file exceeds the maximum size
                   value:
                     response:
                       code: VALIDATION_ERROR
                       errors:
-                        - key: file.size.exceeded
-                          message: The uploaded TMX file exceeds the maximum allowed size.
-                          details: {}
+                        - key: null
+                          message: The file exceeds its maximum permitted size of 1648 megabytes.
+                          details: null
         '401':
           $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         '403':
@@ -121,9 +130,9 @@ x-paths:
                     response:
                       code: RESOURCE_LOCKED
                       errors:
-                        - key: operation.already.in.progress
+                        - key: null
                           message: Operation already in progress; please try again later.
-                          details: {}
+                          details: null
         '429':
           description: The account has reached its limit of concurrent TMX imports.
           content:
@@ -136,9 +145,9 @@ x-paths:
                     response:
                       code: MAX_OPERATIONS_LIMIT_EXCEEDED
                       errors:
-                        - key: operations.limit.exceeded
-                          message: The limit of 2 TMX imports running at once has been reached for this account. Please try again in a few minutes.
-                          details: {}
+                        - key: null
+                          message: The limit of 5 TMX imports running at once has been reached for this account. Please try again in a few minutes.
+                          details: null
         '500':
           $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
 
@@ -239,9 +248,9 @@ x-paths:
                     response:
                       code: GONE
                       errors:
-                        - key: tmx.download.file.expired
+                        - key: null
                           message: 'TmxDownloadFile with downloadKey=ZGpoaDczaGRqc2o6MA== was expired. Please export again.'
-                          details: {}
+                          details: null
         '500':
           $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
 
