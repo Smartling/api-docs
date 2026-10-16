@@ -127,13 +127,11 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '../api_common.yaml#/components/schemas/EmptyResponse'
-              examples:
+                $ref: '#/components/schemas/GlossaryLabelEmptyResponse'
+              example:
                 response:
-                  value:
-                    response:
-                      code: SUCCESS
-                      data: {}
+                  code: SUCCESS
+                  errors: []
         401:
           $ref: './g_common.yaml#/components/responses/GlossaryError401ResponseDefinition'
         403:
@@ -162,14 +160,22 @@ components:
     AccountGlossaryLabelsSuccessResponse:
       type: object
       properties:
-        totalCount:
-          type: integer
-          format: int64
-          description: total labels amount
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/GlossaryLabel"
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      format: int64
+                      description: total labels amount
+                    items:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/GlossaryLabel"
 
     GlossaryLabel:
       type: object
@@ -186,12 +192,17 @@ components:
       description: Glossary label representation.
 
     GlossaryLabelPTO:
-      allOf:
-        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
-        - type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/GlossaryLabel"
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/GlossaryLabel"
 
 
     ManageGlossaryLabelCommandPTO:
@@ -201,5 +212,21 @@ components:
       properties:
         labelText:
           type: string
-          description: Text of the label. Text max size is 50 characters.
+          maxLength: 50
+          description: Text of the label. Must not be blank. Text max size is 50 characters.
       description: Glossary label manage command.
+    GlossaryLabelEmptyResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                errors:
+                  description: Always empty. No `data` property is returned.
+                  type: array
+                  items:
+                    $ref: '../api_common.yaml#/components/schemas/Error'
+              type: object

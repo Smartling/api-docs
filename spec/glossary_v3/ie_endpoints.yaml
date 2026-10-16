@@ -85,9 +85,9 @@ x-paths:
                           importUid: '939a4439-2ed0-4123-bc68-d188e4d664ab'
                           importStatus: 'PENDING'
                         entryChanges:
-                          newEntries: 0,
-                          existingEntryUpdates: 1,
-                          notMatchedEntries: 1,
+                          newEntries: 0
+                          existingEntryUpdates: 1
+                          notMatchedEntries: 1
                           entriesToArchive: 0
                         translationChanges:
                           - localeId: en-US
@@ -111,6 +111,13 @@ x-paths:
           $ref: './g_common.yaml#/components/responses/GlossaryError429ResponseDefinition'
         500:
           $ref: './g_common.yaml#/components/responses/GlossaryError500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken"
+            -F "importFile=@$uploadFilePath"
+            -F "archiveMode=false"
+            "https://api.smartling.com/glossary-api/v3/accounts/$smartlingAccountUid/glossaries/$smartlingGlossaryUid/import"
 
   import_status:
     get:
@@ -198,9 +205,7 @@ x-paths:
         - lang: curl
           source: >
             curl -X POST -H "Authorization: Bearer $smartlingToken"
-            -F "importFile=@$uploadFilePath;type=text/plain"
-            -F "importFileName=$uploadFileSmartlingName" -F "importFileMediaType=$uploadFileSmartlingMediaType"
-            "https://api.smartling.com//glossary-api/v3/accounts/$smartlingAccountUid/glossaries/$smartlingGlossaryUid/import"    
+            "https://api.smartling.com/glossary-api/v3/accounts/$smartlingAccountUid/glossaries/$smartlingGlossaryUid/import/$importUid/confirm"
 
 components:
   parameters:
@@ -220,18 +225,20 @@ components:
       required:
         - format
         - filter
-        - localeIds
       properties:
         format:
           type: string
-          description: Export format.
+          description: Export format (case-insensitive).
           enum:
             - CSV
             - XLSX
             - TBX
         tbxVersion:
           type: string
-          description: TBX version-name, required when TBX format preselected.
+          description: >-
+            TBX version-name, used only for the TBX format. TBXcoreStructV02 is used if omitted.
+            The aliases V_2_CORE / V_3_CORE are also accepted.
+          default: TBXcoreStructV02
           enum:
             - TBXcoreStructV02
             - TBXcoreStructV03
@@ -244,7 +251,9 @@ components:
           description: First locale id in the export scope.
         localeIds:
           type: array
-          description: Locales ids for the export.
+          description: >-
+            Locales ids for the export. Each locale must be one of the glossary locales.
+            If omitted, no translations are exported.
           items:
             $ref: '../api_common.yaml#/components/schemas/LocaleId'
         skipEntries:
@@ -258,14 +267,17 @@ components:
       properties:
         archiveMode:
           type: boolean
-          description: In case if {@code true} passed - all entries that are not in import file will be archived.
+          default: false
+          description: In case if `true` passed - all entries that are not in import file will be archived.
         importFile:
           type: string
           format: binary
-          description: Binary file data to upload.
+          description: Binary file data to upload (CSV, XLSX or TBX).
         importFileName:
           type: string
-          description: Name and extension of the import file. Only needed when the file name of the uploaded file part has no supported extension.
+          description: >-
+            Name and extension of the import file. Optional: used to detect the format
+            when it can't be detected from the uploaded file name.
         importFileMediaType:
           type: string
           enum:
@@ -366,18 +378,28 @@ components:
       description: Import related warning.
 
     GlossaryImportResponsePTO:
-      allOf:
-        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
-        - type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/GlossaryImportResponse"
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/GlossaryImportResponse"
 
     GlossaryImportPTO:
-      allOf:
-        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
-        - type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/GlossaryImport"
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/GlossaryImport"
 
