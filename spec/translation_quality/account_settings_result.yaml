@@ -26,6 +26,7 @@ x-paths:
           in: path
           required: true
           schema: &ref_0
+            type: string
             enum:
               - LEADING_TRAILING_SPACES
               - ORIGINAL_EQUALS_TARGET
@@ -87,16 +88,24 @@ x-paths:
                               - &ref_6
                                 type: object
                                 properties:
-                                  severityLevelCode: &ref_1
-                                    enum:
-                                      - DISABLED
-                                      - LOW
-                                      - MEDIUM
-                                      - HIGH
+                                  severityLevelCode:
+                                    allOf:
+                                      - &ref_1
+                                        type: string
+                                        enum:
+                                          - DISABLED
+                                          - LOW
+                                          - MEDIUM
+                                          - HIGH
+                                    description: severity level code
+                                    example: MEDIUM
                               - &ref_7
                                 type: object
                                 properties:
-                                  checkTypeCode: *ref_0
+                                  checkTypeCode:
+                                    allOf:
+                                      - *ref_0
+                                    description: check type code
                               - type: object
                                 properties:
                                   subTypes:
@@ -107,31 +116,35 @@ x-paths:
                                           type: object
                                           properties:
                                             checkSubTypeCode:
-                                              enum:
-                                                - EMOJI_ADDED
-                                                - EMOJI_DELETED
-                                                - EMOJI_PRESENT
-                                                - INSERTABLE_ADDED
-                                                - INSERTABLE_DELETED
-                                                - PLACEABLE_ADDED
-                                                - PLACEABLE_DELETED
-                                                - SPACES_AROUND_PLACEABLE
-                                                - PLACEABLE_FORMAT
-                                                - NUMBER_ADDED
-                                                - NUMBER_DELETED
-                                                - NUMBER_INCORRECT_CONVERSION
-                                                - TARGET_IS_EMPTY
-                                                - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
-                                                - TARGET_IS_MUCH_LONGER_THAN_SOURCE
-                                                - TAG_ADDED
-                                                - TAG_DELETED
-                                                - SPACES_AROUND_TAGS
-                                                - TAG_ORDER_IS_CHANGED
-                                                - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
-                                                - INVALID_TAG_NESTING
-                                                - TAG_IS_CHANGED
-                                                - SAME_SOURCE_DIFFERENT_TRANSLATIONS
-                                                - SAME_TRANSLATION_DIFFERENT_SOURCES
+                                              allOf:
+                                                - type: string
+                                                  enum:
+                                                    - EMOJI_ADDED
+                                                    - EMOJI_DELETED
+                                                    - EMOJI_PRESENT
+                                                    - INSERTABLE_ADDED
+                                                    - INSERTABLE_DELETED
+                                                    - PLACEABLE_ADDED
+                                                    - PLACEABLE_DELETED
+                                                    - SPACES_AROUND_PLACEABLE
+                                                    - PLACEABLE_FORMAT
+                                                    - NUMBER_ADDED
+                                                    - NUMBER_DELETED
+                                                    - NUMBER_INCORRECT_CONVERSION
+                                                    - TARGET_IS_EMPTY
+                                                    - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                                                    - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                                                    - TAG_ADDED
+                                                    - TAG_DELETED
+                                                    - SPACES_AROUND_TAGS
+                                                    - TAG_ORDER_IS_CHANGED
+                                                    - OPEN_CLOSED_TAG_ORDER_IS_CHANGED
+                                                    - INVALID_TAG_NESTING
+                                                    - TAG_IS_CHANGED
+                                                    - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                                    - SAME_TRANSLATION_DIFFERENT_SOURCES
+                                              description: check subtype code
+                                              example: EMOJI_ADDED
                                             name:
                                               type: string
                                               description: check subtype name
@@ -139,7 +152,11 @@ x-paths:
                                         - &ref_9
                                           type: object
                                           properties:
-                                            severityLevelCode: *ref_1
+                                            severityLevelCode:
+                                              allOf:
+                                                - *ref_1
+                                              description: severity level code
+                                              example: MEDIUM
                               - type: object
                                 properties:
                                   locales:
