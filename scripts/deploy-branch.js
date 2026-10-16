@@ -8,6 +8,11 @@ set('-v');
 
 var branch = process.env.BRANCH_NAME && process.env.BRANCH_NAME.toLowerCase();
 if (branch && branch !== 'gh-pages') {
+  // deploy-to-gh-pages pushes the whole site, not just this preview: it merges the live
+  // gh-pages content into .tmp with a no-overwrite copy. A .tmp left over from an earlier
+  // build of this branch would win over the live root files and roll the site back to that
+  // old snapshot, so always start from an empty folder.
+  rm('-rf', '.tmp');
   var branchPath = path.join('.tmp', 'preview', branch, '/');
   mkdir('-p', branchPath);
   cp('-R', 'web/*', branchPath);

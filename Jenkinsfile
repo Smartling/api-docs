@@ -40,6 +40,11 @@ pipeline {
                     return env.BRANCH_NAME != 'master' && env.BRANCH_NAME != 'gh-pages';
                 }
             }
+            options {
+                // every deploy clones gh-pages, adds its output and force-pushes the whole site,
+                // so concurrent deploys from different branches would overwrite each other
+                lock('api-docs-gh-pages')
+            }
             steps {
                 sh 'npm run deploy-branch'
             }
@@ -54,9 +59,17 @@ pipeline {
             when {
                 branch 'master'
             }
+            options {
+                lock('api-docs-gh-pages')
+            }
             steps {
                 sh 'npm run deploy'
             }
+        }
+    }
+    post {
+        always {
+            cleanWs()
         }
     }
 }
