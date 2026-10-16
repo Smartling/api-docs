@@ -9916,27 +9916,6 @@ components:
           type: array
           maxItems: 150
       type: object
-    BindingsResponse:
-      type: object
-      required:
-      - response
-      properties:
-        response:
-          allOf:
-            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
-            - properties:
-                data:
-                  properties:
-                    items:
-                      items:
-                        $ref: '#/components/schemas/Binding'
-                      type: array
-                    totalCount:
-                      type: integer
-                  required:
-                    - items
-                  type: object
-              type: object
     BatchBindingsRequest:
       type: object
       description: Parameters for bindings search
@@ -10837,15 +10816,12 @@ components:
                   type: object
               type: object
           example:
-            application/json:
-              response:
-                code: SUCCESS
-                data:
-                  items:
-                    anyOf:
-                      - android
-                      - ios
-                      - gettext
+            code: SUCCESS
+            data:
+              items:
+                - android
+                - ios
+                - gettext
     FilesAPIListFilesSuccessResponse:
       type: object
       required:
@@ -11452,7 +11428,7 @@ components:
           properties:
             scheduleUid:
               description: schedule universal identifier.
-              example: ngahq6dgh4ed
+              example: 7a1f5c2e-3b9d-4e8a-9c64-2d0b8f1e5a37
               format: uuid
               type: string
             workflowStepUid:
@@ -11472,7 +11448,7 @@ components:
           properties:
             fieldUid:
               description: custom field universal identifier.
-              example: ngahq6dgh4ed
+              example: 7a1f5c2e-3b9d-4e8a-9c64-2d0b8f1e5a37
               format: uuid
               type: string
             type:
@@ -11481,7 +11457,7 @@ components:
               type: string
             fieldName:
               description: custom field name.
-              example: field-name
+              example: true
               type: boolean
             enabled:
               description: is custom field enabled.
@@ -11501,9 +11477,7 @@ components:
               type: boolean
             options:
               items:
-                example:
-                  - option1
-                  - option2
+                example: option1
                 type: string
               type: array
             defaultValue:
@@ -11534,7 +11508,7 @@ components:
           type: string
         fieldName:
           description: custom field name.
-          example: field-name
+          example: true
           type: boolean
         enabled:
           description: is custom field enabled.
@@ -11554,9 +11528,7 @@ components:
           type: boolean
         options:
           items:
-            example:
-              - option1
-              - option2
+            example: option1
             type: string
           type: array
         defaultValue:
@@ -11572,7 +11544,7 @@ components:
       properties:
         fieldName:
           description: custom field name.
-          example: field-name
+          example: true
           type: boolean
         enabled:
           description: is custom field enabled.
@@ -11592,9 +11564,7 @@ components:
           type: boolean
         options:
           items:
-            example:
-              - option1
-              - option2
+            example: option1
             type: string
           type: array
         defaultValue:
@@ -11801,13 +11771,14 @@ components:
           countryId: US
           description: United States
         description: English (United States)
+        mtSupported: true
         language:
           description: English
           direction: LTR
           languageId: en
           wordDelimiter: SPACE
         localeId: en-US
-        direction: RTL
+        direction: LTR
       properties:
         country:
           description: >-
@@ -12125,7 +12096,7 @@ components:
     ProjectDetailsLocaleItem:
       example:
         description: Russian (Russia)
-        enabled: 'true'
+        enabled: true
         localeId: ru-RU
       properties:
         description:
@@ -12161,6 +12132,10 @@ components:
                     projectTypeCode: APPLICATION_RESOURCES
                     sourceLocaleDescription: English
                     sourceLocaleId: en-US
+                    targetLocales:
+                      - description: Russian (Russia)
+                        enabled: true
+                        localeId: ru-RU
                   properties:
                     accountUid:
                       description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
@@ -12964,8 +12939,8 @@ components:
         orderBy:
           description: Sort result by fields
           example:
-            - DOMAIN
-            - URL_PATH
+            items:
+              - direction: DOMAIN
           properties:
             items:
               items:
@@ -13249,7 +13224,8 @@ components:
                       The field unknown.parameter was not expected. Please
                       consult the documentation to verify the fields you are
                       submitting.
-                    details: unknown.parameter
+                    details:
+                      field: unknown.parameter
 
     Error401ResponseDefinition:
       description: Provided credentials are not valid.
