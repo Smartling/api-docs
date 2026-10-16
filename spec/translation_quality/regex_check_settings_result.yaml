@@ -37,21 +37,38 @@ x-paths:
                       type: string
                       description: Rule name
                       example: ruleName
-                    severityLevelCode: &ref_14
-                      enum:
-                        - DISABLED
-                        - LOW
-                        - MEDIUM
-                        - HIGH
+                    severityLevelCode:
+                      allOf:
+                        - &ref_14
+                          type: string
+                          enum:
+                            - DISABLED
+                            - LOW
+                            - MEDIUM
+                            - HIGH
+                      description: >-
+                        [Severity level
+                        code](#operation/getTranslationQualityCheckSeverityLevels)
+                      example: MEDIUM
                     ruleTypeCode:
-                      enum:
-                        - FORBIDDEN
-                        - MISSING
-                        - COUNT_MISMATCH
+                      allOf:
+                        - type: string
+                          enum:
+                            - FORBIDDEN
+                            - MISSING
+                            - COUNT_MISMATCH
+                      description: >-
+                        [Rule type
+                        code](#operation/getRegexQualityCheckRuleTypes)
+                      example: FORBIDDEN
                     flavorCode:
-                      enum:
-                        - JAVA
-                        - DOT_NET
+                      allOf:
+                        - type: string
+                          enum:
+                            - JAVA
+                            - DOT_NET
+                      description: Flavor code
+                      example: JAVA
                     originalPattern:
                       type: string
                       description: >-
@@ -168,12 +185,17 @@ x-paths:
                                                   the region part is always uppercase.
                                                 example: fr-FR
                                               type: array
-                                            severityLevelCode: &ref_11
-                                              enum:
-                                                - DISABLED
-                                                - LOW
-                                                - MEDIUM
-                                                - HIGH
+                                            severityLevelCode:
+                                              allOf:
+                                                - &ref_11
+                                                  type: string
+                                                  enum:
+                                                    - DISABLED
+                                                    - LOW
+                                                    - MEDIUM
+                                                    - HIGH
+                                              description: severity level code
+                                              example: MEDIUM
       x-code-samples:
         - lang: curl
           source: >
@@ -306,7 +328,11 @@ x-paths:
                               groupUid: *ref_8
                               ruleUid: *ref_9
                               targetLocaleIds: *ref_10
-                              severityLevelCode: *ref_11
+                              severityLevelCode:
+                                allOf:
+                                  - *ref_11
+                                description: severity level code
+                                example: MEDIUM
         x-code-samples:
           - lang: curl
             source: >
@@ -352,7 +378,11 @@ x-paths:
                                         groupUid: *ref_8
                                         ruleUid: *ref_9
                                         targetLocaleIds: *ref_10
-                                        severityLevelCode: *ref_11
+                                        severityLevelCode:
+                                          allOf:
+                                            - *ref_11
+                                          description: severity level code
+                                          example: MEDIUM
         x-code-samples:
           - lang: curl
             source: >
@@ -438,7 +468,13 @@ x-paths:
               allOf:
                 - type: object
                   properties:
-                    severityLevelCode: *ref_14
+                    severityLevelCode:
+                      allOf:
+                        - *ref_14
+                      description: >-
+                        [severity level
+                        code](#operation/getTranslationQualityCheckSeverityLevels)
+                      example: MEDIUM
                   required:
                     - severityLevelCode
       responses:

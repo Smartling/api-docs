@@ -28,6 +28,7 @@ x-paths:
           in: path
           required: true
           schema:
+            type: string
             enum:
               - LEADING_TRAILING_SPACES
               - ORIGINAL_EQUALS_TARGET
@@ -64,11 +65,17 @@ x-paths:
                 - type: object
                   properties:
                     severityLevelCode:
-                      enum:
-                        - DISABLED
-                        - LOW
-                        - MEDIUM
-                        - HIGH
+                      allOf:
+                        - type: string
+                          enum:
+                            - DISABLED
+                            - LOW
+                            - MEDIUM
+                            - HIGH
+                      description: >-
+                        [severity level
+                        code](#operation/getTranslationQualityCheckSeverityLevels)
+                      example: MEDIUM
                   required:
                     - severityLevelCode
       responses:
@@ -98,11 +105,15 @@ x-paths:
                             type: object
                             properties:
                               severityLevelCode:
-                                enum:
-                                  - DISABLED
-                                  - LOW
-                                  - MEDIUM
-                                  - HIGH
+                                allOf:
+                                  - type: string
+                                    enum:
+                                      - DISABLED
+                                      - LOW
+                                      - MEDIUM
+                                      - HIGH
+                                description: severity level code
+                                example: MEDIUM
       x-code-samples:
         - lang: curl
           source: >
@@ -124,6 +135,7 @@ x-paths:
           in: path
           required: true
           schema:
+            type: string
             enum:
               - TAG_CONSISTENCY
               - NUMBER_CONSISTENCY
@@ -138,6 +150,7 @@ x-paths:
           in: path
           required: true
           schema:
+            type: string
             enum:
               - EMOJI_ADDED
               - EMOJI_DELETED
