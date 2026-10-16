@@ -3,7 +3,8 @@ components:
     groupUidPathParameter:
       name: groupUid
       in: path
-      type: string
+      schema:
+        type: string
       required: true
       description: Unique identifier of corresponding group.
 
@@ -11,7 +12,8 @@ components:
       name: wordUid
       in: path
       required: true
-      type: string
+      schema:
+        type: string
       description: Word unique identifier.
 
     checkTypeCodePathParameter:
@@ -54,35 +56,40 @@ components:
       name: targetLocaleId
       in: path
       required: true
-      type: string
+      schema:
+        type: string
       description: Smartling ID for the language you want to translate to.
 
     targetLocaleIdQueryParameter:
       name: targetLocaleId
       in: query
       required: true
-      type: string
+      schema:
+        type: string
       description: Smartling ID for the language you want to translate to.
 
     profileUidPathParameter:
       name: profileUid
       in: path
       required: true
-      type: string
+      schema:
+        type: string
       description: Unique identifier of corresponding profile.
 
     copyProfileUidPathParameter:
       name: profileUid
       in: path
       required: true
-      type: string
+      schema:
+        type: string
       description: Unique identifier of the profile for copy creation.
 
     nameMaskQueryParameter:
       name: nameMask
       in: query
       required: false
-      type: string
+      schema:
+        type: string
       description: name mask.
       example: default
 
@@ -90,7 +97,8 @@ components:
       name: limit
       in: query
       required: false
-      type: integer
+      schema:
+        type: integer
       description: limit size.
       example: 100
 
@@ -98,7 +106,8 @@ components:
       name: offset
       in: query
       required: false
-      type: integer
+      schema:
+        type: integer
       description: offset number.
       example: 1
 
@@ -106,7 +115,8 @@ components:
       name: ruleUid
       in: path
       required: true
-      type: string
+      schema:
+        type: string
       description: Unique identifier of corresponding check rule.
 
   requestBodies:
@@ -126,7 +136,8 @@ components:
       type: object
       properties:
         targetLocaleId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: Smartling ID for the language you want to translate to.
           example: "it-IT"
       required:
@@ -137,7 +148,6 @@ components:
       properties:
         profileUid:
           type: string
-          required: true
           description: Unique identifier of corresponding profile.
           example: "ce6d6b5dbc12"
       required:
@@ -187,7 +197,7 @@ components:
           example:
             - "ru-RU"
           items:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
           type: array
         severityLevelCode:
           type: string
@@ -322,13 +332,9 @@ components:
           description: Unique identifier for the user who modified the profile.
           example: xas344dsd3
         createdDate:
-          type: string
-          description: created date
-          example: "2018-07-02T13:39:27Z"
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
         modifiedDate:
-          type: string
-          description: modified date
-          example: "2018-07-02T13:39:27Z"
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
 
     checkSubTypeCodeResponse:
       type: object
@@ -421,9 +427,9 @@ components:
             type: object
             properties:
               targetLocaleId:
-                type: string
+                allOf:
+                  - $ref: '../api_common.yaml#/components/schemas/LocaleId'
                 description: Smartling locale identifier of the translation
-                example: "it-IT"
               severityLevelCode:
                 type: string
                 $ref: '#/components/schemas/enum/severityLevelCodeEnum'
@@ -470,9 +476,7 @@ components:
       type: object
       properties:
         hashcode:
-          type: string
-          description: string hashcode
-          example: "7191152182c69d9b72069ac1290fe24b"
+          $ref: '../api_common.yaml#/components/schemas/Hashcode'
 
     pluralFormGroupUid:
       type: object
@@ -566,57 +570,57 @@ components:
 
     ProjectCheckTypeEffectiveDTOAnyOf:
       anyOf:
-        - $ref: 'checks/blacklisted_terms.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/blacklisted_terms.yaml#/components/schemas/BlacklistedTermsAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/EmojiConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/global_capitalisation_consistency.yaml#/components/schemas/GlobalCapitalisationConsistencyAccountCheckTypeEffectiveDTO'
         - $ref: 'checks/glossary_compliance.yaml#/components/schemas/ProjectCheckTypeEffectiveDTO'
-        - $ref: 'checks/grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/insertable_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/leading_trailing_spaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/non_translatable_text.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/number_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/repeated_word.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/tag_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/target_length_limit.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/trademark_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/regex_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/grammar_check.yaml#/components/schemas/GrammarCheckAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/insertable_consistency.yaml#/components/schemas/InsertableConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/leading_trailing_spaces.yaml#/components/schemas/LeadingTrailingSpacesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/non_translatable_text.yaml#/components/schemas/NonTranslatableTextAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/number_consistency.yaml#/components/schemas/NumberConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/original_equals_target.yaml#/components/schemas/OriginalEqualsTargetAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/repeated_word.yaml#/components/schemas/RepeatedWordAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/segment_completeness.yaml#/components/schemas/SegmentCompletenessAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/SourceInWrongLanguageAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/spellcheck.yaml#/components/schemas/SpellcheckAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/tag_consistency.yaml#/components/schemas/TagConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/TargetInWrongLanguageAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_length_limit.yaml#/components/schemas/TargetLengthLimitAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/TargetSourceConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/trademark_consistency.yaml#/components/schemas/TrademarkConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/whitespaces.yaml#/components/schemas/WhitespacesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/PunctuationConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/plurals_repetition.yaml#/components/schemas/PluralsRepetitionAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/regex_check.yaml#/components/schemas/RegexCheckAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/open_issues.yaml#/components/schemas/OpenIssuesAccountCheckTypeEffectiveDTO'
 
     AccountCheckTypeEffectiveDTOAnyOf:
       anyOf:
-        - $ref: 'checks/blacklisted_terms.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/insertable_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/leading_trailing_spaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/non_translatable_text.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/number_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/repeated_word.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/spellcheck.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/tag_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/target_length_limit.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/trademark_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/regex_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
-        - $ref: 'checks/open_issues.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/blacklisted_terms.yaml#/components/schemas/BlacklistedTermsAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/emoji_consistency.yaml#/components/schemas/EmojiConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/global_capitalisation_consistency.yaml#/components/schemas/GlobalCapitalisationConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/glossary_compliance.yaml#/components/schemas/GlossaryComplianceAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/grammar_check.yaml#/components/schemas/GrammarCheckAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/insertable_consistency.yaml#/components/schemas/InsertableConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/leading_trailing_spaces.yaml#/components/schemas/LeadingTrailingSpacesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/non_translatable_text.yaml#/components/schemas/NonTranslatableTextAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/number_consistency.yaml#/components/schemas/NumberConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/original_equals_target.yaml#/components/schemas/OriginalEqualsTargetAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/repeated_word.yaml#/components/schemas/RepeatedWordAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/segment_completeness.yaml#/components/schemas/SegmentCompletenessAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/source_in_wrong_language.yaml#/components/schemas/SourceInWrongLanguageAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/spellcheck.yaml#/components/schemas/SpellcheckAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/tag_consistency.yaml#/components/schemas/TagConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_in_wrong_language.yaml#/components/schemas/TargetInWrongLanguageAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_length_limit.yaml#/components/schemas/TargetLengthLimitAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/target_source_consistency.yaml#/components/schemas/TargetSourceConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/trademark_consistency.yaml#/components/schemas/TrademarkConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/whitespaces.yaml#/components/schemas/WhitespacesAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/punctuation_consistency.yaml#/components/schemas/PunctuationConsistencyAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/plurals_repetition.yaml#/components/schemas/PluralsRepetitionAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/regex_check.yaml#/components/schemas/RegexCheckAccountCheckTypeEffectiveDTO'
+        - $ref: 'checks/open_issues.yaml#/components/schemas/OpenIssuesAccountCheckTypeEffectiveDTO'
 
     ProfilesAccountCheckTypeEffectiveDTOAnyOf:
       anyOf:

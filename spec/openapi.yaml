@@ -11,6 +11,9 @@ info:
 servers:
   - url: 'https://api.smartling.com'
 
+security:
+  - BearerAuth: []
+
 externalDocs:
   description: Smartling Help Center
   url: 'https://help.smartling.com'
@@ -438,6 +441,7 @@ paths:
       tags:
         - Authentication
       operationId: authenticate
+      security: []
       requestBody:
         content:
           application/json:
@@ -497,6 +501,7 @@ paths:
         start a new session, rather than refreshing more often.
       summary: Refresh access token
       operationId: refreshAccessToken
+      security: []
       requestBody:
         content:
           application/json:
@@ -582,7 +587,7 @@ paths:
           name: projectTypeCode
           required: false
           schema:
-            type: String
+            type: string
         - description: >-
             Indicator list for the type of the projects.
           in: query
@@ -653,7 +658,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: >-
           Indicator whether or not disabled locales configured for the project
           should be returned as part of the targetLocales. By default disabled
@@ -718,7 +723,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -732,11 +737,12 @@ paths:
                   example: ac48ht4qy
                   type: string
                 localeId:
+                  allOf:
+                    - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
                   description: >-
                     The locale identifier (localeId) of the locale to be added
                     to the project.
                   example: ru-RU
-                  type: string
               type: object
 
       responses:
@@ -791,7 +797,7 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
 
       requestBody:
         content:
@@ -812,7 +818,7 @@ paths:
                   example:
                   - ru-RU
                   items:
-                    type: string
+                    $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
                   type: array
               type: object
 
@@ -855,13 +861,13 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: The uid of the process to check for
         in: path
         name: processUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
 
       responses:
         '200':
@@ -918,7 +924,7 @@ paths:
         required: false
         schema:
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: array
       - description: Fetch only supported locales. Otherwise fetch all locales. Default value is "true".
         in: query
@@ -1079,8 +1085,7 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uid
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
 
       requestBody:
         content:
@@ -1104,7 +1109,7 @@ paths:
                     Example: `/myproject/i18n/ui.properties`
                   maxLength: 512
                 fileType:
-                  $ref: '#/components/schemas/FileType'
+                  $ref: './spec/api_common.yaml#/components/schemas/FileType'
                 smartling.namespace:
                   type: string
                   description: |
@@ -1143,7 +1148,7 @@ paths:
                 callbackUrl:
                   type: string
                   maxLength: 255
-                  format: url
+                  format: uri
                   description: |
                     A GET request that creates a callback to a URL when all authorized strings from a file are 100%
                     published for a locale.* The callback gives the
@@ -1271,13 +1276,13 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - name: fileUri
         description: Value that uniquely identifies the downloaded file.
         in: query
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       responses:
         200:
           description: OK
@@ -1322,13 +1327,13 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - name: fileUri
         description: Smartling value that uniquely identifies a file in Smartling
         in: query
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       responses:
         '200':
           description: OK
@@ -1394,19 +1399,19 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: Identifier for a locale.
         in: path
         name: localeId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       - description: Smartling value that uniquely identifies a file in Smartling
         in: query
         name: fileUri
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       responses:
         '200':
           description: OK
@@ -1495,7 +1500,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
 
       - name: localeIds
         description: |
@@ -1512,7 +1517,7 @@ paths:
         in: query
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       - name: retrievalType
         description: |
           Determines the desired format for the download. Applies to translated files only.
@@ -1601,13 +1606,13 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - name: fileUri
         description: Smartling value that uniquely identifies a file in Smartling
         in: query
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       - name: retrievalType
         description: |
           Determines the desired format for the download. Applies to translated files only.
@@ -1707,7 +1712,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - name: 'fileUris[]'
         description: Smartling values that each uniquely identify a file. The limit is 300 files.
         explode: true
@@ -1715,8 +1720,9 @@ paths:
         required: true
         schema:
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/FileUri'
           type: array
+          maxItems: 300
       - name: 'localeIds[]'
         description: List of locales to download.
         explode: true
@@ -1724,7 +1730,7 @@ paths:
         required: true
         schema:
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: array
       - name: retrievalType
         description: |
@@ -1878,7 +1884,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
 
       requestBody:
         required: true
@@ -1903,14 +1909,13 @@ paths:
                       - localeIds
                     properties:
                       fileUri:
-                        type: string
-                        description: Smartling value that uniquely identifies a file.
+                        $ref: './spec/api_common.yaml#/components/schemas/FileUri'
                       localeIds:
                         type: array
                         description: List of locales to download for the given file. Must contain at least one element.
                         minItems: 1
                         items:
-                          type: string
+                          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
                 retrievalType:
                   description: |
                     Determines the desired format for the download. Applies only to
@@ -2018,7 +2023,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - name: uriMask
         description: >
           Returns only files with a URI containing the given substring. Case
@@ -2034,7 +2039,7 @@ paths:
         required: false
         schema:
           items:
-            $ref: '#/components/schemas/FileType'
+            $ref: './spec/api_common.yaml#/components/schemas/FileType'
           type: array
       - name: lastUploadedAfter
         description: Returns all files uploaded after the specified date.
@@ -2137,7 +2142,7 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       responses:
         '200':
           description: OK
@@ -2185,23 +2190,25 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           multipart/form-data:
             schema:
               properties:
                 fileUri:
+                  allOf:
+                    - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
                   description: Current value that uniquely identifies the file
-                  type: string
                 newFileUri:
+                  allOf:
+                    - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
                   description: >
                     The new value for fileUri. We recommend that you use file
                     path and file name, similar to how version control systems
                     identify the file. Example: /myproject/i18n/ui.properties.
                     This must be a fileUri that does not exist in the current
                     Smartling project.
-                  type: string
               required:
               - fileUri
               - newFileUri
@@ -2212,7 +2219,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmptyResponse'
+                $ref: './spec/api_common.yaml#/components/schemas/EmptyResponse'
               examples:
                 response:
                   value:
@@ -2257,15 +2264,14 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           multipart/form-data:
             schema:
               properties:
                 fileUri:
-                  description: Smartling value that uniquely identifies a file in Smartling
-                  type: string
+                  $ref: './spec/api_common.yaml#/components/schemas/FileUri'
               required:
               - fileUri
               type: object
@@ -2275,7 +2281,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmptyResponse'
+                $ref: './spec/api_common.yaml#/components/schemas/EmptyResponse'
               examples:
                 response:
                   value:
@@ -2311,19 +2317,19 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: Identifier for a locale.
         in: path
         name: localeId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       - description: A unique identifier for a file in Smartling.
         in: query
         name: fileUri
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       - description: >-
           Limits the return to only those file and locale combinations that
           have a ```lastModified``` date after the
@@ -2380,13 +2386,13 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: A unique identifier for a file in Smartling.
         in: query
         name: fileUri
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       - description: >-
           Limits the return to only those file and locale combinations that
           have a ```lastModified``` date after the parameter
@@ -2444,13 +2450,13 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: Identifier for a locale.
         in: path
         name: localeId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       requestBody:
         content:
           multipart/form-data:
@@ -2461,30 +2467,29 @@ paths:
                   format: binary
                   description: The file contents to upload.
                 fileUri:
+                  allOf:
+                    - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
                   description: >-
                     The Smartling URI for a file that contains the original
                     language strings that are already uploaded to Smartling.
-                  type: string
                 fileType:
-                  description: >-
-                    A unique identifier for the file type. To allow translation
-                    imports, XML and JSON files must be uploaded with
-                    `source_key_paths` defined.
-                  enum:
-                    $ref: '#/components/schemas/ImportTranslationsFileType/enum'
-                  type: string
+                  $ref: '#/components/schemas/ImportTranslationsFileType'
                 translationState:
                   description: |
                     Value indicating the workflow state to import the translations into.
                     Content will be imported into the language's default workflow.
+                    If omitted, `PUBLISHED` is used.
 
                     | Value | Description |
                     |-------|-------------|
                     | PUBLISHED | The translated content is published. |
                     | POST_TRANSLATION | The translated content is imported into the first step after translation - if there is none, it will be published. |
+                    | POST_TRANSLATION_PREPUBLISH | Same as `POST_TRANSLATION`, but the import also forces the prepublish action. |
                   enum:
                   - PUBLISHED
                   - POST_TRANSLATION
+                  - POST_TRANSLATION_PREPUBLISH
+                  default: PUBLISHED
                   type: string
                 overwrite:
                   description: Whether or not to overwrite existing translations.
@@ -2494,7 +2499,6 @@ paths:
               - file
               - fileUri
               - fileType
-              - translationState
               type: object
         required: true
       responses:
@@ -2557,13 +2561,13 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: Identifier for a locale.
         in: path
         name: localeId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       requestBody:
         content:
           multipart/form-data:
@@ -2574,10 +2578,11 @@ paths:
                   type: string
                   format: binary
                 fileUri:
+                  allOf:
+                    - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
                   description: >-
                     The Smartling URI for a file that contains the original
                     language strings that are already uploaded to Smartling
-                  type: string
                 retrievalType:
                   description: |
                     Determines the desired format for the download. Applies to
@@ -2650,8 +2655,7 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uuid
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description:
           Limits the response to only those files that have a ```publishDate```
           date after the ```publishedAfter``` parameter. The items array can
@@ -2671,8 +2675,9 @@ paths:
         required: false
         schema:
           type: array
+          maxItems: 20
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       - description:
           A list of locale identifiers to filter the response list by. Up to 50 localeIds
           can be specified. See getProjectDetails to get a project's localeIds.
@@ -2681,8 +2686,9 @@ paths:
         required: false
         schema:
           type: array
+          maxItems: 50
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       - description: Standard Smartling limit and offset to paginate through results. Default value is 0.
         in: query
         name: offset
@@ -2764,8 +2770,7 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uuid
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           multipart/form-data:
@@ -2822,7 +2827,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -2868,8 +2873,7 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uuid
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: Context name (or url) filter.
         in: query
         name: nameFilter
@@ -2940,8 +2944,7 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uuid
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: Unique identifier of a context
         in: path
         name: contextUid
@@ -2975,7 +2978,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -3006,8 +3009,7 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uuid
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: Unique identifier of a context
         in: path
         name: contextUid
@@ -3026,7 +3028,7 @@ paths:
                 - response
                 properties:
                   response:
-                    $ref: '#/components/schemas/SuccessResponse'
+                    $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
               examples:
                 response:
                   value:
@@ -3042,7 +3044,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -3073,8 +3075,7 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uuid
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -3124,8 +3125,7 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uuid
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: Unique identifier of a context
         in: path
         name: contextUid
@@ -3164,7 +3164,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -3212,8 +3212,7 @@ paths:
           name: projectId
           required: true
           schema:
-            format: uuid
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - description: Unique identifier of a context
           in: path
           name: contextUid
@@ -3250,7 +3249,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -3327,8 +3326,7 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uuid
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           multipart/form-data:
@@ -3387,7 +3385,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -3424,8 +3422,7 @@ paths:
         name: projectId
         required: true
         schema:
-          format: uuid
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: >-
           Identifier of the match request obtained when running asynchronous
           match request.
@@ -3473,7 +3470,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -3501,15 +3498,13 @@ paths:
           name: projectId
           required: true
           schema:
-            format: uuid
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - description: Identifier of the asynchronous process obtained when running asynchronous request.
           in: path
           name: processUid
           required: true
           schema:
-            format: uuid
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
         responses:
           200:
             description: OK
@@ -3555,7 +3550,7 @@ paths:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/Error404Response'
+                  $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
                 examples:
                   response:
                     value:
@@ -3649,8 +3644,7 @@ paths:
           name: projectId
           required: true
           schema:
-            format: uuid
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -3698,7 +3692,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -3734,8 +3728,7 @@ paths:
           name: projectId
           required: true
           schema:
-            format: uuid
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - description: |-
             If your original request returns an *offset* value, the set of results is incomplete.
             Run the request again, with the given offset value to see more results.
@@ -3764,7 +3757,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -3798,8 +3791,7 @@ paths:
           name: projectId
           required: true
           schema:
-            format: uuid
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -3812,14 +3804,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
           description: OK
         400:
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -3953,12 +3945,13 @@ paths:
           name: projectId
           required: true
           schema:
-            format: uuid
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         required: true
         content:
           application/json:
+            schema:
+              type: object
             example:
               variables:
                 searchStringsFilter:
@@ -4008,13 +4001,13 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - name: translationJobUid
           description: A unique translation job identifier.
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
         - name: reportStatus
           description: Status of report.
           in: query
@@ -4043,7 +4036,7 @@ paths:
           required: false
           schema:
             items:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/UserUid'
             type: array
         - name: translationJobSchemaContents
           description: if report was generated for the job,.
@@ -4214,13 +4207,13 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - name: translationJobUid
           description: A unique translation job identifier.
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
 
       requestBody:
         content:
@@ -4259,13 +4252,13 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - name: translationJobUid
           description: A unique translation job identifier.
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
         - name: reportStatus
           description: Status of report.
           in: query
@@ -4294,7 +4287,7 @@ paths:
           required: false
           schema:
             items:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/UserUid'
             type: array
         - name: translationJobSchemaContents
           description: if report was generated for the job,.
@@ -4465,13 +4458,13 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - name: translationJobUid
           description: A unique translation job identifier.
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
 
       requestBody:
         content:
@@ -4508,7 +4501,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - name: reportUid
           description: A unique report identifier.
           in: path
@@ -4569,7 +4562,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - name: reportUid
           description: A unique report identifier.
           in: path
@@ -4723,7 +4716,7 @@ paths:
               in: path
               required: true
               schema:
-                type: string
+                $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
             - name: reportUid
               description: A unique report identifier.
               in: path
@@ -4736,7 +4729,7 @@ paths:
               content:
                 application/json:
                   schema:
-                    $ref: '#/components/schemas/EmptyResponse'
+                    $ref: './spec/api_common.yaml#/components/schemas/EmptyResponse'
                   examples:
                     response:
                       value:
@@ -4757,7 +4750,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - name: reportUid
           description: A unique report identifier.
           in: path
@@ -4801,7 +4794,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - name: reportUid
           description: A unique report identifier.
           in: path
@@ -4936,8 +4929,9 @@ paths:
           required: false
           schema:
             items:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
             type: array
+            maxItems: 500
         - description: Used for searching jobs by their status.
           in: query
           name: translationJobStatus
@@ -5046,7 +5040,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: >-
           Used for searching jobs by `jobName`. Any entry is treated as a LIKE
           query on the name of the job.
@@ -5071,8 +5065,9 @@ paths:
         required: false
         schema:
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
           type: array
+          maxItems: 500
       - description: Used for searching jobs by their status.
         in: query
         name: translationJobStatus
@@ -5184,7 +5179,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -5238,7 +5233,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5282,7 +5277,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -5333,7 +5328,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5365,17 +5360,17 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       - in: query
         name: targetLocaleId
         required: false
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
         description: Target / translation locale id.
       - in: query
         name: limit
@@ -5421,7 +5416,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -5461,12 +5456,12 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       requestBody:
         content:
           application/json:
@@ -5510,7 +5505,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5552,12 +5547,12 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       requestBody:
         content:
           application/json:
@@ -5623,12 +5618,12 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       responses:
         200:
           description: OK
@@ -5646,7 +5641,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5685,12 +5680,12 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       requestBody:
         content:
           application/json:
@@ -5730,7 +5725,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5745,7 +5740,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error401Response'
               examples:
                 response:
                   value:
@@ -5776,12 +5771,12 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       requestBody:
         content:
           application/json:
@@ -5810,7 +5805,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -5844,12 +5839,12 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       responses:
         200:
           description: OK
@@ -5903,7 +5898,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -5934,12 +5929,12 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       requestBody:
         content:
           application/json:
@@ -5994,7 +5989,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -6012,7 +6007,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -6045,12 +6040,12 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
 
       responses:
         200:
@@ -6070,7 +6065,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -6083,7 +6078,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error401Response'
               examples:
                 response:
                   value:
@@ -6115,7 +6110,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -6186,7 +6181,7 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -6235,17 +6230,17 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       - in: path
         name: processUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
       responses:
         200:
           description: OK
@@ -6314,12 +6309,12 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       requestBody:
         content:
           application/json:
@@ -6369,7 +6364,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
               examples:
                 response:
                   value:
@@ -6431,12 +6426,12 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       requestBody:
         content:
           application/json:
@@ -6486,6 +6481,8 @@ paths:
           description: Not found validation error
           content:
             application/json:
+              schema:
+                type: object
               examples:
                 response:
                   value:
@@ -6515,12 +6512,12 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - in: path
           name: translationJobUid
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
         - description: The limit on the number of files returned.
           in: query
           name: limit
@@ -6590,17 +6587,17 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       - in: path
         name: targetLocaleId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       requestBody:
         content:
           application/json:
@@ -6674,17 +6671,17 @@ paths:
         in: path
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       - in: path
         name: targetLocaleId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       responses:
         200:
           description: OK
@@ -6737,17 +6734,17 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - in: path
           name: translationJobUid
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
         - in: query
           name: fileUri
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/FileUri'
       responses:
         200:
           description: OK
@@ -6849,17 +6846,17 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - in: path
         name: translationJobUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       - in: query
         name: targetLocaleId
         required: false
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       responses:
         200:
           description: OK
@@ -6947,7 +6944,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -6979,13 +6976,13 @@ paths:
           name: projectId
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - description: A unique identifier for a job.
           in: path
           name: translationJobUid
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       responses:
         '200':
           content:
@@ -7012,7 +7009,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -7043,13 +7040,13 @@ paths:
           name: projectId
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - description: A unique identifier for a job.
           in: path
           name: translationJobUid
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       responses:
         '200':
           content:
@@ -7078,7 +7075,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -7108,13 +7105,13 @@ paths:
           name: projectId
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         - description: A unique identifier for a job.
           in: path
           name: translationJobUid
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       requestBody:
         content:
           application/json:
@@ -7163,7 +7160,7 @@ paths:
           name: projectId
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       responses:
         '200':
           content:
@@ -7200,7 +7197,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -7230,7 +7227,7 @@ paths:
           name: projectId
           required: true
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -7242,7 +7239,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmptyResponse'
+                $ref: './spec/api_common.yaml#/components/schemas/EmptyResponse'
               examples:
                 response:
                   value:
@@ -7321,7 +7318,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404Response'
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
               examples:
                 response:
                   value:
@@ -7482,8 +7479,7 @@ paths:
               properties:
                 projectIds:
                   items:
-                    description: Optional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
-                    type: string
+                    $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
                   maxItems: 1000
                   type: array
                   example: ["12ddasds5", "dsde3e3f4"]
@@ -7545,7 +7541,7 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: Tag mask for search.
         in: query
         name: tagMask
@@ -7607,7 +7603,7 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -7615,8 +7611,7 @@ paths:
               properties:
                 stringHashcodes:
                   items:
-                    description: String hashcode
-                    type: string
+                    $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
                   maxItems: 1000
                   type: array
               required:
@@ -7652,7 +7647,7 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         $ref: '#/components/requestBodies/TagsWithStrings'
       responses:
@@ -7666,7 +7661,7 @@ paths:
                 - response
                 properties:
                   response:
-                    $ref: '#/components/schemas/SuccessResponse'
+                    $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
       x-code-samples:
       - lang: curl
         source: >
@@ -7688,7 +7683,7 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         $ref: '#/components/requestBodies/TagsWithStrings'
       responses:
@@ -7702,7 +7697,7 @@ paths:
                 - response
                 properties:
                   response:
-                    $ref: '#/components/schemas/SuccessResponse'
+                    $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
       x-code-samples:
       - lang: curl
         source: >
@@ -7724,7 +7719,7 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -7733,7 +7728,7 @@ paths:
                 stringHashcodes:
                   description: List of string hashcodes
                   items:
-                    type: string
+                    $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
                   maxItems: 1000
                   type: array
               required:
@@ -7751,7 +7746,7 @@ paths:
                 - response
                 properties:
                   response:
-                    $ref: '#/components/schemas/SuccessResponse'
+                    $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
       x-code-samples:
       - lang: curl
         source: >
@@ -7776,7 +7771,7 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -7825,7 +7820,7 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       requestBody:
         content:
           application/json:
@@ -7879,7 +7874,7 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       - description: Unique identifier of the URL
         in: path
         name: webPageUid
@@ -7930,7 +7925,7 @@ paths:
         name: projectId
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
       responses:
         200:
           description: OK
@@ -8054,7 +8049,7 @@ paths:
         name: agencyUid
         required: true
         schema:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/AgencyUid'
       responses:
         200:
           description: OK
@@ -8098,7 +8093,7 @@ paths:
         schema:
           type: array
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
           maxItems: 200
 
       responses:
@@ -8196,7 +8191,7 @@ paths:
           required: false
           schema:
             items:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
             type: array
         - description: >-
             Optional parameter to filter to the specified list of translation
@@ -8206,7 +8201,7 @@ paths:
           required: false
           schema:
             items:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
             type: array
         - description: >-
             Optional parameter of unique agency identifier.
@@ -8214,7 +8209,7 @@ paths:
           name: agencyUid
           required: false
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/AgencyUid'
         - description: >-
             Optional parameter to filter to the specified list of translation
             resources.
@@ -8223,7 +8218,7 @@ paths:
           required: false
           schema:
             items:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/UserUid'
             type: array
         - description: >-
             Optional parameter to filter to the specified list of translation
@@ -8233,7 +8228,7 @@ paths:
           required: false
           schema:
             items:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
             type: array
         - description: >-
             Optional parameter to filter to the specified list of workflow step types.
@@ -8530,7 +8525,7 @@ paths:
           required: false
           schema:
             items:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
             type: array
         - description: >-
             Optional parameter to filter to the specified list of translation
@@ -8540,7 +8535,7 @@ paths:
           required: false
           schema:
             items:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
             type: array
         - description: >-
             Optional parameter of unique agency identifier.
@@ -8548,7 +8543,7 @@ paths:
           name: agencyUid
           required: false
           schema:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/AgencyUid'
         - description: >-
             Optional parameter to filter to the specified list of translation
             resources.
@@ -8557,7 +8552,7 @@ paths:
           required: false
           schema:
             items:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/UserUid'
             type: array
         - description: >-
             Optional parameter to filter to the specified list of translation
@@ -8567,7 +8562,7 @@ paths:
           required: false
           schema:
             items:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
             type: array
         - description: >-
             Optional parameter to filter to the specified list of workflow step types.
@@ -8931,7 +8926,7 @@ paths:
   /translation-quality-api/v2/accounts/{accountUid}/profiles/{profileUid}/check-types/REGEX_CHECK/settings/rules/{ruleUid}/groups/{groupUid}/severity-level:
     $ref: './spec/translation_quality/regex_check_settings_result.yaml#/x-paths/profiles_regex_check_type_rule_group_severity_level'
 
-  /translation-quality-api/v2/projects/{projectId}/locales/{localeId}/check-types/:
+  /translation-quality-api/v2/projects/{projectId}/locales/{localeId}/check-types:
     $ref: './spec/translation_quality/checks/accounts_result.yaml#/x-paths/get_project_check_types_settings'
 
   /translation-quality-api/v2/accounts/{accountUid}/projects/{projectId}/check:
@@ -9319,6 +9314,14 @@ paths:
 
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        Access token returned by `/auth-api/v2/authenticate` (or
+        `/auth-api/v2/authenticate/refresh`), sent as
+        `Authorization: Bearer <accessToken>`.
   requestBodies:
     TagsWithStrings:
       content:
@@ -9335,7 +9338,7 @@ components:
               stringHashcodes:
                 description: List of string hashcodes
                 items:
-                  type: string
+                  $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
                 maxItems: 1000
                 type: array
             required:
@@ -9346,51 +9349,51 @@ components:
 
   schemas:
     LEADING_TRAILING_SPACES:
-      $ref: './spec/translation_quality/checks/leading_trailing_spaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/leading_trailing_spaces.yaml#/components/schemas/LeadingTrailingSpacesAccountCheckTypeEffectiveDTO'
     ORIGINAL_EQUALS_TARGET:
-      $ref: './spec/translation_quality/checks/original_equals_target.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/original_equals_target.yaml#/components/schemas/OriginalEqualsTargetAccountCheckTypeEffectiveDTO'
     WHITESPACES:
-      $ref: './spec/translation_quality/checks/whitespaces.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/whitespaces.yaml#/components/schemas/WhitespacesAccountCheckTypeEffectiveDTO'
     SPELLCHECK:
-      $ref: './spec/translation_quality/checks/spellcheck.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/spellcheck.yaml#/components/schemas/SpellcheckAccountCheckTypeEffectiveDTO'
     TAG_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/tag_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/tag_consistency.yaml#/components/schemas/TagConsistencyAccountCheckTypeEffectiveDTO'
     TARGET_LENGTH_LIMIT:
-      $ref: './spec/translation_quality/checks/target_length_limit.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/target_length_limit.yaml#/components/schemas/TargetLengthLimitAccountCheckTypeEffectiveDTO'
     NUMBER_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/number_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/number_consistency.yaml#/components/schemas/NumberConsistencyAccountCheckTypeEffectiveDTO'
     REPEATED_WORD:
-      $ref: './spec/translation_quality/checks/repeated_word.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/repeated_word.yaml#/components/schemas/RepeatedWordAccountCheckTypeEffectiveDTO'
     TARGET_IN_WRONG_LANGUAGE:
-      $ref: './spec/translation_quality/checks/target_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/target_in_wrong_language.yaml#/components/schemas/TargetInWrongLanguageAccountCheckTypeEffectiveDTO'
     SOURCE_IN_WRONG_LANGUAGE:
-      $ref: './spec/translation_quality/checks/source_in_wrong_language.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/source_in_wrong_language.yaml#/components/schemas/SourceInWrongLanguageAccountCheckTypeEffectiveDTO'
     SEGMENT_COMPLETENESS:
-      $ref: './spec/translation_quality/checks/segment_completeness.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/segment_completeness.yaml#/components/schemas/SegmentCompletenessAccountCheckTypeEffectiveDTO'
     NON_TRANSLATABLE_TEXT:
-      $ref: './spec/translation_quality/checks/non_translatable_text.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/non_translatable_text.yaml#/components/schemas/NonTranslatableTextAccountCheckTypeEffectiveDTO'
     EMOJI_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/emoji_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/emoji_consistency.yaml#/components/schemas/EmojiConsistencyAccountCheckTypeEffectiveDTO'
     INSERTABLE_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/insertable_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/insertable_consistency.yaml#/components/schemas/InsertableConsistencyAccountCheckTypeEffectiveDTO'
     TARGET_SOURCE_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/target_source_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/target_source_consistency.yaml#/components/schemas/TargetSourceConsistencyAccountCheckTypeEffectiveDTO'
     BLACKLISTED_TERMS:
-      $ref: './spec/translation_quality/checks/blacklisted_terms.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/blacklisted_terms.yaml#/components/schemas/BlacklistedTermsAccountCheckTypeEffectiveDTO'
     GLOSSARY_COMPLIANCE:
-      $ref: './spec/translation_quality/checks/glossary_compliance.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/glossary_compliance.yaml#/components/schemas/GlossaryComplianceAccountCheckTypeEffectiveDTO'
     TRADEMARK_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/trademark_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/trademark_consistency.yaml#/components/schemas/TrademarkConsistencyAccountCheckTypeEffectiveDTO'
     GRAMMAR_CHECK:
-      $ref: './spec/translation_quality/checks/grammar_check.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/grammar_check.yaml#/components/schemas/GrammarCheckAccountCheckTypeEffectiveDTO'
     GLOBAL_CAPITALISATION_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/global_capitalisation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/global_capitalisation_consistency.yaml#/components/schemas/GlobalCapitalisationConsistencyAccountCheckTypeEffectiveDTO'
     PUNCTUATION_CONSISTENCY:
-      $ref: './spec/translation_quality/checks/punctuation_consistency.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/punctuation_consistency.yaml#/components/schemas/PunctuationConsistencyAccountCheckTypeEffectiveDTO'
     PLURALS_REPETITION:
-      $ref: './spec/translation_quality/checks/plurals_repetition.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/plurals_repetition.yaml#/components/schemas/PluralsRepetitionAccountCheckTypeEffectiveDTO'
     OPEN_ISSUES:
-      $ref: './spec/translation_quality/checks/open_issues.yaml#/components/schemas/AccountCheckTypeEffectiveDTO'
+      $ref: './spec/translation_quality/checks/open_issues.yaml#/components/schemas/OpenIssuesAccountCheckTypeEffectiveDTO'
 
     AccountAPIListProjectItem:
       example:
@@ -9412,8 +9415,9 @@ components:
             accessible
           type: boolean
         projectId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
           description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          type: string
         projectName:
           description: >-
             The name of the project. Names of projects are not guaranteed to be
@@ -9426,11 +9430,12 @@ components:
           description: The full name of the sourceLocaleId
           type: string
         sourceLocaleId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           description: >-
             The locale identifier for the source locale of the project. This
             indicates the base locale for which content should be uploaded to
             the project.
-          type: string
       required:
         - projectId
         - projectName
@@ -9447,7 +9452,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -9467,10 +9472,11 @@ components:
       description: The payload to use when adding a file to a job.
       properties:
         fileUri:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
           description: >-
             The URI of the file that has been uploaded to Smartling. `fileUri`
             is required.
-          type: string
         targetLocaleIds:
           description: >-
             The array of `localeId`s that the file should be added to. If not
@@ -9479,7 +9485,7 @@ components:
             were not already part of the job, then the job will be extended to
             contain the additional locales.
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: array
       type: object
     SearchTranslationJobByLocalesAndHashcodesRequest:
@@ -9490,14 +9496,14 @@ components:
             The array of hashcodes to search a job containing given hashcodes.
             If empty, response will also be empty list.
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
           type: array
         localeIds:
           description: >-
             List of localeIds to search jobs associated with provided hashcodes and locales.
             If empty, search will be performed only by hashcodes.
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: array
       type: object
     AddStringsJobRequest:
@@ -9510,7 +9516,7 @@ components:
             job. Hashcodes are required when adding strings to a job. Hashcodes
             are limited to 1000 per API call.
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
           maxItems: 1000
           type: array
         moveEnabled:
@@ -9530,7 +9536,7 @@ components:
             locales provided. If the locales were not already part of the job,
             the job will be extended to contain the additional locales.
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: array
       type: object
     AsyncAcceptedResponse:
@@ -9541,23 +9547,7 @@ components:
           type: string
       type: object
     AsyncProcessResponse:
-      properties:
-        response:
-          properties:
-            code:
-              description: Code of the completed operation.
-              enum:
-                - SUCCESS
-              type: string
-            data:
-              properties:
-                processUid:
-                  description: Identifier of the started asynchronous process.
-                  format: uuid
-                  type: string
-              type: object
-          type: object
-      type: object
+      $ref: './spec/api_common.yaml#/components/schemas/AsyncProcessResponse'
     AsyncMatchResponse:
       properties:
         response:
@@ -9570,11 +9560,11 @@ components:
             data:
               properties:
                 processUid:
+                  allOf:
+                    - $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
                   description: >-
                     Identifier of the started asynchronous process. Should be
                     specified for getting matching stats.
-                  format: uuid
-                  type: string
                 matchId:
                   description: >-
                     Identifier of the started match operation. Should be
@@ -9598,11 +9588,9 @@ components:
                 - FAILED
               type: string
             createdDate:
-              format: date-time
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/DateTime'
             modifiedDate:
-              format: date-time
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/DateTime'
             errorMessage:
               type: string
             processType:
@@ -9652,8 +9640,7 @@ components:
                     $ref: '#/components/schemas/Binding'
                   type: array
                 createdDate:
-                  format: date-time
-                  type: string
+                  $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                 matchId:
                   description: >-
                     Identifier of the started match operation. Should be
@@ -9661,8 +9648,7 @@ components:
                   format: uuid
                   type: string
                 modifiedDate:
-                  format: date-time
-                  type: string
+                  $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                 status:
                   enum:
                     - IN_PROGRESS
@@ -9684,8 +9670,7 @@ components:
                     async action taking place.
                   type: string
                 processUid:
-                  description: The unique identifier crated for the async process.
-                  type: string
+                  $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
                 url:
                   description: >-
                     The URL that a system can use to check the status of the
@@ -9762,7 +9747,7 @@ components:
       properties:
         response:
           allOf:
-          - $ref: '#/components/schemas/SuccessResponse'
+          - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
           - properties:
               data:
                 $ref: '#/components/schemas/Authentication'
@@ -9772,15 +9757,17 @@ components:
       description: Indicates which workflow to authorize for a given locale.
       properties:
         targetLocaleId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           description: >-
             The locale identifier to use when indicating the locale to authorize
             content for. If `targetLocaleId` is specified, then `workflowUid` is
             required as well. Both can be omitted, and the default workflow for
             that locale will be used.
-          type: string
         workflowUid:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
           description: The UID of the workflow to authorize content into.
-          type: string
       type: object
     AuthorizeJobRequest:
       properties:
@@ -9794,7 +9781,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -9818,7 +9805,6 @@ components:
       properties:
         attachmentJobUid:
           description: The unique identifier of the attachment.
-          format: uid
           type: string
         name:
           description: The name of the attachemnt.
@@ -9827,28 +9813,23 @@ components:
           description: The description of the attachment.
           type: string
         createdDate:
-          description: The UTC value of the date the attachemnt was uploaded.
-          example: '2018-03-30T12:58:22Z'
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         createdByUserUid:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
           description: The unique identifier of user whom upload attachment
-          format: uid
-          example: c297ff10f584
-          type: string
       type: object
 
     CreateAttachmentResponse:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     attachmentUid:
                       description: The unique identifier of the attachment.
-                      format: uid
                       type: string
                     name:
                       description: The name of the attachment.
@@ -9857,15 +9838,11 @@ components:
                       description: The description of the attachment.
                       type: string
                     createdDate:
-                      description: The UTC value of the date the attachment was uploaded.
-                      example: '2018-03-30T12:58:22Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     createdByUserUid:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
                       description: The unique identifier of user whom upload attachment.
-                      format: uid
-                      example: c297ff10f584
-                      type: string
                   type: object
               required:
                 - data
@@ -9896,8 +9873,9 @@ components:
         coordinates:
           $ref: '#/components/schemas/Coordinates'
         stringHashcode:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
           description: Unique identifier for the translatable.
-          type: string
         timecode:
           $ref: '#/components/schemas/Timecode'
       required:
@@ -9916,9 +9894,9 @@ components:
                 format: uuid
                 type: string
               stringHashcode:
+                allOf:
+                  - $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
                 description: Unique identifier for the translatable.
-                format: hash
-                type: string
               coordinates:
                 $ref: '#/components/schemas/Coordinates'
               selector:
@@ -9936,6 +9914,7 @@ components:
               - stringHashcode
             type: object
           type: array
+          maxItems: 150
       type: object
     BindingsResponse:
       type: object
@@ -9944,7 +9923,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -9965,11 +9944,12 @@ components:
         stringHashcodes:
           description: List of the hashcodes for the strings to get bindings for.
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
           type: array
         contentFileUri:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
           description: Content file name to get bindings for.
-          type: string
         contextUid:
           description: ContextUID to get bindings for.
           format: uuid
@@ -9986,11 +9966,12 @@ components:
         stringHashcodes:
           description: List of the hashcodes for the strings to delete bindings for.
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
           type: array
         contentFileUri:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
           description: Content file name to delete bindings for.
-          type: string
         contextUid:
           description: ContextUID to delete bindings for.
           format: uuid
@@ -10007,7 +9988,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -10038,7 +10019,7 @@ components:
         targetLocaleDescription:
           type: string
         targetLocaleId:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
         unuathorizedProgressReport:
           $ref: '#/components/schemas/StringCountWordCountResponse'
         workflowProgressReportList:
@@ -10076,7 +10057,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -10116,11 +10097,7 @@ components:
                   description: Unique identifier for the context.
                   type: string
                 created:
-                  description: >-
-                    A date when the context was created. Format: ISO8601 date
-                    and time string
-                  format: date-time
-                  type: string
+                  $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                 name:
                   description: >-
                     File name for IMAGE context, URL for HTML Context and video
@@ -10164,7 +10141,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -10216,7 +10193,7 @@ components:
           example:
           - ru-RU
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: array
         description:
           description: >-
@@ -10225,10 +10202,10 @@ components:
           example: This is my job description.
           type: string
         dueDate:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
           description: The date the job is requested to be completed by.
           example: '2020-11-21T01:51:17Z'
-          format: date-time
-          type: string
         referenceNumber:
           description: Customer specific number/identifier for the job.
           example: referenceNumb1
@@ -10279,23 +10256,21 @@ components:
       type: object
       properties:
         workflowStepUid:
-          type: string
-          description: The uid of the workflow step.
-          example: '8312172ed60d'
+          $ref: './spec/api_common.yaml#/components/schemas/WorkflowStepUid'
         targetLocaleId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           description: Smartling ID for the language you want to get translations for.
-          type: string
           example: 'de-DE'
     LocaleWorkflowPairDTO:
       type: object
       properties:
         workflowUid:
-          type: string
-          description: The uid of the workflow.
-          example: '8312172ed60d'
+          $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
         targetLocaleId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           description: Smartling ID for the language you want to get translations for.
-          type: string
           example: 'de-DE'
     CreateJobCostReportRequest:
       description: The payload to use when generating a job cost report.
@@ -10339,13 +10314,12 @@ components:
       type: object
       properties:
         localeId:
-          description: Smartling locale identifier.
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
         hashcodes:
           description: >-
             The array of hashcodes.
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
           type: array
     CustomFieldBasicResponse:
       type: object
@@ -10381,9 +10355,9 @@ components:
                         type: object
                         properties:
                           hashcode:
-                            type: string
+                            allOf:
+                              - $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
                             description: Unique hash identifier for the source string
-                            example: "0214054db2146bef256852cd0d27f936"
                       translations:
                         type: array
                         description: Array of translations for the source string
@@ -10424,7 +10398,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   type: object
@@ -10438,13 +10412,11 @@ components:
                         type: object
                         properties:
                           targetLocaleId:
-                            type: string
-                            description: The locale identidier.
-                            example: de-DE
+                            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
                           hashcode:
+                            allOf:
+                              - $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
                             description: Unique identifier for the translatable.
-                            format: hash
-                            type: string
               type: object
     DetailedJobResponse:
       type: object
@@ -10453,7 +10425,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -10466,31 +10438,20 @@ components:
                       description: The callback URL to invoke when a job is completed.
                       type: string
                     createdByUserUid:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
                       description: The userUid of whom created the job.
-                      type: string
                     createdDate:
-                      description: The UTC value of the date the job was created.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     description:
                       description: The description of the job.
                       type: string
                     dueDate:
-                      description: The UTC value of the due date for the job.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     firstCompletedDate:
-                      description: The UTC value of when the job was first completed.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     firstAuthorizedDate:
-                      description: The UTC value of when the job was first authorized.
-                      example: '2015-01-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     jobName:
                       description: The name of the job.
                       type: string
@@ -10517,23 +10478,15 @@ components:
                         - DELETED
                       type: string
                     lastCompletedDate:
-                      description: The UTC value of when the job was last completed.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     lastAuthorizedDate:
-                      description: The UTC value of when the job was last authorized.
-                      example: '2015-12-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     modifiedByUserUid:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
                       description: The userUid of whom last modified the job.
-                      type: string
                     modifiedDate:
-                      description: The UTC value of the date the job was modified.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     sourceFiles:
                       description: >-
                         List of source files of the job. Limited to **300** unordered entries.
@@ -10541,19 +10494,18 @@ components:
                       items:
                         $ref: '#/components/schemas/SourceFile'
                       type: array
+                      maxItems: 300
                     targetLocaleIds:
                       description: The array of localeIds for the job.
                       items:
-                        example: de-DE
-                        type: string
+                        $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
                       type: array
                     customFields:
                       type: array
                       items:
                         $ref: '#/components/schemas/CustomFieldBasicResponse'
                     translationJobUid:
-                      description: The unique identifier created for the job.
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
                     issues:
                       $ref: '#/components/schemas/IssuesCount'
                   type: object
@@ -10564,108 +10516,13 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - VALIDATION_ERROR
               type: string
             errors:
               items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    EmptyResponse:
-      type: object
-      required:
-      - response
-      properties:
-        response:
-          allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
-            - properties:
-                data:
-                  description: Always null.
-                  type: object
-              type: object
-
-    Error:
-      type: object
-      properties:
-        key:
-          example: general_error
-          type: string
-        message:
-          example: Unexpected server error
-          type: string
-        details:
-          example: {}
-          type: object
-      required:
-        - key
-        - message
-
-    Error400Response:
-      type: object
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occured.
-              enum:
-                - VALIDATION_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-
-    Error401Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occured.
-              enum:
-                - AUTHENTICATION_ERROR
-                - AUTHORIZATION_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    Error404Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occured.
-              enum:
-                - NOT_FOUND_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
+                $ref: './spec/api_common.yaml#/components/schemas/Error'
               type: array
           required:
             - code
@@ -10675,76 +10532,14 @@ components:
         - response
       type: object
     Error423Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occured.
-              enum:
-                - RESOURCE_LOCKED
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    Error429Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occured.
-              enum:
-                - MAX_OPERATIONS_LIMIT_EXCEEDED
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    Error500Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occured.
-              enum:
-                - GENERAL_ERROR
-                - MAINTENANCE_MODE_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
+      $ref: './spec/api_common.yaml#/components/schemas/Error423Response'
     EstimateJobReportResponse:
       properties:
         response:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - GENERAL_ERROR
                 - MAINTENANCE_MODE_ERROR
@@ -10776,18 +10571,17 @@ components:
         totalStrings:
           type: integer
         projectId:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         creatorUserUid:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/UserUid'
         creatorUserRole:
           type: string
         contentCoverage:
           type: string
         creatorAgencyUid:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/AgencyUid'
         createdDate:
-          type: string
-          format: 'YYYY-MM-DDThh:mm:ssZ'
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         totalWordCount:
           type: string
         totalWeightedWordCount:
@@ -10814,7 +10608,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - GENERAL_ERROR
                 - MAINTENANCE_MODE_ERROR
@@ -10845,7 +10639,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - GENERAL_ERROR
                 - MAINTENANCE_MODE_ERROR
@@ -10873,15 +10667,14 @@ components:
         percentComplete:
           type: integer
         createdDate:
-          type: string
-          format: 'YYYY-MM-DDThh:mm:ssZ'
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
     EstimateJobReportTagsResponse:
       properties:
         response:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - GENERAL_ERROR
                 - MAINTENANCE_MODE_ERROR
@@ -10902,52 +10695,30 @@ components:
           type: array
           items:
             type: string
-    FileType:
-      type: string
-      description: A unique identifier for the file type.
-      enum:
-        - android
-        - csv
-        - doc
-        - docx
-        - gettext
-        - html
-        - idml
-        - ios
-        - java_properties
-        - json
-        - madcap
-        - markdown
-        - plain_text
-        - ppt
-        - pptx
-        - pres
-        - qt
-        - resx
-        - srt
-        - stringsdict
-        - xls
-        - xlsx
-        - xlsxTemplate
-        - xliff
-        - xml
-        - yaml
     ImportTranslationsFileType:
       type: string
-      description: A unique identifier for the file type.
+      description: >-
+        A unique identifier for the file type. Translations are matched to the
+        source strings by string key. For JSON and XML files, which have no
+        implicit keys, upload the source file with `source_key_paths` (or
+        inline key paths for JSON) so that keys exist. Strings without a
+        matching key are skipped and listed in `translationImportErrors`.
       enum:
         - android
         - arb
         - csv
         - gettext
         - ios
-        - stringsdict
-        - java_properties
+        - javaProperties
         - json
+        - pres
         - qt
         - resx
         - srt
+        - stringsdict
         - vtt
+        - xliff
+        - xliff2
         - xml
         - yaml
     TranslationJobFile:
@@ -10961,7 +10732,7 @@ components:
               description: List of locale ids
               type: array
               items:
-                type: string
+                $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
             fileUid:
               description: File uid
               type: string
@@ -10974,7 +10745,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -10993,12 +10764,13 @@ components:
     FilesAPILastModifiedResponseItem:
       properties:
         lastModified:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
           description: The date the file was last modified for the specified locale
-          format: 'YYYY-MM-DDThh:mm:ssZ'
-          type: string
         localeId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           description: A unique identifier for the uploaded file
-          type: string
       required:
         - localeId
         - lastModified
@@ -11010,7 +10782,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   $ref: '#/components/schemas/FilesAPILastModifiedResponseItem'
@@ -11024,21 +10796,20 @@ components:
         lastUploaded: '2016-01-01T00:00:00Z'
       properties:
         created:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
           description: The time and date of the first upload
-          format: 'YYYY-MM-DDThh:mm:ssZ'
-          type: string
         fileType:
-          $ref: '#/components/schemas/FileType'
+          $ref: './spec/api_common.yaml#/components/schemas/FileType'
         fileUri:
-          description: A unique identifier for the uploaded file
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
         hasInstructions:
           description: Whether translator instructions have been captured for the file.
           type: boolean
         lastUploaded:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
           description: The time and date of the last upload
-          format: 'YYYY-MM-DDThh:mm:ssZ'
-          type: string
       required:
         - fileUri
         - created
@@ -11053,13 +10824,13 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     items:
                       items:
-                        $ref: '#/components/schemas/FileType'
+                        $ref: './spec/api_common.yaml#/components/schemas/FileType'
                       type: array
                   required:
                     - items
@@ -11082,7 +10853,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11123,7 +10894,7 @@ components:
           description: The number of excluded words in the uploaded file
           type: integer
         localeId:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       required:
         - localeId
         - authorizedStringCount
@@ -11140,19 +10911,18 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     created:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                       description: The time and date of the first upload
-                      format: 'YYYY-MM-DDThh:mm:ssZ'
-                      type: string
                     fileType:
-                      $ref: '#/components/schemas/FileType'
+                      $ref: './spec/api_common.yaml#/components/schemas/FileType'
                     fileUri:
-                      description: A unique identifier for the uploaded file
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/FileUri'
                     hasInstructions:
                       description: >-
                         Whether translator instructions have been captured for the
@@ -11163,9 +10933,9 @@ components:
                         $ref: '#/components/schemas/FilesAPIStatusAllLocalesItem'
                       type: array
                     lastUploaded:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                       description: The time and date of the last upload
-                      format: 'YYYY-MM-DDThh:mm:ssZ'
-                      type: string
                     parserVersion:
                       description: >-
                         Records the version of Smartling's File Parser used to parse
@@ -11222,7 +10992,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11243,9 +11013,9 @@ components:
                       description: The number of published words in the uploaded file
                       type: integer
                     created:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                       description: The time and date of the first upload
-                      format: 'YYYY-MM-DDThh:mm:ssZ'
-                      type: string
                     excludedStringCount:
                       description: The number of excluded strings in the uploaded file
                       type: integer
@@ -11253,19 +11023,18 @@ components:
                       description: The number of excluded words in the uploaded file
                       type: integer
                     fileType:
-                      $ref: '#/components/schemas/FileType'
+                      $ref: './spec/api_common.yaml#/components/schemas/FileType'
                     fileUri:
-                      description: A unique identifier for the uploaded file
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/FileUri'
                     hasInstructions:
                       description: >-
                         Whether translator instructions have been captured for the
                         file
                       type: integer
                     lastUploaded:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                       description: The time and date of the last upload
-                      format: 'YYYY-MM-DDThh:mm:ssZ'
-                      type: string
                     parserVersion:
                       description: >-
                         Records the version of Smartling's File Parser used to parse
@@ -11324,7 +11093,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11345,22 +11114,7 @@ components:
                   type: object
               type: object
     FilesAPIUploadAcceptedResponse:
-      properties:
-        code:
-          enum:
-            - ACCEPTED
-          type: string
-        data:
-          properties:
-            message:
-              type: string
-          required:
-            - message
-          type: object
-      required:
-        - code
-        - data
-      type: object
+      $ref: './spec/api_common.yaml#/components/schemas/FilesAPIUploadAcceptedResponse'
     FilesAPIUploadSuccessResponse:
       type: object
       required:
@@ -11368,7 +11122,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11392,8 +11146,7 @@ components:
     FilesApiTranslationImportErrorItem:
       properties:
         fileUri:
-          description: A unique identifier for the uploaded file
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/FileUri'
         importKey:
           description: Key for an imported string affected by the error
           type: string
@@ -11403,8 +11156,9 @@ components:
             type: string
           type: array
         stringHashcode:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
           description: The hashcode of a string affected by the error
-          type: string
       required:
         - importKey
         - stringHashcode
@@ -11418,7 +11172,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   $ref: '#/components/schemas/PublishedFilesAPIRecentlyPublishedFilesResponseItem'
@@ -11426,15 +11180,15 @@ components:
     PublishedFilesAPIRecentlyPublishedFilesResponseItem:
       properties:
         fileUri:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
           description: The URI of the file that was published
-          type: string
         publishDate:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
           description: The date the file was published for the specified locale
-          format: 'YYYY-MM-DDThh:mm:ssZ'
-          type: string
         localeId:
-          description: Identifier for a locale
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       required:
         - fileUri
         - localeId
@@ -11444,7 +11198,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11465,7 +11219,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11486,7 +11240,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11515,13 +11269,13 @@ components:
     MTTranslateRequest:
       properties:
         sourceLocaleId:
-          type: string
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           description: Locale ID of the original text
-          example: en-US
         targetLocaleId:
-          type: string
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           description: Locale ID of the requested translation
-          example: de-DE
         profileUid:
           type: string
           description: Optional Profile UID to use for translation. Will override the default/preconfigured in the settings profile.
@@ -11547,7 +11301,7 @@ components:
           description: The text to translate
           example: Text to translate
           type: string
-          maxLength: 64kb
+          maxLength: 65536
       required:
         - key
         - sourceText
@@ -11559,7 +11313,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11638,7 +11392,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11680,21 +11434,16 @@ components:
           type: array
           example: ["en-US", "en-GB"]
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       type: object
     JobLocalesCompletionDate:
       properties:
         data:
           properties:
             completionDate:
-              description: The UTC value of when the locale was last completed.
-              example: '2015-11-21T01:51:17.000Z'
-              format: date-time
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/DateTime'
             targetLocaleId:
-              description: The locale identidier.
-              example: de-DE
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: object
       type: object
     JobSchedule:
@@ -11707,19 +11456,14 @@ components:
               format: uuid
               type: string
             workflowStepUid:
-              description: workflow step universal identifier.
-              example: 568cd2bae16f
-              format: uuid
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/WorkflowStepUid'
             dueDate:
+              allOf:
+                - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
               description: due date in milliseconds format.
               example: '2020-11-21T01:51:17Z'
-              format: date-time
-              type: string
             targetLocaleId:
-              description: The locale identidier.
-              example: de-DE
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: object
       type: object
     CustomFields:
@@ -11866,7 +11610,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11887,7 +11631,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11908,7 +11652,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11928,18 +11672,12 @@ components:
     AccountListJobsResponseItem:
       properties:
         createdDate:
-          description: The UTC value of the date the job was created.
-          example: '2015-11-21T01:51:17.000Z'
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         description:
           description: The description of the job.
           type: string
         dueDate:
-          description: The UTC value of the due date for the job.
-          example: '2015-11-21T01:51:17.000Z'
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         jobName:
           description: The name of the job.
           type: string
@@ -11958,9 +11696,10 @@ components:
           example: 2
           type: integer
         projectId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
           description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
           example: fd7244365
-          type: string
         referenceNumber:
           description: Customer specific number/identifier for the job.
           example: CustomerReferenceNum1
@@ -11968,18 +11707,16 @@ components:
         targetLocaleIds:
           description: The array of localeIds for the job.
           items:
-            example: de-DE
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: array
         translationJobUid:
-          description: The unique identifier of the job.
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
       type: object
     ListJobsResponse:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -11999,18 +11736,12 @@ components:
     ListJobsResponseItem:
       properties:
         createdDate:
-          description: The UTC value of the date the job was created.
-          example: '2015-11-21T01:51:17.000Z'
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         description:
           description: The description of the job.
           type: string
         dueDate:
-          description: The UTC value of the due date for the job.
-          example: '2015-11-21T01:51:17.000Z'
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         jobName:
           description: The name of the job.
           type: string
@@ -12027,12 +11758,10 @@ components:
         targetLocaleIds:
           description: The array of localeIds for the job.
           items:
-            example: de-DE
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: array
         translationJobUid:
-          description: The unique identifier of the job.
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
         referenceNumber:
           description: Customer specific number/identifier for the job.
           example: CustomerReferenceNum1
@@ -12042,7 +11771,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12062,8 +11791,9 @@ components:
     ListJobsWithProcessesResponseItem:
       properties:
         translationJobUid:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
           description: The unique identifier of a job that currently has an active asynchronous process.
-          type: string
       type: object
     LocaleApiItem:
       example:
@@ -12123,10 +11853,11 @@ components:
             - LTR
           type: string
         localeId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           description: >-
             The identifier for the locale. Locales are defined as a unique
             combination of language and country pairs.
-          type: string
       required:
         - localeId
         - description
@@ -12140,7 +11871,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12166,13 +11897,14 @@ components:
         If `overrideContextOlderThanDays` is not specified, **strings with context will not be bound to this context**.
       properties:
         contentFileUri:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
           description: >-
             File URI containing strings to perform matching with the context:
             <br/>
             Example: `"contentFileUri": "example.properties"`
             <br/>
             Can't be used along with the `stringHashcodes` or `translationJobUids` parameter.
-          type: string
         stringHashcodes:
           description: >-
             An array of string hashcodes to perform matching with the context:
@@ -12181,8 +11913,7 @@ components:
             <br/>
             Can't be used along with the `contentFileUri` or `translationJobUids` parameter.
           items:
-            format: hash
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
           type: array
         translationJobUids:
           description: >-
@@ -12192,9 +11923,9 @@ components:
             <br/>
             Can't be used along with the `contentFileUri` or `stringHashcodes` parameter.
           items:
-            format: hash
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
           type: array
+          maxItems: 1
         overrideContextOlderThanDays:
           description: >-
             Specifies whether to override context for strings that were already
@@ -12222,6 +11953,7 @@ components:
         contextUids:
           description: List of contexts UIDs to delete. List size is limited to 100 items.
           type: array
+          maxItems: 100
           items:
             type: string
       type: object
@@ -12241,7 +11973,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12256,28 +11988,21 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     createdDate:
-                      description: The UTC value of when the process was created.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     modifiedDate:
-                      description: The UTC value of when the process was last modified.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     processState:
                       description: >-
                         The current state of the process. Values returned are
                         IN_PROGRESS | COMPLETED | FAILED.
                       type: string
                     processUid:
-                      description: The unique identifier for a process.
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
                   type: object
               type: object
     ProgressInfoResponse:
@@ -12297,7 +12022,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12325,22 +12050,21 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     createdDate:
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     modifiedDate:
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     newProjectUid:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
                       description: >-
                         A unique identifier for the newly created project. This is
                         available once the project copying has finished, which is
                         indicated once it has a processState of CLOSED.
-                      type: string
                     processState:
                       description: >-
                         The status of the copy request. The new projectId will be
@@ -12367,8 +12091,9 @@ components:
                           type: string
                       type: object
                     processUid:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
                       description: A unique identifier for a long running process
-                      type: string
                   required:
                     - processUid
                     - newProjectUid
@@ -12385,13 +12110,14 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     processUid:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/ProcessUid'
                       description: A unique identifier for a long running process
-                      type: string
                   required:
                     - processUid
                   type: object
@@ -12409,8 +12135,9 @@ components:
           description: Boolean indicator of the locale is enabled for the project.
           type: boolean
         localeId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           description: The identifier for the specific locale configured for the project.
-          type: string
       required:
         - localeId
         - description
@@ -12423,7 +12150,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   example:
@@ -12445,8 +12172,9 @@ components:
                         but can still be accessible
                       type: boolean
                     projectId:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
                       description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-                      type: string
                     projectName:
                       description: The name of the project.
                       type: string
@@ -12457,11 +12185,12 @@ components:
                       description: The full name of the sourceLocaleId
                       type: string
                     sourceLocaleId:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
                       description: >-
                         The locale identifier for the source locale of the project.
                         This indicates the base locale for which content should be
                         uploaded to the project.
-                      type: string
                     targetLocales:
                       description: The locales configured for translation for this project.
                       items:
@@ -12482,8 +12211,9 @@ components:
       description: The payload to use when removing a file from a job.
       properties:
         fileUri:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/FileUri'
           description: The URI of the file that is to be removed from the job.
-          type: string
       type: object
     AddLocaleJobRequest:
       description: The payload to use when add a locale to a job.
@@ -12509,19 +12239,14 @@ components:
     JobScheduleEditItemCommand:
       properties:
         workflowStepUid:
-          description: workflow step universal identifier.
-          format: uuid
-          example: 568cd2bae16f
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/WorkflowStepUid'
         dueDate:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
           description: due date in milliseconds format.
           example: '2020-11-21T01:51:17Z'
-          format: date-time
-          type: string
         targetLocaleId:
-          description: The locale identidier.
-          example: ru-RU
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
       required:
         - targetLocaleId
         - workflowStepUid
@@ -12535,9 +12260,7 @@ components:
             The hashcodes (string identifiers) that should be removed from the
             job.
           items:
-            example:
-              - ca51a04da69cf64dce022bb4f146c962
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
           type: array
         localeIds:
           description: >-
@@ -12545,9 +12268,7 @@ components:
             removed from. If not specified, the strings will be removed from all
             locales within that job.
           items:
-            example:
-              - ru-RU
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: array
       type: object
     GetJobsWithProcessesRequest:
@@ -12561,7 +12282,7 @@ components:
             values.
           example: ["gh3cychkttgi"]
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
           minItems: 1
           maxItems: 500
           type: array
@@ -12577,14 +12298,14 @@ components:
             (Optional) The `fileUri`s (file identifiers) used to search for
             jobs. Any job containing the specified `fileUri` will be returned.
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/FileUri'
           type: array
         hashcodes:
           description: >-
             (Optional) The hashcodes (string identifiers) used to search for
             jobs. Any job containing specified hashcodes will be returned.
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/Hashcode'
           type: array
         translationJobUids:
           description: >-
@@ -12592,7 +12313,7 @@ components:
             used to search for jobs. Any job containing the specified `fileUri`
             will be returned.
           items:
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
           type: array
       type: object
     ShallowJobResponse:
@@ -12602,7 +12323,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12615,31 +12336,20 @@ components:
                       description: The callback URL to invoke when a job is completed.
                       type: string
                     createdByUserUid:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
                       description: The userUid of who created the job.
-                      type: string
                     createdDate:
-                      description: The UTC value of the date the job was created.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     description:
                       description: The description of the job.
                       type: string
                     dueDate:
-                      description: The UTC value of the due date for the job.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     firstCompletedDate:
-                      description: The UTC value of when the job was first completed.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     firstAuthorizedDate:
-                      description: The UTC value of when the job was first authorized.
-                      example: '2015-01-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     jobName:
                       description: The name of the job.
                       type: string
@@ -12654,35 +12364,26 @@ components:
                         CANCELLED | CLOSED
                       type: string
                     lastCompletedDate:
-                      description: The UTC value of when the job was last completed.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     lastAuthorizedDate:
-                      description: The UTC value of when the job was last authorized.
-                      example: '2015-12-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     modifiedByUserUid:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/UserUid'
                       description: The userUid of who last modified the job.
-                      type: string
                     modifiedDate:
-                      description: The UTC value of the date the job was modified.
-                      example: '2015-11-21T01:51:17.000Z'
-                      format: date-time
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                     targetLocaleIds:
                       description: The array of localeIds for the job.
                       items:
-                        type: string
+                        $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
                       type: array
                     customFields:
                       type: array
                       items:
                         $ref: '#/components/schemas/CustomFieldBasicResponse'
                     translationJobUid:
-                      description: The unique identifier for the job.
-                      type: string
+                      $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
                     referenceNumber:
                       description: Customer specific number/identifier for the job.
                       example: CustomerReferenceNum1
@@ -12722,7 +12423,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12742,7 +12443,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   type: object
@@ -12753,19 +12454,18 @@ components:
                     items:
                       type: array
                       items:
+                        type: object
                         properties:
                           translationJobUid:
-                            description: The UID of the translationJob
-                            format: uid
-                            type: string
+                            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
                           jobName:
                             description: Name of the translation job
                             type: string
                           dueDate:
+                            allOf:
+                              - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                             description: The date by which the job is requested to be completed.
                             example: '2020-11-21T01:51:17Z'
-                            format: date-time
-                            type: string
                           hashcodesByLocale:
                             type: array
                             items:
@@ -12778,7 +12478,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -12792,18 +12492,6 @@ components:
                       type: integer
                   type: object
               type: object
-    SuccessResponse:
-      properties:
-        code:
-          description: >-
-            Indicates whether the response was successful or what error has
-            occured.
-          enum:
-            - SUCCESS
-          type: string
-      required:
-        - code
-      type: object
     TagInfo:
       properties:
         tag:
@@ -12816,9 +12504,7 @@ components:
     AccountTagInfo:
       properties:
         projectId:
-          description: Project identifier
-          example: ewr33dssd
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         tag:
           description: Tag text
           example: SomeTag
@@ -12857,10 +12543,10 @@ components:
           description: The description of the job.
           type: string
         dueDate:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
           description: The date by which the job is requested to be completed.
           example: '2020-11-21T01:51:17Z'
-          format: date-time
-          type: string
         referenceNumber:
           description: Customer specific number/identifier for the job.
           example: CustomerReferenceNum1
@@ -12884,7 +12570,7 @@ components:
         agencyName:
           type: string
         agencyUid:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/AgencyUid'
       required:
         - agencyUid
         - agencyName
@@ -12908,7 +12594,7 @@ components:
         workflowName:
           type: string
         workflowUid:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
       type: object
     VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItemTargetLocalesItem:
       properties:
@@ -12918,7 +12604,7 @@ components:
               type: integer
           type: object
         localeId:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
         workflowSteps:
           $ref: '#/components/schemas/VendorsAPIJobsListAgencyItemProgressDetailsItemWorkflowsItemTargetLocalesItemWorkflowStepsItem'
       type: object
@@ -12934,16 +12620,14 @@ components:
           description: A workflow step position in workflow
           type: integer
         workflowStepUid:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/WorkflowStepUid'
       type: object
     VendorsAPIJobsListAgencyItemTranslationJobItem:
       properties:
         translationJobAuthorizedDate:
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         translationJobDueDate:
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         translationJobName:
           type: string
         translationJobRisk:
@@ -12956,7 +12640,7 @@ components:
               type: string
           type: object
         translationJobUid:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
         translationJobCustomFields:
           type: array
           items:
@@ -12969,16 +12653,16 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     agency:
                       $ref: '#/components/schemas/VendorsAPIJobsListAgencyItem'
                     lastUpdatedDate:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                       description: Date when data for the API response was last refreshed.
-                      format: date-time
-                      type: string
                     translationJobs:
                       items:
                         $ref: '#/components/schemas/VendorsAPIJobsListTranslationJobItem'
@@ -13003,7 +12687,7 @@ components:
         project:
           properties:
             projectId:
-              type: string
+              $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
             projectName:
               type: string
           type: object
@@ -13022,7 +12706,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13041,31 +12725,29 @@ components:
         accountName:
           type: string
         projectUid:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
         projectName:
           type: string
         localeId:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
         workflowUid:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
         workflowName:
           type: string
         workflowStepUid:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/WorkflowStepUid'
         workflowStepName:
           type: string
         workflowStepType:
           type: string
         translationJobUid:
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
         translationJobName:
           type: string
         translationJobWorkflowStepDueDate:
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         translationJobOverallDueDate:
-          format: date-time
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/DateTime'
         userUid:
           type: string
           nullable: true
@@ -13116,8 +12798,8 @@ components:
             - 123jd44
           items:
             type: string
-          maximum: 200
-          minimum: 1
+          maxItems: 200
+          minItems: 1
           type: array
       type: object
     WebPageDetailListResponse:
@@ -13127,7 +12809,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13145,9 +12827,9 @@ components:
                                   type: string
                                 type: array
                               created:
+                                allOf:
+                                  - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                                 description: capture url date
-                                example: '2015-11-21T01:51:17Z'
-                                type: string
                               stringCount:
                                 description: string count
                                 example: 10
@@ -13185,7 +12867,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13200,9 +12882,9 @@ components:
                             type: string
                           type: array
                         created:
+                          allOf:
+                            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
                           description: capture url date
-                          example: '2015-11-21T01:51:17Z'
-                          type: string
                         stringCount:
                           description: string count
                           example: 10
@@ -13235,7 +12917,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13270,8 +12952,7 @@ components:
           example:
             - ru-RU
           items:
-            description: An identifying code for a language in Smartling.
-            type: string
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: array
         offset:
           default: 0
@@ -13307,15 +12988,14 @@ components:
           example: ASC
           type: string
         urlCaptureDateAfter:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
           description: The date after which the URL was captured.
           example: '2020-11-21T01:51:17Z'
-          format: date-time
-          type: string
         urlCaptureDateBefore:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
           description: The date by which the URL was captured.
-          example: '2020-11-21T01:51:17Z'
-          format: date-time
-          type: string
         urlPath:
           description: url
           example: /home/page.htm
@@ -13332,7 +13012,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13370,7 +13050,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13387,10 +13067,11 @@ components:
                             description: Name of the agency that was credited for the words
                             type: string
                           agencyUid:
+                            allOf:
+                              - $ref: './spec/api_common.yaml#/components/schemas/AgencyUid'
                             description: >-
                               The unique identifier of the agency that was credited
                               for the words
-                            type: string
                           fuzzyProfileName:
                             description: Name of the fuzzy match profile used
                             type: string
@@ -13403,17 +13084,16 @@ components:
                             description: Name of the translation job
                             type: string
                           jobUid:
-                            description: The unique identifier of the translation job
-                            type: string
+                            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
                           projectId:
+                            allOf:
+                              - $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
                             description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-                            type: string
                           projectName:
                             description: Name of the project
                             type: string
                           targetLocaleId:
-                            description: Locale ID of the translations
-                            type: string
+                            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
                           targetLocaleName:
                             description: Name of the locale of the translations
                             type: string
@@ -13448,9 +13128,9 @@ components:
                               the words transitioned through
                             type: string
                           workflowStepUid:
-                            description: >-
-                              Unique identifier of the workflow step the words transitioned through
-                            type: string
+                            allOf:
+                              - $ref: './spec/api_common.yaml#/components/schemas/WorkflowStepUid'
+                            description: Unique identifier of the workflow step the words transitioned through
                           workflowStepName:
                             description: >-
                               Name of the workflow step the words transitioned through
@@ -13475,8 +13155,7 @@ components:
             $ref: '#/components/schemas/WorkflowStepSummaryReportItemResponse'
           type: array
         workflowUid:
-          description: The uid of the workflow.
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
       type: object
     WorkflowStepSummaryReportItemResponse:
       properties:
@@ -13493,8 +13172,7 @@ components:
           description: The type of the step.
           type: string
         workflowStepUid:
-          description: The uid of the workflow step.
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/WorkflowStepUid'
       type: object
     WorkflowStepClassWordCount:
       properties:
@@ -13512,8 +13190,7 @@ components:
     UserInfoApiItem:
       properties:
         userUid:
-          description: User identifier.
-          type: string
+          $ref: './spec/api_common.yaml#/components/schemas/UserUid'
         firstName:
           description: User first name.
           type: string
@@ -13536,7 +13213,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -13560,7 +13237,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error400Response'
+            $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
           examples:
             response:
               value:
@@ -13579,7 +13256,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error401Response'
+            $ref: './spec/api_common.yaml#/components/schemas/Error401Response'
           examples:
             response:
               value:
@@ -13595,7 +13272,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error429Response'
+            $ref: './spec/api_common.yaml#/components/schemas/Error429Response'
           examples:
             response:
               value:
@@ -13612,4 +13289,4 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error500Response'
+            $ref: './spec/api_common.yaml#/components/schemas/Error500Response'

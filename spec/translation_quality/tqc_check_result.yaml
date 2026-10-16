@@ -6,14 +6,11 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: runStringTranslationQualityCheck
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: accountUid
           in: path
-          type: string
+          schema:
+            type: string
           required: true
           description: >-
             The account’s unique identifier. This can be found in the Smartling
@@ -21,10 +18,20 @@ x-paths:
         - name: projectId
           in: path
           required: true
-          type: string
           description: >-
             A unique project identifier. This can be found in the Smartling
             Dashboard under Account Settings > API.
+          schema:
+            type: string
+            description: >-
+              Unique identifier of a Smartling project — 9 lowercase
+              alphanumeric characters.
+            pattern: ^[a-z0-9]{9}$
+            example: 84c012a33
+          examples:
+            typical:
+              summary: Typical project ID
+              value: abcd12345
       requestBody:
         description: ''
         required: true
@@ -36,7 +43,19 @@ x-paths:
                     - type: object
                       properties:
                         targetLocaleId:
-                          type: string
+                          allOf:
+                            - &ref_0
+                              type: string
+                              pattern: ^[a-z]{2}(-[A-Z]{2})?$
+                              description: >
+                                Locale identifier. Either a 2-letter language
+                                code (`en`) or a
+
+                                language-region pair (`en-US`). The language
+                                part is always lowercase;
+
+                                the region part is always uppercase.
+                              example: fr-FR
                           description: >-
                             Smartling ID for the language you want to translate
                             to.
@@ -46,12 +65,12 @@ x-paths:
                     - type: object
                       properties:
                         sourceLocaleId:
-                          type: string
+                          allOf:
+                            - *ref_0
                           description: >-
                             The locale identifier for the source locale of the
                             project. This indicates the base locale for which
                             content should be uploaded to the project.
-                          example: en-US
                     - type: object
                       properties:
                         skipSuggestions:
@@ -64,10 +83,13 @@ x-paths:
                             allOf:
                               - type: object
                                 properties:
-                                  hashcode:
+                                  hashcode: &ref_1
                                     type: string
-                                    description: string hashcode
-                                    example: 7191152182c69d9b72069ac1290fe24b
+                                    description: >-
+                                      MD5 hash digest — 32 lowercase hexadecimal
+                                      characters.
+                                    pattern: ^[a-f0-9]{32}$
+                                    example: d41d8cd98f00b204e9800998ecf8427e
                               - type: object
                                 properties:
                                   stringUid:
@@ -210,10 +232,7 @@ x-paths:
                                           type: string
                                           description: translation of the original string
                                           example: blacklist_term
-                                        hashcode:
-                                          type: string
-                                          description: string hashcode
-                                          example: 7191152182c69d9b72069ac1290fe24b
+                                        hashcode: *ref_1
                                         pluralFormGroupUid:
                                           type: string
                                           description: unique identifier of plural form
@@ -351,10 +370,7 @@ x-paths:
                                                           translation:
                                                             type: object
                                                             properties:
-                                                              localeId:
-                                                                type: string
-                                                                description: locale identifier
-                                                                example: ru-RU
+                                                              localeId: *ref_0
                                                               translatedTerm:
                                                                 type: string
                                                                 description: translated term
@@ -375,14 +391,12 @@ x-paths:
                                                                 type: boolean
                                                                 description: submitted for translation
                                                                 example: false
-                                                              createdDate:
+                                                              createdDate: &ref_2
                                                                 type: string
-                                                                description: created date
-                                                                example: '2018-11-16T16:06:53Z'
-                                                              modifiedDate:
-                                                                type: string
-                                                                description: modified date
-                                                                example: '2018-11-17T16:06:53Z'
+                                                                format: date-time
+                                                                description: ISO 8601 UTC timestamp.
+                                                                example: '2026-01-15T10:00:00Z'
+                                                              modifiedDate: *ref_2
                                                           termText:
                                                             type: string
                                                             description: term text
@@ -431,14 +445,8 @@ x-paths:
                                                             type: string
                                                             description: created by user identifier
                                                             example: xas344dsd3
-                                                          createdDate:
-                                                            type: string
-                                                            description: created date
-                                                            example: '2018-11-16T16:06:53Z'
-                                                          modifiedDate:
-                                                            type: string
-                                                            description: modified date
-                                                            example: '2018-11-17T16:06:53Z'
+                                                          createdDate: *ref_2
+                                                          modifiedDate: *ref_2
                                                   positionTypeCode:
                                                     type: string
                                                     enum:
@@ -609,6 +617,8 @@ x-paths:
                                                     oneOf:
                                                       - type: object
                                                         title: NUMBER_ADDED
+                                                        required:
+                                                          - type
                                                         properties:
                                                           type:
                                                             type: string
@@ -621,6 +631,8 @@ x-paths:
                                                             example: '1000'
                                                       - type: object
                                                         title: NUMBER_DELETED
+                                                        required:
+                                                          - type
                                                         properties:
                                                           type:
                                                             type: string
@@ -633,6 +645,8 @@ x-paths:
                                                             example: '1000'
                                                       - type: object
                                                         title: NUMBER_INCORRECT_CONVERSION
+                                                        required:
+                                                          - type
                                                         properties:
                                                           type:
                                                             type: string
@@ -1043,8 +1057,8 @@ x-paths:
                                                     description: check type code
                                                     example: REGEX_CHECK
                                                   details:
-                                                    - ref: >-
-                                                        tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
+                                                    $ref: >-
+                                                      tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
                                                   positionTypeCode:
                                                     type: string
                                                     enum:

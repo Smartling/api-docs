@@ -32,5 +32,7 @@ if (branch && branch !== 'gh-pages') {
   cp('-R', 'spec/people', specFolder);
   cp('-R', 'spec/api_common.yaml', specFolder);
 
+  require('./bundle-refs')(branchPath);
+
   exec('deploy-to-gh-pages --update .tmp');
 }

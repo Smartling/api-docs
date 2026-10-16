@@ -7,12 +7,7 @@ x-paths:
       description: Retrieve all available webhook event types for the account.
       operationId: getAvailableEventTypes
       parameters:
-        - name: accountUid
-          in: path
-          required: true
-          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
       responses:
         '200':
           description: Success
@@ -21,13 +16,13 @@ x-paths:
               schema:
                 $ref: './webhooks_components.yaml#/components/schemas/EventTypeListResponse'
         '400':
-          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError400ResponseDefinition'
         '401':
-          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError401ResponseDefinition'
         '429':
-          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError429ResponseDefinition'
         '500':
-          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError500ResponseDefinition'
   subscription_events:
     get:
       tags:
@@ -36,13 +31,7 @@ x-paths:
       description: Retrieve webhook delivery events for a given subscription with optional filters and pagination.
       operationId: getSubscriptionEvents
       parameters:
-        - name: accountUid
-          in: path
-          required: true
-          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          schema:
-            type: string
-            example: "111222333"
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - name: subscriptionUid
           in: path
           required: true
@@ -79,17 +68,13 @@ x-paths:
           description: Filter events created before this date (ISO 8601 format).
           required: false
           schema:
-            type: string
-            format: date-time
-            example: "2025-07-01T13:35:34Z"
+            $ref: '../api_common.yaml#/components/schemas/DateTime'
         - name: createdDateAfter
           in: query
           description: Filter events created after this date (ISO 8601 format).
           required: false
           schema:
-            type: string
-            format: date-time
-            example: "2025-07-01T13:35:34Z"
+            $ref: '../api_common.yaml#/components/schemas/DateTime'
         - name: eventTypes[]
           in: query
           description: Filter by one or more event types.
@@ -124,10 +109,7 @@ x-paths:
                           description: Event type identifier.
                           example: "file.published"
                         createdDate:
-                          type: string
-                          format: date-time
-                          description: Timestamp when the event was created.
-                          example: "2025-07-01T13:35:33Z"
+                          $ref: '../api_common.yaml#/components/schemas/DateTime'
                         lastAttemptStatus:
                           type: string
                           enum: [ SUCCESS, PENDING, FAIL, SENDING ]
@@ -148,15 +130,15 @@ x-paths:
                     description: Scroll identifier to fetch the next batch of results.
                     example: "2639c663-5cf3-4f08-b15d-6799366109ab"
         '400':
-          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError400ResponseDefinition'
         '401':
-          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError401ResponseDefinition'
         '404':
-          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError404ResponseDefinition'
         '429':
-          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError429ResponseDefinition'
         '500':
-          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError500ResponseDefinition'
   event_details:
     get:
       tags:
@@ -165,12 +147,7 @@ x-paths:
       description: Retrieve details of a specific webhook event.
       operationId: getEvent
       parameters:
-        - name: accountUid
-          in: path
-          required: true
-          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - name: subscriptionUid
           in: path
           required: true
@@ -195,15 +172,15 @@ x-paths:
                     type: object
                     example: "...."
         '400':
-          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError400ResponseDefinition'
         '401':
-          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError401ResponseDefinition'
         '404':
-          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError404ResponseDefinition'
         '429':
-          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError429ResponseDefinition'
         '500':
-          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError500ResponseDefinition'
   event_attempts:
     get:
       tags:
@@ -212,12 +189,7 @@ x-paths:
       description: Retrieve all delivery attempts for a specific webhook event.
       operationId: getEventAttempts
       parameters:
-        - name: accountUid
-          in: path
-          required: true
-          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - name: subscriptionUid
           in: path
           required: true
@@ -238,15 +210,15 @@ x-paths:
               schema:
                 $ref: './webhooks_components.yaml#/components/schemas/AttemptsListResponse'
         '400':
-          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError400ResponseDefinition'
         '401':
-          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError401ResponseDefinition'
         '404':
-          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError404ResponseDefinition'
         '429':
-          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError429ResponseDefinition'
         '500':
-          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError500ResponseDefinition'
   event_resend:
     post:
       tags:
@@ -255,12 +227,7 @@ x-paths:
       description: Manually trigger a retry for a webhook event delivery.
       operationId: resendEvent
       parameters:
-        - name: accountUid
-          in: path
-          required: true
-          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
         - name: subscriptionUid
           in: path
           required: true
@@ -277,12 +244,12 @@ x-paths:
         '200':
           description: Success
         '400':
-          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError400ResponseDefinition'
         '401':
-          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError401ResponseDefinition'
         '404':
-          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError404ResponseDefinition'
         '429':
-          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError429ResponseDefinition'
         '500':
-          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+          $ref: './webhooks_components.yaml#/components/responses/WebhooksError500ResponseDefinition'

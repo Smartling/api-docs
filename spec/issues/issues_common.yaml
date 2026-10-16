@@ -14,12 +14,7 @@ x-paths:
         - Issues
       operationId: createIssue
       parameters:
-        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
       requestBody:
         description: New issue for a string
         content:
@@ -89,12 +84,7 @@ x-paths:
       operationId: editIssue
 
       parameters:
-        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - description: Unique identifier of corresponding issue.
           in: path
           name: issueUid
@@ -137,12 +127,7 @@ x-paths:
         - Issues
       operationId: openOrCloseIssue
       parameters:
-        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - description: Unique identifier of corresponding issue.
           in: path
           name: issueUid
@@ -192,12 +177,7 @@ x-paths:
         - Issues
       operationId: getIssueDetails
       parameters:
-        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - description: Unique identifier of corresponding issue
           in: path
           name: issueUid
@@ -254,12 +234,7 @@ x-paths:
         - Issues
       operationId: updateIssueAnsweredStatus
       parameters:
-        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - description: Unique identifier of corresponding issue.
           in: path
           name: issueUid
@@ -302,12 +277,7 @@ x-paths:
         - Issues
       operationId: updateIssueAssignee
       parameters:
-        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - description: Unique identifier of corresponding issue.
           in: path
           name: issueUid
@@ -348,12 +318,7 @@ x-paths:
         - Issues
       operationId: deleteIssueAssignee
       parameters:
-        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - description: Unique identifier of corresponding issue.
           in: path
           name: issueUid
@@ -386,12 +351,7 @@ x-paths:
         - Issues
       operationId: updateIssueSeverityLevel
       parameters:
-        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - description: Unique identifier of corresponding issue.
           in: path
           name: issueUid
@@ -433,12 +393,7 @@ x-paths:
         - Issues
       operationId: updateIssueType
       parameters:
-        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
         - description: Unique identifier of corresponding issue.
           in: path
           name: issueUid
@@ -487,12 +442,7 @@ x-paths:
         - Issues
       operationId: getProjectIssuesList
       parameters:
-        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
       requestBody:
         content:
           application/json:
@@ -553,12 +503,7 @@ x-paths:
         - Issues
       operationId: getIssuesCount
       parameters:
-        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
       requestBody:
         content:
           application/json:
@@ -599,12 +544,7 @@ x-paths:
         - Issues
       operationId: getAccountIssuesList
       parameters:
-        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
       requestBody:
         content:
           application/json:
@@ -665,12 +605,7 @@ x-paths:
         - Issues
       operationId: getAccountIssuesCount
       parameters:
-        - description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-          in: path
-          name: accountUid
-          required: true
-          schema:
-            type: string
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
       requestBody:
         content:
           application/json:
@@ -699,18 +634,6 @@ x-paths:
             https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountUid/issues/count
 components:
   schemas:
-    SuccessResponse:
-      properties:
-        code:
-          description: >-
-            Indicates whether the response was successful or what error has
-            occured.
-          enum:
-            - SUCCESS
-          type: string
-      required:
-        - code
-      type: object
     IssueRequest:
       properties:
         issueText:
@@ -743,24 +666,24 @@ components:
         string:
           properties:
             hashcode:
+              allOf:
+                - $ref: '../api_common.yaml#/components/schemas/Hashcode'
               description: >-
                 Unique identifier for a string in Smartling. Used by the Issues
                 API to attach an issue to a string. You can get the hashcode for
                 a string via String API.
               example: c32c16cddafd63dfa0dc12449372a093
-              type: string
             localeId:
-              description: An identifying code for a target language in Smartling.
-              example: ru-RU
-              type: string
+              $ref: '../api_common.yaml#/components/schemas/LocaleId'
           required:
             - hashcode
             - localeId
           type: object
         assigneeUserUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: User identifier who is assigned to issue
           example: 7c9ff09e71b3
-          type: string
         issueSeverityLevelCode:
           description: '[Issue Severity Level identifier](#operation/getAllIssueSeverityLevels)'
           enum:
@@ -781,7 +704,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -835,8 +758,9 @@ components:
                       description: Issue identifier
                       type: string
                     projectId:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/ProjectUid'
                       description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-                      type: string
                     accountUid:
                       description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
                       type: string
@@ -844,14 +768,17 @@ components:
                       description: Issue number
                       type: integer
                     reportedByUserUid:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/UserUid'
                       description: User identifier who created (reported) issue
-                      type: string
                     resolvedByUserUid:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/UserUid'
                       description: User identifier who resolved issue
-                      type: string
                     assigneeUserUid:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/UserUid'
                       description: User identifier who is assigned to issue
-                      type: string
                     resolvedDate:
                       description: Issue resolve date
                       type: string
@@ -859,22 +786,23 @@ components:
                       description: Issue flag "reopened"
                       type: boolean
                     reopenedByUserUid:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/UserUid'
                       description: User identifier who reopened issue
-                      type: string
                     reopenedDate:
                       description: Issue reopen date
                       type: string
                     string:
                       properties:
                         hashcode:
+                          allOf:
+                            - $ref: '../api_common.yaml#/components/schemas/Hashcode'
                           description: >-
                             Unique identifier for a string in Smartling. Used by the
                             Issues API to attach an issue to a string. You can get
                             the hashcode for a string via String API.
-                          type: string
                         localeId:
-                          description: An identifying code for a target language in Smartling.
-                          type: string
+                          $ref: '../api_common.yaml#/components/schemas/LocaleId'
                       type: object
                     issueCommentsCount:
                       description: Issue comments count
@@ -898,7 +826,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -928,7 +856,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -950,7 +878,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -1004,8 +932,9 @@ components:
                       description: Issue identifier
                       type: string
                     projectId:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/ProjectUid'
                       description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-                      type: string
                     accountUid:
                       description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
                       type: string
@@ -1013,14 +942,17 @@ components:
                       description: Issue number
                       type: integer
                     reportedByUserUid:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/UserUid'
                       description: User identifier who created (reported) issue
-                      type: string
                     resolvedByUserUid:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/UserUid'
                       description: User identifier who resolved issue
-                      type: string
                     assigneeUserUid:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/UserUid'
                       description: User identifier who is assigned to issue
-                      type: string
                     resolvedDate:
                       description: Issue resolve date
                       type: string
@@ -1028,22 +960,23 @@ components:
                       description: Issue flag "reopened"
                       type: boolean
                     reopenedByUserUid:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/UserUid'
                       description: User identifier who reopened issue
-                      type: string
                     reopenedDate:
                       description: Issue reopen date
                       type: string
                     string:
                       properties:
                         hashcode:
+                          allOf:
+                            - $ref: '../api_common.yaml#/components/schemas/Hashcode'
                           description: >-
                             Unique identifier for a string in Smartling. Used by the
                             Issues API to attach an issue to a string. You can get
                             the hashcode for a string via String API.
-                          type: string
                         localeId:
-                          description: An identifying code for a target language in Smartling.
-                          type: string
+                          $ref: '../api_common.yaml#/components/schemas/LocaleId'
                       type: object
                     issueCommentsCount:
                       description: Issue comments count
@@ -1065,7 +998,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -1100,9 +1033,7 @@ components:
             - MT_ERROR
           type: string
         localeId:
-          description: An identifying code for a target language in Smartling.
-          example: ru-RU
-          type: string
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
       required:
         - issueTypeCode
         - issueSubTypeCode
@@ -1114,7 +1045,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -1137,15 +1068,15 @@ components:
                         - MT_ERROR
                       type: string
                     localeId:
-                      description: An identifying code for a target language in Smartling.
-                      type: string
+                      $ref: '../api_common.yaml#/components/schemas/LocaleId'
                   type: object
               type: object
     IssueAssigneeRequest:
       properties:
         assigneeUserUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: User identifier who is assigned to issue
-          type: string
       required:
         - assigneeUserUid
       type: object
@@ -1156,13 +1087,14 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
                     assigneeUserUid:
+                      allOf:
+                        - $ref: '../api_common.yaml#/components/schemas/UserUid'
                       description: User identifier who is assigned to issue
-                      type: string
                   type: object
               type: object
     IssueAssigneeDeleteResponse:
@@ -1171,7 +1103,7 @@ components:
         - response
       properties:
         response:
-          $ref: '#/components/schemas/SuccessResponse'
+          $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
     IssueSeverityLevelRequest:
       properties:
         issueSeverityLevelCode:
@@ -1191,7 +1123,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -1276,13 +1208,14 @@ components:
             - NOT_WATCHING
           type: string          
         reportedByUserUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: User identifier who created the issue.
-          example: 661801f19693
-          type: string
         assigneeUserUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: User identifier who is assigned to issue.
           example: 661801f19693
-          type: string
         hasComments:
           description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
           example: true
@@ -1304,8 +1237,7 @@ components:
                 - uhtkye5amtiz
                 - h9blewayxsz9
               items:
-                description: Job identifier.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
               maxItems: 1000
               type: array
             presence:
@@ -1333,8 +1265,7 @@ components:
               example:
                 - ru-RU
               items:
-                description: An identifying code for a target language in Smartling.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/LocaleId'
               type: array
           type: object
         limit:
@@ -1388,7 +1319,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -1445,8 +1376,9 @@ components:
                             description: Issue identifier
                             type: string
                           projectId:
+                            allOf:
+                              - $ref: '../api_common.yaml#/components/schemas/ProjectUid'
                             description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-                            type: string
                           accountUid:
                             description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
                             type: string
@@ -1454,14 +1386,17 @@ components:
                             description: Issue number
                             type: integer
                           reportedByUserUid:
+                            allOf:
+                              - $ref: '../api_common.yaml#/components/schemas/UserUid'
                             description: User identifier who created (reported) issue
-                            type: string
                           resolvedByUserUid:
+                            allOf:
+                              - $ref: '../api_common.yaml#/components/schemas/UserUid'
                             description: User identifier who resolved issue
-                            type: string
                           assigneeUserUid:
+                            allOf:
+                              - $ref: '../api_common.yaml#/components/schemas/UserUid'
                             description: User identifier who is assigned to issue
-                            type: string
                           resolvedDate:
                             description: Issue resolve date
                             type: string
@@ -1469,23 +1404,24 @@ components:
                             description: Issue flag "reopened"
                             type: boolean
                           reopenedByUserUid:
+                            allOf:
+                              - $ref: '../api_common.yaml#/components/schemas/UserUid'
                             description: User identifier who reopened issue
-                            type: string
                           reopenedDate:
                             description: Issue reopen date
                             type: string
                           string:
                             properties:
                               hashcode:
+                                allOf:
+                                  - $ref: '../api_common.yaml#/components/schemas/Hashcode'
                                 description: >-
                                   Unique identifier for a string in Smartling. Used
                                   by the Issues API to attach an issue to a string.
                                   You can get the hashcode for a string via String
                                   API.
-                                type: string
                               localeId:
-                                description: An identifying code for a target language in Smartling.
-                                type: string
+                                $ref: '../api_common.yaml#/components/schemas/LocaleId'
                             type: object
                           issueCommentsCount:
                             description: Issue comments count
@@ -1569,13 +1505,14 @@ components:
             - NOT_WATCHING
           type: string
         reportedByUserUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: User identifier who created issue
-          example: 661801f19693
-          type: string
         assigneeUserUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: User identifier who is assigned to issue
           example: 661801f19693
-          type: string
         hasComments:
           description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
           example: true
@@ -1597,8 +1534,7 @@ components:
                 - uhtkye5amtiz
                 - h9blewayxsz9
               items:
-                description: Job identifier.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
               maxItems: 1000
               type: array
             presence:
@@ -1626,8 +1562,7 @@ components:
               example:
                 - ru-RU
               items:
-                description: An identifying code for a target language in Smartling.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/LocaleId'
               type: array
           type: object
       type: object
@@ -1638,7 +1573,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   properties:
@@ -1653,8 +1588,7 @@ components:
           example:
             - c711467bs
           items:
-            description: Optional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/ProjectUid'
           description: UOptional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
           type: array
         createdDateBefore:
@@ -1727,13 +1661,14 @@ components:
             - NOT_WATCHING
           type: string
         reportedByUserUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: User identifier who created the issue.
-          example: 661801f19693
-          type: string
         assigneeUserUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: User identifier who is assigned to issue.
           example: 661801f19693
-          type: string
         hasComments:
           description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
           example: true
@@ -1755,8 +1690,7 @@ components:
                 - uhtkye5amtiz
                 - h9blewayxsz9
               items:
-                description: Job identifier.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
               maxItems: 1000
               type: array
             presence:
@@ -1784,8 +1718,7 @@ components:
               example:
                 - ru-RU
               items:
-                description: An identifying code for a target language in Smartling.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/LocaleId'
               type: array
           type: object
         limit:
@@ -1838,8 +1771,7 @@ components:
           example:
             - c711467bs
           items:
-            description: Optional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/ProjectUid'
           description: UOptional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
           type: array
         createdDateBefore:
@@ -1911,13 +1843,14 @@ components:
             - NOT_WATCHING
           type: string
         reportedByUserUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: User identifier who created issue
-          example: 661801f19693
-          type: string
         assigneeUserUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: User identifier who is assigned to issue
           example: 661801f19693
-          type: string
         hasComments:
           description: Does the issue have any comments? True for issues that have comments. False for issues that have only the original description but no comments.
           example: true
@@ -1939,8 +1872,7 @@ components:
                 - uhtkye5amtiz
                 - h9blewayxsz9
               items:
-                description: Job identifier.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
               maxItems: 1000
               type: array
             presence:
@@ -1968,8 +1900,7 @@ components:
               example:
                 - ru-RU
               items:
-                description: An identifying code for a target language in Smartling.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/LocaleId'
               type: array
           type: object
       type: object

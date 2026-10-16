@@ -1,12 +1,5 @@
 components:
   parameters:
-    accountUidPathParameter:
-      name: accountUid
-      in: path
-      schema:
-        type: string
-      required: true
-      description: A unique account identifier. This can be found in the Smartling Dashboard under Account Settings - API.
     glossaryUidPathParameter:
       name: glossaryUid
       in: path
@@ -56,7 +49,7 @@ components:
             Locales list for translation filtering. Each locale must be one of the glossary locales.
             Required for the entries search endpoint unless `entryUids` is passed.
           items:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
           example:
             [ "uk-UA","en","en-US" ]
         entryUids:
@@ -78,19 +71,22 @@ components:
             - BOTH
           example: ACTIVE
         missingTranslationLocaleId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: >-
             Additional locale id filter, which allow to find missing/empty translations.
             Must be one of the glossary locales.
           example: uk-UA
         presentTranslationLocaleId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: >-
             Additional locale id filter, which allow to find only present translations.
             Must be one of the glossary locales.
           example: uk-UA
         presentTranslationTargetLocaleId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: >-
             Second locale filter, applied only together with `presentTranslationLocaleId` (ignored otherwise).
             The entry must also have a translation with a non-empty term in this locale.
@@ -109,7 +105,8 @@ components:
             (a translation for the target locale must still exist).
           example: false
         dntLocaleId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: >-
             Additional locale id filter, which allow to find only DNT-marked translations.
             Must be one of the glossary locales.
@@ -282,11 +279,9 @@ components:
             - ANY
           example: ANY
         date:
-          type: string
-          description: Date-time value.
-          example: '2023-02-01T11:45:00.000Z'
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
         type:
-          required: true
+          type: string
           example: after
       description: After date filter.
     BeforeDateAuditionDateFilter:
@@ -304,9 +299,7 @@ components:
             - ANY
           example: ANY
         date:
-          type: string
-          description: Date-time value.
-          example: '2023-02-01T11:45:00.000Z'
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
         type:
           type: string
           example: before
@@ -327,11 +320,13 @@ components:
             - ANY
           example: ANY
         from:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
           description: From date-time / range start.
           example: '2023-02-01T11:45:00.000Z'
         to:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
           description: To date-time / range end.
           example: '2023-02-11T11:45:00.000Z'
         type:
@@ -353,16 +348,15 @@ components:
             - ANY
           example: ANY
         date:
-          required: true
-          type: string
-          description: Date-time value.
-          example: '2023-02-01T11:45:00.000Z'
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
         type:
           type: string
           example: exact
       description: Exact date filter.
     AuditorCommandPTO:
       type: object
+      required:
+        - userIds
       properties:
         level:
           type: string
@@ -373,7 +367,6 @@ components:
             - ANY
           example: ANY
         userIds:
-          required: true
           type: array
           description: User identifiers.
           items:
@@ -416,7 +409,8 @@ components:
             - DESC
           example: DESC
         localeId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: >-
             Locale identifier - for case when 'term' sort field is selected. Must be one of `localeIds`;
             the first of `localeIds` is used if omitted.
@@ -431,18 +425,6 @@ components:
         operationUid:
           type: string
           description: Uid of the async operation.
-
-    SuccessResponse:
-      properties:
-        code:
-          description: >-
-            Indicates whether the response was successful or what error has occurred.
-          enum:
-            - SUCCESS
-          type: string
-      required:
-        - code
-      type: object
 
     AsyncOperationResponsePTO:
       type: object
@@ -479,24 +461,8 @@ components:
               type: array
               description: Always empty.
               items:
-                $ref: '#/components/schemas/Error'
+                $ref: '../api_common.yaml#/components/schemas/Error'
               example: [ ]
-
-    Error:
-      type: object
-      properties:
-        key:
-          example: general_error
-          type: string
-        message:
-          example: Unexpected server error
-          type: string
-        details:
-          example: {}
-          type: object
-      required:
-        - key
-        - message
 
     EmptyResponse:
       type: object
@@ -505,7 +471,7 @@ components:
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   description: Always empty.
@@ -523,113 +489,7 @@ components:
       required:
         - code
       type: object
-    Error400Response:
-      type: object
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occurred.
-              enum:
-                - VALIDATION_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-    Error401Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occurred.
-              enum:
-                - AUTHENTICATION_ERROR
-                - AUTHORIZATION_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    Error403Response:
-      type: object
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occurred.
-              enum:
-                - ACCESS_DENIED_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-    Error404Response:
-      type: object
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occurred.
-              enum:
-                - NOT_FOUND_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-    Error429Response:
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occurred.
-              enum:
-                - MAX_OPERATIONS_LIMIT_EXCEEDED
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-      type: object
-    Error500Response:
+    GlossaryError500Response:
       properties:
         response:
           properties:
@@ -641,7 +501,7 @@ components:
               type: string
             errors:
               items:
-                $ref: '#/components/schemas/Error'
+                $ref: '../api_common.yaml#/components/schemas/Error'
               type: array
           required:
             - code
@@ -652,12 +512,12 @@ components:
       type: object
 
   responses:
-    Error400ResponseDefinition:
+    GlossaryError400ResponseDefinition:
       description: Provided request parameters are invalid.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error400Response'
+            $ref: '../api_common.yaml#/components/schemas/Error400Response'
           examples:
             response:
               value:
@@ -667,12 +527,12 @@ components:
                     - key: error.key
                       message: >-
                         message that describes the error
-    Error401ResponseDefinition:
+    GlossaryError401ResponseDefinition:
       description: Provided credentials are not valid.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error401Response'
+            $ref: '../api_common.yaml#/components/schemas/Error401Response'
           examples:
             response:
               value:
@@ -682,12 +542,12 @@ components:
                     - details: { }
                       key: invalid_token
                       message: Invalid token
-    Error403ResponseDefinition:
+    GlossaryError403ResponseDefinition:
       description: Access denied.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error403Response'
+            $ref: '../api_common.yaml#/components/schemas/Error403Response'
           examples:
             response:
               value:
@@ -697,12 +557,12 @@ components:
                     - key: no.access
                       message: >-
                         access denied message
-    Error404ResponseDefinition:
+    GlossaryError404ResponseDefinition:
       description: Resource not found.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error404Response'
+            $ref: '../api_common.yaml#/components/schemas/Error404Response'
           examples:
             response:
               value:
@@ -712,12 +572,12 @@ components:
                     - key: not.found
                       message: >-
                         message describing not found resource
-    Error429ResponseDefinition:
+    GlossaryError429ResponseDefinition:
       description: Too many simultaneous API requests.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error429Response'
+            $ref: '../api_common.yaml#/components/schemas/Error429Response'
           examples:
             response:
               value:
@@ -727,9 +587,9 @@ components:
                     - key: too.many.requests
                       message: >-
                         limitation message
-    Error500ResponseDefinition:
+    GlossaryError500ResponseDefinition:
       description: Unexpected error.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error500Response'
+            $ref: '#/components/schemas/GlossaryError500Response'

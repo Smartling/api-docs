@@ -6,10 +6,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTranslationQualityCheckTypes
-      consumes:
-        - application/json
-      produces:
-        - application/json
       responses:
         '200':
           description: OK
@@ -163,9 +159,7 @@ x-paths:
                             name: Tag order changed
                       - checkTypeCode: TARGET_LENGTH_LIMIT
                         name: Target length limit
-                        description: >-
-                          Check that the translation is within the length
-                          limit
+                        description: Check that the translation is within the length limit
                         checkSubTypes: []
                       - checkTypeCode: NUMBER_CONSISTENCY
                         name: Number consistency
@@ -309,10 +303,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTranslationQualityCheckSubTypes
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: checkTypeCode
           in: path
@@ -367,10 +357,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getGlossaryComplianceMatchMethods
-      consumes:
-        - application/json
-      produces:
-        - application/json
       responses:
         '200':
           description: OK
@@ -434,10 +420,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTranslationQualityCheckSeverityLevels
-      consumes:
-        - application/json
-      produces:
-        - application/json
       responses:
         '200':
           description: OK
@@ -501,10 +483,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTrademarkConsistencyTrademarkTypes
-      consumes:
-        - application/json
-      produces:
-        - application/json
       responses:
         '200':
           description: OK
@@ -571,17 +549,36 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getUserCustomDictionary
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - &ref_3
           name: localeId
           in: path
           required: true
-          type: string
-          description: A valid Smartling Locale ID.
+          description: >
+            Locale identifier. Either a 2-letter language code (`en`) or a
+
+            language-region pair (`en-US`). The language part is always
+            lowercase;
+
+            the region part is always uppercase.
+          schema:
+            type: string
+            pattern: ^[a-z]{2}(-[A-Z]{2})?$
+            description: >
+              Locale identifier. Either a 2-letter language code (`en`) or a
+
+              language-region pair (`en-US`). The language part is always
+              lowercase;
+
+              the region part is always uppercase.
+            example: fr-FR
+          examples:
+            language_only:
+              summary: Language code only
+              value: en
+            language_region:
+              summary: Language and region
+              value: fr-FR
       responses:
         '200':
           description: OK
@@ -619,10 +616,8 @@ x-paths:
                                         createdDate:
                                           type: string
                                           format: date-time
-                                          description: >-
-                                            the UTC value of the date the word was
-                                            added.
-                                          example: 2018-11-21T01:51:17.000Z
+                                          description: ISO 8601 UTC timestamp.
+                                          example: '2026-01-15T10:00:00Z'
       x-code-samples:
         - lang: curl
           source: >
@@ -634,10 +629,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: addWordToUserCustomDictionary
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_3
       requestBody:
@@ -681,16 +672,13 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: removeWordFromUserCustomDictionary
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_3
         - name: wordUid
           in: path
           required: true
-          type: string
+          schema:
+            type: string
           description: Word unique identifier.
       responses:
         '200':
@@ -711,8 +699,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getRegexQualityCheckRuleTypes
-      produces:
-        - application/json
       responses:
         '200':
           description: OK
@@ -775,8 +761,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getRegexQualityCheckFlavors
-      produces:
-        - application/json
       responses:
         '200':
           description: OK

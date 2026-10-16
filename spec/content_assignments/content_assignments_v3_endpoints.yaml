@@ -173,7 +173,7 @@ x-paths:
           required: true
           description: Process identifier returned by the initiating assign or remove operation.
           schema:
-            $ref: '#/components/schemas/ProcessUid'
+            $ref: '../api_common.yaml#/components/schemas/ProcessUid'
       responses:
         '200':
           description: Process status retrieved.
@@ -247,15 +247,6 @@ x-paths:
 components:
   schemas:
 
-    # -- Identifiers --
-
-    ProcessUid:
-      type: string
-      format: uuid
-      description: Unique identifier of an asynchronous process.
-      examples:
-        - e61fa6ae-128b-4ecc-98c7-a992e1a791dd
-
     # -- Command / request bodies --
 
     TranslationAssignCommand:
@@ -322,7 +313,7 @@ components:
               properties:
                 processUid:
                   description: Unique identifier of the async process. Poll the process status endpoint with this value.
-                  $ref: '#/components/schemas/ProcessUid'
+                  $ref: '../api_common.yaml#/components/schemas/ProcessUid'
 
     TranslationAssignmentStatusResponse:
       type: object
@@ -346,7 +337,7 @@ components:
                 - processState
               properties:
                 processUid:
-                  $ref: '#/components/schemas/ProcessUid'
+                  $ref: '../api_common.yaml#/components/schemas/ProcessUid'
                 processState:
                   type: string
                   description: Current state of the process.
@@ -375,5 +366,6 @@ components:
                       type: integer
                       description: Number of hashcodes skipped.
                 lastError:
-                  type: [string, "null"]
+                  type: string
+                  nullable: true
                   description: Error message from the most recent failure, if any. `null` when the process has not errored.

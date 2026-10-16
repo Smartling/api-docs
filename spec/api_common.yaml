@@ -3,9 +3,14 @@ components:
       accountUid:
         name: accountUid
         in: path
-        type: string
+        schema:
+          type: string
         required: true
         description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        examples:
+          typical:
+            summary: Typical account UID
+            value: 4f23eabe9
 
       projectId:
         name: projectId
@@ -13,12 +18,23 @@ components:
         required: true
         description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
         schema:
-          type: string
-          pattern: '^[a-z0-9]{9}$'
+          $ref: '#/components/schemas/ProjectUid'
         examples:
           typical:
             summary: Typical project ID
-            value: abcd12345
+            value: 84c012a33
+
+      projectUid:
+        name: projectUid
+        in: path
+        required: true
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        schema:
+          $ref: '#/components/schemas/ProjectUid'
+        examples:
+          typical:
+            summary: Typical project ID
+            value: 84c012a33
 
       localeId:
         name: localeId
@@ -61,17 +77,15 @@ components:
         type: object
         properties:
           sourceLocaleId:
-            type: string
+            allOf:
+              - $ref: '#/components/schemas/LocaleId'
             description: The locale identifier for the source locale of the project. This indicates the base locale for which content should be uploaded to the project.
-            example: "en-US"
 
       hashcode:
         type: object
         properties:
           hashcode:
-            type: string
-            description: string hashcode
-            example: "7191152182c69d9b72069ac1290fe24b"
+            $ref: '#/components/schemas/Hashcode'
 
   schemas:
 
@@ -79,14 +93,12 @@ components:
       type: string
       format: date-time
       description: ISO 8601 UTC timestamp.
-      examples:
-        - "2026-01-15T10:00:00Z"
+      example: "2026-01-15T10:00:00Z"
 
     FileUri:
       type: string
       description: URI path of a source file within a Smartling project.
-      examples:
-        - /content/en/home.json
+      example: /content/en/home.json
 
     LocaleId:
       type: string
@@ -101,57 +113,49 @@ components:
       type: string
       description: MD5 hash digest — 32 lowercase hexadecimal characters.
       pattern: '^[a-f0-9]{32}$'
-      examples:
-        - d41d8cd98f00b204e9800998ecf8427e
+      example: d41d8cd98f00b204e9800998ecf8427e
 
     TranslationJobUid:
       type: string
       description: Translation job unique identifier — 12 lowercase alphanumeric characters.
       pattern: '^[a-z0-9]{12}$'
-      examples:
-        - j45v1uvsi3tx
+      example: j45v1uvsi3tx
 
     WorkflowUid:
       type: string
       description: Workflow unique identifier — 12 lowercase alphanumeric characters.
       pattern: '^[a-z0-9]{12}$'
-      examples:
-        - 5449a8595ae4
+      example: 5449a8595ae4
 
     WorkflowStepUid:
       type: string
       description: Workflow step unique identifier — 12 lowercase alphanumeric characters.
       pattern: '^[a-z0-9]{12}$'
-      examples:
-        - 7564fc097a85
+      example: 7564fc097a85
 
     UserUid:
       type: string
       description: Unique identifier of a user — 12 lowercase alphanumeric characters.
       pattern: '^[a-z0-9]{12}$'
-      examples:
-        - 99b0662fbae1
+      example: 99b0662fbae1
 
     AgencyUid:
       type: string
       description: Agency unique identifier — 8 lowercase hexadecimal characters.
       pattern: '^[a-f0-9]{8}$'
-      examples:
-        - f965c52b
+      example: f965c52b
 
     ProjectUid:
       type: string
       description: Unique identifier of a Smartling project — 9 lowercase alphanumeric characters.
       pattern: '^[a-z0-9]{9}$'
-      examples:
-        - 84c012a33
+      example: 84c012a33
 
     ProcessUid:
       type: string
       description: Unique identifier of an async process (UUID v4).
       pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-      examples:
-        - 097ecbc2-8f1b-4ce5-b5c4-d48c3f0e5d9e
+      example: 097ecbc2-8f1b-4ce5-b5c4-d48c3f0e5d9e
 
     SuccessResponse:
       type: object
@@ -182,12 +186,15 @@ components:
       type: object
       properties:
         key:
+          description: Error key
           example: general_error
           type: string
         message:
+          description: Human readable description of the error
           example: Unexpected server error
           type: string
         details:
+          description: Details of the occurred error.
           example: {}
           type: object
       required:
@@ -201,7 +208,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - VALIDATION_ERROR
               type: string
@@ -222,7 +229,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - AUTHENTICATION_ERROR
                 - AUTHORIZATION_ERROR
@@ -238,13 +245,34 @@ components:
       required:
         - response
       type: object
+    Error403Response:
+      type: object
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occurred.
+              enum:
+                - ACCESS_DENIED_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
     Error404Response:
       properties:
         response:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - NOT_FOUND_ERROR
               type: string
@@ -265,7 +293,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - RESOURCE_LOCKED
               type: string
@@ -286,7 +314,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - MAX_OPERATIONS_LIMIT_EXCEEDED
               type: string
@@ -307,7 +335,7 @@ components:
           properties:
             code:
               description: >-
-                Indicates whether the response was successful or what error has occured.
+                Indicates whether the response was successful or what error has occurred.
               enum:
                 - GENERAL_ERROR
                 - MAINTENANCE_MODE_ERROR
@@ -323,6 +351,90 @@ components:
       required:
         - response
       type: object
+    FileType:
+      type: string
+      description: A unique identifier for the file type.
+      enum:
+        - android
+        - arb
+        - asciidoc
+        - csv
+        - dita
+        - ditaZip
+        - doc
+        - docm
+        - docx
+        - flare
+        - fluent
+        - freemarker
+        - gettext
+        - html
+        - idml
+        - imageJpg
+        - imagePng
+        - imageWebp
+        - indd
+        - ios
+        - javaProperties
+        - json
+        - madcap
+        - markdown
+        - mdx
+        - pdf
+        - plainText
+        - ppt
+        - pptx
+        - pres
+        - qt
+        - resx
+        - rtf
+        - srt
+        - stringsdict
+        - svg
+        - vsdm
+        - vsdx
+        - vtt
+        - xcstrings
+        - xliff
+        - xliff2
+        - xls
+        - xlsx
+        - xlsxTemplate
+        - xml
+        - yaml
+    FilesAPIUploadAcceptedResponse:
+      properties:
+        code:
+          enum:
+            - ACCEPTED
+          type: string
+        data:
+          properties:
+            message:
+              type: string
+          required:
+            - message
+          type: object
+      required:
+        - code
+        - data
+      type: object
+    AsyncProcessResponse:
+      properties:
+        response:
+          properties:
+            code:
+              description: Code of the completed operation.
+              enum:
+                - SUCCESS
+              type: string
+            data:
+              properties:
+                processUid:
+                  $ref: '#/components/schemas/ProcessUid'
+              type: object
+          type: object
+      type: object
   responses:
     Error400ResponseDefinition:
       description: Provided request parameters are invalid.
@@ -336,12 +448,12 @@ components:
                 response:
                   code: VALIDATION_ERROR
                   errors:
-                    key: unknown.field
-                    message: >-
-                      The field unknown.parameter was not expected. Please
-                      consult the documentation to verify the fields you are
-                      submitting.
-                    details: unknown.parameter
+                    - key: unknown.field
+                      message: >-
+                        The field unknown.parameter was not expected. Please
+                        consult the documentation to verify the fields you are
+                        submitting.
+                      details: unknown.parameter
 
     Error401ResponseDefinition:
       description: Provided credentials are not valid.
@@ -355,9 +467,9 @@ components:
                 response:
                   code: AUTHENTICATION_ERROR
                   errors:
-                    details: {}
-                    key: invalid_token
-                    message: Invalid token
+                    - details: {}
+                      key: invalid_token
+                      message: Invalid token
 
     Error429ResponseDefinition:
       description: Too many simultaneous API requests.
@@ -371,10 +483,10 @@ components:
                 response:
                   code: MAX_OPERATIONS_LIMIT_EXCEEDED
                   errors:
-                    key: too.many.requests
-                    message: >-
-                      The limit of 10 concurrent Smartling file API
-                      operations for this project has been exceeded.
+                    - key: too.many.requests
+                      message: >-
+                        The limit of 10 concurrent Smartling file API
+                        operations for this project has been exceeded.
 
     Error500ResponseDefinition:
       description: Unexpected error

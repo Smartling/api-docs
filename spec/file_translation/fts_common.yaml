@@ -1,13 +1,5 @@
 components:
   parameters:
-    accountUidPathParameter:
-      name: accountUid
-      in: path
-      schema:
-        type: string
-      required: true
-      description: A unique account identifier. This can be found in the Smartling Dashboard under Account Settings > API.
-
     fileUidPathParameter:
       name: fileUid
       in: path
@@ -33,25 +25,14 @@ components:
       description: Unique identifier of language detection action triggered on a file.
 
   schemas:
-    SuccessResponse:
-      properties:
-        code:
-          description: >-
-            Indicates whether the response was successful or what error has occurred.
-          enum:
-            - SUCCESS
-          type: string
-      required:
-        - code
-      type: object
-    EmptyResponse:
+    FileTranslationEmptyResponse:
       type: object
       required:
         - response
       properties:
         response:
           allOf:
-            - $ref: '#/components/schemas/SuccessResponse'
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
             - properties:
                 data:
                   description: Always empty.
@@ -69,60 +50,21 @@ components:
       required:
         - code
       type: object
-    Error400Response:
-      type: object
-      properties:
-        response:
-          properties:
-            code:
-              description: >-
-                Indicates whether the response was successful or what error has occurred.
-              enum:
-                - VALIDATION_ERROR
-              type: string
-            errors:
-              items:
-                $ref: '#/components/schemas/Error'
-              type: array
-          required:
-            - code
-            - errors
-          type: object
-      required:
-        - response
-    Error:
-      type: object
-      properties:
-        key:
-          description: Error key
-          example: generalError
-          type: string
-        message:
-          description: Human readable description of the error
-          example: 'Sorry, something went wrong. We notified the responsible team. If you still need to contact us please provide this error code: jtcorrr3'
-          type: string
-        details:
-          description: Details of the occurred error.
-          example: '{"errorId": "jtcorrr3"}'
-          type: object
-      required:
-        - key
-        - message
   responses:
-    Error400ResponseDefinition:
+    FileTranslationError400ResponseDefinition:
       description: Provided request parameters are invalid.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error400Response'
+            $ref: '../api_common.yaml#/components/schemas/Error400Response'
           examples:
             response:
               value:
                 response:
                   code: VALIDATION_ERROR
                   errors:
-                    key: not.found
-                    message: >-
-                      mtUid jtcorrr3 not found
-                    details:
-                      mtUid: jtcorrr3
+                    - key: not.found
+                      message: >-
+                        mtUid jtcorrr3 not found
+                      details:
+                        field: mtUid

@@ -7,15 +7,12 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: createTranslationQualityCheckTypeGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - &ref_2
           name: accountUid
           in: path
-          type: string
+          schema:
+            type: string
           required: true
           description: >-
             The account’s unique identifier. This can be found in the Smartling
@@ -149,7 +146,19 @@ x-paths:
                                           type: object
                                           properties:
                                             targetLocaleId:
-                                              type: string
+                                              allOf:
+                                                - &ref_12
+                                                  type: string
+                                                  pattern: ^[a-z]{2}(-[A-Z]{2})?$
+                                                  description: >
+                                                    Locale identifier. Either a 2-letter
+                                                    language code (`en`) or a
+
+                                                    language-region pair (`en-US`). The
+                                                    language part is always lowercase;
+
+                                                    the region part is always uppercase.
+                                                  example: fr-FR
                                               description: >-
                                                 Smartling ID for the language you want
                                                 to translate to.
@@ -174,10 +183,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTranslationQualityCheckTypeGroupDetails
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_2
         - *ref_3
@@ -241,17 +246,14 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getProfilesTranslationQualityCheckTypeGroupDetails
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_2
         - &ref_11
           name: profileUid
           in: path
           required: true
-          type: string
+          schema:
+            type: string
           description: Unique identifier of corresponding profile.
         - *ref_3
       responses:
@@ -279,7 +281,7 @@ x-paths:
                                 items:
                                   allOf:
                                     - *ref_5
-                                    - &ref_12
+                                    - &ref_13
                                       type: object
                                       properties:
                                         profileUid:
@@ -322,10 +324,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: CreateProfilesTranslationQualityCheckTypeGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_2
         - *ref_11
@@ -339,8 +337,7 @@ x-paths:
                   description: List of target locale IDs.
                   example:
                     - ru-RU
-                  items:
-                    type: string
+                  items: *ref_12
                   type: array
               required:
                 - targetLocaleIds
@@ -360,7 +357,7 @@ x-paths:
                           data:
                             allOf:
                               - *ref_5
-                              - *ref_12
+                              - *ref_13
                               - *ref_6
                               - *ref_7
                               - type: object
@@ -397,17 +394,14 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTranslationQualityCheckTypeGroupDetailsByGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_2
         - *ref_3
-        - &ref_13
+        - &ref_14
           name: groupUid
           in: path
-          type: string
+          schema:
+            type: string
           required: true
           description: Unique identifier of corresponding group.
       responses:
@@ -461,14 +455,10 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: deleteTranslationQualityCheckTypeGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_2
         - *ref_3
-        - *ref_13
+        - *ref_14
       responses:
         '200':
           description: OK
@@ -498,15 +488,11 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getProfilesTranslationQualityCheckTypeGroupDetailsByGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_2
         - *ref_11
         - *ref_3
-        - *ref_13
+        - *ref_14
       responses:
         '200':
           description: OK
@@ -523,7 +509,7 @@ x-paths:
                           data:
                             allOf:
                               - *ref_5
-                              - *ref_12
+                              - *ref_13
                               - *ref_6
                               - *ref_7
                               - type: object
@@ -558,15 +544,11 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: deleteProfilesTranslationQualityCheckTypeGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_2
         - *ref_11
         - *ref_3
-        - *ref_13
+        - *ref_14
       responses:
         '200':
           description: OK
@@ -593,20 +575,16 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: addLocaleToTranslationQualityCheckTypeGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_2
         - *ref_3
-        - *ref_13
+        - *ref_14
       requestBody:
         description: ''
         required: true
         content:
           application/json:
-            schema: &ref_14
+            schema: &ref_15
               allOf:
                 - *ref_10
       responses:
@@ -614,7 +592,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: &ref_15
+              schema: &ref_16
                 type: object
                 properties:
                   response:
@@ -638,27 +616,23 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: addLocaleToProfilesTranslationQualityCheckTypeGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_2
         - *ref_11
         - *ref_3
-        - *ref_13
+        - *ref_14
       requestBody:
         description: ''
         required: true
         content:
           application/json:
-            schema: *ref_14
+            schema: *ref_15
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_15
+              schema: *ref_16
       x-code-samples:
         - lang: curl
           source: >
@@ -673,19 +647,16 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: deleteLocaleFromTranslationQualityCheckTypeGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_2
         - *ref_3
-        - *ref_13
-        - &ref_16
+        - *ref_14
+        - &ref_17
           name: targetLocaleId
           in: path
           required: true
-          type: string
+          schema:
+            type: string
           description: Smartling ID for the language you want to translate to.
       responses:
         '200':
@@ -716,16 +687,12 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: deleteLocaleFromProfilesTranslationQualityCheckTypeGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_2
         - *ref_11
         - *ref_3
-        - *ref_13
-        - *ref_16
+        - *ref_14
+        - *ref_17
       responses:
         '200':
           description: OK

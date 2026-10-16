@@ -6,15 +6,12 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: createTQCRegexRule
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - &ref_1
           name: accountUid
           in: path
-          type: string
+          schema:
+            type: string
           required: true
           description: >-
             The account’s unique identifier. This can be found in the Smartling
@@ -23,7 +20,8 @@ x-paths:
           name: profileUid
           in: path
           required: true
-          type: string
+          schema:
+            type: string
           description: Unique identifier of corresponding profile.
       requestBody:
         description: ''
@@ -39,7 +37,7 @@ x-paths:
                       type: string
                       description: Rule name
                       example: ruleName
-                    severityLevelCode: &ref_10
+                    severityLevelCode: &ref_14
                       enum:
                         - DISABLED
                         - LOW
@@ -139,29 +137,38 @@ x-paths:
                                     type: array
                                     items:
                                       allOf:
-                                        - &ref_7
-                                          type: object
+                                        - type: object
                                           properties:
-                                            groupUid:
+                                            groupUid: &ref_8
                                               type: string
                                               description: >-
                                                 Smartling rule group identifier of the
                                                 translation
                                               example: ce6d6b5dbc12
-                                            ruleUid:
+                                            ruleUid: &ref_9
                                               type: string
                                               description: >-
                                                 Smartling rule identifier of the
                                                 translation
                                               example: ce6d6b5dbcs2
-                                            targetLocaleIds:
+                                            targetLocaleIds: &ref_10
                                               description: The list of target locales.
                                               example:
                                                 - ru-RU
-                                              items:
+                                              items: &ref_7
                                                 type: string
+                                                pattern: ^[a-z]{2}(-[A-Z]{2})?$
+                                                description: >
+                                                  Locale identifier. Either a 2-letter
+                                                  language code (`en`) or a
+
+                                                  language-region pair (`en-US`). The
+                                                  language part is always lowercase;
+
+                                                  the region part is always uppercase.
+                                                example: fr-FR
                                               type: array
-                                            severityLevelCode:
+                                            severityLevelCode: &ref_11
                                               enum:
                                                 - DISABLED
                                                 - LOW
@@ -180,8 +187,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTQCRegexRule
-      produces:
-        - application/json
       parameters:
         - *ref_1
         - *ref_2
@@ -189,7 +194,8 @@ x-paths:
           name: ruleUid
           in: path
           required: true
-          type: string
+          schema:
+            type: string
           description: Unique identifier of corresponding check rule.
       responses:
         '200':
@@ -208,10 +214,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: updateTQCRegexRule
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_1
         - *ref_2
@@ -240,8 +242,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: deleteTQCRegexRule
-      produces:
-        - application/json
       parameters:
         - *ref_1
         - *ref_2
@@ -270,10 +270,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: createTQCRegexRuleGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_1
         - *ref_2
@@ -287,8 +283,7 @@ x-paths:
                   description: List of target locale IDs.
                   example:
                     - ru-RU
-                  items:
-                    type: string
+                  items: *ref_7
                   type: array
               required:
                 - targetLocaleIds
@@ -297,7 +292,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: &ref_8
+              schema: &ref_12
                 type: object
                 properties:
                   response:
@@ -305,7 +300,13 @@ x-paths:
                       - *ref_6
                       - type: object
                         properties:
-                          data: *ref_7
+                          data:
+                            type: object
+                            properties:
+                              groupUid: *ref_8
+                              ruleUid: *ref_9
+                              targetLocaleIds: *ref_10
+                              severityLevelCode: *ref_11
         x-code-samples:
           - lang: curl
             source: >
@@ -318,10 +319,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTQCRegexRuleGroups
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_1
         - *ref_2
@@ -350,7 +347,12 @@ x-paths:
                                 type: array
                                 items:
                                   allOf:
-                                    - *ref_7
+                                    - type: object
+                                      properties:
+                                        groupUid: *ref_8
+                                        ruleUid: *ref_9
+                                        targetLocaleIds: *ref_10
+                                        severityLevelCode: *ref_11
         x-code-samples:
           - lang: curl
             source: >
@@ -364,18 +366,15 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: getTQCRegexRuleGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_1
         - *ref_2
         - *ref_4
-        - &ref_9
+        - &ref_13
           name: groupUid
           in: path
-          type: string
+          schema:
+            type: string
           required: true
           description: Unique identifier of corresponding group.
       responses:
@@ -383,7 +382,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_12
         x-code-samples:
           - lang: curl
             source: >
@@ -396,15 +395,11 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: deleteTQCRegexRuleGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_1
         - *ref_2
         - *ref_4
-        - *ref_9
+        - *ref_13
       responses:
         '200':
           description: OK
@@ -430,10 +425,6 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: updateProfilesCheckRuleSeverityLevel
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_1
         - *ref_2
@@ -443,11 +434,11 @@ x-paths:
         required: true
         content:
           application/json:
-            schema: &ref_11
+            schema: &ref_15
               allOf:
                 - type: object
                   properties:
-                    severityLevelCode: *ref_10
+                    severityLevelCode: *ref_14
                   required:
                     - severityLevelCode
       responses:
@@ -469,15 +460,11 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: addLocaleToProfilesTranslationQualityCheckTypeRegexRuleGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_1
         - *ref_2
         - *ref_4
-        - *ref_9
+        - *ref_13
       requestBody:
         description: ''
         required: true
@@ -488,7 +475,8 @@ x-paths:
                 - type: object
                   properties:
                     targetLocaleId:
-                      type: string
+                      allOf:
+                        - *ref_7
                       description: Smartling ID for the language you want to translate to.
                       example: it-IT
                   required:
@@ -498,7 +486,7 @@ x-paths:
           description: OK
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_12
       x-code-samples:
         - lang: curl
           source: >
@@ -512,18 +500,16 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: deleteLocaleFromTranslationQualityCheckTypeRegexRuleGroup
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_1
+        - *ref_2
         - *ref_4
-        - *ref_9
+        - *ref_13
         - name: targetLocaleId
           in: path
           required: true
-          type: string
+          schema:
+            type: string
           description: Smartling ID for the language you want to translate to.
       responses:
         '200':
@@ -550,27 +536,23 @@ x-paths:
       tags:
         - Translation quality checks
       operationId: updateProfilesCheckRuleGroupSeverityLevel
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - *ref_1
         - *ref_2
         - *ref_4
-        - *ref_9
+        - *ref_13
       requestBody:
         description: ''
         required: true
         content:
           application/json:
-            schema: *ref_11
+            schema: *ref_15
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_12
       x-code-samples:
         - lang: curl
           source: >

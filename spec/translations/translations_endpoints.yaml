@@ -164,7 +164,7 @@ x-paths:
           required: true
           description: Process identifier returned by the initiating operation.
           schema:
-            type: string
+            $ref: '../api_common.yaml#/components/schemas/ProcessUid'
       responses:
         '200':
           description: Process status retrieved.
@@ -334,8 +334,7 @@ x-paths:
               description: Attachment filename (`{sourceLocale}_{targetLocale}_{stepName}.xliff`).
               schema:
                 type: string
-                examples:
-                  - 'attachment; filename="en-US_fr-FR_Translation.xliff";'
+                example: 'attachment; filename="en-US_fr-FR_Translation.xliff";'
           content:
             text/xml:
               schema:
@@ -407,8 +406,7 @@ x-paths:
               description: Attachment filename (`{sourceLocale}_{targetLocale}_{stepName}.tmx`).
               schema:
                 type: string
-                examples:
-                  - 'attachment; filename="en-US_fr-FR_Translation.tmx";'
+                example: 'attachment; filename="en-US_fr-FR_Translation.tmx";'
           content:
             text/xml:
               schema:
@@ -685,7 +683,8 @@ components:
       description: HATEOAS link to a package resource.
       properties:
         href:
-          type: [string, "null"]
+          type: string
+          nullable: true
           format: uri
           description: |
             URL of the resource. `null` while the resource is still being prepared
@@ -694,10 +693,12 @@ components:
           type: string
           description: Relationship type (e.g. `content`, `translationMemory`).
         title:
-          type: [string, "null"]
+          type: string
+          nullable: true
           description: Human-readable label for this link. Currently always `null`.
         processUid:
-          type: [string, "null"]
+          type: string
+          nullable: true
           description: |
             UID of the background job preparing this resource. When `null`, the
             resource is ready to download. Only set on `translationMemory` links.
@@ -711,19 +712,16 @@ components:
           type: string
           description: Unique identifier of the translation package.
         projectId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/ProjectUid'
           description: Project this package belongs to.
-          examples:
-            - abcd12345
+          example: abcd12345
         localeId:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
           description: Target locale of the package.
         created:
-          type: string
-          format: date-time
-          description: Timestamp when the package was created.
-          examples:
-            - "2026-01-23T10:30:00Z"
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
         links:
           type: array
           description: HATEOAS links to downloadable package resources.
@@ -768,27 +766,22 @@ components:
       required: [processUid, processState]
       properties:
         processUid:
-          type: string
-          description: Unique identifier of the process.
+          $ref: '../api_common.yaml#/components/schemas/ProcessUid'
         processState:
           type: string
           description: Current state of the process.
           enum: [PENDING, IN_PROGRESS, COMPLETED, FAILED]
-          examples:
-            - COMPLETED
+          example: COMPLETED
         createdDate:
-          type: string
-          format: date-time
-          description: Timestamp when the process was created.
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
         modifiedDate:
-          type: string
-          format: date-time
-          description: Timestamp of the last status update.
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
         translationJobUid:
           description: Associated translation job UID, if applicable.
-          oneOf:
+          type: string
+          nullable: true
+          allOf:
             - $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
-            - type: "null"
         processStatistics:
           $ref: '#/components/schemas/AsyncProgressStatistics'
 
@@ -818,7 +811,8 @@ components:
           description: Hashcode of the string that failed.
           $ref: '../api_common.yaml#/components/schemas/Hashcode'
         fileUri:
-          type: string
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/FileUri'
           description: Source file URI of the failing string.
         messages:
           type: array
@@ -873,6 +867,7 @@ components:
               type: string
               enum: [SUCCESS]
             data:
-              oneOf:
+              type: object
+              nullable: true
+              allOf:
                 - $ref: '#/components/schemas/AsyncProgressData'
-                - type: "null"
