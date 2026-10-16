@@ -76,9 +76,10 @@ x-paths:
                     response:
                       code: VALIDATION_ERROR
                       errors:
-                        - key: null
+                        - key: file.uri.required
                           message: File uri is required.
-                          details: null
+                          details:
+                            field: fileUri
                 tm_not_owned_or_not_allowed:
                   summary: tmUid does not belong to the account, or is not eligible for import
                   value:
@@ -95,9 +96,9 @@ x-paths:
                     response:
                       code: VALIDATION_ERROR
                       errors:
-                        - key: null
+                        - key: file.size.exceeded
                           message: The uploaded TMX file exceeds the maximum allowed size.
-                          details: null
+                          details: {}
         '401':
           $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         '403':
@@ -120,9 +121,9 @@ x-paths:
                     response:
                       code: RESOURCE_LOCKED
                       errors:
-                        - key: null
+                        - key: operation.already.in.progress
                           message: Operation already in progress; please try again later.
-                          details: null
+                          details: {}
         '429':
           description: The account has reached its limit of concurrent TMX imports.
           content:
@@ -135,9 +136,9 @@ x-paths:
                     response:
                       code: MAX_OPERATIONS_LIMIT_EXCEEDED
                       errors:
-                        - key: null
+                        - key: operations.limit.exceeded
                           message: The limit of 2 TMX imports running at once has been reached for this account. Please try again in a few minutes.
-                          details: null
+                          details: {}
         '500':
           $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
 
@@ -238,9 +239,9 @@ x-paths:
                     response:
                       code: GONE
                       errors:
-                        - key: null
+                        - key: tmx.download.file.expired
                           message: 'TmxDownloadFile with downloadKey=ZGpoaDczaGRqc2o6MA== was expired. Please export again.'
-                          details: null
+                          details: {}
         '500':
           $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
 
