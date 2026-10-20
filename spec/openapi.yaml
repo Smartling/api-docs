@@ -332,6 +332,7 @@ tags:
     description: |-
       The Content Search API allows you to search for strings within a Smartling project.
       You can filter by string text, hashcode, namespace, or any combination of available filters.
+      The same GraphQL endpoint also submits the matched translations for LQA review.
     externalDocs:
       url: https://graphql-reference.smartling.com/strings-view-service-graphql-api/
       description: Content Search Documentation
@@ -3894,9 +3895,15 @@ paths:
   #
   '/strings-view-service-graphql-api/v2/projects/{projectId}/graphql':
     post:
-      summary: Search strings
+      summary: Search strings or submit them for LQA
       description: |-
-        Search for strings in your project using GraphQL.
+        Run a GraphQL query or mutation against the strings of your project.
+        This endpoint serves the `searchStrings` query and the
+        `submitLQARequest` mutation. See the
+        [Content Search GraphQL reference](https://graphql-reference.smartling.com/strings-view-service-graphql-api/)
+        for the full schema.
+
+        ### Search strings
 
         **Example Query:**
         ```graphql
@@ -3919,6 +3926,40 @@ paths:
             }
           }
         ```
+
+        ### Submit strings for LQA
+
+        The `submitLQARequest` mutation adds the translations matched by the
+        filters to an existing LQA (Linguistic Quality Assurance) request and
+        submits it for review. Create the request first with
+        [Create LQA request](/#operation/lqa_requests_create) and pass its
+        `lqaRequestUid`.
+
+        The operation runs asynchronously: the response returns an
+        `operationId` as soon as the operation is queued.
+
+        Each filter is applied within the project from the request URL, and the
+        results of all filters are combined. Every matching translation (string
+        hashcode + target locale) is added to the LQA request. Only active
+        strings that have a translation and are in a workflow step are
+        submitted, so filters that explicitly select inactive strings, strings
+        without translations or strings without a workflow step are skipped.
+
+        Limits and restrictions:
+        - At most 20000 translations can be added by a single operation;
+          translations beyond that limit are not added.
+        - Not available for trial accounts or for users with the Content
+          Viewer role.
+
+        **Example Mutation:**
+        ```graphql
+          mutation SubmitLQARequest($filters: [SearchFilter!]!, $lqaRequestUid: String!) {
+            submitLQARequest(filters: $filters, lqaRequestUid: $lqaRequestUid) {
+              success
+              operationId
+            }
+          }
+        ```
       tags:
         - Content Search
       operationId: searchStrings
@@ -3934,19 +3975,48 @@ paths:
           application/json:
             schema:
               type: object
-            example:
-              variables:
-                searchStringsFilter:
-                  localeIds: [ "es-LA" ]
-                  workflowStepsFilter:
-                    workflowStepUids: [ "a58fab71dce6", "f5f168bb13b1" ]
-                  limit: 1
+            examples:
+              search_strings:
+                summary: Search strings
+                value:
+                  variables:
+                    searchStringsFilter:
+                      localeIds: [ "es-LA" ]
+                      workflowStepsFilter:
+                        workflowStepUids: [ "a58fab71dce6", "f5f168bb13b1" ]
+                      limit: 1
+              submit_lqa_request:
+                summary: Submit strings for LQA
+                value:
+                  query: |-
+                    mutation SubmitLQARequest($filters: [SearchFilter!]!, $lqaRequestUid: String!) {
+                      submitLQARequest(filters: $filters, lqaRequestUid: $lqaRequestUid) {
+                        success
+                        operationId
+                      }
+                    }
+                  variables:
+                    lqaRequestUid: a68892bd72f5
+                    filters:
+                      - localeIds: [ "de-DE", "fr-FR" ]
+                        workflowStepsFilter:
+                          workflowStepUids: [ "c348c280445c" ]
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ContentSearchResponse'
+                anyOf:
+                  - $ref: '#/components/schemas/ContentSearchResponse'
+                  - $ref: '#/components/schemas/SubmitLqaRequestResponse'
+              examples:
+                submit_lqa_request:
+                  summary: Submit strings for LQA
+                  value:
+                    data:
+                      submitLQARequest:
+                        success: true
+                        operationId: ab6e2a3c40d4
           description: OK
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
@@ -10202,6 +10272,26 @@ components:
                   type: string
                   description: GraphQL type name
                   example: "StringGroup"
+    SubmitLqaRequestResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            submitLQARequest:
+              type: object
+              description: Result of starting an asynchronous action.
+              required:
+                - success
+                - operationId
+              properties:
+                success:
+                  type: boolean
+                  description: Whether the action was accepted and queued for processing
+                operationId:
+                  type: string
+                  description: Identifier of the queued asynchronous operation
+                  example: ab6e2a3c40d4
     LocaleHashcodeResponse:
       type: object
       required:
