@@ -351,6 +351,7 @@ components:
       properties:
         definition:
           type: string
+          maxLength: 1500
           description: >-
             Glossary entry definition. Max definition length is equal to 1500 characters.
         partOfSpeech:
@@ -397,13 +398,12 @@ components:
           type: array
           minItems: 1
           description: >-
-            Glossary entry translations. Must not be empty.
+            Glossary entry translations.
             Please note:
               - translations that were not passed into the current array but present ( update call ) will be removed
                   (as example we may consider search by filter which may return translations only for specified locales);
               - each translation from the array should at least has not empty term or notes field, or disabled property marked as 'true',
-                otherwise 'validation error' ( code : 400 ) will be returned;
-              - each translation `localeId` must be one of the glossary locales.
+                otherwise 'validation error' ( code : 400 ) will be returned.
           items:
             $ref: "#/components/schemas/GlossaryEntryTranslationCommandPTO"
         customFieldValues:
@@ -424,13 +424,15 @@ components:
         localeId:
           allOf:
             - $ref: '../api_common.yaml#/components/schemas/LocaleId'
-          description: Translation locale id.
+          description: Translation locale id. Must be one of the glossary locales.
         term:
           type: string
+          maxLength: 250
           description: Translation term. Max term length is equal to 250 characters.
           example: en term
         notes:
           type: string
+          maxLength: 1500
           description: Translation notes. Max notes length is equal to 1500 characters.
         caseSensitive:
           type: boolean
@@ -452,6 +454,7 @@ components:
             Max amount of variations in current array is 50.
           items:
             type: string
+            maxLength: 250
           example: [ "en synonym to the term" ]
         customFieldValues:
           type: array
@@ -747,6 +750,8 @@ components:
 
     EntriesSearchSuccessResponse:
       type: object
+      required:
+        - response
       properties:
         response:
           allOf:

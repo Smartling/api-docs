@@ -127,11 +127,13 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GlossaryLabelEmptyResponse'
-              example:
+                $ref: './g_common.yaml#/components/schemas/GlossaryEmptyResponse'
+              examples:
                 response:
-                  code: SUCCESS
-                  errors: []
+                  value:
+                    response:
+                      code: SUCCESS
+                      errors: []
         401:
           $ref: './g_common.yaml#/components/responses/GlossaryError401ResponseDefinition'
         403:
@@ -159,6 +161,8 @@ components:
   schemas:
     AccountGlossaryLabelsSuccessResponse:
       type: object
+      required:
+        - response
       properties:
         response:
           allOf:
@@ -215,18 +219,3 @@ components:
           maxLength: 50
           description: Text of the label. Must not be blank. Text max size is 50 characters.
       description: Glossary label manage command.
-    GlossaryLabelEmptyResponse:
-      type: object
-      required:
-        - response
-      properties:
-        response:
-          allOf:
-            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
-            - properties:
-                errors:
-                  description: Always empty. No `data` property is returned.
-                  type: array
-                  items:
-                    $ref: '../api_common.yaml#/components/schemas/Error'
-              type: object

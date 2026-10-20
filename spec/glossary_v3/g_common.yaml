@@ -64,7 +64,7 @@ components:
           type: string
           description: >-
             State of the glossary entry.
-            ACTIVE will be used in case if omitted, or BOTH if `entryUids` is passed.
+            ACTIVE is used if omitted, or BOTH if `entryUids` is passed.
           enum:
             - ACTIVE
             - ARCHIVED
@@ -471,7 +471,7 @@ components:
                 $ref: '../api_common.yaml#/components/schemas/Error'
               example: [ ]
 
-    EmptyResponse:
+    GlossaryEmptyResponse:
       type: object
       required:
         - response
@@ -479,12 +479,13 @@ components:
         response:
           allOf:
             - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
-            - properties:
-                data:
-                  description: Always empty.
-                  type: object
-                  example: { }
-              type: object
+            - type: object
+              properties:
+                errors:
+                  type: array
+                  description: Always empty. No `data` property is returned.
+                  items:
+                    $ref: '../api_common.yaml#/components/schemas/Error'
     AcceptedResponse:
       properties:
         code:
