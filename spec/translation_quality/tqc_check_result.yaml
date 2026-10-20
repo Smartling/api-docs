@@ -15,6 +15,10 @@ x-paths:
           description: >-
             The account’s unique identifier. This can be found in the Smartling
             Dashboard under Account Settings > API.
+          examples:
+            typical:
+              summary: Typical account UID
+              value: 4f23eabe9
         - name: projectId
           in: path
           required: true
@@ -31,7 +35,7 @@ x-paths:
           examples:
             typical:
               summary: Typical project ID
-              value: abcd12345
+              value: 84c012a33
       requestBody:
         description: ''
         required: true
@@ -39,130 +43,132 @@ x-paths:
           application/json:
             schema:
               allOf:
-                - allOf:
-                    - type: object
-                      properties:
-                        targetLocaleId:
-                          allOf:
-                            - &ref_0
-                              type: string
-                              pattern: ^[a-z]{2}(-[A-Z]{2})?$
-                              description: >
-                                Locale identifier. Either a 2-letter language
-                                code (`en`) or a
+                - type: object
+                  properties:
+                    targetLocaleId:
+                      allOf:
+                        - &ref_0
+                          type: string
+                          pattern: ^[a-z]{2}(-[A-Z]{2})?$
+                          description: >
+                            Locale identifier. Either a 2-letter language code
+                            (`en`) or a
 
-                                language-region pair (`en-US`). The language
-                                part is always lowercase;
+                            language-region pair (`en-US`). The language part is
+                            always lowercase;
 
-                                the region part is always uppercase.
-                              example: fr-FR
-                          description: >-
-                            Smartling ID for the language you want to translate
-                            to.
-                          example: it-IT
-                      required:
-                        - targetLocaleId
-                    - type: object
-                      properties:
-                        sourceLocaleId:
-                          allOf:
-                            - *ref_0
-                          description: >-
-                            The locale identifier for the source locale of the
-                            project. This indicates the base locale for which
-                            content should be uploaded to the project.
-                    - type: object
-                      properties:
-                        skipSuggestions:
-                          type: boolean
-                          description: skip suggestions
-                          example: false
-                        strings:
-                          type: array
-                          items:
+                            the region part is always uppercase.
+                          example: fr-FR
+                      description: Smartling ID for the language you want to translate to.
+                      example: it-IT
+                  required:
+                    - targetLocaleId
+                - type: object
+                  properties:
+                    sourceLocaleId:
+                      allOf:
+                        - *ref_0
+                      description: >-
+                        The locale identifier for the source locale of the
+                        project. This indicates the base locale for which
+                        content should be uploaded to the project.
+                - type: object
+                  properties:
+                    skipSuggestions:
+                      type: boolean
+                      description: skip suggestions
+                      example: false
+                    strings:
+                      type: array
+                      items:
+                        allOf:
+                          - type: object
+                            properties:
+                              hashcode: &ref_1
+                                type: string
+                                description: >-
+                                  MD5 hash digest — 32 lowercase hexadecimal
+                                  characters.
+                                pattern: ^[a-f0-9]{32}$
+                                example: d41d8cd98f00b204e9800998ecf8427e
+                          - type: object
+                            properties:
+                              stringUid:
+                                type: string
+                                description: >-
+                                  it is string part unique identifier if string
+                                  is splitted on several parts
+                                example: ''
+                          - type: object
+                            properties:
+                              originalString:
+                                type: string
+                                description: original string
+                                example: blacklist_term
+                          - type: object
+                            properties:
+                              translation:
+                                type: string
+                                description: translation of the original string
+                                example: blacklist_term
+                          - type: object
+                            properties:
+                              pluralFormGroupUid:
+                                type: string
+                                description: unique identifier of plural form
+                                example: 7191152182c69d9b72069ac1290fe24b
+                          - type: object
+                            properties:
+                              pluralForm:
+                                type: string
+                                description: plural form
+                                example: ONE
+                    useDefaultSettings:
+                      type: boolean
+                      description: use default settings
+                      example: false
+                    checkTypeCodes:
+                      minItems: 1
+                      maxItems: 100
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          checkTypeCode:
                             allOf:
-                              - type: object
-                                properties:
-                                  hashcode: &ref_1
-                                    type: string
-                                    description: >-
-                                      MD5 hash digest — 32 lowercase hexadecimal
-                                      characters.
-                                    pattern: ^[a-f0-9]{32}$
-                                    example: d41d8cd98f00b204e9800998ecf8427e
-                              - type: object
-                                properties:
-                                  stringUid:
-                                    type: string
-                                    description: >-
-                                      it is string part unique identifier if
-                                      string is splitted on several parts
-                                    example: ''
-                              - type: object
-                                properties:
-                                  originalString:
-                                    type: string
-                                    description: original string
-                                    example: blacklist_term
-                              - type: object
-                                properties:
-                                  translation:
-                                    type: string
-                                    description: translation of the original string
-                                    example: blacklist_term
-                              - type: object
-                                properties:
-                                  pluralFormGroupUid:
-                                    type: string
-                                    description: unique identifier of plural form
-                                    example: 7191152182c69d9b72069ac1290fe24b
-                              - type: object
-                                properties:
-                                  pluralForm:
-                                    type: string
-                                    description: plural form
-                                    example: ONE
-                        useDefaultSettings:
-                          type: boolean
-                          description: use default settings
-                          example: false
-                        checkTypeCodes:
-                          minItems: 1
-                          maxItems: 100
-                          type: array
-                          items:
-                            allOf:
-                              - type: object
-                                properties:
-                                  checkTypeCode:
-                                    enum:
-                                      - LEADING_TRAILING_SPACES
-                                      - ORIGINAL_EQUALS_TARGET
-                                      - WHITESPACES
-                                      - SPELLCHECK
-                                      - TAG_CONSISTENCY
-                                      - TARGET_LENGTH_LIMIT
-                                      - NUMBER_CONSISTENCY
-                                      - REPEATED_WORD
-                                      - TARGET_IN_WRONG_LANGUAGE
-                                      - SOURCE_IN_WRONG_LANGUAGE
-                                      - SEGMENT_COMPLETENESS
-                                      - NON_TRANSLATABLE_TEXT
-                                      - EMOJI_CONSISTENCY
-                                      - INSERTABLE_CONSISTENCY
-                                      - TARGET_SOURCE_CONSISTENCY
-                                      - BLACKLISTED_TERMS
-                                      - GLOSSARY_COMPLIANCE
-                                      - TRADEMARK_CONSISTENCY
-                                      - GRAMMAR_CHECK
-                                      - GLOBAL_CAPITALISATION_CONSISTENCY
-                                      - PUNCTUATION_CONSISTENCY
-                                      - PLURALS_REPETITION
-                                      - REGEX_CHECK
-                                      - OPEN_ISSUES
-                          description: >-
-                            [check type
-                            codes](#operation/getTranslationQualityCheckTypes)
+                              - type: string
+                                enum:
+                                  - LEADING_TRAILING_SPACES
+                                  - ORIGINAL_EQUALS_TARGET
+                                  - WHITESPACES
+                                  - SPELLCHECK
+                                  - TAG_CONSISTENCY
+                                  - TARGET_LENGTH_LIMIT
+                                  - NUMBER_CONSISTENCY
+                                  - REPEATED_WORD
+                                  - TARGET_IN_WRONG_LANGUAGE
+                                  - SOURCE_IN_WRONG_LANGUAGE
+                                  - SEGMENT_COMPLETENESS
+                                  - NON_TRANSLATABLE_TEXT
+                                  - EMOJI_CONSISTENCY
+                                  - INSERTABLE_CONSISTENCY
+                                  - TARGET_SOURCE_CONSISTENCY
+                                  - BLACKLISTED_TERMS
+                                  - GLOSSARY_COMPLIANCE
+                                  - TRADEMARK_CONSISTENCY
+                                  - GRAMMAR_CHECK
+                                  - GLOBAL_CAPITALISATION_CONSISTENCY
+                                  - PUNCTUATION_CONSISTENCY
+                                  - PLURALS_REPETITION
+                                  - REGEX_CHECK
+                                  - OPEN_ISSUES
+                            description: >-
+                              [check type
+                              code](#operation/getTranslationQualityCheckTypes)
+                            example: LEADING_TRAILING_SPACES
+                      description: >-
+                        [check type
+                        codes](#operation/getTranslationQualityCheckTypes)
             example:
               targetLocaleId: en-US
               sourceLocaleId: fr-FR
@@ -170,20 +176,14 @@ x-paths:
               strings:
                 - originalString: Bonjour ©
                   translation: Hello
-                  hashcode: 9091152182c69d9b72069ac1290fe2345
-                  stringUid: null
-                  pluralFormGroupUid: null
-                  pluralForm: null
+                  hashcode: 9091152182c69d9b72069ac1290fe234
                 - originalString: Bonjour 100
                   translation: Hello    100
-                  hashcode: 1091152182c69d9b72069ac1290fe23999
-                  stringUid: null
-                  pluralFormGroupUid: null
-                  pluralForm: null
+                  hashcode: 1091152182c69d9b72069ac1290fe239
               useDefaultSettings: false
               checkTypeCodes:
-                - BLACKLISTED_TERMS
-                - EMOJI_CONSISTENCY
+                - checkTypeCode: BLACKLISTED_TERMS
+                - checkTypeCode: EMOJI_CONSISTENCY
       responses:
         '200':
           description: OK
@@ -692,9 +692,10 @@ x-paths:
                                                           enum:
                                                             - IDENTICAL_CAPITALIZATION
                                                             - IDENTICAL_TAGS
-                                                          example: >-
-                                                            ["IDENTICAL_CAPITALIZATION",
-                                                            "IDENTICAL_TAGS"]
+                                                          example: IDENTICAL_CAPITALIZATION
+                                                        example:
+                                                          - IDENTICAL_CAPITALIZATION
+                                                          - IDENTICAL_TAGS
                                                   positionTypeCode:
                                                     type: string
                                                     enum:
@@ -807,9 +808,12 @@ x-paths:
                                                         items:
                                                           type: string
                                                         description: suggestions
-                                                        example: >-
-                                                          ["Szia", "Szita", "Szila", "Szia a",
-                                                          "Szilvia"]
+                                                        example:
+                                                          - Szia
+                                                          - Szita
+                                                          - Szila
+                                                          - Szia a
+                                                          - Szilvia
                                                   positionTypeCode:
                                                     type: string
                                                     enum:
@@ -1107,9 +1111,6 @@ x-paths:
                               originalString: blacklist_term
                               translation: blacklist_term
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: BLACKLISTED_TERMS
                                 severityLevelCode: MEDIUM
@@ -1117,10 +1118,10 @@ x-paths:
                                   - from: 0
                                     to: 14
                                 details:
-                                  - blacklistedTermUid: uidgj1
-                                    termText: blacklist_term
-                                    alternatives: []
-                                    notes: ''
+                                  blacklistedTermUid: uidgj1
+                                  termText: blacklist_term
+                                  alternatives: []
+                                  notes: ''
                                 positionTypeCode: TARGET
                 EMOJI_CONSISTENCY:
                   value:
@@ -1132,9 +1133,6 @@ x-paths:
                               originalString: Bonjour 😀
                               translation: Hello
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: EMOJI_CONSISTENCY
                                 severityLevelCode: LOW
@@ -1142,8 +1140,8 @@ x-paths:
                                   - from: 14
                                     to: 16
                                 details:
-                                  - emoji: 😀
-                                    type: EMOJI_DELETED
+                                  emoji: 😀
+                                  type: EMOJI_DELETED
                                 positionTypeCode: SOURCE
                 GLOBAL_CAPITALISATION_CONSISTENCY:
                   value:
@@ -1155,16 +1153,13 @@ x-paths:
                               originalString: ATTENTION
                               translation: WARNINg
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: GLOBAL_CAPITALISATION_CONSISTENCY
                                 severityLevelCode: LOW
                                 positions:
                                   - from: 0
                                     to: 7
-                                details: null
+                                details: {}
                                 positionTypeCode: TARGET
                 GLOSSARY_COMPLIANCE:
                   value:
@@ -1176,9 +1171,6 @@ x-paths:
                               originalString: resize
                               translation: поменять
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: GLOSSARY_COMPLIANCE
                                 severityLevelCode: MEDIUM
@@ -1192,7 +1184,7 @@ x-paths:
                                       localeId: ru-RU
                                       translatedTerm: изменить размер
                                       notes: ''
-                                      translatorUserUid: null
+                                      translatorUserUid: 23ddd32e
                                       lockTranslation: false
                                       submittedForTranslation: false
                                       createdDate: '2018-11-16T16:06:53Z'
@@ -1222,9 +1214,6 @@ x-paths:
                               originalString: Bonjour <br>
                               translation: Hello
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: INSERTABLE_CONSISTENCY
                                 severityLevelCode: LOW
@@ -1246,9 +1235,6 @@ x-paths:
                               originalString: Bonjour
                               translation: ' Hello '
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: LEADING_TRAILING_SPACES
                                 severityLevelCode: LOW
@@ -1257,7 +1243,7 @@ x-paths:
                                     to: 1
                                   - from: 6
                                     to: 7
-                                details: null
+                                details: {}
                                 positionTypeCode: TARGET
                 NON_TRANSLATABLE_TEXT:
                   value:
@@ -1269,9 +1255,6 @@ x-paths:
                               originalString: Bonjour {0}
                               translation: Hello
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: NON_TRANSLATABLE_TEXT
                                 severityLevelCode: MEDIUM
@@ -1292,9 +1275,6 @@ x-paths:
                               originalString: Bonjour 1000
                               translation: Hello 20
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: NUMBER_CONSISTENCY
                                 severityLevelCode: LOW
@@ -1308,8 +1288,8 @@ x-paths:
                               - checkTypeCode: NUMBER_CONSISTENCY
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 5
-                                  to: 7
+                                  - from: 5
+                                    to: 7
                                 details:
                                   type: NUMBER_ADDED
                                   number: '20'
@@ -1324,17 +1304,14 @@ x-paths:
                               originalString: Bonjour
                               translation: Hello Hello
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: REPEATED_WORD
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 5
-                                  to: 9
+                                  - from: 5
+                                    to: 9
                                 details:
-                                  - word: Hello
+                                  word: Hello
                                 positionTypeCode: TARGET
                 SEGMENT_COMPLETENESS:
                   value:
@@ -1346,15 +1323,12 @@ x-paths:
                               originalString: Le chien a mangé mes devoirs.
                               translation: The dog ate
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: SEGMENT_COMPLETENESS
                                 severityLevelCode: MEDIUM
                                 positions:
-                                  from: 0
-                                  to: 10
+                                  - from: 0
+                                    to: 10
                                 details:
                                   type: TARGET_IS_MUCH_SHORTER_THAN_SOURCE
                                 positionTypeCode: TARGET
@@ -1368,16 +1342,13 @@ x-paths:
                               originalString: Der Hund hat meine Hausaufgaben gegessen.
                               translation: The dog ate my homework.
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: SOURCE_IN_WRONG_LANGUAGE
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 0
-                                  to: 63
-                                details: null
+                                  - from: 0
+                                    to: 63
+                                details: {}
                                 positionTypeCode: SOURCE
                 SPELLCHECK:
                   value:
@@ -1389,15 +1360,12 @@ x-paths:
                               originalString: Le chien a mangé mes devoirs.
                               translation: The dog ate my homewrk.
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: SPELLCHECK
                                 severityLevelCode: MEDIUM
                                 positions:
-                                  from: 0
-                                  to: 5
+                                  - from: 0
+                                    to: 5
                                 details:
                                   word: homewrk
                                   suggestions:
@@ -1413,15 +1381,12 @@ x-paths:
                               originalString: <p>Bonjour</p>
                               translation: <p>Hello
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: TAG_CONSISTENCY
                                 severityLevelCode: MEDIUM
                                 positions:
-                                  from: 8
-                                  to: 12
+                                  - from: 8
+                                    to: 12
                                 details:
                                   tag: </p>
                                   type: TAG_DELETED
@@ -1436,16 +1401,13 @@ x-paths:
                               originalString: Bonjour
                               translation: Hello
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: TARGET_LENGTH_LIMIT
                                 severityLevelCode: HIGH
                                 positions:
-                                  from: 0
-                                  to: 4
-                                details: null
+                                  - from: 0
+                                    to: 4
+                                details: {}
                                 positionTypeCode: TARGET
                 TARGET_IN_WRONG_LANGUAGE:
                   value:
@@ -1457,16 +1419,13 @@ x-paths:
                               originalString: Le chien a mangé mes devoirs.
                               translation: Der Hund hat meine Hausaufgaben gegessen.
                               hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: TARGET_IN_WRONG_LANGUAGE
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 0
-                                  to: 64
-                                details: null
+                                  - from: 0
+                                    to: 64
+                                details: {}
                                 positionTypeCode: TARGET
                 TARGET_SOURCE_CONSISTENCY:
                   value:
@@ -1478,15 +1437,12 @@ x-paths:
                               originalString: Le chien a mangé mes devoirs.
                               translation: The dog have ate my homework.
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: TARGET_SOURCE_CONSISTENCY
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 0
-                                  to: 27
+                                  - from: 0
+                                    to: 27
                                 details:
                                   type: SAME_SOURCE_DIFFERENT_TRANSLATIONS
                                   originalString: Le chien a mangé mes devoirs.
@@ -1501,16 +1457,13 @@ x-paths:
                           - string:
                               originalString: Bonjour ©
                               translation: Hello
-                              hashcode: 9091152182c69d9b72069ac1290fe2345
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
+                              hashcode: 9091152182c69d9b72069ac1290fe234
                             mistakes:
                               - checkTypeCode: TRADEMARK_CONSISTENCY
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 6
-                                  to: 7
+                                  - from: 6
+                                    to: 7
                                 details:
                                   trademarkTypeCode: COPYRIGHT
                                 positionTypeCode: SOURCE
@@ -1523,17 +1476,14 @@ x-paths:
                           - string:
                               originalString: Bonjour 100
                               translation: Hello  100
-                              hashcode: 1091152182c69d9b72069ac1290fe23999
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
+                              hashcode: 1091152182c69d9b72069ac1290fe239
                             mistakes:
                               - checkTypeCode: WHITESPACES
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 4
-                                  to: 6
-                                details: null
+                                  - from: 4
+                                    to: 6
+                                details: {}
                                 positionTypeCode: TARGET
                 GRAMMAR_CHECK:
                   value:
@@ -1545,15 +1495,12 @@ x-paths:
                               originalString: Le chien a mangé mes devoirs.
                               translation: The dog have ate my homework.
                               hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: GRAMMAR_CHECK
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 9
-                                  to: 13
+                                  - from: 9
+                                    to: 13
                                 details:
                                   text: ate
                                   message: Possible agreement error
@@ -1572,15 +1519,12 @@ x-paths:
                               originalString: hello
                               translation: hello
                               hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: ORIGINAL_EQUALS_TARGET
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 0
-                                  to: 5
+                                  - from: 0
+                                    to: 5
                                 details:
                                   types:
                                     - IDENTICAL_CAPITALIZATION
@@ -1596,15 +1540,12 @@ x-paths:
                               originalString: Hello!
                               translation: Привет. Как дела?
                               hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: PUNCTUATION_CONSISTENCY
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 5
-                                  to: 6
+                                  - from: 5
+                                    to: 6
                                 details:
                                   punctuationMark: '!'
                                   type: PUNCTUATION_MARK_DELETED
@@ -1620,15 +1561,14 @@ x-paths:
                               originalString: 2 rows
                               translation: 2 rows
                               hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
-                              stringUid: null
                               pluralFormGroupUid: a0b1acda22fc97da9c2b9ae5f3b25888
                               pluralForm: MANY
                             mistakes:
                               - checkTypeCode: PLURALS_REPETITION
                                 severityLevelCode: MEDIUM
                                 positions:
-                                  from: 0
-                                  to: 5
+                                  - from: 0
+                                    to: 5
                                 details:
                                   pluralFormGroupUid: a0b1acda22fc97da9c2b9ae5f3b25888
                                   repeatedPluralForms:
@@ -1645,9 +1585,6 @@ x-paths:
                               originalString: test@gmail
                               translation: test@mail
                               hashcode: 7191152182c69d9b72069ac1290fe24b
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: REGEX_CHECK
                                 severityLevelCode: LOW
@@ -1678,15 +1615,12 @@ x-paths:
                               originalString: hello
                               translation: hello
                               hashcode: a0b1acda22fc97da9c2b9ae5f3b25888
-                              stringUid: null
-                              pluralFormGroupUid: null
-                              pluralForm: null
                             mistakes:
                               - checkTypeCode: OPEN_ISSUES
                                 severityLevelCode: LOW
                                 positions:
-                                  from: 0
-                                  to: 5
+                                  - from: 0
+                                    to: 5
                                 details:
                                   sourceIssuesCount: 5
                                   translationIssuesCount: 3

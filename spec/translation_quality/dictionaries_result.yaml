@@ -42,32 +42,36 @@ x-paths:
                                   allOf:
                                     - type: object
                                       properties:
-                                        checkTypeCode: &ref_0
-                                          enum:
-                                            - LEADING_TRAILING_SPACES
-                                            - ORIGINAL_EQUALS_TARGET
-                                            - WHITESPACES
-                                            - SPELLCHECK
-                                            - TAG_CONSISTENCY
-                                            - TARGET_LENGTH_LIMIT
-                                            - NUMBER_CONSISTENCY
-                                            - REPEATED_WORD
-                                            - TARGET_IN_WRONG_LANGUAGE
-                                            - SOURCE_IN_WRONG_LANGUAGE
-                                            - SEGMENT_COMPLETENESS
-                                            - NON_TRANSLATABLE_TEXT
-                                            - EMOJI_CONSISTENCY
-                                            - INSERTABLE_CONSISTENCY
-                                            - TARGET_SOURCE_CONSISTENCY
-                                            - BLACKLISTED_TERMS
-                                            - GLOSSARY_COMPLIANCE
-                                            - TRADEMARK_CONSISTENCY
-                                            - GRAMMAR_CHECK
-                                            - GLOBAL_CAPITALISATION_CONSISTENCY
-                                            - PUNCTUATION_CONSISTENCY
-                                            - PLURALS_REPETITION
-                                            - REGEX_CHECK
-                                            - OPEN_ISSUES
+                                        checkTypeCode:
+                                          allOf:
+                                            - &ref_0
+                                              type: string
+                                              enum:
+                                                - LEADING_TRAILING_SPACES
+                                                - ORIGINAL_EQUALS_TARGET
+                                                - WHITESPACES
+                                                - SPELLCHECK
+                                                - TAG_CONSISTENCY
+                                                - TARGET_LENGTH_LIMIT
+                                                - NUMBER_CONSISTENCY
+                                                - REPEATED_WORD
+                                                - TARGET_IN_WRONG_LANGUAGE
+                                                - SOURCE_IN_WRONG_LANGUAGE
+                                                - SEGMENT_COMPLETENESS
+                                                - NON_TRANSLATABLE_TEXT
+                                                - EMOJI_CONSISTENCY
+                                                - INSERTABLE_CONSISTENCY
+                                                - TARGET_SOURCE_CONSISTENCY
+                                                - BLACKLISTED_TERMS
+                                                - GLOSSARY_COMPLIANCE
+                                                - TRADEMARK_CONSISTENCY
+                                                - GRAMMAR_CHECK
+                                                - GLOBAL_CAPITALISATION_CONSISTENCY
+                                                - PUNCTUATION_CONSISTENCY
+                                                - PLURALS_REPETITION
+                                                - REGEX_CHECK
+                                                - OPEN_ISSUES
+                                          description: check type code
                                     - type: object
                                       properties:
                                         name:
@@ -82,12 +86,12 @@ x-paths:
                                             correctly transferred to the translation
                                         checkSubTypes:
                                           type: array
-                                          items:
-                                            allOf:
-                                              - &ref_2
-                                                type: object
-                                                properties:
-                                                  checkSubTypeCode:
+                                          items: &ref_2
+                                            type: object
+                                            properties:
+                                              checkSubTypeCode:
+                                                allOf:
+                                                  - type: string
                                                     enum:
                                                       - EMOJI_ADDED
                                                       - EMOJI_DELETED
@@ -113,10 +117,12 @@ x-paths:
                                                       - TAG_IS_CHANGED
                                                       - SAME_SOURCE_DIFFERENT_TRANSLATIONS
                                                       - SAME_TRANSLATION_DIFFERENT_SOURCES
-                                                  name:
-                                                    type: string
-                                                    description: check subtype name
-                                                    example: Emoji added
+                                                description: check subtype code
+                                                example: EMOJI_ADDED
+                                              name:
+                                                type: string
+                                                description: check subtype name
+                                                example: Emoji added
               example:
                 response:
                   code: SUCCESS
@@ -330,9 +336,7 @@ x-paths:
                                 description: Total element count
                               items:
                                 type: array
-                                items:
-                                  allOf:
-                                    - *ref_2
+                                items: *ref_2
               example:
                 response:
                   code: SUCCESS
@@ -446,11 +450,15 @@ x-paths:
                                     - type: object
                                       properties:
                                         severityLevelCode:
-                                          enum:
-                                            - DISABLED
-                                            - LOW
-                                            - MEDIUM
-                                            - HIGH
+                                          allOf:
+                                            - type: string
+                                              enum:
+                                                - DISABLED
+                                                - LOW
+                                                - MEDIUM
+                                                - HIGH
+                                          description: severity level code
+                                          example: MEDIUM
                                     - type: object
                                       properties:
                                         name:
@@ -600,24 +608,22 @@ x-paths:
                                 description: Total element count
                               items:
                                 type: array
-                                items:
-                                  allOf:
-                                    - &ref_4
-                                      type: object
-                                      properties:
-                                        wordUid:
-                                          type: string
-                                          description: word unique identifier
-                                          example: 23jkj23sa
-                                        word:
-                                          type: string
-                                          description: trademark consistency type name
-                                          example: hello
-                                        createdDate:
-                                          type: string
-                                          format: date-time
-                                          description: ISO 8601 UTC timestamp.
-                                          example: '2026-01-15T10:00:00Z'
+                                items: &ref_4
+                                  type: object
+                                  properties:
+                                    wordUid:
+                                      type: string
+                                      description: word unique identifier
+                                      example: 23jkj23sa
+                                    word:
+                                      type: string
+                                      description: trademark consistency type name
+                                      example: hello
+                                    createdDate:
+                                      type: string
+                                      format: date-time
+                                      description: ISO 8601 UTC timestamp.
+                                      example: '2026-01-15T10:00:00Z'
       x-code-samples:
         - lang: curl
           source: >
@@ -656,9 +662,7 @@ x-paths:
                       - *ref_1
                       - type: object
                         properties:
-                          data:
-                            allOf:
-                              - *ref_4
+                          data: *ref_4
       x-code-samples:
         - lang: curl
           source: >
@@ -725,10 +729,14 @@ x-paths:
                                     - type: object
                                       properties:
                                         ruleTypeCode:
-                                          enum:
-                                            - FORBIDDEN
-                                            - MISSING
-                                            - COUNT_MISMATCH
+                                          allOf:
+                                            - type: string
+                                              enum:
+                                                - FORBIDDEN
+                                                - MISSING
+                                                - COUNT_MISMATCH
+                                          description: rule type code
+                                          example: FORBIDDEN
                                     - type: object
                                       properties:
                                         name:
@@ -787,9 +795,13 @@ x-paths:
                                     - type: object
                                       properties:
                                         flavorCode:
-                                          enum:
-                                            - JAVA
-                                            - DOT_NET
+                                          allOf:
+                                            - type: string
+                                              enum:
+                                                - JAVA
+                                                - DOT_NET
+                                          description: flavor code
+                                          example: JAVA
                                     - type: object
                                       properties:
                                         name:
