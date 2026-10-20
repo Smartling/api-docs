@@ -24,11 +24,9 @@ x-paths:
         - The call is synchronous and blocks until the evaluation finishes.
           It fails with `500` when the evaluation does not finish within
           **120** seconds or ends with an error.
-        - `aiFunctionKey` selects the evaluation model:
-          `lqa-agent-evaluation` or `lqa-agent-evaluation-light`. When it is
-          omitted, `null` or blank, `lqa-agent-evaluation` is used if
-          `metadata.integrationType` is `FOUNDATION`, otherwise
-          `lqa-agent-evaluation-light`. Any other value fails with `400`.
+        - `metadata.integrationType` selects the evaluation model:
+          `lqa-agent-evaluation` when it is `FOUNDATION`, otherwise
+          `lqa-agent-evaluation-light`.
         - The call fails with `404` when the project or its linguistic package
           is not found.
         - `wordCount` is accepted but not used.
@@ -66,7 +64,6 @@ x-paths:
                   workflowStepUid: 78c4deb43f0d
                   metadata:
                     integrationType: FOUNDATION
-                  aiFunctionKey: lqa-agent-evaluation
       responses:
         '200':
           description: Evaluation finished.
@@ -110,16 +107,6 @@ x-paths:
                           message: must not be blank
                           details:
                             field: projectUid
-                ai_function_key_not_supported:
-                  summary: Unsupported `aiFunctionKey`
-                  value:
-                    response:
-                      code: VALIDATION_ERROR
-                      errors:
-                        - key: api.request.validation.ai.function.key.not.supported
-                          message: "aiFunctionKey 'lqa-agent-evaluation-pro' is not supported, supported values: lqa-agent-evaluation, lqa-agent-evaluation-light"
-                          details:
-                            field: aiFunctionKey
         '401':
           $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
         '403':
@@ -230,24 +217,12 @@ components:
           description: |
             Free-form metadata passed to the evaluation. The `integrationType`
             entry defaults to `API` when it is not provided. The value
-            `FOUNDATION` (case-sensitive) selects `lqa-agent-evaluation` as the
-            default AI function when `aiFunctionKey` is not provided.
+            `FOUNDATION` (case-sensitive) selects the `lqa-agent-evaluation`
+            model; any other value selects `lqa-agent-evaluation-light`.
           additionalProperties:
             type: string
           example:
             integrationType: FOUNDATION
-        aiFunctionKey:
-          type: string
-          nullable: true
-          description: |
-            Key of the AI function that runs the evaluation:
-            `lqa-agent-evaluation` or `lqa-agent-evaluation-light`. When
-            omitted, `null` or blank, defaults to `lqa-agent-evaluation` if
-            `metadata.integrationType` is `FOUNDATION`, otherwise to
-            `lqa-agent-evaluation-light`. An explicit key always takes
-            precedence over `metadata.integrationType`. Any other value fails
-            with `400`.
-          example: lqa-agent-evaluation-light
 
     # -- Response bodies --
 
