@@ -31,13 +31,6 @@ x-paths:
           that custom field assigned. Errors from the Jobs API are returned
           as `400` with the upstream error key.
 
-        Callers with several LQA projects can pass `targetAccountUid` to pick
-        the account that owns the LQA project.
-
-        Set `excludeSmartmatches` to `true` to skip strings that were
-        SmartMatched in the original project during the last six months when
-        strings are added to the request.
-
         After the request is created, add strings to it and submit it to
         start processing.
 
@@ -61,18 +54,10 @@ x-paths:
                 summary: Create a new job for the request
                 value:
                   translationJobName: LQA review 2026-10
-                  ait: false
-                  excludeSmartmatches: true
               existing_job:
                 summary: Reuse an existing job of the LQA project
                 value:
                   translationJobUid: j45v1uvsi3tx
-              ai_translation:
-                summary: Request created for an AI translation review in a given account
-                value:
-                  translationJobName: AIT review
-                  ait: true
-                  targetAccountUid: 2fb3eaae9
       responses:
         '200':
           description: LQA request created in `DRAFT` state.
@@ -91,7 +76,6 @@ x-paths:
                         targetProjectUid: f3d8a1b72
                         targetJobUid: j45v1uvsi3tx
                         createdByUserUid: 5ab3c1d2e4f6
-                        ait: false
                         lqaRequestStatusCode: DRAFT
                         createdDate: "2026-10-06T09:15:00Z"
                         modifiedDate: "2026-10-06T09:15:00Z"
@@ -192,26 +176,6 @@ components:
           nullable: true
           description: Name of a new job to create in the LQA project. The name must be unique in that project.
           example: LQA review 2026-10
-        ait:
-          type: boolean
-          nullable: true
-          description: Marks the request as an AI translation review. Defaults to `false`.
-        excludeSmartmatches:
-          type: boolean
-          nullable: true
-          description: |
-            When `true`, strings that were SmartMatched in the original project
-            during the last six months are skipped when strings are added to
-            the request. Defaults to `false`.
-        targetAccountUid:
-          type: string
-          nullable: true
-          description: |
-            Account that owns the LQA project. Used by callers that have
-            several LQA projects and ignored for other callers.
-            When omitted, the default LQA account is used.
-            When `null`, every LQA project of the account is considered.
-          example: 2fb3eaae9
 
     # -- Response bodies --
 
@@ -242,7 +206,6 @@ components:
         - targetProjectUid
         - targetJobUid
         - createdByUserUid
-        - ait
         - lqaRequestStatusCode
         - createdDate
         - modifiedDate
@@ -267,9 +230,6 @@ components:
           allOf:
             - $ref: '../api_common.yaml#/components/schemas/UserUid'
           description: UID of the user that created the request.
-        ait:
-          type: boolean
-          description: Whether the request reviews an AI translation.
         lqaRequestStatusCode:
           $ref: '#/components/schemas/LqaRequestStatusCode'
         createdDate:
