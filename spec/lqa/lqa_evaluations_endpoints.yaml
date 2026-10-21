@@ -24,9 +24,6 @@ x-paths:
         - The call is synchronous and blocks until the evaluation finishes.
           It fails with `500` when the evaluation does not finish within
           **120** seconds or ends with an error.
-        - `metadata.integrationType` selects the evaluation model:
-          `lqa-agent-evaluation` when it is `FOUNDATION`, otherwise
-          `lqa-agent-evaluation-light`.
         - The call fails with `404` when the project or its linguistic package
           is not found.
         - `wordCount` is accepted but not used.
@@ -51,7 +48,7 @@ x-paths:
                   originalString: Finish the new string with memory
                   translation: Terminez la nouvelle chaine avec la memoire
               full:
-                summary: With job, workflow and evaluation settings
+                summary: With job and workflow
                 value:
                   projectUid: ec84fa8c6
                   hashcode: da45fd54b8563f0c9b09b496438d7ffd
@@ -62,8 +59,6 @@ x-paths:
                   jobUid: j45v1uvsi3tx
                   workflowUid: 96dd14da0d81
                   workflowStepUid: 78c4deb43f0d
-                  metadata:
-                    integrationType: FOUNDATION
       responses:
         '200':
           description: Evaluation finished.
@@ -211,18 +206,6 @@ components:
           pattern: '^[a-z0-9]{12}$'
           description: Workflow step of the string.
           example: 78c4deb43f0d
-        metadata:
-          type: object
-          nullable: true
-          description: |
-            Free-form metadata passed to the evaluation. The `integrationType`
-            entry defaults to `API` when it is not provided. The value
-            `FOUNDATION` (case-sensitive) selects the `lqa-agent-evaluation`
-            model; any other value selects `lqa-agent-evaluation-light`.
-          additionalProperties:
-            type: string
-          example:
-            integrationType: FOUNDATION
 
     # -- Response bodies --
 
