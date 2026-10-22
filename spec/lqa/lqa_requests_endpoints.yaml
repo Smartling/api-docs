@@ -27,9 +27,6 @@ x-paths:
           still processing.
         - `translationJobName` creates a new job in the LQA project.
 
-        Callers with several LQA projects can pass `targetAccountUid` to pick
-        the account that owns the LQA project.
-
         After the request is created, add strings to it and submit it to
         start processing.
 
@@ -57,11 +54,6 @@ x-paths:
                 summary: Reuse an existing job of the LQA project
                 value:
                   translationJobUid: j45v1uvsi3tx
-              target_account:
-                summary: Create a new job in the LQA project of a given account
-                value:
-                  translationJobName: LQA review 2026-10
-                  targetAccountUid: 2fb3eaae9
       responses:
         '200':
           description: LQA request created in `DRAFT` state.
@@ -181,15 +173,6 @@ components:
           nullable: true
           description: Name of a new job to create in the LQA project. The name must be unique in that project.
           example: LQA review 2026-10
-        targetAccountUid:
-          type: string
-          nullable: true
-          description: |
-            Account that owns the LQA project. Used by callers that have
-            several LQA projects and ignored for other callers.
-            When omitted, the default LQA account is used.
-            When `null`, every LQA project of the account is considered.
-          example: 2fb3eaae9
 
     # -- Response bodies --
 
