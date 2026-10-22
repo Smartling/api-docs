@@ -35,6 +35,7 @@ if (branch && branch !== 'gh-pages') {
   cp('-R', 'spec/translations', specFolder);
   cp('-R', 'spec/content_assignments', specFolder);
   cp('-R', 'spec/people', specFolder);
+  cp('-R', 'spec/lqa', specFolder);
   cp('-R', 'spec/api_common.yaml', specFolder);
 
   require('./bundle-refs')(branchPath);
