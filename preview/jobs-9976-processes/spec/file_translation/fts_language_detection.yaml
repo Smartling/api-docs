@@ -1,0 +1,166 @@
+x-paths:
+
+  language_detection_action:
+    post:
+      summary: Detect file language
+      description: >-
+        Request source language detection for an existing file.
+      tags:
+        - File Machine Translations (MT)
+      operationId: detectFileSourceLanguage
+      produces:
+        - application/json
+      parameters:
+        - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/fileUidPathParameter'
+      responses:
+        '202':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: ACCEPTED
+                      data:
+                        languageDetectionUid: "h5dhjbg1ganp"
+              schema:
+                $ref: '#/components/schemas/LanguageDetectionResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        key: not.found
+                        message: >-
+                          fileUid h5dhjbg1ganp not found
+                        details:
+                          field: "fileUid"
+
+        '401':
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" 
+            https://api.smartling.com/file-translations-api/v2/accounts/$smartlingAccountId/files/$smartlingFtsFileUid/language-detection
+
+  language_detection_status:
+    get:
+      summary: Get language detection progress
+      description: |-
+        Get progress for an ongoing source language detection action.
+        Result of language detection is propagated to response as soon as state changes to COMPLETED.
+      tags:
+        - File Machine Translations (MT)
+      operationId: getLanguageDetectionStatus
+      produces:
+        - application/json
+      parameters:
+        - $ref: './fts_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/fileUidPathParameter'
+        - $ref: './fts_common.yaml#/components/parameters/languageDetectionUidPathParameter'
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        state: "COMPLETED"
+                        error : null
+                        detectedSourceLanguages :
+                          - languageId: de
+                            defaultLocaleId: "de-DE"
+                          - languageId: no
+                            defaultLocaleId: "no-NO"
+              schema:
+                $ref: '#/components/schemas/LanguageDetectionStatusResponse'
+          description: OK
+        '400':
+          $ref: './fts_common.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken" 
+            https://api.smartling.com/file-translations-api/v2/accounts/$smartlingAccountId/files/$smartlingFtsFileUid/language-detection/$smartlingLanguageDetectionUid/status
+
+components:
+  schemas:
+    LanguageDetectionResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './fts_common.yaml#/components/schemas/AcceptedResponse'
+            - properties:
+                data:
+                  properties:
+                    languageDetectionUid:
+                      description: >-
+                        Unique identifier for the language detection action.
+                      type: string
+                  type: object
+              type: object
+    LanguageDetectionStatusResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: './fts_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    state:
+                      $ref: '#/components/schemas/LanguageDetectionState'
+                    error:
+                      $ref: './fts_common.yaml#/components/schemas/Error'
+                    detectedSourceLanguages:
+                      type: array
+                      items:
+                        type: object
+                      languageId:
+                        type: string
+                        description: Detected source language of the file
+                      defaultLocaleId:
+                        type: string
+                        description: Smartling's default locale that corresponds to languageId
+                  type: object
+
+              type: object    
+    LanguageDetectionState:
+      type: string
+      description: |-
+        | State | Description |
+        |---------------|-------------|
+        | **QUEUED** | Language detection in progress.|
+        | **FAILED** | Language detection failed.|
+        | **COMPLETED** | Language detection complete.|
+      enum:
+        - QUEUED
+        - FAILED
+        - COMPLETED
