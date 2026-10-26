@@ -50,10 +50,11 @@ x-paths:
               examples:
                 response:
                   value:
-                    code: SUCCESS
-                    data:
-                      labelUid: bad90990-4be1-4570-81da-b719cddd5352
-                      labelText: text of the label
+                    response:
+                      code: SUCCESS
+                      data:
+                        labelUid: bad90990-4be1-4570-81da-b719cddd5352
+                        labelText: text of the label
         400:
           $ref: './g_common.yaml#/components/responses/GlossaryError400ResponseDefinition'
         401:
@@ -94,10 +95,11 @@ x-paths:
               examples:
                 response:
                   value:
-                    code: SUCCESS
-                    data:
-                      labelUid: bad90990-4be1-4570-81da-b719cddd5352
-                      labelText: text of the label
+                    response:
+                      code: SUCCESS
+                      data:
+                        labelUid: bad90990-4be1-4570-81da-b719cddd5352
+                        labelText: text of the label
         400:
           $ref: './g_common.yaml#/components/responses/GlossaryError400ResponseDefinition'
         401:
@@ -125,13 +127,13 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '../api_common.yaml#/components/schemas/EmptyResponse'
+                $ref: './g_common.yaml#/components/schemas/GlossaryEmptyResponse'
               examples:
                 response:
                   value:
                     response:
                       code: SUCCESS
-                      data: {}
+                      errors: []
         401:
           $ref: './g_common.yaml#/components/responses/GlossaryError401ResponseDefinition'
         403:
@@ -159,15 +161,25 @@ components:
   schemas:
     AccountGlossaryLabelsSuccessResponse:
       type: object
+      required:
+        - response
       properties:
-        totalCount:
-          type: integer
-          format: int64
-          description: total labels amount
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/GlossaryLabel"
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      format: int64
+                      description: total labels amount
+                    items:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/GlossaryLabel"
 
     GlossaryLabel:
       type: object
@@ -184,12 +196,17 @@ components:
       description: Glossary label representation.
 
     GlossaryLabelPTO:
-      allOf:
-        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
-        - type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/GlossaryLabel"
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/GlossaryLabel"
 
 
     ManageGlossaryLabelCommandPTO:
@@ -199,5 +216,6 @@ components:
       properties:
         labelText:
           type: string
-          description: Text of the label. Text max size is 50 characters.
+          maxLength: 50
+          description: Text of the label. Must not be blank. Text max size is 50 characters.
       description: Glossary label manage command.
