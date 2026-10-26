@@ -152,7 +152,327 @@ x-paths:
         '500':
           $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
 
+  lqa_request:
+    get:
+      tags:
+        - lqa
+      operationId: lqa_requests_get
+      summary: Get LQA request
+      description: |
+        Returns the LQA request with the given UID in any state. Use it to
+        follow the request after it is submitted, through
+        `lqaRequestStatusCode`.
+
+        The request is looked up by `lqaRequestUid` only. `projectId` is not
+        checked against the request. A request whose LQA project job was
+        deleted is no longer returned, and the call fails as if the request
+        did not exist.
+
+        Requires the Account Owner or Project Manager role.
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: UID of the original project whose strings are reviewed.
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/ProjectUid'
+          example: a295c174d
+        - $ref: '#/components/parameters/LqaRequestUid'
+      responses:
+        '200':
+          description: The LQA request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LqaRequestResponse'
+              examples:
+                in_progress:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        lqaRequestUid: 3f9a1c7e5b20
+                        sourceLocaleId: en-US
+                        targetProjectUid: f3d8a1b72
+                        targetJobUid: j45v1uvsi3tx
+                        createdByUserUid: 5ab3c1d2e4f6
+                        lqaRequestStatusCode: IN_PROGRESS
+                        createdDate: "2026-10-06T09:15:00Z"
+                        modifiedDate: "2026-10-06T09:20:41Z"
+        '400':
+          description: |
+            The LQA request does not exist. `response.code` is
+            `VALIDATION_ERROR`.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                request_not_found:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.lqa.request.not.found
+                          message: The lqa request '3f9a1c7e5b20' not found
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+    put:
+      tags:
+        - lqa
+      operationId: lqa_requests_fill
+      summary: Add strings to LQA request
+      description: |
+        Adds strings of the project in the path (the *original project*) to
+        an LQA request in `DRAFT` state. Each string names the target locale
+        and the workflow step whose translation is reviewed. The response
+        carries no data.
+
+        - A call accepts at most 500 strings. Call this endpoint repeatedly
+          to add more.
+        - Strings are added to the ones already in the request. Nothing is
+          removed or replaced.
+        - A string that is already in the request with the same hashcode,
+          target locale and workflow step is skipped without an error.
+        - An empty `strings` array is a no-op. It succeeds without checking
+          that the request exists or is in `DRAFT` state.
+
+        Once all strings are added, submit the request to start processing.
+
+        Requires the Account Owner or Project Manager role.
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: UID of the original project that holds the strings. It is stored as the original project of the added strings.
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/ProjectUid'
+          example: a295c174d
+        - $ref: '#/components/parameters/LqaRequestUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FillLqaRequestCommand'
+            examples:
+              two_strings:
+                value:
+                  strings:
+                    - hashcode: 5d41402abc4b2a76b9719d911017c592
+                      targetLocaleId: fr-FR
+                      workflowStepUid: a1b2c3d4e5f6
+                    - hashcode: 7d793037a0760186574b0282f2f435e7
+                      targetLocaleId: de-DE
+                      workflowStepUid: a1b2c3d4e5f6
+      responses:
+        '200':
+          description: Strings added.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - response
+                properties:
+                  response:
+                    type: object
+                    required:
+                      - code
+                    properties:
+                      code:
+                        type: string
+                        enum: [SUCCESS]
+                      data:
+                        type: object
+                        nullable: true
+                        description: Always null.
+              examples:
+                ok:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+        '400':
+          description: |
+            Validation failed. `response.code` is `VALIDATION_ERROR`.
+            Field errors name the invalid field in `details.field`.
+            Domain errors share this status, see the examples for the error keys.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                invalid_field:
+                  summary: A string field failed validation
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: NotBlank
+                          message: must not be blank
+                          details:
+                            field: strings[0].targetLocaleId
+                not_in_draft:
+                  summary: The request was already submitted
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.lqa.request.not.in.draft.state
+                          message: The lqa request '3f9a1c7e5b20' not in draft state
+                request_not_found:
+                  summary: The LQA request does not exist
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.lqa.request.not.found
+                          message: The lqa request '3f9a1c7e5b20' not found
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  submit_lqa_request:
+    post:
+      tags:
+        - lqa
+      operationId: lqa_requests_submit
+      summary: Submit LQA request
+      description: |
+        Starts processing of an LQA request in `DRAFT` state. The call:
+
+        1. Rejects an unknown request and a request that is not in `DRAFT`
+           state.
+        2. Rejects a request with no strings.
+        3. Rejects the call when another LQA request for the same workflow
+           step and target locale is still being submitted.
+        4. Creates one translation package in the original project per
+           workflow step and target locale.
+        5. Adds missing target locales to the LQA project.
+        6. Moves the request to `IN_PROGRESS`.
+
+        Processing continues asynchronously after the call returns. Get the
+        LQA request to follow its `lqaRequestStatusCode`.
+
+        Requires the Account Owner or Project Manager role.
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: UID of the original project whose strings are reviewed. Use the same project as when adding strings to the request.
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/ProjectUid'
+          example: a295c174d
+        - $ref: '#/components/parameters/LqaRequestUid'
+      responses:
+        '200':
+          description: Request accepted for processing.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - response
+                properties:
+                  response:
+                    type: object
+                    required:
+                      - code
+                    properties:
+                      code:
+                        type: string
+                        enum: [SUCCESS]
+                      data:
+                        type: object
+                        nullable: true
+                        description: Always null.
+              examples:
+                ok:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+        '400':
+          description: |
+            The request cannot be submitted. `response.code` is
+            `VALIDATION_ERROR`, see the examples for the error keys.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                request_not_found:
+                  summary: The LQA request does not exist
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.lqa.request.not.found
+                          message: The lqa request '3f9a1c7e5b20' not found
+                not_in_draft:
+                  summary: The request was already submitted
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.lqa.request.not.in.draft.state
+                          message: The lqa request '3f9a1c7e5b20' not in draft state
+                request_is_empty:
+                  summary: The request has no strings
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.lqa.request.is.empty
+                          message: The lqa request '3f9a1c7e5b20' is empty
+                in_progress_for_step_and_locale:
+                  summary: Another submission for the same workflow step and target locale is in progress
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.lqa.request.for.workflow.step.uid.and.locale.if.in.progress
+                          message: lqa review submit for such workflow step and target locales in progress, please try later
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
 components:
+  parameters:
+
+    LqaRequestUid:
+      name: lqaRequestUid
+      in: path
+      required: true
+      description: UID of the LQA request.
+      schema:
+        $ref: '#/components/schemas/LqaRequestUid'
+      example: 3f9a1c7e5b20
+
   schemas:
 
     # -- Command / request bodies --
@@ -172,6 +492,39 @@ components:
           nullable: true
           description: Name of a new job to create in the LQA project. The name must be unique in that project.
           example: LQA review 2026-10
+
+    FillLqaRequestCommand:
+      type: object
+      description: Strings to add to an LQA request.
+      required:
+        - strings
+      properties:
+        strings:
+          type: array
+          maxItems: 500
+          items:
+            $ref: '#/components/schemas/LqaRequestString'
+
+    LqaRequestString:
+      type: object
+      description: One string of the original project to review.
+      required:
+        - hashcode
+        - targetLocaleId
+        - workflowStepUid
+      properties:
+        hashcode:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/Hashcode'
+          description: Hashcode of the string in the original project.
+        targetLocaleId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          description: Target locale whose translation is reviewed.
+        workflowStepUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+          description: Workflow step of the original project whose translation is reviewed.
 
     # -- Response bodies --
 
