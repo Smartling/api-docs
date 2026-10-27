@@ -221,10 +221,12 @@ components:
       properties:
         blocklistName:
           type: string
-          description: Name of the blocklist. Character limit is equal to 170 characters.
+          maxLength: 170
+          description: Name of the blocklist, unique within the account. Character limit is equal to 170 characters.
           example: My new blocklist
         description:
           type: string
+          maxLength: 250
           description: Description of the blocklist. Character limit is equal to 250 characters.
           example: Blocklist created for common terms in scope of 'my-project'
         glossaryUids:
@@ -246,7 +248,7 @@ components:
           example: some name / description
         blocklistState:
           type: string
-          description: Blocklist state.
+          description: Blocklist state. ACTIVE is used if omitted.
           enum:
             - ACTIVE
             - ARCHIVED
@@ -337,35 +339,44 @@ components:
       description: Blocklist response.
 
     BlocklistResponsePTO:
-      allOf:
-        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
-        - type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/BlocklistResponse"
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/BlocklistResponse"
 
     BlocklistArchiveUnarchivedResponsePTO:
-      type: object
-      properties:
-        code:
-          type: string
-          description: >- 
-            SUCCESS in case if operation was successfully performed, 
-            NO_CONTENT in case if  operation was not performed.
-          example: SUCCESS
-      description: Result of the archive / restore operation on blocklist.
+      allOf:
+        - $ref: "./g_common.yaml#/components/schemas/CodeOnlyResponse"
+      description: Result of the archive / restore operation on blocklist (always HTTP 200).
 
     BlocklistSearchListResponsePTO:
       type: object
+      required:
+        - response
       properties:
-        totalCount:
-          type: integer
-          format: int64
-          description: total blocklists amount
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/BlocklistSearchResponsePTO"
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      format: int64
+                      description: total blocklists amount
+                    items:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/BlocklistSearchResponsePTO"
 
     BlocklistSearchResponsePTO:
       allOf:

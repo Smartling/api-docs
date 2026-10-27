@@ -252,13 +252,16 @@ components:
       type: object
       required:
         - glossaryName
+        - localeIds
       properties:
         glossaryName:
           type: string
-          description: Name of the glossary. Character limit is equal to 170 characters.
+          maxLength: 170
+          description: Name of the glossary, unique within the account. Character limit is equal to 170 characters.
           example: My new glossary
         description:
           type: string
+          maxLength: 250
           description: Description of the glossary. Character limit is equal to 250 characters.
           example: Glossary created for common terms in scope of 'my-project'
         verificationMode:
@@ -266,14 +269,16 @@ components:
           description: Verification mode.
         localeIds:
           type: array
-          description: Supported locale ids.
+          description: Supported locale ids. Must not be empty; each locale must be a supported Smartling locale.
+          minItems: 1
           uniqueItems: true
           items:
             $ref: '../api_common.yaml#/components/schemas/LocaleId'
           example: [ "uk-UA","en","pt","pt-BR" ]
         fallbackLocales:
           type: array
-          description: Fallback locales configuration.
+          description: >-
+            Fallback locales configuration. Items whose locales are not listed in `localeIds` are ignored.
           items:
             $ref: "#/components/schemas/FallbackLocaleCommandPTO"
       description: Glossary command.
@@ -321,11 +326,14 @@ components:
           type: string
           description: >-
             Allow to search glossaries by query in scope of glossaryName or description properties.
-            Also supports exact search by glossaryUid.
+            Also supports exact search by glossaryUid: if `query` is a UUID, it is matched as a glossaryUid
+            and `glossaryState` is ignored (BOTH is used).
           example: some name
         glossaryState:
           type: string
-          description: Glossary state.
+          description: >-
+            Glossary state. ACTIVE is used if omitted.
+            Ignored (BOTH is used) when `glossaryUids` is passed.
           enum:
             - ACTIVE
             - ARCHIVED
@@ -351,10 +359,9 @@ components:
           allOf:
             - $ref: "#/components/schemas/SortCommandPTO"
           description: >-
-            Sorting command. Sort fields are - 'glossaryName | createdDate | lastModifiedDate'
-      description: >-
-        Glossary filter that adds additional glossaries entry count property into the search glossaries by filter result.
-    
+            Sorting command. Sort fields are - 'glossaryName | createdDate | lastModifiedDate'.
+            Default is lastModifiedDate DESC.
+      description: Glossaries filter.
 
     GetGlossariesWithEntriesCountByFilterCommandPTO:
       allOf:
@@ -457,12 +464,17 @@ components:
       description: Fallback locale configuration.
 
     GlossaryResponsePTO:
-      allOf:
-        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
-        - type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/GlossaryResponse"
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/GlossaryResponse"
 
 
     GlossariesArchiveUnarchivedResponse:
@@ -477,24 +489,39 @@ components:
       description: Result of the bulk archive / restore operation on glossary.
 
     GlossariesArchiveUnarchivedResponsePTO:
-      allOf:
-        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
-        - type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/GlossariesArchiveUnarchivedResponse"
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/GlossariesArchiveUnarchivedResponse"
 
     GlossarySearchListResponsePTO:
       type: object
+      required:
+        - response
       properties:
-        totalCount:
-          type: integer
-          format: int64
-          description: total glossaries amount
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/GlossarySearchResponsePTO"
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      format: int64
+                      description: total glossaries amount
+                    items:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/GlossarySearchResponsePTO"
 
     GlossarySearchResponsePTO:
       allOf:
@@ -504,20 +531,46 @@ components:
             entriesCount:
               type: integer
               format: int32
-              description: Amount of entries in current glossary.
-          description: Extends simple glossary response with additional entriesCount  count
+              nullable: true
+              description: >-
+                Amount of entries in current glossary. `null` unless `includeEntriesCount` is true.
+            lastOptimization:
+              type: object
+              nullable: true
+              description: >-
+                Last completed MT optimization summary for the glossary. `null` if the glossary has no
+                completed optimization.
+              properties:
+                optimizedEntriesCount:
+                  type: integer
+                  format: int32
+                  description: Amount of MT-optimized entries.
+                showWarn:
+                  type: boolean
+                  description: Whether the optimization removed enough entries to reach the warning threshold.
+          description: Glossary response extended with `entriesCount` and `lastOptimization`.
 
     GlossaryEntriesCountsSuccessResponsePTO:
       type: object
+      required:
+        - response
       properties:
-        totalCount:
-          type: integer
-          format: int64
-          description: total items amount
-        items:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/GlossaryEntriesCountsResponsePTO"
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      format: int64
+                      description: total items amount
+                    items:
+                      type: "array"
+                      items:
+                        $ref: "#/components/schemas/GlossaryEntriesCountsResponsePTO"
 
     GlossaryEntriesCountsResponsePTO:
       type: object
