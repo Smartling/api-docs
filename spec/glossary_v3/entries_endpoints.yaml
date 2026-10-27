@@ -346,9 +346,12 @@ components:
 
     GlossaryEntryCommandPTO:
       type: object
+      required:
+        - translations
       properties:
         definition:
           type: string
+          maxLength: 1500
           description: >-
             Glossary entry definition. Max definition length is equal to 1500 characters.
         partOfSpeech:
@@ -393,8 +396,9 @@ components:
           example: true
         translations:
           type: array
+          minItems: 1
           description: >-
-            Glossary entry translations. 
+            Glossary entry translations.
             Please note:
               - translations that were not passed into the current array but present ( update call ) will be removed
                   (as example we may consider search by filter which may return translations only for specified locales);
@@ -407,6 +411,12 @@ components:
           description: Assigned custom field values.
           items:
             $ref: "#/components/schemas/CustomFieldValuesCommandPTO"
+        suggestion:
+          type: boolean
+          default: false
+          description: >-
+            Create the entry as a suggestion (`suggestionStatus` SUGGESTED) instead of a standard entry.
+          example: false
 
     GlossaryEntryTranslationCommandPTO:
       type: object
@@ -414,13 +424,15 @@ components:
         localeId:
           allOf:
             - $ref: '../api_common.yaml#/components/schemas/LocaleId'
-          description: Translation locale id.
+          description: Translation locale id. Must be one of the glossary locales.
         term:
           type: string
+          maxLength: 250
           description: Translation term. Max term length is equal to 250 characters.
           example: en term
         notes:
           type: string
+          maxLength: 1500
           description: Translation notes. Max notes length is equal to 1500 characters.
         caseSensitive:
           type: boolean
@@ -442,6 +454,7 @@ components:
             Max amount of variations in current array is 50.
           items:
             type: string
+            maxLength: 250
           example: [ "en synonym to the term" ]
         customFieldValues:
           type: array
@@ -536,6 +549,21 @@ components:
         archived:
           type: boolean
           description: Archived flag.
+        mtOptimizedLabel:
+          type: string
+          description: MT-compatibility state of the entry.
+          enum:
+            - Not MT-Compatible
+            - MT-Compatible
+            - MT-Compatibility pending
+          example: MT-Compatibility pending
+        suggestionStatus:
+          type: string
+          description: Suggestion status of the entry. Omitted for standard (non-suggested) entries.
+          enum:
+            - SUGGESTED
+            - APPROVED
+          example: SUGGESTED
         createdByUserUid:
           allOf:
             - $ref: '../api_common.yaml#/components/schemas/UserUid'
@@ -672,12 +700,17 @@ components:
           description: Glossary entry response. Which provides translation request details in extended form.
 
     GlossaryEntryDetailedResponsePTO:
-      allOf:
-        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
-        - type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/GlossaryEntryDetailedResponse"
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/GlossaryEntryDetailedResponse"
 
 
     EntryTranslationInProgressPTO:
@@ -717,12 +750,22 @@ components:
 
     EntriesSearchSuccessResponse:
       type: object
+      required:
+        - response
       properties:
-        totalCount:
-          type: integer
-          format: int64
-          description: total labels amount
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/GlossaryEntryResponsePTO"
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      format: int64
+                      description: total entries amount
+                    items:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/GlossaryEntryResponsePTO"
