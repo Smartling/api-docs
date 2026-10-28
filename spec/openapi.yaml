@@ -12108,6 +12108,16 @@ components:
                   type: object
               type: object
     ProjectCreateRequest:
+      description: >-
+        The request body depends on `projectTypeCode`: an `LQA` project requires
+        `lqaDefaultWorkflowUid`, a Global Delivery Network project (`GDN`, `GDN_JS`)
+        requires `siteURL`, and every other project type accepts an optional
+        `defaultWorkflowUid`.
+      oneOf:
+        - $ref: '#/components/schemas/LqaProjectCreateRequest'
+        - $ref: '#/components/schemas/GdnProjectCreateRequest'
+        - $ref: '#/components/schemas/StandardProjectCreateRequest'
+    ProjectCreateRequestBase:
       type: object
       required:
       - projectName
@@ -12119,15 +12129,6 @@ components:
           description: The name of the new project. Must be shorter than 170 characters and must not contain HTML tags.
           type: string
           example: Marketing Documents
-        projectTypeCode:
-          description: >-
-            The type of the new project, for example `APPLICATION_RESOURCES`, `BUSINESS_DOCUMENTS`,
-            `FILES_MIXED`, `MEDIA`, `GDN`, `GDN_JS`, `LQA`, `MEDIA_STUDIO_COMPANION` or a connector
-            project type such as `CONTENTFUL` or `WORDPRESS`. The type decides which workflow
-            field is validated: `lqaDefaultWorkflowUid` for `LQA`, `defaultWorkflowUid` for all
-            other types.
-          type: string
-          example: BUSINESS_DOCUMENTS
         originalLocaleId:
           allOf:
             - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
@@ -12140,30 +12141,86 @@ components:
           example:
           - de-DE
           - fr-FR
-        siteURL:
-          description: >-
-            The URL of the website to translate. Required for Global Delivery Network projects
-            (`GDN`, `GDN_JS`) and not allowed for any other project type.
-          type: string
-          example: https://www.example.com
-        packageUid:
-          description: >-
-            The unique identifier of an existing linguistic package of the account to use for the
-            project. When omitted, a new linguistic package is created. Not allowed for `LQA` projects.
-          type: string
-        lqaDefaultWorkflowUid:
-          allOf:
-            - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
-          description: >-
-            The default workflow of an `LQA` project. Required when `projectTypeCode` is `LQA`
-            and must be an existing workflow of the account. Ignored for other project types.
-        defaultWorkflowUid:
-          allOf:
-            - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
-          description: >-
-            The default workflow for all target locales of the project. Optional, and used only
-            when `projectTypeCode` is not `LQA`. Must be a custom workflow of the account. When
-            omitted, a starter workflow is created for the project and used as the default.
+    LqaProjectCreateRequest:
+      title: LQA project
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateRequestBase'
+        - type: object
+          required:
+          - lqaDefaultWorkflowUid
+          properties:
+            projectTypeCode:
+              description: The type of the new project.
+              type: string
+              enum:
+              - LQA
+            lqaDefaultWorkflowUid:
+              allOf:
+                - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
+              description: >-
+                The default workflow of the project. Must be an existing workflow of the account.
+                The account can have only one `LQA` project per original language, and a
+                linguistic package cannot be assigned to an `LQA` project.
+    GdnProjectCreateRequest:
+      title: Global Delivery Network project
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateRequestBase'
+        - type: object
+          required:
+          - siteURL
+          properties:
+            projectTypeCode:
+              description: The type of the new project.
+              type: string
+              enum:
+              - GDN
+              - GDN_JS
+            siteURL:
+              description: The URL of the website to translate.
+              type: string
+              example: https://www.example.com
+            packageUid:
+              description: >-
+                The unique identifier of an existing linguistic package of the account to use for the
+                project. When omitted, a new linguistic package is created.
+              type: string
+            defaultWorkflowUid:
+              allOf:
+                - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
+              description: >-
+                The default workflow for all target locales of the project. Must be a custom workflow
+                of the account. When omitted, a starter workflow is created for the project and used
+                as the default.
+    StandardProjectCreateRequest:
+      title: Other project types
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateRequestBase'
+        - type: object
+          properties:
+            projectTypeCode:
+              description: >-
+                The type of the new project, any type except `LQA`, `GDN` and `GDN_JS`, for example
+                `APPLICATION_RESOURCES`, `BUSINESS_DOCUMENTS`, `FILES_MIXED`, `MEDIA`,
+                `MEDIA_STUDIO_COMPANION` or a connector project type such as `CONTENTFUL` or `WORDPRESS`.
+              type: string
+              not:
+                enum:
+                - LQA
+                - GDN
+                - GDN_JS
+              example: BUSINESS_DOCUMENTS
+            packageUid:
+              description: >-
+                The unique identifier of an existing linguistic package of the account to use for the
+                project. When omitted, a new linguistic package is created.
+              type: string
+            defaultWorkflowUid:
+              allOf:
+                - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
+              description: >-
+                The default workflow for all target locales of the project. Must be a custom workflow
+                of the account. When omitted, a starter workflow is created for the project and used
+                as the default.
     ProjectCreateSuccessResponse:
       type: object
       required:
