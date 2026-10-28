@@ -665,13 +665,19 @@ paths:
 
         Which workflow field is validated and used depends on `projectTypeCode`:
 
-        * `LQA` projects: `lqaDefaultWorkflowUid` is required. It must be an existing
-          workflow of the account. It becomes the default workflow of the project.
-          `defaultWorkflowUid` is ignored.
+        * `LQA` projects use one of two options. `defaultWorkflowUid` is ignored.
+          * Existing workflow: set `lqaDefaultWorkflowUid` to an existing workflow of the
+            account. It becomes the default workflow of the project. `lqaNewWorkflowName`
+            and `lqaSchemaUid` must not be set.
+          * New workflow: set `lqaNewWorkflowName` (up to 150 characters) and `lqaSchemaUid`
+            (an existing LQA schema of the account), and leave `lqaDefaultWorkflowUid` empty.
+            A new LQA workflow with this name is created as the default workflow of the
+            project, and its LQA review step is linked to the schema.
         * All other project types: `defaultWorkflowUid` is optional. When set, it must be
           a custom workflow of the account. It becomes the default workflow for every
           target locale of the project. When it is omitted, a starter workflow is created
-          for the project and used as the default. `lqaDefaultWorkflowUid` is ignored.
+          for the project and used as the default. `lqaDefaultWorkflowUid`,
+          `lqaNewWorkflowName` and `lqaSchemaUid` are ignored.
 
         **Other validation rules**
 
@@ -709,8 +715,13 @@ paths:
         | `site.url.not.exists` | `siteURL` | The website at the site URL could not be reached. |
         | `package.not.found` | `packageUid` | The linguistic package does not exist in the account. |
         | `lqa.package.not.allowed` | `packageUid` | A linguistic package is given for an `LQA` project. |
-        | `lqa.workflow.required` | `lqaDefaultWorkflowUid` | The LQA default workflow is missing for an `LQA` project. |
         | `lqa.workflow.not.found` | `lqaDefaultWorkflowUid` | The LQA default workflow does not exist in the account. |
+        | `lqa.workflow.name.required` | `lqaNewWorkflowName` | Neither an LQA default workflow nor a new LQA workflow name is given for an `LQA` project. |
+        | `lqa.workflow.name.too.long` | `lqaNewWorkflowName` | The new LQA workflow name is longer than 150 characters. |
+        | `lqa.workflow.name.not.allowed` | `lqaNewWorkflowName` | A new LQA workflow name is given together with an LQA default workflow. |
+        | `lqa.schema.required` | `lqaSchemaUid` | Neither an LQA default workflow nor an LQA schema is given for an `LQA` project. |
+        | `lqa.schema.not.found` | `lqaSchemaUid` | The LQA schema does not exist in the account. |
+        | `lqa.schema.not.allowed` | `lqaSchemaUid` | An LQA schema is given together with an LQA default workflow. |
         | `default.workflow.invalid` | `defaultWorkflowUid` | The default workflow does not exist or is not a custom workflow of the account. |
         | `project.limit.exceeded` | | The account has reached the maximum number of projects. |
         | `project.create.invalid` | | The project cannot be created with the given parameters. |
@@ -749,8 +760,8 @@ paths:
                   translationLocaleIds:
                   - ja-JP
                   siteURL: https://www.example.com
-              lqa:
-                summary: LQA project
+              lqaExistingWorkflow:
+                summary: LQA project with an existing workflow
                 value:
                   projectName: English LQA
                   projectTypeCode: LQA
@@ -758,6 +769,16 @@ paths:
                   translationLocaleIds:
                   - de-DE
                   lqaDefaultWorkflowUid: 5449a8595ae4
+              lqaNewWorkflow:
+                summary: LQA project with a new workflow
+                value:
+                  projectName: English LQA
+                  projectTypeCode: LQA
+                  originalLocaleId: en-US
+                  translationLocaleIds:
+                  - de-DE
+                  lqaNewWorkflowName: English LQA Review
+                  lqaSchemaUid: b6c1f2d8e9a4
 
       responses:
         200:
@@ -785,10 +806,10 @@ paths:
                     response:
                       code: VALIDATION_ERROR
                       errors:
-                      - key: lqa.workflow.required
-                        message: An LQA default workflow is required for an LQA project.
+                      - key: lqa.schema.required
+                        message: An LQA schema is required when no LQA default workflow is provided.
                         details:
-                          field: lqaDefaultWorkflowUid
+                          field: lqaSchemaUid
         401:
           $ref: '#/components/responses/Error401ResponseDefinition'
         429:
@@ -12109,12 +12130,13 @@ components:
               type: object
     ProjectCreateRequest:
       description: >-
-        The request body depends on `projectTypeCode`: an `LQA` project requires
-        `lqaDefaultWorkflowUid`, a Global Delivery Network project (`GDN`, `GDN_JS`)
-        requires `siteURL`, and every other project type accepts an optional
-        `defaultWorkflowUid`.
+        The request body depends on `projectTypeCode`: an `LQA` project requires either
+        `lqaDefaultWorkflowUid`, or `lqaNewWorkflowName` together with `lqaSchemaUid`.
+        A Global Delivery Network project (`GDN`, `GDN_JS`) requires `siteURL`, and
+        every other project type accepts an optional `defaultWorkflowUid`.
       oneOf:
-        - $ref: '#/components/schemas/LqaProjectCreateRequest'
+        - $ref: '#/components/schemas/LqaExistingWorkflowProjectCreateRequest'
+        - $ref: '#/components/schemas/LqaNewWorkflowProjectCreateRequest'
         - $ref: '#/components/schemas/GdnProjectCreateRequest'
         - $ref: '#/components/schemas/StandardProjectCreateRequest'
     ProjectCreateRequestBase:
@@ -12141,8 +12163,11 @@ components:
           example:
           - de-DE
           - fr-FR
-    LqaProjectCreateRequest:
-      title: LQA project
+    LqaExistingWorkflowProjectCreateRequest:
+      title: LQA project with an existing workflow
+      description: >-
+        The account can have only one `LQA` project per original language, and a
+        linguistic package cannot be assigned to an `LQA` project.
       allOf:
         - $ref: '#/components/schemas/ProjectCreateRequestBase'
         - type: object
@@ -12159,8 +12184,37 @@ components:
                 - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
               description: >-
                 The default workflow of the project. Must be an existing workflow of the account.
-                The account can have only one `LQA` project per original language, and a
-                linguistic package cannot be assigned to an `LQA` project.
+                Must not be combined with `lqaNewWorkflowName` or `lqaSchemaUid`.
+    LqaNewWorkflowProjectCreateRequest:
+      title: LQA project with a new workflow
+      description: >-
+        A new LQA workflow is created as the default workflow of the project, and its
+        LQA review step is linked to the given LQA schema. The account can have only one
+        `LQA` project per original language, and a linguistic package cannot be assigned
+        to an `LQA` project.
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateRequestBase'
+        - type: object
+          required:
+          - lqaNewWorkflowName
+          - lqaSchemaUid
+          properties:
+            projectTypeCode:
+              description: The type of the new project.
+              type: string
+              enum:
+              - LQA
+            lqaNewWorkflowName:
+              description: The name of the new LQA workflow. Must not be combined with `lqaDefaultWorkflowUid`.
+              type: string
+              maxLength: 150
+              example: English LQA Review
+            lqaSchemaUid:
+              description: >-
+                The unique identifier of an existing LQA schema of the account, linked to the LQA
+                review step of the new workflow. Must not be combined with `lqaDefaultWorkflowUid`.
+              type: string
+              example: b6c1f2d8e9a4
     GdnProjectCreateRequest:
       title: Global Delivery Network project
       allOf:
