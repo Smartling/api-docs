@@ -651,6 +651,189 @@ paths:
             curl -H "Authorization: Bearer $smartlingToken"
             https://api.smartling.com/accounts-api/v2/accounts/$smartlingAccountId/projects
 
+  /projects-api/v2/accounts/{accountUid}/create-project:
+    post:
+      summary: Create a project
+      tags:
+      - Account & Projects
+      description: |
+        Creates a new project in the account and returns its unique identifier.
+
+        Only account owners and administrators can create projects.
+
+        **Project types**
+
+        `projectTypeCode` accepts the following values:
+
+        * `GDN`
+        * `APPLICATION_RESOURCES`
+        * `LQA`
+        * `MEDIA_STUDIO_COMPANION`
+        * `<ConnectorTypeCode>`
+
+        **Default workflow**
+
+        Which workflow field is validated and used depends on `projectTypeCode`:
+
+        * `LQA` projects use one of two options. `defaultWorkflowUid` is ignored.
+          * Existing workflow: set `lqaDefaultWorkflowUid` to an existing workflow of the
+            account. It becomes the default workflow of the project. `lqaNewWorkflowName`
+            and `lqaSchemaUid` must not be set.
+          * New workflow: set `lqaNewWorkflowName` (up to 150 characters) and `lqaSchemaUid`
+            (an existing LQA schema of the account), and leave `lqaDefaultWorkflowUid` empty.
+            A new LQA workflow with this name is created as the default workflow of the
+            project, and its LQA review step is linked to the schema.
+        * All other project types: `defaultWorkflowUid` is optional. When set, it must be
+          a custom workflow of the account. It becomes the default workflow for every
+          target locale of the project. When it is omitted, a starter workflow is created
+          for the project and used as the default. `lqaDefaultWorkflowUid`,
+          `lqaNewWorkflowName` and `lqaSchemaUid` are ignored.
+
+        **Other validation rules**
+
+        * `projectName` is required, must be shorter than 170 characters and must not contain HTML tags.
+        * `originalLocaleId` and at least one `translationLocaleIds` value are required and must be valid
+          Smartling locales. `translationLocaleIds` must not contain `originalLocaleId`.
+        * `siteURL` is required for Global Delivery Network projects (`GDN`) and rejected
+          for every other project type.
+        * `packageUid` must be a linguistic package of the account. It is not allowed for `LQA` projects.
+          When it is omitted, a new linguistic package is created for the project.
+        * An account can have only one `LQA` project per original language.
+        * The request fails when the account has reached its project limit.
+
+        **Validation error keys**
+
+        | Key | Field | Reason |
+        |-----|-------|--------|
+        | `project.name.required` | `projectName` | The project name is missing. |
+        | `project.name.too.long` | `projectName` | The project name is 170 characters or longer. |
+        | `project.name.html.tags` | `projectName` | The project name contains HTML tags. |
+        | `project.type.required` | `projectTypeCode` | The project type is missing. |
+        | `project.type.not.allowed` | `projectTypeCode` | The project type cannot be created via the API for this account. |
+        | `original.locale.required` | `originalLocaleId` | The original locale is missing. |
+        | `original.locale.invalid` | `originalLocaleId` | The original locale is not a valid locale. |
+        | `lqa.original.language.exists` | `originalLocaleId` | An `LQA` project for this original language already exists in the account. |
+        | `translation.locales.required` | `translationLocaleIds` | No translation locale is given. |
+        | `translation.locale.invalid` | `translationLocaleIds` | A translation locale is not a valid locale. |
+        | `translation.locales.contain.original` | `translationLocaleIds` | The translation locales contain the original locale. |
+        | `site.url.required` | `siteURL` | The site URL is missing for a Global Delivery Network project. |
+        | `site.url.not.allowed` | `siteURL` | The site URL is given for a project type other than Global Delivery Network. |
+        | `site.url.invalid` | `siteURL` | The site URL has an invalid format. |
+        | `site.url.too.long` | `siteURL` | The site URL host is longer than 255 characters. |
+        | `site.url.restricted` | `siteURL` | The site URL domain is not allowed. |
+        | `site.url.redirects` | `siteURL` | The site URL redirects to another location. |
+        | `site.url.not.exists` | `siteURL` | The website at the site URL could not be reached. |
+        | `package.not.found` | `packageUid` | The linguistic package does not exist in the account. |
+        | `lqa.package.not.allowed` | `packageUid` | A linguistic package is given for an `LQA` project. |
+        | `lqa.workflow.not.found` | `lqaDefaultWorkflowUid` | The LQA default workflow does not exist in the account. |
+        | `lqa.workflow.name.required` | `lqaNewWorkflowName` | Neither an LQA default workflow nor a new LQA workflow name is given for an `LQA` project. |
+        | `lqa.workflow.name.too.long` | `lqaNewWorkflowName` | The new LQA workflow name is longer than 150 characters. |
+        | `lqa.workflow.name.not.allowed` | `lqaNewWorkflowName` | A new LQA workflow name is given together with an LQA default workflow. |
+        | `lqa.schema.required` | `lqaSchemaUid` | Neither an LQA default workflow nor an LQA schema is given for an `LQA` project. |
+        | `lqa.schema.not.found` | `lqaSchemaUid` | The LQA schema does not exist in the account. |
+        | `lqa.schema.not.allowed` | `lqaSchemaUid` | An LQA schema is given together with an LQA default workflow. |
+        | `default.workflow.invalid` | `defaultWorkflowUid` | The default workflow does not exist or is not a custom workflow of the account. |
+        | `project.limit.exceeded` | | The account has reached the maximum number of projects. |
+        | `project.create.invalid` | | The project cannot be created with the given parameters. |
+      operationId: createAccountProject
+
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateRequest'
+            examples:
+              files:
+                summary: Files project with an existing default workflow
+                value:
+                  projectName: Marketing Documents
+                  projectTypeCode: BUSINESS_DOCUMENTS
+                  originalLocaleId: en-US
+                  translationLocaleIds:
+                  - de-DE
+                  - fr-FR
+                  defaultWorkflowUid: 5449a8595ae4
+              gdn:
+                summary: Global Delivery Network project
+                value:
+                  projectName: Marketing Website GDN
+                  projectTypeCode: GDN
+                  originalLocaleId: en-US
+                  translationLocaleIds:
+                  - ja-JP
+                  siteURL: https://www.example.com
+              lqaExistingWorkflow:
+                summary: LQA project with an existing workflow
+                value:
+                  projectName: English LQA
+                  projectTypeCode: LQA
+                  originalLocaleId: en-US
+                  translationLocaleIds:
+                  - de-DE
+                  lqaDefaultWorkflowUid: 5449a8595ae4
+              lqaNewWorkflow:
+                summary: LQA project with a new workflow
+                value:
+                  projectName: English LQA
+                  projectTypeCode: LQA
+                  originalLocaleId: en-US
+                  translationLocaleIds:
+                  - de-DE
+                  lqaNewWorkflowName: English LQA Review
+                  lqaSchemaUid: b6c1f2d8e9a4
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectCreateSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        projectUid: fd7244365
+        400:
+          description: Provided request parameters are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                      - key: lqa.schema.required
+                        message: An LQA schema is required when no LQA default workflow is provided.
+                        details:
+                          field: lqaSchemaUid
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" \
+              -d '{"projectName": "Marketing Documents", "projectTypeCode": "BUSINESS_DOCUMENTS", "originalLocaleId": "en-US", "translationLocaleIds": ["de-DE"]}' \
+              https://api.smartling.com/projects-api/v2/accounts/$smartlingAccountId/create-project
+
   /projects-api/v2/projects/{projectId}:
     get:
       tags:
@@ -11953,6 +12136,170 @@ components:
                       description: A unique identifier for a long running process
                   required:
                     - processUid
+                  type: object
+              type: object
+    ProjectCreateRequest:
+      description: >-
+        The request body depends on `projectTypeCode`: an `LQA` project requires either
+        `lqaDefaultWorkflowUid`, or `lqaNewWorkflowName` together with `lqaSchemaUid`.
+        A Global Delivery Network project (`GDN`) requires `siteURL`, and
+        every other project type accepts an optional `defaultWorkflowUid`.
+      oneOf:
+        - $ref: '#/components/schemas/LqaExistingWorkflowProjectCreateRequest'
+        - $ref: '#/components/schemas/LqaNewWorkflowProjectCreateRequest'
+        - $ref: '#/components/schemas/GdnProjectCreateRequest'
+        - $ref: '#/components/schemas/StandardProjectCreateRequest'
+    ProjectCreateRequestBase:
+      type: object
+      required:
+      - projectName
+      - projectTypeCode
+      - originalLocaleId
+      - translationLocaleIds
+      properties:
+        projectName:
+          description: The name of the new project. Must be shorter than 170 characters and must not contain HTML tags.
+          type: string
+          example: Marketing Documents
+        originalLocaleId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          description: The source locale of the project.
+        translationLocaleIds:
+          description: The target locales of the project. Must contain at least one locale and must not contain `originalLocaleId`.
+          type: array
+          items:
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          example:
+          - de-DE
+          - fr-FR
+    LqaExistingWorkflowProjectCreateRequest:
+      title: LQA project with an existing workflow
+      description: >-
+        The account can have only one `LQA` project per original language, and a
+        linguistic package cannot be assigned to an `LQA` project.
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateRequestBase'
+        - type: object
+          required:
+          - lqaDefaultWorkflowUid
+          properties:
+            projectTypeCode:
+              description: The type of the new project.
+              type: string
+              enum:
+              - LQA
+            lqaDefaultWorkflowUid:
+              allOf:
+                - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
+              description: >-
+                The default workflow of the project. Must be an existing workflow of the account.
+                Must not be combined with `lqaNewWorkflowName` or `lqaSchemaUid`.
+    LqaNewWorkflowProjectCreateRequest:
+      title: LQA project with a new workflow
+      description: >-
+        A new LQA workflow is created as the default workflow of the project, and its
+        LQA review step is linked to the given LQA schema. The account can have only one
+        `LQA` project per original language, and a linguistic package cannot be assigned
+        to an `LQA` project.
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateRequestBase'
+        - type: object
+          required:
+          - lqaNewWorkflowName
+          - lqaSchemaUid
+          properties:
+            projectTypeCode:
+              description: The type of the new project.
+              type: string
+              enum:
+              - LQA
+            lqaNewWorkflowName:
+              description: The name of the new LQA workflow. Must not be combined with `lqaDefaultWorkflowUid`.
+              type: string
+              maxLength: 150
+              example: English LQA Review
+            lqaSchemaUid:
+              description: >-
+                The unique identifier of an existing LQA schema of the account, linked to the LQA
+                review step of the new workflow. Must not be combined with `lqaDefaultWorkflowUid`.
+              type: string
+              example: b6c1f2d8e9a4
+    GdnProjectCreateRequest:
+      title: Global Delivery Network project
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateRequestBase'
+        - type: object
+          required:
+          - siteURL
+          properties:
+            projectTypeCode:
+              description: The type of the new project.
+              type: string
+              enum:
+              - GDN
+            siteURL:
+              description: The URL of the website to translate.
+              type: string
+              example: https://www.example.com
+            packageUid:
+              description: >-
+                The unique identifier of an existing linguistic package of the account to use for the
+                project. When omitted, a new linguistic package is created.
+              type: string
+            defaultWorkflowUid:
+              allOf:
+                - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
+              description: >-
+                The default workflow for all target locales of the project. Must be a custom workflow
+                of the account. When omitted, a starter workflow is created for the project and used
+                as the default.
+    StandardProjectCreateRequest:
+      title: Other project types
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateRequestBase'
+        - type: object
+          properties:
+            projectTypeCode:
+              description: >-
+                The type of the new project, any type except `LQA` and `GDN`, for example
+                `APPLICATION_RESOURCES`, `BUSINESS_DOCUMENTS`, `FILES_MIXED`, `MEDIA`,
+                `MEDIA_STUDIO_COMPANION` or a connector project type such as `CONTENTFUL` or `WORDPRESS`.
+              type: string
+              not:
+                enum:
+                - LQA
+                - GDN
+              example: BUSINESS_DOCUMENTS
+            packageUid:
+              description: >-
+                The unique identifier of an existing linguistic package of the account to use for the
+                project. When omitted, a new linguistic package is created.
+              type: string
+            defaultWorkflowUid:
+              allOf:
+                - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
+              description: >-
+                The default workflow for all target locales of the project. Must be a custom workflow
+                of the account. When omitted, a starter workflow is created for the project and used
+                as the default.
+    ProjectCreateSuccessResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    projectUid:
+                      allOf:
+                        - $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
+                      description: The unique identifier of the created project.
+                  required:
+                    - projectUid
                   type: object
               type: object
     ProjectDetailsLocaleItem:
