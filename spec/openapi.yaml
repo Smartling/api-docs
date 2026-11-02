@@ -685,7 +685,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProjectCreateRequest'
+              oneOf:
+                - $ref: '#/components/schemas/ProjectCreateResourceFilesRequest'
+                - $ref: '#/components/schemas/ProjectCreateGdnRequest'
+                - $ref: '#/components/schemas/ProjectCreateLqaRequest'
+                - $ref: '#/components/schemas/ProjectCreateMediaStudioCompanionRequest'
+                - $ref: '#/components/schemas/ProjectCreateConnectorRequest'
+              discriminator:
+                propertyName: projectTypeCode
+                mapping:
+                  APPLICATION_RESOURCES: '#/components/schemas/ProjectCreateResourceFilesRequest'
+                  GDN: '#/components/schemas/ProjectCreateGdnRequest'
+                  LQA: '#/components/schemas/ProjectCreateLqaRequest'
+                  MEDIA_STUDIO_COMPANION: '#/components/schemas/ProjectCreateMediaStudioCompanionRequest'
             examples:
               resourceFiles:
                 summary: Resource Files project
@@ -12276,16 +12288,20 @@ components:
     ProjectCreateGdnRequest:
       title: GDN
       description: Global Delivery Network project.
+      type: object
+      required:
+        - projectTypeCode
+      properties:
+        projectTypeCode:
+          type: string
+          enum:
+            - GDN
       allOf:
         - $ref: '#/components/schemas/ProjectCreateCommonRequest'
         - type: object
           required:
             - siteURL
           properties:
-            projectTypeCode:
-              type: string
-              enum:
-                - GDN
             siteURL:
               description: >-
                 URL of the website to translate. The website must be reachable and must not redirect to another location.
@@ -12296,18 +12312,65 @@ components:
               $ref: '#/components/schemas/ProjectCreatePackageUid'
             defaultWorkflowUid:
               $ref: '#/components/schemas/ProjectCreateDefaultWorkflowUid'
-    ProjectCreateGeneralRequest:
-      title: Resource Files, Media Studio Companion, connectors
+    ProjectCreateConnectorRequest:
+      title: Connector
       description: >-
-        `APPLICATION_RESOURCES`, `MEDIA_STUDIO_COMPANION` or a connector project type
-        (`projectTypeGroupCode` is `CONNECTOR` in [List project types](#operation/getAccountProjectTypes)).
+        Connector project. Any project type with `projectTypeGroupCode` `CONNECTOR` in
+        [List project types](#operation/getAccountProjectTypes), for example `CONTENTFUL`.
+      type: object
+      required:
+        - projectTypeCode
+      properties:
+        projectTypeCode:
+          description: >-
+            Connector project type. Only the connector project types enabled for the account
+            can be created; `GITHUB` requires a dedicated account feature.
+          type: string
+          enum:
+            - CONTENTFUL
+            - ELOQUA
+            - HUBSPOT
+            - SALESFORCE_MARKETING_CLOUD
+            - ZENDESK
+            - GITHUB
+            - SMARTLING_REPOSITORY_CONNECTOR
+            - ADOBE_AEM_CLASSIC
+            - ADOBE_AEM_TOUCH
+            - DRUPAL_CLASSIC
+            - DRUPAL_TMGMT
+            - SITECORE
+            - WORDPRESS
+            - YEXT
+            - SALESFORCE_KNOWLEDGE
+            - BRAZE
+            - EPISERVER
+            - CONTENTSTACK
+            - SANITY
+            - CONTENTFUL_V2
+            - MARKETO_V2
+            - GOOGLE_DRIVE
+            - SALESFORCE_COMMERCE_CLOUD
+            - AKENEO
+            - ITERABLE
+            - WORKFRONT
+            - SERVICENOW
+            - SHOPIFY
+            - WEBFLOW
+            - FIGMA
+            - INDESIGN
+            - CAPTIONHUB
+            - SANITY_DOCUMENTS
+            - SITECORE_XMC
+            - INTERCOM
+            - MARKETO_SEGMENTS
+            - PHOTOSHOP
+            - ILLUSTRATOR
+            - ADOBE_EXPRESS
+            - BUILDER_IO
       allOf:
         - $ref: '#/components/schemas/ProjectCreateCommonRequest'
         - type: object
           properties:
-            projectTypeCode:
-              type: string
-              example: APPLICATION_RESOURCES
             packageUid:
               $ref: '#/components/schemas/ProjectCreatePackageUid'
             defaultWorkflowUid:
@@ -12318,14 +12381,18 @@ components:
         Linguistic quality assessment project. Provide either `lqaDefaultWorkflowUid` to use an existing workflow,
         or `lqaNewWorkflowName` and `lqaSchemaUid` to create a new workflow. The account must not already have
         an LQA project for the language of `originalLocaleId`. `packageUid` is not allowed.
+      type: object
+      required:
+        - projectTypeCode
+      properties:
+        projectTypeCode:
+          type: string
+          enum:
+            - LQA
       allOf:
         - $ref: '#/components/schemas/ProjectCreateCommonRequest'
         - type: object
           properties:
-            projectTypeCode:
-              type: string
-              enum:
-                - LQA
             lqaDefaultWorkflowUid:
               allOf:
                 - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
@@ -12350,23 +12417,49 @@ components:
       allOf:
         - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
       description: Custom workflow of the account to use as the default workflow of the project.
+    ProjectCreateMediaStudioCompanionRequest:
+      title: Media Studio Companion
+      description: Media Studio Companion project. Available only when Media Studio Companion is enabled for the account.
+      type: object
+      required:
+        - projectTypeCode
+      properties:
+        projectTypeCode:
+          type: string
+          enum:
+            - MEDIA_STUDIO_COMPANION
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateCommonRequest'
+        - type: object
+          properties:
+            packageUid:
+              $ref: '#/components/schemas/ProjectCreatePackageUid'
+            defaultWorkflowUid:
+              $ref: '#/components/schemas/ProjectCreateDefaultWorkflowUid'
     ProjectCreatePackageUid:
       description: Unique identifier of a linguistic package of the account to assign to the project.
       type: string
       maxLength: 12
       example: 2a8e4f6c1b3d
-    ProjectCreateRequest:
-      oneOf:
-        - $ref: '#/components/schemas/ProjectCreateGeneralRequest'
-        - $ref: '#/components/schemas/ProjectCreateGdnRequest'
-        - $ref: '#/components/schemas/ProjectCreateLqaRequest'
-      discriminator:
-        propertyName: projectTypeCode
-        mapping:
-          APPLICATION_RESOURCES: '#/components/schemas/ProjectCreateGeneralRequest'
-          MEDIA_STUDIO_COMPANION: '#/components/schemas/ProjectCreateGeneralRequest'
-          GDN: '#/components/schemas/ProjectCreateGdnRequest'
-          LQA: '#/components/schemas/ProjectCreateLqaRequest'
+    ProjectCreateResourceFilesRequest:
+      title: Resource Files
+      description: Resource Files project.
+      type: object
+      required:
+        - projectTypeCode
+      properties:
+        projectTypeCode:
+          type: string
+          enum:
+            - APPLICATION_RESOURCES
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateCommonRequest'
+        - type: object
+          properties:
+            packageUid:
+              $ref: '#/components/schemas/ProjectCreatePackageUid'
+            defaultWorkflowUid:
+              $ref: '#/components/schemas/ProjectCreateDefaultWorkflowUid'
     ProjectCreateSuccessResponse:
       type: object
       required:
