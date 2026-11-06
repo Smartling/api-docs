@@ -3,7 +3,10 @@ x-paths:
     get:
       summary: Get comments
       description: >-
-        Returns all comments on an issue.
+        Returns the comments on an issue, one page at a time. Comments are
+        ordered by creation, oldest first. Use `limit` and `offset` to page
+        through them. `totalCount` is the number of all comments on the issue,
+        not the number of comments on the returned page.
 
 
         **Note**: The `createdByUserUid` value is not currently usable for
@@ -20,6 +23,27 @@ x-paths:
           required: true
           schema:
             type: string
+        - description: >-
+            Maximum number of comments to return. Must be between 1 and 500.
+            An empty value is rejected.
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 500
+            maximum: 500
+            minimum: 1
+            type: integer
+        - description: >-
+            Number of comments to skip before the first returned comment. Must
+            be 0 or greater. An empty value is rejected.
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
       responses:
         '200':
           content:
@@ -39,12 +63,38 @@ x-paths:
               schema:
                 $ref: '#/components/schemas/IssueCommentsGetResponse'
           description: OK
+        '400':
+          x-summary: Invalid query parameter
+          description: |-
+            A query parameter is invalid. `details.field` contains the parameter name.
+
+            | Parameter | Rule | Error `key` | Error `message` |
+            |-----------|------|-------------|-----------------|
+            | `limit` | Must not be empty | `NotNull` | must not be null |
+            | `limit` | Must be 1 or greater | `Min` | must be greater than or equal to 1 |
+            | `limit` | Must be 500 or less | `Max` | must be less than or equal to 500 |
+            | `offset` | Must not be empty | `NotNull` | must not be null |
+            | `offset` | Must be 0 or greater | `Min` | must be greater than or equal to 0 |
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: Max
+                          message: must be less than or equal to 500
+                          details:
+                            field: limit
       x-code-samples:
         - lang: curl
           source: >
             curl -X GET -H "Authorization: Bearer $smartlingToken" -H
             "Content-Type: application/json"
-            https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/comments
+            "https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/$issueUid/comments?limit=100&offset=0"
 
     post:
       summary: Create comment
@@ -325,7 +375,9 @@ components:
                         type: object
                       type: array
                     totalCount:
-                      description: Total element count
+                      description: >-
+                        Number of all comments on the issue, regardless of
+                        `limit` and `offset`.
                       type: integer
                   type: object
               type: object
