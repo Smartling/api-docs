@@ -1,0 +1,305 @@
+x-paths:
+
+  create_tqc_profile_or_get_profiles:
+    get:
+      description: >-
+        Get profiles.
+      summary: Get profiles
+      tags:
+        - Translation quality checks
+      operationId: getTQCProfiles
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/nameMaskQueryParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/limitQueryParameter'
+        - $ref: './tqc_common.yaml#/components/parameters/offsetQueryParameter'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCProfilesResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles
+
+    post:
+      description: >-
+        Create a profile.
+      summary: Create a profile
+      tags:
+        - Translation quality checks
+      operationId: createTQCProfile
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TQCProfileRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCProfileResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles
+
+  update_tqc_profile:
+    put:
+      description: >-
+        Update the profile name.
+      summary: Update the profile name
+      tags:
+        - Translation quality checks
+      operationId: updateTQCProfile
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TQCProfileRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateTQCProfileResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/name
+
+  get_or_delete_tqc_profile:
+    get:
+      description: >-
+        Get a profile.
+      summary: Get a profile
+      tags:
+        - Translation quality checks
+      operationId: getTQCProfile
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCProfileResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid
+
+    delete:
+      description: >-
+        Delete profile.
+      summary: Delete profile
+      tags:
+        - Translation quality checks
+      operationId: deleteTQCProfile
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/profileUidPathParameter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: null
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X DELETE -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid
+
+  default_profile:
+    get:
+      description: >-
+        Get default profile.
+      summary: Get default profile
+      tags:
+        - Translation quality checks
+      operationId: getTQCDefaultProfile
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCProfileResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET -H "Authorization: Bearer $smartlingToken" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/default-profile
+
+    put:
+      description: >-
+        Update default profile.
+      summary: Update default profile
+      tags:
+        - Translation quality checks
+      operationId: updateTQCDefaultProfile
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTQCDefaultProfileRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCProfileResponse'
+
+        x-code-samples:
+          - lang: curl
+            source: |
+              curl -X PUT -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON"  https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/default-profile
+
+  copy_tqc_profile:
+    post:
+      description: >-
+        Copy a profile.
+      summary: Copy a profile
+      tags:
+        - Translation quality checks
+      operationId: copyTQCProfile
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+        - $ref: './tqc_common.yaml#/components/parameters/copyProfileUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TQCProfileRequest'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TQCProfileResponse'
+
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" -d "$smartlingStringTQCJSON" https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/copy
+
+
+components:
+  schemas:
+
+    TQCProfileRequest:
+      allOf:
+        - $ref: './tqc_common.yaml#/components/requestBodies/profileName'
+
+    UpdateTQCDefaultProfileRequest:
+      allOf:
+        - $ref: './tqc_common.yaml#/components/requestBodies/profileUid'
+
+    UpdateTQCProfileResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: './tqc_common.yaml#/components/requestBodies/profileName'
+
+    TQCProfileResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  $ref: './tqc_common.yaml#/components/schemas/profileResponse'
+
+    TQCProfilesResponse:
+      type: object
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Total element count
+                      example: 1
+                    items:
+                      type: array
+                      items:
+                        $ref: './tqc_common.yaml#/components/schemas/profileResponse'
