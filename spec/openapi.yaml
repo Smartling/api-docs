@@ -1283,6 +1283,208 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  /projects-api/v2/projects/{projectId}/rename:
+    put:
+      summary: Rename a project
+      tags:
+      - Account & Projects
+      description: |
+        Changes the name of an existing project and returns the updated project details.
+      operationId: renameProject
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - projectName
+              properties:
+                projectName:
+                  description: >-
+                    The new name of the project. It must not be blank and must
+                    not exceed 170 characters.
+                  example: Android XML Content v2
+                  type: string
+                  maxLength: 170
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetailsSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        accountUid: at724e365
+                        archived: false
+                        projectId: fd7244365
+                        projectName: Android XML Content v2
+                        projectTypeCode: APPLICATION_RESOURCES
+                        sourceLocaleDescription: English
+                        sourceLocaleId: en-US
+                        targetLocales:
+                        - description: German (Germany)
+                          enabled: true
+                          localeId: de-DE
+        400:
+          description: Provided request parameters are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                      - key: null
+                        message: The project name is required
+                        details:
+                          field: projectName
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X PUT -H "Authorization: Bearer $smartlingToken"
+          -H "Content-Type: application/json"
+          -d '{"projectName": "Android XML Content v2"}'
+          https://api.smartling.com/projects-api/v2/projects/$smartlingProjectId/rename
+
+  /projects-api/v2/projects/{projectId}/archive:
+    post:
+      summary: Archive a project
+      tags:
+      - Account & Projects
+      description: |
+        Archives a project and returns the updated project details.
+        Archived projects are hidden from a user's view, but can still be accessed.
+        Use [Unarchive a project](/#operation/unarchiveProject) to restore the project.
+      operationId: archiveProject
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetailsSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        accountUid: at724e365
+                        archived: true
+                        projectId: fd7244365
+                        projectName: Android XML Content
+                        projectTypeCode: APPLICATION_RESOURCES
+                        sourceLocaleDescription: English
+                        sourceLocaleId: en-US
+                        targetLocales:
+                        - description: German (Germany)
+                          enabled: true
+                          localeId: de-DE
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken"
+          https://api.smartling.com/projects-api/v2/projects/$smartlingProjectId/archive
+
+  /projects-api/v2/projects/{projectId}/unarchive:
+    post:
+      summary: Unarchive a project
+      tags:
+      - Account & Projects
+      description: |
+        Restores an archived project and returns the updated project details.
+      operationId: unarchiveProject
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetailsSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        accountUid: at724e365
+                        archived: false
+                        projectId: fd7244365
+                        projectName: Android XML Content
+                        projectTypeCode: APPLICATION_RESOURCES
+                        sourceLocaleDescription: English
+                        sourceLocaleId: en-US
+                        targetLocales:
+                        - description: German (Germany)
+                          enabled: true
+                          localeId: de-DE
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken"
+          https://api.smartling.com/projects-api/v2/projects/$smartlingProjectId/unarchive
+
 #
 # Locales API
 #
