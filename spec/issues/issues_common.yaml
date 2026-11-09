@@ -446,6 +446,19 @@ x-paths:
           application/json:
             schema:
               $ref: '#/components/schemas/FindRequest'
+            examples:
+              request:
+                value:
+                  issueStateCodes:
+                    - OPENED
+                  issueTypeCodes:
+                    - TRANSLATION
+                  sortBy:
+                    items:
+                      - direction: DESC
+                        fieldName: createdDate
+                  limit: 30
+                  offset: 0
         required: true
       responses:
         200:
@@ -482,11 +495,43 @@ x-paths:
                             reopenedByUserUid: 661801f19693
                             reopenedDate: '2015-12-21T16:38:48Z'
                         totalCount: 1
+        '400':
+          x-summary: Invalid filter
+          description: |-
+            The filter is invalid. `details.field` contains the path of the invalid field.
+
+            | Field | Rule | Error `key` | Error `message` |
+            |-------|------|-------------|-----------------|
+            | `issueNumbers` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `issueUids` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `jobFilter.jobUids` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `stringFilter.hashcodes` | Up to 1000 items | `issuesFilter.stringFilter.hashcodes.size` | size must be less than 1000 |
+            | `stringFilter.localeIds` | Up to 500 items | `issuesFilter.stringFilter.localeIds.size` | size must be less than 500 |
+            | `issueStateCodes`, `issueTypeCodes`, `issueSeverityLevelCodes`, `issueWatchingStateCode`, `jobFilter.presence` | Must be one of the documented values | `EnumValue` | |
+            | `limit` | Must be between 1 and 30 | `Min` / `Max` | must be greater than or equal to 1 / must be less than or equal to 30 |
+            | `offset` | Must be 0 or greater | `Min` | must be greater than or equal to 0 |
+            | `sortBy.items[].direction` | Required; `ASC` or `DESC` | `NotNull` / `EnumValue` | |
+            | `sortBy.items[].fieldName` | Required; one of the documented values | `NotNull` / `IssueSortFieldName` | |
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: issuesFilter.stringFilter.hashcodes.size
+                          message: size must be less than 1000
+                          details:
+                            field: stringFilter.hashcodes
       x-code-samples:
         - lang: curl
           source: >
             curl -X POST -H "Authorization: Bearer $smartlingToken"
-            -H "Content-Type: application/json" -d "$smartlingIssuesFilterJSON"
+            -H "Content-Type: application/json"
+            -d '{"issueStateCodes": ["OPENED"], "limit": 30, "offset": 0}'
             https://api.smartling.com/issues-api/v2/projects/$smartlingProjectId/issues/list
 
   count_project_issues:
@@ -522,6 +567,33 @@ x-paths:
               schema:
                 $ref: '#/components/schemas/IssuesCountResponse'
           description: OK
+        '400':
+          x-summary: Invalid filter
+          description: |-
+            The filter is invalid. `details.field` contains the path of the invalid field.
+
+            | Field | Rule | Error `key` | Error `message` |
+            |-------|------|-------------|-----------------|
+            | `issueNumbers` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `issueUids` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `jobFilter.jobUids` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `stringFilter.hashcodes` | Up to 1000 items | `issuesFilter.stringFilter.hashcodes.size` | size must be less than 1000 |
+            | `stringFilter.localeIds` | Up to 500 items | `issuesFilter.stringFilter.localeIds.size` | size must be less than 500 |
+            | `issueStateCodes`, `issueTypeCodes`, `issueSeverityLevelCodes`, `issueWatchingStateCode`, `jobFilter.presence` | Must be one of the documented values | `EnumValue` | |
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: issuesFilter.stringFilter.hashcodes.size
+                          message: size must be less than 1000
+                          details:
+                            field: stringFilter.hashcodes
       x-code-samples:
         - lang: curl
           source: >
@@ -548,6 +620,21 @@ x-paths:
           application/json:
             schema:
               $ref: '#/components/schemas/FindAccountIssuesRequest'
+            examples:
+              request:
+                value:
+                  projectIds:
+                    - e8fa915fa
+                  issueStateCodes:
+                    - OPENED
+                  issueTypeCodes:
+                    - TRANSLATION
+                  sortBy:
+                    items:
+                      - direction: DESC
+                        fieldName: createdDate
+                  limit: 30
+                  offset: 0
         required: true
       responses:
         200:
@@ -584,11 +671,68 @@ x-paths:
                             reopenedByUserUid: 661801f19693
                             reopenedDate: '2015-12-21T16:38:48Z'
                         totalCount: 1
+        '400':
+          x-summary: Invalid filter
+          description: |-
+            The filter is invalid. `details.field` contains the path of the invalid field.
+
+            | Field | Rule | Error `key` | Error `message` |
+            |-------|------|-------------|-----------------|
+            | `issueNumbers` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `issueUids` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `jobFilter.jobUids` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `stringFilter.hashcodes` | Up to 1000 items | `issuesFilter.stringFilter.hashcodes.size` | size must be less than 1000 |
+            | `stringFilter.localeIds` | Up to 500 items | `issuesFilter.stringFilter.localeIds.size` | size must be less than 500 |
+            | `issueStateCodes`, `issueTypeCodes`, `issueSeverityLevelCodes`, `issueWatchingStateCode`, `jobFilter.presence` | Must be one of the documented values | `EnumValue` | |
+            | `limit` | Must be between 1 and 30 | `Min` / `Max` | must be greater than or equal to 1 / must be less than or equal to 30 |
+            | `offset` | Must be 0 or greater | `Min` | must be greater than or equal to 0 |
+            | `sortBy.items[].direction` | Required; `ASC` or `DESC` | `NotNull` / `EnumValue` | |
+            | `sortBy.items[].fieldName` | Required; one of the documented values | `NotNull` / `IssueSortFieldName` | |
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: issuesFilter.stringFilter.hashcodes.size
+                          message: size must be less than 1000
+                          details:
+                            field: stringFilter.hashcodes
+        '403':
+          description: >-
+            At least one of the `projectIds` is not accessible to the caller.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - response
+                properties:
+                  response:
+                    type: object
+                    required:
+                      - code
+                      - errors
+                    properties:
+                      code:
+                        description: Indicates what error has occurred.
+                        enum:
+                          - AUTHORIZATION_ERROR
+                        type: string
+                      errors:
+                        items:
+                          $ref: '../api_common.yaml#/components/schemas/Error'
+                        type: array
       x-code-samples:
         - lang: curl
           source: >
             curl -X POST -H "Authorization: Bearer $smartlingToken"
-            -H "Content-Type: application/json" -d "$smartlingIssuesFilterJSON"
+            -H "Content-Type: application/json"
+            -d '{"projectIds": ["e8fa915fa"], "issueStateCodes": ["OPENED"], "limit": 30, "offset": 0}'
             https://api.smartling.com/issues-api/v2/accounts/$smartlingAccountUid/issues/list
 
   count_account_issues:
@@ -624,6 +768,58 @@ x-paths:
               schema:
                 $ref: '#/components/schemas/IssuesCountResponse'
           description: OK
+        '400':
+          x-summary: Invalid filter
+          description: |-
+            The filter is invalid. `details.field` contains the path of the invalid field.
+
+            | Field | Rule | Error `key` | Error `message` |
+            |-------|------|-------------|-----------------|
+            | `issueNumbers` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `issueUids` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `jobFilter.jobUids` | Up to 1000 items | `Size` | size must be between 0 and 1000 |
+            | `stringFilter.hashcodes` | Up to 1000 items | `issuesFilter.stringFilter.hashcodes.size` | size must be less than 1000 |
+            | `stringFilter.localeIds` | Up to 500 items | `issuesFilter.stringFilter.localeIds.size` | size must be less than 500 |
+            | `issueStateCodes`, `issueTypeCodes`, `issueSeverityLevelCodes`, `issueWatchingStateCode`, `jobFilter.presence` | Must be one of the documented values | `EnumValue` | |
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: issuesFilter.stringFilter.hashcodes.size
+                          message: size must be less than 1000
+                          details:
+                            field: stringFilter.hashcodes
+        '403':
+          description: >-
+            At least one of the `projectIds` is not accessible to the caller.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - response
+                properties:
+                  response:
+                    type: object
+                    required:
+                      - code
+                      - errors
+                    properties:
+                      code:
+                        description: Indicates what error has occurred.
+                        enum:
+                          - AUTHORIZATION_ERROR
+                        type: string
+                      errors:
+                        items:
+                          $ref: '../api_common.yaml#/components/schemas/Error'
+                        type: array
       x-code-samples:
         - lang: curl
           source: >
@@ -1228,6 +1424,15 @@ components:
             type: integer
           maxItems: 1000
           type: array
+        issueUids:
+          description: Unique identifiers of the issues to filter by. Up to 1000 items.
+          example:
+            - 902372ac8e1e
+          items:
+            description: Issue unique identifier.
+            type: string
+          maxItems: 1000
+          type: array
         jobFilter:
           properties:
             jobUids:
@@ -1248,33 +1453,33 @@ components:
         stringFilter:
           properties:
             hashcodes:
+              description: Hashcodes of the strings to filter by. Up to 1000 items.
               example:
                 - afe47cdaffe0c0226506919c291d9c1a
                 - afe37cdaffe0c0226508919c291d9c1a
-                - afe47cdaffe0c02265406919c291d2c1a
               items:
-                description: >-
-                  Unique identifier for a string in Smartling. Used by the
-                  Issues API to attach an issue to a string. You can get the
-                  hashcode for a string via the Strings API.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/Hashcode'
+              maxItems: 1000
               type: array
             localeIds:
+              description: Target locales to filter by. Up to 500 items.
               example:
                 - ru-RU
               items:
                 $ref: '../api_common.yaml#/components/schemas/LocaleId'
+              maxItems: 500
               type: array
           type: object
         limit:
           default: 30
-          description: limit
+          description: Maximum number of issues to return. Must be between 1 and 30.
           example: 30
-          minimum: 0
+          maximum: 30
+          minimum: 1
           type: integer
         offset:
           default: 0
-          description: offset
+          description: Number of issues to skip before the first returned issue.
           example: 0
           minimum: 0
           type: integer
@@ -1283,6 +1488,9 @@ components:
           properties:
             items:
               items:
+                required:
+                  - direction
+                  - fieldName
                 properties:
                   direction:
                     description: Sort direction
@@ -1303,7 +1511,6 @@ components:
                       - issueTextModifiedDate
                       - resolvedByUserUid
                       - reportedByUserUid
-                      - assigneeUserUid
                       - lastCommentDate
                     type: string
                 type: object
@@ -1525,6 +1732,15 @@ components:
             type: integer
           maxItems: 1000
           type: array
+        issueUids:
+          description: Unique identifiers of the issues to filter by. Up to 1000 items.
+          example:
+            - 902372ac8e1e
+          items:
+            description: Issue unique identifier.
+            type: string
+          maxItems: 1000
+          type: array
         jobFilter:
           properties:
             jobUids:
@@ -1545,22 +1761,21 @@ components:
         stringFilter:
           properties:
             hashcodes:
+              description: Hashcodes of the strings to filter by. Up to 1000 items.
               example:
                 - afe47cdaffe0c0226506919c291d9c1a
                 - afe37cdaffe0c0226508919c291d9c1a
-                - afe47cdaffe0c02265406919c291d2c1a
               items:
-                description: >-
-                  Unique identifier for a string in Smartling. Used by the
-                  Issues API to attach an issue to a string. You can get the
-                  hashcode for a string via String API.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/Hashcode'
+              maxItems: 1000
               type: array
             localeIds:
+              description: Target locales to filter by. Up to 500 items.
               example:
                 - ru-RU
               items:
                 $ref: '../api_common.yaml#/components/schemas/LocaleId'
+              maxItems: 500
               type: array
           type: object
       type: object
@@ -1587,7 +1802,12 @@ components:
             - c711467bs
           items:
             $ref: '../api_common.yaml#/components/schemas/ProjectUid'
-          description: UOptional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
+          description: >-
+            Optional array of unique project identifiers. This can be found in
+            the Smartling Dashboard under Account Settings > API. Every project
+            must be accessible to the caller, otherwise the request fails with
+            `403`. When omitted, issues from all projects accessible to the
+            caller are used.
           type: array
         createdDateBefore:
           description: Filter issues which were created before this date.
@@ -1681,6 +1901,15 @@ components:
             type: integer
           maxItems: 1000
           type: array
+        issueUids:
+          description: Unique identifiers of the issues to filter by. Up to 1000 items.
+          example:
+            - 902372ac8e1e
+          items:
+            description: Issue unique identifier.
+            type: string
+          maxItems: 1000
+          type: array
         jobFilter:
           properties:
             jobUids:
@@ -1701,33 +1930,33 @@ components:
         stringFilter:
           properties:
             hashcodes:
+              description: Hashcodes of the strings to filter by. Up to 1000 items.
               example:
                 - afe47cdaffe0c0226506919c291d9c1a
                 - afe37cdaffe0c0226508919c291d9c1a
-                - afe47cdaffe0c02265406919c291d2c1a
               items:
-                description: >-
-                  Unique identifier for a string in Smartling. Used by the
-                  Issues API to attach an issue to a string. You can get the
-                  hashcode for a string via the Strings API.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/Hashcode'
+              maxItems: 1000
               type: array
             localeIds:
+              description: Target locales to filter by. Up to 500 items.
               example:
                 - ru-RU
               items:
                 $ref: '../api_common.yaml#/components/schemas/LocaleId'
+              maxItems: 500
               type: array
           type: object
         limit:
           default: 30
-          description: limit
+          description: Maximum number of issues to return. Must be between 1 and 30.
           example: 30
-          minimum: 0
+          maximum: 30
+          minimum: 1
           type: integer
         offset:
           default: 0
-          description: offset
+          description: Number of issues to skip before the first returned issue.
           example: 0
           minimum: 0
           type: integer
@@ -1736,6 +1965,9 @@ components:
           properties:
             items:
               items:
+                required:
+                  - direction
+                  - fieldName
                 properties:
                   direction:
                     description: Sort direction
@@ -1756,7 +1988,6 @@ components:
                       - issueTextModifiedDate
                       - resolvedByUserUid
                       - reportedByUserUid
-                      - assigneeUserUid
                       - lastCommentDate
                     type: string
                 type: object
@@ -1770,7 +2001,12 @@ components:
             - c711467bs
           items:
             $ref: '../api_common.yaml#/components/schemas/ProjectUid'
-          description: UOptional array of unique project identifiers. This can be found in the Smartling Dashboard under Account Settings > API.
+          description: >-
+            Optional array of unique project identifiers. This can be found in
+            the Smartling Dashboard under Account Settings > API. Every project
+            must be accessible to the caller, otherwise the request fails with
+            `403`. When omitted, issues from all projects accessible to the
+            caller are used.
           type: array
         createdDateBefore:
           description: Filter issues which created before this date
@@ -1863,6 +2099,15 @@ components:
             type: integer
           maxItems: 1000
           type: array
+        issueUids:
+          description: Unique identifiers of the issues to filter by. Up to 1000 items.
+          example:
+            - 902372ac8e1e
+          items:
+            description: Issue unique identifier.
+            type: string
+          maxItems: 1000
+          type: array
         jobFilter:
           properties:
             jobUids:
@@ -1883,22 +2128,21 @@ components:
         stringFilter:
           properties:
             hashcodes:
+              description: Hashcodes of the strings to filter by. Up to 1000 items.
               example:
                 - afe47cdaffe0c0226506919c291d9c1a
                 - afe37cdaffe0c0226508919c291d9c1a
-                - afe47cdaffe0c02265406919c291d2c1a
               items:
-                description: >-
-                  Unique identifier for a string in Smartling. Used by the
-                  Issues API to attach an issue to a string. You can get the
-                  hashcode for a string via String API.
-                type: string
+                $ref: '../api_common.yaml#/components/schemas/Hashcode'
+              maxItems: 1000
               type: array
             localeIds:
+              description: Target locales to filter by. Up to 500 items.
               example:
                 - ru-RU
               items:
                 $ref: '../api_common.yaml#/components/schemas/LocaleId'
+              maxItems: 500
               type: array
           type: object
       type: object
