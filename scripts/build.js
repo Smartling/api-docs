@@ -35,6 +35,7 @@ cp('-R', 'spec/translations', 'web_deploy/spec');
 cp('-R', 'spec/content_assignments', 'web_deploy/spec');
 cp('-R', 'spec/people', 'web_deploy/spec');
 cp('-R', 'spec/string_instructions', 'web_deploy/spec');
+cp('-R', 'spec/lqa', 'web_deploy/spec');
 cp('-R', 'spec/api_common.yaml', 'web_deploy/spec');
 
 require('./bundle-refs')('web_deploy');

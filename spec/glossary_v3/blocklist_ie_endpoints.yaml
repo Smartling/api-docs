@@ -78,6 +78,12 @@ x-paths:
           $ref: './g_common.yaml#/components/responses/GlossaryError429ResponseDefinition'
         500:
           $ref: './g_common.yaml#/components/responses/GlossaryError500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken"
+            -F "importFile=@$uploadFilePath"
+            "https://api.smartling.com/glossary-api/v3/accounts/$smartlingAccountUid/blocklists/$smartlingBlocklistUid/import"
 
   blocklist_import_status:
     get:
@@ -149,9 +155,7 @@ x-paths:
         - lang: curl
           source: >
             curl -X POST -H "Authorization: Bearer $smartlingToken"
-            -F "importFile=@$uploadFilePath;type=text/csv"
-            -F "importFileName=$uploadFileSmartlingName" -F "importFileMediaType=$uploadFileSmartlingMediaType"
-            "https://api.smartling.com//glossary-api/v3/accounts/$smartlingAccountUid/blocklist/$smartlingBlocklistUid/import"    
+            "https://api.smartling.com/glossary-api/v3/accounts/$smartlingAccountUid/blocklists/$smartlingBlocklistUid/import/$importUid/confirm"
 
 components:
   parameters:
@@ -195,16 +199,20 @@ components:
         importFile:
           type: string
           format: binary
-          description: Binary file data to upload.
+          description: Binary file data to upload (CSV or XLSX).
         importFileName:
           type: string
-          description: Name and extension of the import file. Only needed when the file name of the uploaded file part has no supported extension.
+          description: >-
+            Name and extension of the import file. Optional: used to detect the format
+            when it can't be detected from the uploaded file name.
         importFileMediaType:
           type: string
           enum:
             - text/csv
             - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-          description: Import file media type. One of 'text/csv |  application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'. Only needed when the file name of the uploaded file part has no supported extension.
+          description: >-
+            Import file media type. One of 'text/csv |  application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'.
+            Optional: used to detect the format when it can't be detected from the uploaded file name.
       description: Blocklist import command.
 
     BlocklistImportResponse:
@@ -215,10 +223,9 @@ components:
             - $ref: '#/components/schemas/BlocklistImport'
           description: BlocklistImport meta-data.
         termChanges:
-          type: array
+          allOf:
+            - $ref: '#/components/schemas/ImportTermChanges'
           description: Term changes stats.
-          items:
-            $ref: '#/components/schemas/ImportTermChanges'
       description: Blocklist import meta-data.
 
     BlocklistImport:
@@ -261,18 +268,28 @@ components:
       description: Blocklist term change stats.
 
     BlocklistImportResponsePTO:
-      allOf:
-        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
-        - type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/BlocklistImportResponse"
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/BlocklistImportResponse"
 
     BlocklistImportPTO:
-      allOf:
-        - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
-        - type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/BlocklistImport"
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: "../api_common.yaml#/components/schemas/SuccessResponse"
+            - type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/BlocklistImport"
 

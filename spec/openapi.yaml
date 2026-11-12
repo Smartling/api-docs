@@ -109,6 +109,14 @@ tags:
       Locales are the language and country pairs that are used to identify the
       source content and the desired target locale for your translated content.
 
+  - name: lqa
+    x-displayName: Linguistic Quality Assurance
+    description: |-
+      Creates Linguistic Quality Assurance (LQA) requests, adds strings to
+      them, submits them and tracks their state. An LQA request copies strings of a
+      project into a job of an LQA project, where reviewers check the
+      quality of their translations.
+
   - name: People
     description: |-
       Smartling users, who process and translate content with the Smartling platform.
@@ -648,6 +656,421 @@ paths:
             curl -H "Authorization: Bearer $smartlingToken"
             https://api.smartling.com/accounts-api/v2/accounts/$smartlingAccountId/projects
 
+    post:
+      tags:
+      - Account & Projects
+      summary: Create project
+      operationId: createAccountProject
+      description: |
+        Creates a project in the account and returns its unique identifier.
+
+        The attributes the request accepts depend on `projectTypeCode`:
+
+        | Project type code | Additional attributes |
+        |-------------------|-----------------------|
+        | `APPLICATION_RESOURCES`, connector project types | `packageUid`, `defaultWorkflowUid` (optional) |
+        | `GDN` | `siteURL` (required), `packageUid`, `defaultWorkflowUid` (optional) |
+        | `LQA` | `lqaDefaultWorkflowUid`, or `lqaNewWorkflowName` and `lqaSchemaUid` |
+
+        Every project type also requires `projectName`, `originalLocaleId` and `translationLocaleIds`.
+        Only the project types available to the account can be created. Use
+        [List project types](#operation/getAccountProjectTypes) to get them.
+
+        Only account owners can create projects. The endpoint accepts up to 10 requests
+        per 15 seconds and up to 3 concurrent requests per user.
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/ProjectCreateResourceFilesRequest'
+                - $ref: '#/components/schemas/ProjectCreateGdnRequest'
+                - $ref: '#/components/schemas/ProjectCreateLqaRequest'
+                - $ref: '#/components/schemas/Connectors'
+              discriminator:
+                propertyName: projectTypeCode
+                mapping:
+                  APPLICATION_RESOURCES: '#/components/schemas/ProjectCreateResourceFilesRequest'
+                  GDN: '#/components/schemas/ProjectCreateGdnRequest'
+                  LQA: '#/components/schemas/ProjectCreateLqaRequest'
+                  CONTENTFUL: '#/components/schemas/Connectors'
+                  ELOQUA: '#/components/schemas/Connectors'
+                  HUBSPOT: '#/components/schemas/Connectors'
+                  SALESFORCE_MARKETING_CLOUD: '#/components/schemas/Connectors'
+                  ZENDESK: '#/components/schemas/Connectors'
+                  GITHUB: '#/components/schemas/Connectors'
+                  SMARTLING_REPOSITORY_CONNECTOR: '#/components/schemas/Connectors'
+                  ADOBE_AEM_CLASSIC: '#/components/schemas/Connectors'
+                  ADOBE_AEM_TOUCH: '#/components/schemas/Connectors'
+                  DRUPAL_CLASSIC: '#/components/schemas/Connectors'
+                  DRUPAL_TMGMT: '#/components/schemas/Connectors'
+                  SITECORE: '#/components/schemas/Connectors'
+                  WORDPRESS: '#/components/schemas/Connectors'
+                  YEXT: '#/components/schemas/Connectors'
+                  SALESFORCE_KNOWLEDGE: '#/components/schemas/Connectors'
+                  BRAZE: '#/components/schemas/Connectors'
+                  EPISERVER: '#/components/schemas/Connectors'
+                  CONTENTSTACK: '#/components/schemas/Connectors'
+                  SANITY: '#/components/schemas/Connectors'
+                  CONTENTFUL_V2: '#/components/schemas/Connectors'
+                  MARKETO_V2: '#/components/schemas/Connectors'
+                  GOOGLE_DRIVE: '#/components/schemas/Connectors'
+                  SALESFORCE_COMMERCE_CLOUD: '#/components/schemas/Connectors'
+                  AKENEO: '#/components/schemas/Connectors'
+                  ITERABLE: '#/components/schemas/Connectors'
+                  WORKFRONT: '#/components/schemas/Connectors'
+                  SERVICENOW: '#/components/schemas/Connectors'
+                  SHOPIFY: '#/components/schemas/Connectors'
+                  WEBFLOW: '#/components/schemas/Connectors'
+                  FIGMA: '#/components/schemas/Connectors'
+                  INDESIGN: '#/components/schemas/Connectors'
+                  CAPTIONHUB: '#/components/schemas/Connectors'
+                  SANITY_DOCUMENTS: '#/components/schemas/Connectors'
+                  SITECORE_XMC: '#/components/schemas/Connectors'
+                  INTERCOM: '#/components/schemas/Connectors'
+                  MARKETO_SEGMENTS: '#/components/schemas/Connectors'
+                  PHOTOSHOP: '#/components/schemas/Connectors'
+                  ILLUSTRATOR: '#/components/schemas/Connectors'
+                  ADOBE_EXPRESS: '#/components/schemas/Connectors'
+                  BUILDER_IO: '#/components/schemas/Connectors'
+            examples:
+              resourceFiles:
+                summary: Resource Files project
+                value:
+                  projectName: Android XML Content
+                  projectTypeCode: APPLICATION_RESOURCES
+                  originalLocaleId: en-US
+                  translationLocaleIds:
+                  - de-DE
+                  - fr-FR
+                  defaultWorkflowUid: 5449a8595ae4
+              gdn:
+                summary: GDN project
+                value:
+                  projectName: Marketing Website GDN
+                  projectTypeCode: GDN
+                  originalLocaleId: en-US
+                  translationLocaleIds:
+                  - de-DE
+                  - fr-FR
+                  siteURL: https://www.example.com
+              lqaExistingWorkflow:
+                summary: LQA project with an existing workflow
+                value:
+                  projectName: German LQA
+                  projectTypeCode: LQA
+                  originalLocaleId: de-DE
+                  translationLocaleIds:
+                  - fr-FR
+                  lqaDefaultWorkflowUid: 5449a8595ae4
+              lqaNewWorkflow:
+                summary: LQA project with a new workflow
+                value:
+                  projectName: German LQA
+                  projectTypeCode: LQA
+                  originalLocaleId: de-DE
+                  translationLocaleIds:
+                  - fr-FR
+                  lqaNewWorkflowName: German LQA Workflow
+                  lqaSchemaUid: 3f1a9c7d2e4b
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectCreateSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        projectUid: fd7244365
+        400:
+          x-summary: The request is invalid.
+          description: |
+            Each error names the rejected attribute in `details.field`.
+            Common error keys:
+
+            | Key | Cause |
+            |-----|-------|
+            | `project.name.required`, `project.name.too.long`, `project.name.html.tags` | `projectName` is blank, longer than 170 characters or contains HTML tags. |
+            | `project.type.required`, `project.type.not.allowed` | `projectTypeCode` is missing, or the account cannot create this project type. |
+            | `original.locale.required`, `original.locale.invalid`, `original.locale.too.long` | `originalLocaleId` is missing, unknown or longer than 5 characters. |
+            | `translation.locales.required`, `translation.locale.blank`, `translation.locale.invalid`, `translation.locale.too.long`, `translation.locales.too.many`, `translation.locales.contain.original` | `translationLocaleIds` is empty, has a blank, unknown or too long locale, has more than 1000 locales or contains `originalLocaleId`. |
+            | `site.url.required`, `site.url.invalid`, `site.url.too.long`, `site.url.restricted`, `site.url.redirects`, `site.url.not.exists` | `siteURL` is missing for a `GDN` project or the website is not valid. |
+            | `site.url.not.allowed` | `siteURL` is sent for a project type other than `GDN`. |
+            | `package.not.found`, `package.uid.too.long` | `packageUid` is not a linguistic package of the account. |
+            | `default.workflow.invalid`, `default.workflow.uid.too.long` | `defaultWorkflowUid` is not a custom workflow of the account. |
+            | `lqa.package.not.allowed` | `packageUid` is sent for an `LQA` project. |
+            | `lqa.original.language.exists` | The account already has an `LQA` project for the language of `originalLocaleId`. |
+            | `lqa.workflow.not.found`, `lqa.workflow.uid.too.long` | `lqaDefaultWorkflowUid` is not a workflow of the account. |
+            | `lqa.workflow.name.required`, `lqa.workflow.name.too.long`, `lqa.workflow.name.not.allowed` | `lqaNewWorkflowName` is missing without `lqaDefaultWorkflowUid`, longer than 150 characters, or sent together with `lqaDefaultWorkflowUid`. |
+            | `lqa.schema.required`, `lqa.schema.not.found`, `lqa.schema.not.allowed`, `lqa.schema.uid.too.long` | `lqaSchemaUid` is missing without `lqaDefaultWorkflowUid`, not found, or sent together with `lqaDefaultWorkflowUid`. |
+            | `project.limit.exceeded` | The account has reached the maximum number of projects. |
+          content:
+            application/json:
+              schema:
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                      - key: site.url.required
+                        message: The site URL is required for a Global Delivery Network project.
+                        details:
+                          field: siteURL
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        403:
+          description: The user is not allowed to create projects in the account.
+          content:
+            application/json:
+              schema:
+                $ref: './spec/api_common.yaml#/components/schemas/Error403Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: ACCESS_DENIED_ERROR
+                      errors:
+                      - key: no.access
+                        message: Access denied.
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json" \
+              -d '{"projectName": "Android XML Content", "projectTypeCode": "APPLICATION_RESOURCES", "originalLocaleId": "en-US", "translationLocaleIds": ["de-DE", "fr-FR"]}' \
+              https://api.smartling.com/accounts-api/v2/accounts/$smartlingAccountId/projects
+
+  /accounts-api/v2/accounts/{accountUid}/project-types:
+    get:
+      tags:
+      - Account & Projects
+      summary: Get project types
+      operationId: getAccountProjectTypes
+      description: |
+        Returns the project types that can be created in the account. Use a returned
+        `projectTypeCode` to [create a project](#operation/createAccountProject).
+
+        General project types (`APPLICATION_RESOURCES`, `GDN` and `LQA`) come first, followed by the
+        connector project types enabled for the account. `GITHUB` requires a dedicated account feature.
+
+        Only account owners can list project types.
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account’s unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: projectTypeGroupCode
+          in: query
+          required: false
+          description: Returns only the project types of this group. All project types are returned when omitted.
+          schema:
+            $ref: '#/components/schemas/ProjectTypeGroupCode'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountProjectTypeListSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - projectTypeCode: APPLICATION_RESOURCES
+                            projectTypeName: Resource Files
+                            projectTypeGroupCode: GENERAL
+                          - projectTypeCode: GDN
+                            projectTypeName: GDN
+                            projectTypeGroupCode: GENERAL
+                          - projectTypeCode: LQA
+                            projectTypeName: LQA
+                            projectTypeGroupCode: GENERAL
+                          - projectTypeCode: CONTENTFUL
+                            projectTypeName: Contentful (Fields)
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: ELOQUA
+                            projectTypeName: Eloqua
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: HUBSPOT
+                            projectTypeName: Hubspot
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: SALESFORCE_MARKETING_CLOUD
+                            projectTypeName: Salesforce Marketing Cloud
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: ZENDESK
+                            projectTypeName: Zendesk
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: GITHUB
+                            projectTypeName: GitHub
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: SMARTLING_REPOSITORY_CONNECTOR
+                            projectTypeName: Smartling Repository
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: ADOBE_AEM_CLASSIC
+                            projectTypeName: AEM Classic
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: ADOBE_AEM_TOUCH
+                            projectTypeName: AEM Touch
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: DRUPAL_CLASSIC
+                            projectTypeName: Drupal Classic
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: DRUPAL_TMGMT
+                            projectTypeName: Drupal TMGMT
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: SITECORE
+                            projectTypeName: Sitecore
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: WORDPRESS
+                            projectTypeName: Wordpress
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: YEXT
+                            projectTypeName: Yext
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: SALESFORCE_KNOWLEDGE
+                            projectTypeName: Salesforce Knowledge
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: BRAZE
+                            projectTypeName: Braze
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: EPISERVER
+                            projectTypeName: Episerver
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: CONTENTSTACK
+                            projectTypeName: Contentstack
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: SANITY
+                            projectTypeName: Sanity (Fields)
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: CONTENTFUL_V2
+                            projectTypeName: Contentful (Entries)
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: MARKETO_V2
+                            projectTypeName: Marketo
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: GOOGLE_DRIVE
+                            projectTypeName: Google Drive
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: SALESFORCE_COMMERCE_CLOUD
+                            projectTypeName: Salesforce Commerce Cloud
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: AKENEO
+                            projectTypeName: Akeneo
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: ITERABLE
+                            projectTypeName: Iterable
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: WORKFRONT
+                            projectTypeName: Workfront
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: SERVICENOW
+                            projectTypeName: ServiceNow
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: SHOPIFY
+                            projectTypeName: Shopify
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: WEBFLOW
+                            projectTypeName: Webflow
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: FIGMA
+                            projectTypeName: Figma
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: INDESIGN
+                            projectTypeName: InDesign
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: CAPTIONHUB
+                            projectTypeName: CaptionHub
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: SANITY_DOCUMENTS
+                            projectTypeName: Sanity (Documents)
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: SITECORE_XMC
+                            projectTypeName: Sitecore XMC
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: INTERCOM
+                            projectTypeName: Intercom
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: MARKETO_SEGMENTS
+                            projectTypeName: Marketo (Segments)
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: PHOTOSHOP
+                            projectTypeName: Photoshop
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: ILLUSTRATOR
+                            projectTypeName: Illustrator
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: ADOBE_EXPRESS
+                            projectTypeName: Adobe Express
+                            projectTypeGroupCode: CONNECTOR
+                          - projectTypeCode: BUILDER_IO
+                            projectTypeName: Builder.io
+                            projectTypeGroupCode: CONNECTOR
+                        totalCount: 43
+        400:
+          description: The `projectTypeGroupCode` value is not supported.
+          content:
+            application/json:
+              schema:
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                      - key: projectTypeGroupCode.invalid
+                        message: Specified projectTypeGroupCode is invalid.
+                        details:
+                          field: projectTypeGroupCode
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        403:
+          description: The user is not allowed to list project types of the account.
+          content:
+            application/json:
+              schema:
+                $ref: './spec/api_common.yaml#/components/schemas/Error403Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: ACCESS_DENIED_ERROR
+                      errors:
+                      - key: no.access
+                        message: Access denied.
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken"
+            "https://api.smartling.com/accounts-api/v2/accounts/$smartlingAccountId/project-types?projectTypeGroupCode=GENERAL"
+
   /projects-api/v2/projects/{projectId}:
     get:
       tags:
@@ -905,6 +1328,208 @@ paths:
           $ref: '#/components/responses/Error429ResponseDefinition'
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
+
+  /projects-api/v2/projects/{projectId}/rename:
+    put:
+      summary: Rename a project
+      tags:
+      - Account & Projects
+      description: |
+        Changes the name of an existing project and returns the updated project details.
+      operationId: renameProject
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - projectName
+              properties:
+                projectName:
+                  description: >-
+                    The new name of the project. It must not be blank and must
+                    not exceed 170 characters.
+                  example: Android XML Content v2
+                  type: string
+                  maxLength: 170
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetailsSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        accountUid: at724e365
+                        archived: false
+                        projectId: fd7244365
+                        projectName: Android XML Content v2
+                        projectTypeCode: APPLICATION_RESOURCES
+                        sourceLocaleDescription: English
+                        sourceLocaleId: en-US
+                        targetLocales:
+                        - description: German (Germany)
+                          enabled: true
+                          localeId: de-DE
+        400:
+          description: Provided request parameters are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: './spec/api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                      - key: null
+                        message: The project name is required
+                        details:
+                          field: projectName
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X PUT -H "Authorization: Bearer $smartlingToken"
+          -H "Content-Type: application/json"
+          -d '{"projectName": "Android XML Content v2"}'
+          https://api.smartling.com/projects-api/v2/projects/$smartlingProjectId/rename
+
+  /projects-api/v2/projects/{projectId}/archive:
+    post:
+      summary: Archive a project
+      tags:
+      - Account & Projects
+      description: |
+        Archives a project and returns the updated project details.
+        Archived projects are hidden from a user's view, but can still be accessed.
+        Use [Unarchive a project](/#operation/unarchiveProject) to restore the project.
+      operationId: archiveProject
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetailsSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        accountUid: at724e365
+                        archived: true
+                        projectId: fd7244365
+                        projectName: Android XML Content
+                        projectTypeCode: APPLICATION_RESOURCES
+                        sourceLocaleDescription: English
+                        sourceLocaleId: en-US
+                        targetLocales:
+                        - description: German (Germany)
+                          enabled: true
+                          localeId: de-DE
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken"
+          https://api.smartling.com/projects-api/v2/projects/$smartlingProjectId/archive
+
+  /projects-api/v2/projects/{projectId}/unarchive:
+    post:
+      summary: Unarchive a project
+      tags:
+      - Account & Projects
+      description: |
+        Restores an archived project and returns the updated project details.
+      operationId: unarchiveProject
+
+      parameters:
+      - name: projectId
+        description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+        in: path
+        required: true
+        schema:
+          $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetailsSuccessResponse'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        accountUid: at724e365
+                        archived: false
+                        projectId: fd7244365
+                        projectName: Android XML Content
+                        projectTypeCode: APPLICATION_RESOURCES
+                        sourceLocaleDescription: English
+                        sourceLocaleId: en-US
+                        targetLocales:
+                        - description: German (Germany)
+                          enabled: true
+                          localeId: de-DE
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
+      x-code-samples:
+      - lang: curl
+        source: >
+          curl -X POST -H "Authorization: Bearer $smartlingToken"
+          https://api.smartling.com/projects-api/v2/projects/$smartlingProjectId/unarchive
 
 #
 # Locales API
@@ -8649,6 +9274,12 @@ paths:
     $ref: './spec/translations/translations_endpoints.yaml#/x-paths/get_recent_import_status'
 
 #
+## LQA API
+
+  /lqa-api/v2/accounts/{accountUid}/lqa-evaluations/v2/execute:
+    $ref: './spec/lqa/lqa_evaluations_endpoints.yaml#/x-paths/execute_lqa_evaluation'
+
+#
 ## Content Assignments API v3
 
   /content-assignments-api/v3/projects/{projectId}/strings/assign:
@@ -8659,6 +9290,18 @@ paths:
 
   /content-assignments-api/v3/projects/{projectId}/processes/{processUid}:
     $ref: './spec/content_assignments/content_assignments_v3_endpoints.yaml#/x-paths/get_assignment_status'
+
+#
+## LQA Proxy API
+
+  /lqa-proxy-api/v2/projects/{projectId}/lqa-requests:
+    $ref: './spec/lqa/lqa_requests_endpoints.yaml#/x-paths/create_lqa_request'
+
+  /lqa-proxy-api/v2/projects/{projectId}/lqa-requests/{lqaRequestUid}:
+    $ref: './spec/lqa/lqa_requests_endpoints.yaml#/x-paths/lqa_request'
+
+  /lqa-proxy-api/v2/projects/{projectId}/lqa-requests/{lqaRequestUid}/submit:
+    $ref: './spec/lqa/lqa_requests_endpoints.yaml#/x-paths/submit_lqa_request'
 
 #
 ## Workflows API
@@ -9308,6 +9951,93 @@ components:
                       type: array
                     totalCount:
                       description: The number of projects that match your specified criteria
+                      type: integer
+                  required:
+                    - totalCount
+                    - items
+                  type: object
+              type: object
+    AccountProjectTypeItem:
+      type: object
+      required:
+        - projectTypeCode
+        - projectTypeName
+        - projectTypeGroupCode
+      properties:
+        projectTypeCode:
+          description: >-
+            Project type code to use as `projectTypeCode` when creating a project. The general
+            project types are `APPLICATION_RESOURCES`, `GDN` and `LQA`; the other values are
+            connector project types.
+          type: string
+          enum:
+            - APPLICATION_RESOURCES
+            - GDN
+            - LQA
+            - CONTENTFUL
+            - ELOQUA
+            - HUBSPOT
+            - SALESFORCE_MARKETING_CLOUD
+            - ZENDESK
+            - GITHUB
+            - SMARTLING_REPOSITORY_CONNECTOR
+            - ADOBE_AEM_CLASSIC
+            - ADOBE_AEM_TOUCH
+            - DRUPAL_CLASSIC
+            - DRUPAL_TMGMT
+            - SITECORE
+            - WORDPRESS
+            - YEXT
+            - SALESFORCE_KNOWLEDGE
+            - BRAZE
+            - EPISERVER
+            - CONTENTSTACK
+            - SANITY
+            - CONTENTFUL_V2
+            - MARKETO_V2
+            - GOOGLE_DRIVE
+            - SALESFORCE_COMMERCE_CLOUD
+            - AKENEO
+            - ITERABLE
+            - WORKFRONT
+            - SERVICENOW
+            - SHOPIFY
+            - WEBFLOW
+            - FIGMA
+            - INDESIGN
+            - CAPTIONHUB
+            - SANITY_DOCUMENTS
+            - SITECORE_XMC
+            - INTERCOM
+            - MARKETO_SEGMENTS
+            - PHOTOSHOP
+            - ILLUSTRATOR
+            - ADOBE_EXPRESS
+            - BUILDER_IO
+          example: APPLICATION_RESOURCES
+        projectTypeName:
+          description: Display name of the project type.
+          type: string
+          example: Resource Files
+        projectTypeGroupCode:
+          $ref: '#/components/schemas/ProjectTypeGroupCode'
+    AccountProjectTypeListSuccessResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/AccountProjectTypeItem'
+                      type: array
+                    totalCount:
+                      description: The number of returned project types.
                       type: integer
                   required:
                     - totalCount
@@ -11943,6 +12673,214 @@ components:
                     - processUid
                   type: object
               type: object
+    ProjectCreateCommonRequest:
+      type: object
+      required:
+        - projectName
+        - projectTypeCode
+        - originalLocaleId
+        - translationLocaleIds
+      properties:
+        projectName:
+          description: Name of the project. Must not contain HTML tags.
+          type: string
+          maxLength: 170
+          example: Android XML Content
+        projectTypeCode:
+          description: >-
+            Type of the project. Must be one of the project types returned by
+            [List project types](#operation/getAccountProjectTypes).
+          type: string
+        originalLocaleId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          description: Source locale of the project.
+        translationLocaleIds:
+          description: >-
+            Target locales of the project. Must not contain `originalLocaleId`.
+            Duplicated locales are ignored.
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+    ProjectCreateGdnRequest:
+      title: GDN
+      description: Global Delivery Network project.
+      type: object
+      required:
+        - projectTypeCode
+      properties:
+        projectTypeCode:
+          type: string
+          enum:
+            - GDN
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateCommonRequest'
+        - type: object
+          required:
+            - siteURL
+          properties:
+            siteURL:
+              description: >-
+                URL of the website to translate. The website must be reachable and must not redirect to another location.
+              type: string
+              format: uri
+              example: https://www.example.com
+            packageUid:
+              $ref: '#/components/schemas/ProjectCreatePackageUid'
+            defaultWorkflowUid:
+              $ref: '#/components/schemas/ProjectCreateDefaultWorkflowUid'
+    Connectors:
+      title: Connectors
+      description: >-
+        Connector project. Any project type with `projectTypeGroupCode` `CONNECTOR` in
+        [List project types](#operation/getAccountProjectTypes), for example `CONTENTFUL`.
+      type: object
+      required:
+        - projectTypeCode
+      properties:
+        projectTypeCode:
+          description: >-
+            Connector project type. Only the connector project types enabled for the account
+            can be created; `GITHUB` requires a dedicated account feature.
+          type: string
+          enum:
+            - CONTENTFUL
+            - ELOQUA
+            - HUBSPOT
+            - SALESFORCE_MARKETING_CLOUD
+            - ZENDESK
+            - GITHUB
+            - SMARTLING_REPOSITORY_CONNECTOR
+            - ADOBE_AEM_CLASSIC
+            - ADOBE_AEM_TOUCH
+            - DRUPAL_CLASSIC
+            - DRUPAL_TMGMT
+            - SITECORE
+            - WORDPRESS
+            - YEXT
+            - SALESFORCE_KNOWLEDGE
+            - BRAZE
+            - EPISERVER
+            - CONTENTSTACK
+            - SANITY
+            - CONTENTFUL_V2
+            - MARKETO_V2
+            - GOOGLE_DRIVE
+            - SALESFORCE_COMMERCE_CLOUD
+            - AKENEO
+            - ITERABLE
+            - WORKFRONT
+            - SERVICENOW
+            - SHOPIFY
+            - WEBFLOW
+            - FIGMA
+            - INDESIGN
+            - CAPTIONHUB
+            - SANITY_DOCUMENTS
+            - SITECORE_XMC
+            - INTERCOM
+            - MARKETO_SEGMENTS
+            - PHOTOSHOP
+            - ILLUSTRATOR
+            - ADOBE_EXPRESS
+            - BUILDER_IO
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateCommonRequest'
+        - type: object
+          properties:
+            packageUid:
+              $ref: '#/components/schemas/ProjectCreatePackageUid'
+            defaultWorkflowUid:
+              $ref: '#/components/schemas/ProjectCreateDefaultWorkflowUid'
+    ProjectCreateLqaRequest:
+      title: LQA
+      description: >-
+        Linguistic quality assessment project. Provide either `lqaDefaultWorkflowUid` to use an existing workflow,
+        or `lqaNewWorkflowName` and `lqaSchemaUid` to create a new workflow. The account must not already have
+        an LQA project for the language of `originalLocaleId`. `packageUid` is not allowed.
+      type: object
+      required:
+        - projectTypeCode
+      properties:
+        projectTypeCode:
+          type: string
+          enum:
+            - LQA
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateCommonRequest'
+        - type: object
+          properties:
+            lqaDefaultWorkflowUid:
+              allOf:
+                - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
+              description: >-
+                Existing workflow of the account to use for the project. When set,
+                `lqaNewWorkflowName` and `lqaSchemaUid` must be omitted.
+            lqaNewWorkflowName:
+              description: >-
+                Name of the new workflow to create for the project. Required when
+                `lqaDefaultWorkflowUid` is omitted.
+              type: string
+              maxLength: 150
+              example: German LQA Workflow
+            lqaSchemaUid:
+              description: >-
+                Unique identifier of the LQA schema of the account to use for the new workflow.
+                Required when `lqaDefaultWorkflowUid` is omitted.
+              type: string
+              maxLength: 12
+              example: 3f1a9c7d2e4b
+    ProjectCreateDefaultWorkflowUid:
+      allOf:
+        - $ref: './spec/api_common.yaml#/components/schemas/WorkflowUid'
+      description: >-
+        Custom workflow of the account to use as the default workflow of the project. When omitted or `null`,
+        a new default project-level workflow is created and assigned to the target locales.
+    ProjectCreatePackageUid:
+      description: >-
+        Unique identifier of a linguistic package of the account to assign to the project. When omitted or `null`,
+        a new linguistic package is created for the project.
+      type: string
+      maxLength: 12
+      example: 2a8e4f6c1b3d
+    ProjectCreateResourceFilesRequest:
+      title: Resource Files
+      description: Resource Files project.
+      type: object
+      required:
+        - projectTypeCode
+      properties:
+        projectTypeCode:
+          type: string
+          enum:
+            - APPLICATION_RESOURCES
+      allOf:
+        - $ref: '#/components/schemas/ProjectCreateCommonRequest'
+        - type: object
+          properties:
+            packageUid:
+              $ref: '#/components/schemas/ProjectCreatePackageUid'
+            defaultWorkflowUid:
+              $ref: '#/components/schemas/ProjectCreateDefaultWorkflowUid'
+    ProjectCreateSuccessResponse:
+      type: object
+      required:
+      - response
+      properties:
+        response:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    projectUid:
+                      $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
+                  required:
+                    - projectUid
+                  type: object
+              type: object
     ProjectDetailsLocaleItem:
       example:
         description: Russian (Russia)
@@ -12032,6 +12970,14 @@ components:
                     - targetLocales
                   type: object
               type: object
+    ProjectTypeGroupCode:
+      description: >-
+        Group of the project type: `GENERAL` for project types that are not connectors,
+        `CONNECTOR` for the connector project types enabled for the account.
+      type: string
+      enum:
+        - GENERAL
+        - CONNECTOR
     RemoveFileJobRequest:
       description: The payload to use when removing a file from a job.
       properties:
