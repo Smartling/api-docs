@@ -1,0 +1,379 @@
+x-paths:
+
+  # ---------------------------------------------------------------------------
+  # Assignment
+  # ---------------------------------------------------------------------------
+
+  assign_strings:
+    post:
+      tags:
+        - content-assignments-v3
+      operationId: content_assignments_v3_assign_strings
+      summary: Assign strings to a user
+      description: |
+        Assigns up to `500` strings, identified by `hashCodes`, to a user
+        for a workflow step and locale. Content is assigned directly by
+        hashcode; there's no task-bucket or claiming concept.
+
+        The operation runs asynchronously. Poll the process status
+        endpoint with the returned `processUid` for progress and outcome.
+
+        The target user must have a workflow assignment for the step and
+        locale before they can be assigned to content in that step.
+
+        Translation Resource Managers (TRMs), Agency Account Owners (AAOs),
+        and other roles with access to the endpoint can assign any user who
+        has that workflow assignment. A Translation Resource (TR) can only
+        assign content to themselves, and only when claiming is enabled for
+        the account.
+
+        Returns `400` when: `hashCodes` is empty or exceeds `500` entries;
+        `localeId` or `workflowStepUid` is missing or not accessible to
+        the caller; `userUid` is missing or does not resolve to a known
+        user; the target user has no workflow assignment for the step and
+        locale; the caller is a TR and `userUid` is not the caller's own
+        UID; the caller is a TR and claiming is not enabled for the
+        account; or the workflow is not configured for the locale.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranslationAssignUserCommand'
+            examples:
+              typical:
+                value:
+                  userUid: 99b0662fbae1
+                  localeId: fr-FR
+                  workflowStepUid: ef2db44fdb5c
+                  hashCodes: [fbde34aaa8580ac6956a4a188759c790, b10110c8aa332b080a73298c71590a5a]
+      responses:
+        '200':
+          description: Assignment queued for async processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationAssignmentProcessResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: e61fa6ae-128b-4ecc-98c7-a992e1a791dd
+        '400':
+          description: The request failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: The project, locale, workflow step, or user does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  remove_strings:
+    post:
+      tags:
+        - content-assignments-v3
+      operationId: content_assignments_v3_remove_strings
+      summary: Remove string assignments
+      description: |
+        Removes the assignment of up to `500` strings, identified by
+        `hashCodes`, for a workflow step and locale.
+
+        The operation runs asynchronously. Poll the process status
+        endpoint with the returned `processUid` for progress and outcome.
+
+        Returns `400` when `hashCodes` is empty or exceeds `500` entries,
+        or `localeId`/`workflowStepUid` is missing or not accessible to
+        the caller.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranslationAssignCommand'
+            examples:
+              typical:
+                value:
+                  localeId: fr-FR
+                  workflowStepUid: ef2db44fdb5c
+                  hashCodes: [fbde34aaa8580ac6956a4a188759c790, b10110c8aa332b080a73298c71590a5a]
+      responses:
+        '200':
+          description: Removal queued for async processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationAssignmentProcessResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: 73523693-e0f0-4765-bb1c-d0ab5b69cec9
+        '400':
+          description: The request failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: The project, locale, or workflow step does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  # ---------------------------------------------------------------------------
+  # Status
+  # ---------------------------------------------------------------------------
+
+  get_assignment_status:
+    get:
+      tags:
+        - content-assignments-v3
+      operationId: content_assignments_v3_get_assignment_status
+      summary: Get async assignment process status
+      description: |
+        Returns status and statistics for an async process created by the
+        assign or remove strings endpoints.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+        - name: processUid
+          in: path
+          required: true
+          description: Process identifier returned by the initiating assign or remove operation.
+          schema:
+            $ref: '#/components/schemas/ProcessUid'
+      responses:
+        '200':
+          description: Process status retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationAssignmentStatusResponse'
+              examples:
+                in_progress:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: 5e965f17-1b30-4125-9530-081a1318030f
+                        processState: IN_PROGRESS
+                        createdDate: "2026-01-31T08:30:37Z"
+                        modifiedDate: "2026-01-31T08:30:37Z"
+                        processStatistics:
+                          requested: 3
+                          processed: 0
+                          errored: 0
+                          skipped: 0
+                        lastError: null
+                failed:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: 5e965f17-1b30-4125-9530-081a1318030f
+                        processState: FAILED
+                        createdDate: "2026-01-31T08:30:37Z"
+                        modifiedDate: "2026-01-31T08:30:38Z"
+                        processStatistics:
+                          requested: 3
+                          processed: 0
+                          errored: 3
+                          skipped: 0
+                        lastError: Cannot determine role for target user
+                completed:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        processUid: 606ab840-2e1e-4945-9f94-ec2dede7deb6
+                        processState: COMPLETED
+                        createdDate: "2026-01-31T08:36:42Z"
+                        modifiedDate: "2026-01-31T08:36:43Z"
+                        processStatistics:
+                          requested: 4
+                          processed: 3
+                          errored: 0
+                          skipped: 1
+                        lastError: null
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: No process matches `processUid` for this project.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+components:
+  schemas:
+
+    # -- Identifiers --
+
+    ProcessUid:
+      type: string
+      format: uuid
+      description: Unique identifier of an asynchronous process.
+      examples:
+        - e61fa6ae-128b-4ecc-98c7-a992e1a791dd
+
+    # -- Command / request bodies --
+
+    TranslationAssignCommand:
+      type: object
+      description: |
+        Identifies the strings to act on, by hashcode, for a workflow step
+        and locale. Used directly by the remove-strings endpoint, and as
+        the base of `TranslationAssignUserCommand` for the assign
+        endpoint.
+      required:
+        - localeId
+        - workflowStepUid
+        - hashCodes
+      properties:
+        localeId:
+          $ref: '../api_common.yaml#/components/schemas/LocaleId'
+        workflowStepUid:
+          $ref: '../api_common.yaml#/components/schemas/WorkflowStepUid'
+        hashCodes:
+          type: array
+          maxItems: 500
+          description: Hashcodes of the strings to assign or remove. Capped at 500 entries per request.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/Hashcode'
+
+    TranslationAssignUserCommand:
+      description: Assigns specific strings to a user for a workflow step and locale, by hashcode.
+      allOf:
+        - $ref: '#/components/schemas/TranslationAssignCommand'
+        - type: object
+          required:
+            - userUid
+          properties:
+            userUid:
+              allOf:
+                - $ref: '../api_common.yaml#/components/schemas/UserUid'
+              description: |
+                UID of the user to assign the strings to. The user must have
+                a workflow assignment for the step and locale. When the
+                caller is a Translation Resource (TR), this must be the
+                caller's own UID.
+
+    # -- Response bodies --
+
+    TranslationAssignmentProcessResponse:
+      type: object
+      description: Response envelope for an async assign or remove operation.
+      required:
+        - response
+      properties:
+        response:
+          type: object
+          required:
+            - code
+            - data
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              type: object
+              required:
+                - processUid
+              properties:
+                processUid:
+                  description: Unique identifier of the async process. Poll the process status endpoint with this value.
+                  $ref: '#/components/schemas/ProcessUid'
+
+    TranslationAssignmentStatusResponse:
+      type: object
+      description: Response envelope for an async assignment process status lookup.
+      required:
+        - response
+      properties:
+        response:
+          type: object
+          required:
+            - code
+            - data
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              type: object
+              required:
+                - processUid
+                - processState
+              properties:
+                processUid:
+                  $ref: '#/components/schemas/ProcessUid'
+                processState:
+                  type: string
+                  description: Current state of the process.
+                  enum:
+                    - IN_PROGRESS
+                    - COMPLETED
+                    - FAILED
+                createdDate:
+                  $ref: '../api_common.yaml#/components/schemas/DateTime'
+                modifiedDate:
+                  $ref: '../api_common.yaml#/components/schemas/DateTime'
+                processStatistics:
+                  type: object
+                  description: Counters describing progress through the process.
+                  properties:
+                    requested:
+                      type: integer
+                      description: Total number of hashcodes requested for processing.
+                    processed:
+                      type: integer
+                      description: Number of hashcodes successfully processed.
+                    errored:
+                      type: integer
+                      description: Number of hashcodes that failed processing.
+                    skipped:
+                      type: integer
+                      description: Number of hashcodes skipped.
+                lastError:
+                  type: [string, "null"]
+                  description: Error message from the most recent failure, if any. `null` when the process has not errored.

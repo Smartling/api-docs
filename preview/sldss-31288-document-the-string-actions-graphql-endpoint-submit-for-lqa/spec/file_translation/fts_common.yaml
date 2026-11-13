@@ -1,0 +1,70 @@
+components:
+  parameters:
+    fileUidPathParameter:
+      name: fileUid
+      in: path
+      schema:
+        type: string
+      required: true
+      description: Unique identifier of the uploaded file.
+
+    mtUidPathParameter:
+      name: mtUid
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Unique identifier of machine translation action triggered on a file.
+
+    languageDetectionUidPathParameter:
+      name: languageDetectionUid
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Unique identifier of language detection action triggered on a file.
+
+  schemas:
+    FileTranslationEmptyResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  description: Always empty.
+                  type: object
+                  example: {}
+              type: object
+    AcceptedResponse:
+      properties:
+        code:
+          description: >-
+            Indicates whether the response was successful or what error has occurred.
+          enum:
+            - ACCEPTED
+          type: string
+      required:
+        - code
+      type: object
+  responses:
+    FileTranslationError400ResponseDefinition:
+      description: Provided request parameters are invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/Error400Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: VALIDATION_ERROR
+                  errors:
+                    - key: not.found
+                      message: >-
+                        mtUid jtcorrr3 not found
+                      details:
+                        field: mtUid

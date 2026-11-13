@@ -1,0 +1,401 @@
+x-paths:
+
+  export_entries:
+    post:
+      summary: Export glossary entries
+      description: >-
+        This request export glossary entries into file with preselected format.
+        For now next formats are allowed:
+         - CSV,
+         - XLSX,
+         - TBX.
+        
+        For TBX files - 2 version-names / versions supported:
+         - TBXcoreStructV02,
+         - TBXcoreStructV03.
+      tags:
+        - Glossary API
+      operationId: exportGlossary
+      consumes:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GlossaryEntriesExportCommandPTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  initialize_import:
+    post:
+      tags:
+        - Glossary API
+      summary: Initialize glossary import process
+      description: >-
+        Initialize glossary import process. Upload file, and perform validation.
+        ( No changes will be done during this method call ). In case of success
+        glossary import will be created with 'PENDING' status.
+      operationId: initializeGlossaryImport
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GlossaryImportCommandPTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GlossaryImportResponsePTO'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        glossaryImport:
+                          glossaryUid: 'bad90990-4be1-4570-81da-b719cddd5352'
+                          importUid: '939a4439-2ed0-4123-bc68-d188e4d664ab'
+                          importStatus: 'PENDING'
+                        entryChanges:
+                          newEntries: 0,
+                          existingEntryUpdates: 1,
+                          notMatchedEntries: 1,
+                          entriesToArchive: 0
+                        translationChanges:
+                          - localeId: en-US
+                            newTranslations: 1
+                            updatedTranslations: 0
+                            translationsToRemove: 1
+                        warnings:
+                          - key: warning.key1
+                            message: message-1
+                          - key: warning.key2
+                            message: message-2
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  import_status:
+    get:
+      tags:
+        - Glossary API
+      summary: Read import process status
+      description: >-
+        Read import process status
+      operationId: importStatus
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
+        - $ref: '#/components/parameters/importUidPathParameter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GlossaryImportPTO'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        glossaryUid: 'bad90990-4be1-4570-81da-b719cddd5352'
+                        importUid: '939a4439-2ed0-4123-bc68-d188e4d664ab'
+                        importStatus: 'PENDING'
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  confirm_import:
+    post:
+      tags:
+        - Glossary API
+      summary: Confirm previously created glossary import
+
+      description: >-
+        Confirm previously created glossary import. Only imports in status : 'PENDING' may be confirmed.
+      operationId: confirmGlossaryImport
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: './g_common.yaml#/components/parameters/accountUidPathParameter'
+        - $ref: './g_common.yaml#/components/parameters/glossaryUidPathParameter'
+        - $ref: '#/components/parameters/importUidPathParameter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GlossaryImportPTO'
+              response:
+                value:
+                  response:
+                    code: SUCCESS
+                    data:
+                      glossaryUid: 'bad90990-4be1-4570-81da-b719cddd5352'
+                      importUid: '939a4439-2ed0-4123-bc68-d188e4d664ab'
+                      importStatus: 'IN_PROGRESS'
+        400:
+          $ref: './g_common.yaml#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: './g_common.yaml#/components/responses/Error401ResponseDefinition'
+        403:
+          $ref: './g_common.yaml#/components/responses/Error403ResponseDefinition'
+        404:
+          $ref: './g_common.yaml#/components/responses/Error404ResponseDefinition'
+        429:
+          $ref: './g_common.yaml#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: './g_common.yaml#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken"
+            -F "importFile=@$uploadFilePath;type=text/plain"
+            -F "importFileName=$uploadFileSmartlingName" -F "importFileMediaType=$uploadFileSmartlingMediaType"
+            "https://api.smartling.com//glossary-api/v3/accounts/$smartlingAccountUid/glossaries/$smartlingGlossaryUid/import"    
+
+components:
+  parameters:
+    importUidPathParameter:
+      name: importUid
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique identifier of the glossary-import.
+      example: 69dae398-96c2-45f6-9f0d-91470c3464bd
+
+  schemas:
+    GlossaryEntriesExportCommandPTO:
+      type: object
+      required:
+        - format
+        - filter
+        - localeIds
+      properties:
+        format:
+          type: string
+          description: Export format.
+          enum:
+            - CSV
+            - XLSX
+            - TBX
+        tbxVersion:
+          type: string
+          description: TBX version-name, required when TBX format preselected.
+          enum:
+            - TBXcoreStructV02
+            - TBXcoreStructV03
+        filter:
+          description: Glossary entries filter.
+          $ref: './g_common.yaml#/components/schemas/GetGlossaryEntriesByFilterCommandPTO'
+        focusLocaleId:
+          type: string
+          description: First locale id in the export scope.
+        localeIds:
+          type: array
+          description: Locales ids for the export.
+          items:
+            type: string
+        skipEntries:
+          type: boolean
+          description: Skip entries export if true; exports only headers ( template ).
+      description: Export command with filtering properties and additional options.
+    GlossaryImportCommandPTO:
+      type: object
+      required:
+        - importFile
+        - importFileName
+        - importFileMediaType
+      properties:
+        archiveMode:
+          type: boolean
+          description: In case if {@code true} passed - all entries that are not in import file will be archived.
+        importFile:
+          type: string
+          format: binary
+          description: Binary file data to upload.
+        importFileName:
+          required: true
+          type: string
+          description: Name and extension of the import file.
+        importFileMediaType:
+          required: true
+          type: string
+          enum:
+            - text/csv
+            - text/xml
+            - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+          description: Import file media type. One of 'text/csv |  text/xml | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      description: Glossary import command.
+
+    GlossaryImportResponse:
+      type: object
+      properties:
+        glossaryImport:
+          description: GlossaryImport meta-data.
+          $ref: '#/components/schemas/GlossaryImport'
+        entryChanges:
+          description: Entry changes stats.
+          $ref: '#/components/schemas/ImportEntryChanges'
+        translationChanges:
+          type: array
+          description: Translation changes stats.
+          items:
+            $ref: '#/components/schemas/ImportEntryTranslationChanges'
+        warnings:
+          type: array
+          description: Import process warnings.
+          items:
+            $ref: '#/components/schemas/ImportWarning'
+      description: Glossary import meta-data.
+    GlossaryImport:
+      type: object
+      properties:
+        glossaryUid:
+          type: string
+          format: uuid
+          description: Glossary uid.
+        importUid:
+          type: string
+          format: uuid
+          description: Import uid.
+        importStatus:
+          type: string
+          description: Status of the import.
+          example: PENDING
+          enum:
+            - PENDING
+            - IN_PROGRESS
+            - SUCCESSFUL
+            - FAILED
+      description: Glossary import process meta-data.
+    ImportEntryChanges:
+      type: object
+      properties:
+        newEntries:
+          type: integer
+          format: int32
+          description: Amount of glossary entries to be created.
+        existingEntryUpdates:
+          type: integer
+          format: int32
+          description: Amount of glossary entries to be updated.
+        notMatchedEntries:
+          type: integer
+          format: int32
+          description: Amount of glossary entries that wont be updated.
+        entriesToArchive:
+          type: integer
+          format: int32
+          description: Amount of glossary entries to be archived.
+      description: Glossary entry change stats.
+    ImportEntryTranslationChanges:
+      type: object
+      properties:
+        localeId:
+          type: string
+          description: Locale identifier.
+          example : en-US
+        newTranslations:
+          type: integer
+          format: int32
+          description: Amount of translations to be created.
+        updatedTranslations:
+          type: integer
+          format: int32
+          description: Amount of translations to be updated.
+        translationsToRemove:
+          type: integer
+          format: int32
+          description: Amount of translations to be removed.
+      description: Glossary entry translations change stats.
+    ImportWarning:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Warning key.
+        message:
+          type: string
+          description: Warning message.
+      description: Import related warning.
+
+    GlossaryImportResponsePTO:
+      allOf:
+        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/GlossaryImportResponse"
+
+    GlossaryImportPTO:
+      allOf:
+        - $ref: "./g_common.yaml#/components/schemas/SuccessResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/GlossaryImport"
+

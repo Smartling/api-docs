@@ -1,0 +1,219 @@
+x-paths:
+
+  # ---------------------------------------------------------------------------
+  # LQA evaluations
+  # ---------------------------------------------------------------------------
+
+  execute_lqa_evaluation:
+    post:
+      tags:
+        - lqa
+      operationId: lqa_evaluations_execute_v2
+      summary: Evaluate the quality of a translation
+      description: |
+        Evaluates a single translated string with the AI Linguistic Quality
+        Assurance (LQA) agent and returns the errors it detects, each with a
+        category and a severity.
+
+        The agent checks the translation against the glossary terms, blocklist
+        terms and automated style guide rules of the linguistic package of
+        `projectUid`, then runs the quality evaluation. Nothing is saved to the
+        project: the call only returns the evaluation result.
+
+        **Behavior notes**
+        - The call is synchronous and blocks until the evaluation finishes.
+          It fails with `500` when the evaluation does not finish within
+          **120** seconds or ends with an error.
+        - The call fails with `404` when the project or its linguistic package
+          is not found.
+
+        Requires the Account Owner role.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/accountUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LqaEvaluationCommand'
+            examples:
+              minimal:
+                summary: Required fields only
+                value:
+                  projectUid: ec84fa8c6
+                  hashcode: da45fd54b8563f0c9b09b496438d7ffd
+                  sourceLocaleId: en
+                  targetLocaleId: fr-FR
+                  originalString: Finish the new string with memory
+                  translation: Terminez la nouvelle chaine avec la memoire
+      responses:
+        '200':
+          description: Evaluation finished.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LqaEvaluationResponse'
+              examples:
+                errors_found:
+                  summary: Two errors found
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        errors:
+                          - category: Not compliant with Blocklist
+                            severity: Critical
+                          - category: Omission
+                            severity: Major
+                no_errors:
+                  summary: No errors found
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        errors: []
+        '400':
+          description: Request failed validation. `response.code` is `VALIDATION_ERROR`.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                missing_field:
+                  summary: A required field is missing or blank
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: NotBlank
+                          message: must not be blank
+                          details:
+                            field: projectUid
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: |
+            The project or its linguistic package does not exist. `response.code`
+            is `VALIDATION_ERROR` (not `NOT_FOUND_ERROR`) and the error key is
+            `api.request.error.notFound`.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                not_found:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.error.notFound
+                          message: not found
+        '500':
+          description: The evaluation timed out or the LQA agent returned an error status.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error500Response'
+              examples:
+                general_error:
+                  value:
+                    response:
+                      code: GENERAL_ERROR
+                      errors:
+                        - key: api.request.error.general
+                          message: general error
+
+components:
+  schemas:
+
+    # -- Command / request bodies --
+
+    LqaEvaluationCommand:
+      type: object
+      description: Translated string to evaluate.
+      required:
+        - projectUid
+        - hashcode
+        - sourceLocaleId
+        - targetLocaleId
+        - originalString
+        - translation
+      properties:
+        projectUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/ProjectUid'
+          description: Project the string belongs to. Its linguistic package provides the glossary, blocklists and style guide.
+        hashcode:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/Hashcode'
+          description: Hashcode of the string.
+        sourceLocaleId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          description: Source locale of the string.
+          example: en
+        targetLocaleId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          description: Locale of the translation.
+          example: fr-FR
+        originalString:
+          type: string
+          description: Source text. May be empty.
+          example: Finish the new string with memory
+        translation:
+          type: string
+          description: Translated text to evaluate. May be empty.
+          example: Terminez la nouvelle chaine avec la memoire
+
+    # -- Response bodies --
+
+    LqaEvaluationResponse:
+      type: object
+      description: Response envelope for an LQA evaluation.
+      required:
+        - response
+      properties:
+        response:
+          type: object
+          required:
+            - code
+            - data
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              $ref: '#/components/schemas/LqaEvaluationResult'
+
+    LqaEvaluationResult:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          description: Errors found by the evaluation. Empty when the translation has no errors.
+          items:
+            $ref: '#/components/schemas/LqaEvaluationError'
+
+    LqaEvaluationError:
+      type: object
+      required:
+        - category
+        - severity
+      properties:
+        category:
+          type: string
+          description: Name of the error category.
+          example: Omission
+        severity:
+          type: string
+          description: Name of the error severity.
+          example: Major
