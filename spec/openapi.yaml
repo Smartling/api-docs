@@ -7528,6 +7528,108 @@ paths:
         500:
           $ref: '#/components/responses/Error500ResponseDefinition'
 
+  /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/certificates:
+    get:
+      summary: List translation certificates of job
+      description: |-
+        Returns the translation certificates for a job that uses certified
+        translation by Smartling Language Services, with one item per target
+        locale that Smartling Language Services translates. The list is empty
+        when no locale of the job is eligible for a certificate.
+
+        Each locale has a `certificate` (PDF) and a `bundle` (ZIP). Their
+        `attachmentUid`s are set only when the locale `status` is `COMPLETED`.
+
+        Certificates are generated asynchronously and no webhook is sent when
+        they are ready. Poll this endpoint until every locale has the status
+        `COMPLETED` or `FAILED`.
+      tags:
+      - Jobs
+      operationId: getJobCertificates
+
+      parameters:
+        - description: A unique project identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          in: path
+          name: projectId
+          required: true
+          schema:
+            $ref: './spec/api_common.yaml#/components/schemas/ProjectUid'
+        - description: A unique identifier for a job.
+          in: path
+          name: translationJobUid
+          required: true
+          schema:
+            $ref: './spec/api_common.yaml#/components/schemas/TranslationJobUid'
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        items:
+                          - localeId: de-DE
+                            localeDescription: German (Germany)
+                            status: COMPLETED
+                            error: null
+                            certificate:
+                              attachmentUid: 3c5b7a1e9f2d
+                            bundle:
+                              attachmentUid: 8e4d2b6a0c1f
+                            createdDate: '2026-01-15T10:00:00Z'
+                            completedDate: '2026-01-15T10:05:00Z'
+                          - localeId: fr-FR
+                            localeDescription: French (France)
+                            status: IN_PROGRESS
+                            error: null
+                            certificate:
+                              attachmentUid: null
+                            bundle:
+                              attachmentUid: null
+                            createdDate: '2026-01-15T10:00:00Z'
+                            completedDate: null
+                          - localeId: es-ES
+                            localeDescription: Spanish (Spain)
+                            status: FAILED
+                            error: Certified download generation failed. Our team has been notified and is resolving the issue.
+                            certificate:
+                              attachmentUid: null
+                            bundle:
+                              attachmentUid: null
+                            createdDate: '2026-01-15T10:00:00Z'
+                            completedDate: null
+                        totalCount: 3
+              schema:
+                $ref: '#/components/schemas/ListJobCertificatesResponse'
+          description: OK
+        400:
+          $ref: '#/components/responses/Error400ResponseDefinition'
+        401:
+          $ref: '#/components/responses/Error401ResponseDefinition'
+        404:
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: './spec/api_common.yaml#/components/schemas/Error404Response'
+              examples:
+                response:
+                  value:
+                    response:
+                      code: NOT_FOUND_ERROR
+                      errors:
+                      - key: not.found
+                        message: Translation job is not found
+                        details: null
+
+        429:
+          $ref: '#/components/responses/Error429ResponseDefinition'
+        500:
+          $ref: '#/components/responses/Error500ResponseDefinition'
+
   /jobs-api/v3/projects/{projectId}/jobs/{translationJobUid}/schedule:
     get:
       summary: Find schedule for translation job
@@ -12002,6 +12104,66 @@ components:
               $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
           type: object
       type: object
+    JobCertificateArtifact:
+      properties:
+        attachmentUid:
+          description: >-
+            The unique identifier of the generated file. Set only when the
+            locale `status` is `COMPLETED`; `null` otherwise.
+          example: 3c5b7a1e9f2d
+          nullable: true
+          type: string
+      type: object
+    JobCertificateLocale:
+      properties:
+        localeId:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/LocaleId'
+          description: The target locale the certificate is issued for.
+        localeDescription:
+          description: The display name of the target locale.
+          example: German (Germany)
+          nullable: true
+          type: string
+        status:
+          description: |-
+            The state of certificate generation for this locale:
+
+            * `IN_PROGRESS` - the certificate and bundle are still being generated.
+            * `COMPLETED` - the certificate and bundle are ready; their `attachmentUid`s are set.
+            * `FAILED` - generation failed. Smartling is notified automatically and resolves the issue; no action is needed from you.
+          enum:
+            - IN_PROGRESS
+            - COMPLETED
+            - FAILED
+          example: COMPLETED
+          type: string
+        error:
+          description: A human-readable explanation. Set only when `status` is `FAILED`; `null` otherwise.
+          example: Certified download generation failed. Our team has been notified and is resolving the issue.
+          nullable: true
+          type: string
+        certificate:
+          allOf:
+            - $ref: '#/components/schemas/JobCertificateArtifact'
+          description: The translation certificate (PDF).
+        bundle:
+          allOf:
+            - $ref: '#/components/schemas/JobCertificateArtifact'
+          description: The certified translation bundle (ZIP).
+        createdDate:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/DateTime'
+          description: When certificate generation started for this locale.
+        completedDate:
+          description: >-
+            When the certificate and bundle became ready for this locale (ISO
+            8601 UTC). Set only when `status` is `COMPLETED`; `null` otherwise.
+          example: '2026-01-15T10:05:00Z'
+          format: date-time
+          nullable: true
+          type: string
+      type: object
     JobSchedule:
       properties:
         data:
@@ -12167,6 +12329,27 @@ components:
                     items:
                       items:
                         $ref: '#/components/schemas/TranslationJobFile'
+                      type: array
+                    totalCount:
+                      type: number
+                  type: object
+              required:
+                - data
+              type: object
+      required:
+        - response
+      type: object
+    ListJobCertificatesResponse:
+      properties:
+        response:
+          allOf:
+            - $ref: './spec/api_common.yaml#/components/schemas/SuccessResponse'
+            - properties:
+                data:
+                  properties:
+                    items:
+                      items:
+                        $ref: '#/components/schemas/JobCertificateLocale'
                       type: array
                     totalCount:
                       type: number
