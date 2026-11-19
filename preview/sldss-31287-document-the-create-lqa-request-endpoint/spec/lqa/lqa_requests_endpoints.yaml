@@ -1,0 +1,295 @@
+x-paths:
+
+  # ---------------------------------------------------------------------------
+  # LQA requests
+  # ---------------------------------------------------------------------------
+
+  create_lqa_request:
+    post:
+      tags:
+        - lqa-requests
+      operationId: lqa_requests_create
+      summary: Create an LQA request
+      description: |
+        Creates a Linguistic Quality Assurance (LQA) request in `DRAFT` state
+        for strings of the project in the path (the *original project*).
+
+        The request lives in the LQA project registered for the account that
+        has the same source language as the original project. An LQA project
+        is a regular Smartling project that holds copies of strings from the
+        original project, so reviewers can work on them there.
+
+        Provide exactly one of `translationJobUid` or `translationJobName`.
+        A blank value counts as missing.
+
+        - `translationJobUid` reuses an existing job of the LQA project.
+          The call fails when the job already holds an LQA request that is
+          still processing.
+        - `translationJobName` creates a new job in the LQA project and
+          stores the linguistic package UID of the original project in the
+          job custom field `Linguistic Package`. The LQA project must have
+          that custom field assigned. Errors from the Jobs API are returned
+          as `400` with the upstream error key.
+
+        Callers with several LQA projects can pass `targetAccountUid` to pick
+        the account that owns the LQA project.
+
+        Set `excludeSmartmatches` to `true` to skip strings that were
+        SmartMatched in the original project during the last six months when
+        strings are added to the request.
+
+        After the request is created, add strings to it and submit it to
+        start processing.
+
+        Requires the Account Owner or Project Manager role.
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: UID of the original project whose strings are reviewed. This is the project that the caller works in, not the LQA project.
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/ProjectUid'
+          example: a295c174d
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLqaRequestCommand'
+            examples:
+              new_job:
+                summary: Create a new job for the request
+                value:
+                  translationJobName: LQA review 2026-10
+                  ait: false
+                  excludeSmartmatches: true
+              existing_job:
+                summary: Reuse an existing job of the LQA project
+                value:
+                  translationJobUid: j45v1uvsi3tx
+              ai_translation:
+                summary: Request created for an AI translation review in a given account
+                value:
+                  translationJobName: AIT review
+                  ait: true
+                  targetAccountUid: 2fb3eaae9
+      responses:
+        '200':
+          description: LQA request created in `DRAFT` state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LqaRequestResponse'
+              examples:
+                created:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        lqaRequestUid: 3f9a1c7e5b20
+                        sourceLocaleId: en-US
+                        targetProjectUid: f3d8a1b72
+                        targetJobUid: j45v1uvsi3tx
+                        createdByUserUid: 5ab3c1d2e4f6
+                        ait: false
+                        lqaRequestStatusCode: DRAFT
+                        createdDate: "2026-10-06T09:15:00Z"
+                        modifiedDate: "2026-10-06T09:15:00Z"
+        '400':
+          description: |
+            Validation failed. `response.code` is `VALIDATION_ERROR`.
+            Domain errors share this status, see the examples for the error keys.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                job_uid_or_name_required:
+                  summary: None or both of the job fields were sent
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.translation.job.uid.or.job.name.required
+                          message: The job name or job uid required
+                job_in_progress:
+                  summary: The job already has an unfinished LQA request
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.translation.job.in.progress
+                          message: The translation job is currently in progress. Please try again later.
+                job_already_exists:
+                  summary: A job with the given name exists in the LQA project
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.translation.job.already.exists
+                          message: There is already a job with that name, please provide a unique name
+                lqa_project_not_found:
+                  summary: No LQA project registered for the account and source language
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.lqa.project.not.found
+                          message: There is no LQA project with this source language.
+                linguistic_custom_field_not_found:
+                  summary: The LQA project has no `Linguistic Package` job custom field
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.linguistic.custom.field.was.not.found
+                          message: linguistic custom field was not found for project=f3d8a1b72
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: |
+            The project in the path does not exist. `response.code` is
+            `VALIDATION_ERROR` (not `NOT_FOUND_ERROR`) and the error key is
+            `api.request.error.notFound`.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                not_found:
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.error.notFound
+                          message: not found
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+components:
+  schemas:
+
+    # -- Command / request bodies --
+
+    CreateLqaRequestCommand:
+      type: object
+      description: Creates an LQA request. Exactly one of `translationJobUid` and `translationJobName` is required.
+      properties:
+        translationJobUid:
+          type: string
+          nullable: true
+          pattern: '^[a-z0-9]{12}$'
+          description: UID of an existing job of the LQA project.
+          example: j45v1uvsi3tx
+        translationJobName:
+          type: string
+          nullable: true
+          description: Name of a new job to create in the LQA project. The name must be unique in that project.
+          example: LQA review 2026-10
+        ait:
+          type: boolean
+          nullable: true
+          description: Marks the request as an AI translation review. Defaults to `false`.
+        excludeSmartmatches:
+          type: boolean
+          nullable: true
+          description: |
+            When `true`, strings that were SmartMatched in the original project
+            during the last six months are skipped when strings are added to
+            the request. Defaults to `false`.
+        targetAccountUid:
+          type: string
+          nullable: true
+          description: |
+            Account that owns the LQA project. Used by callers that have
+            several LQA projects and ignored for other callers.
+            When omitted, the default LQA account is used.
+            When `null`, every LQA project of the account is considered.
+          example: 2fb3eaae9
+
+    # -- Response bodies --
+
+    LqaRequestResponse:
+      type: object
+      description: Response envelope for a single LQA request.
+      required:
+        - response
+      properties:
+        response:
+          type: object
+          required:
+            - code
+            - data
+          properties:
+            code:
+              type: string
+              enum: [SUCCESS]
+            data:
+              $ref: '#/components/schemas/LqaRequest'
+
+    LqaRequest:
+      type: object
+      description: An LQA request.
+      required:
+        - lqaRequestUid
+        - sourceLocaleId
+        - targetProjectUid
+        - targetJobUid
+        - createdByUserUid
+        - ait
+        - lqaRequestStatusCode
+        - createdDate
+        - modifiedDate
+      properties:
+        lqaRequestUid:
+          allOf:
+            - $ref: '#/components/schemas/LqaRequestUid'
+          description: UID of the request.
+        sourceLocaleId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          description: Source locale of the original project.
+        targetProjectUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/ProjectUid'
+          description: UID of the LQA project that holds the request.
+        targetJobUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/TranslationJobUid'
+          description: UID of the LQA project job that holds the request.
+        createdByUserUid:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/UserUid'
+          description: UID of the user that created the request.
+        ait:
+          type: boolean
+          description: Whether the request reviews an AI translation.
+        lqaRequestStatusCode:
+          $ref: '#/components/schemas/LqaRequestStatusCode'
+        createdDate:
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
+        modifiedDate:
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
+
+    LqaRequestUid:
+      type: string
+      description: Unique identifier (UID) of an LQA request - 12 lowercase hexadecimal characters.
+      pattern: '^[a-f0-9]{12}$'
+      example: 3f9a1c7e5b20
+
+    LqaRequestStatusCode:
+      type: string
+      description: State of an LQA request.
+      enum:
+        - DRAFT
+        - IN_PROGRESS
+        - COMPLETED
+        - PARTIALLY_COMPLETED
+        - FAILED
+        - CANCELLED

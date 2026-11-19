@@ -1,0 +1,137 @@
+x-paths:
+
+  # ---------------------------------------------------------------------------
+  # Bulk create string instructions
+  # ---------------------------------------------------------------------------
+
+  bulk_create_instructions:
+    post:
+      tags:
+        - string-instructions
+      operationId: string_instructions_bulk_create
+      summary: Add the same instruction to multiple strings
+      description: |
+        Creates a new enabled string instruction with the given text for every
+        listed string in the project. All instructions are saved in a single
+        transaction.
+
+        **Limits**
+        - At most **1000** hashcodes per request.
+        - Instruction text is at most **5000** characters.
+        - Rate limit (per user, across all `/string-instructions-api/v2` endpoints):
+          **50** requests per **15** seconds, **3** concurrent requests.
+
+        **Behavior notes**
+        - Each call adds a new instruction; existing instructions on the same
+          strings are neither replaced nor deduplicated. Repeating a request
+          creates duplicate active instructions.
+        - Hashcodes that do not match a string in the project are silently
+          skipped. The response does not report how many instructions were created.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkCreateInstructionsCommand'
+            examples:
+              bulk_create:
+                value:
+                  stringHashcodes:
+                    - 1756c52b143867ba428c03fbcfca9697
+                    - 2867d63c254978cb539d14fcdb5a7708
+                  instructionText: Keep the product name in English.
+      responses:
+        '200':
+          description: Instructions created; no data returned.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/EmptyResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: {}
+        '400':
+          description: Request failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                no_hashcodes:
+                  summary: No hashcodes provided
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.string.instructions.no.hashcodes.provided
+                          message: At least one string hashcode must be specified
+                max_hashcodes:
+                  summary: Hashcode limit exceeded
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.string.instructions.max.hashcodes.provided
+                          message: No more than 1000 string hashcodes can be specified
+                no_text:
+                  summary: Instruction text is blank
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.string.instructions.no.text.provided
+                          message: No instruction text was provided
+                max_text:
+                  summary: Instruction text is too long
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.string.instructions.max.text.provided
+                          message: No more than 5000 characters of instruction text is allowed
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: Requested resource not found.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+components:
+  schemas:
+
+    # -- Command / request bodies --
+
+    BulkCreateInstructionsCommand:
+      type: object
+      description: Instruction text to apply to a batch of strings.
+      required:
+        - stringHashcodes
+        - instructionText
+      properties:
+        stringHashcodes:
+          type: array
+          description: Hashcodes of the source strings to add the instruction to.
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '../api_common.yaml#/components/schemas/Hashcode'
+        instructionText:
+          type: string
+          description: Instruction text. Must not be blank.
+          minLength: 1
+          maxLength: 5000

@@ -1,0 +1,288 @@
+x-paths:
+  available_event_types:
+    get:
+      tags:
+        - Webhooks
+      summary: Get available event types
+      description: Retrieve all available webhook event types for the account.
+      operationId: getAvailableEventTypes
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './webhooks_components.yaml#/components/schemas/EventTypeListResponse'
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+  subscription_events:
+    get:
+      tags:
+        - Webhooks
+      summary: Get subscription events
+      description: Retrieve webhook delivery events for a given subscription with optional filters and pagination.
+      operationId: getSubscriptionEvents
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+            example: "111222333"
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+            example: "111122223333"
+        - name: limit
+          in: query
+          description: Maximum number of items to return (1–100).
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            example: 50
+        - name: scrollId
+          in: query
+          description: Scroll identifier returned by a previous request, used for pagination.
+          required: false
+          schema:
+            type: string
+            example: "2639c663-5cf3-4f08-b15d-6799366109ab"
+        - name: attemptStatus
+          in: query
+          description: Filter events by their last attempt delivery status.
+          required: false
+          schema:
+            type: string
+            enum: [ SUCCESS, PENDING, FAIL, SENDING ]
+            example: "SUCCESS"
+        - name: createdDateBefore
+          in: query
+          description: Filter events created before this date (ISO 8601 format).
+          required: false
+          schema:
+            type: string
+            format: date-time
+            example: "2025-07-01T13:35:34Z"
+        - name: createdDateAfter
+          in: query
+          description: Filter events created after this date (ISO 8601 format).
+          required: false
+          schema:
+            type: string
+            format: date-time
+            example: "2025-07-01T13:35:34Z"
+        - name: eventTypes[]
+          in: query
+          description: Filter by one or more event types.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              example: "file.published"
+          style: form
+          explode: true
+      responses:
+        "200":
+          description: Successful response with list of webhook events.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        eventId:
+                          type: string
+                          format: uuid
+                          description: Unique event identifier.
+                          example: "2639c663-5cf3-4f08-b15d-6799366109ab"
+                        eventType:
+                          type: string
+                          description: Event type identifier.
+                          example: "file.published"
+                        createdDate:
+                          type: string
+                          format: date-time
+                          description: Timestamp when the event was created.
+                          example: "2025-07-01T13:35:33Z"
+                        lastAttemptStatus:
+                          type: string
+                          enum: [ SUCCESS, PENDING, FAIL, SENDING ]
+                          description: Latest delivery attempt status for this event.
+                          example: "SUCCESS"
+                      required:
+                        - eventId
+                        - eventType
+                        - createdDate
+                        - lastAttemptStatus
+                  hasMore:
+                    type: boolean
+                    description: Whether there are more events available.
+                    example: false
+                  scrollId:
+                    type: string
+                    nullable: true
+                    description: Scroll identifier to fetch the next batch of results.
+                    example: "2639c663-5cf3-4f08-b15d-6799366109ab"
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+  event_details:
+    get:
+      tags:
+        - Webhooks
+      summary: Get event
+      description: Retrieve details of a specific webhook event.
+      operationId: getEvent
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+        - name: eventId
+          in: path
+          required: true
+          description: Unique identifier of the event.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  eventSchema:
+                    type: object
+                    example: "...."
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+  event_attempts:
+    get:
+      tags:
+        - Webhooks
+      summary: Get event attempts
+      description: Retrieve all delivery attempts for a specific webhook event.
+      operationId: getEventAttempts
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+        - name: eventId
+          in: path
+          required: true
+          description: Unique identifier of the event.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './webhooks_components.yaml#/components/schemas/AttemptsListResponse'
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'
+  event_resend:
+    post:
+      tags:
+        - Webhooks
+      summary: Resend event
+      description: Manually trigger a retry for a webhook event delivery.
+      operationId: resendEvent
+      parameters:
+        - name: accountUid
+          in: path
+          required: true
+          description: The account's unique identifier. This can be found in the Smartling Dashboard under Account Settings > API.
+          schema:
+            type: string
+        - name: subscriptionUid
+          in: path
+          required: true
+          description: Unique identifier of the subscription.
+          schema:
+            type: string
+        - name: eventId
+          in: path
+          required: true
+          description: Unique identifier of the event.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          $ref: './webhooks_components.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: './webhooks_components.yaml#/components/responses/Error401ResponseDefinition'
+        '404':
+          $ref: './webhooks_components.yaml#/components/responses/Error404ResponseDefinition'
+        '429':
+          $ref: './webhooks_components.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: './webhooks_components.yaml#/components/responses/Error500ResponseDefinition'

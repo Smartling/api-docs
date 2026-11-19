@@ -1,0 +1,2889 @@
+x-paths:
+  profiles_check_types_settings:
+    get:
+      description: Get all profile settings that are available.
+      summary: Get all profile settings
+      tags:
+        - Translation quality checks
+      operationId: getProfilesAccountCheckTypesSettings
+      produces:
+        - application/json
+      parameters:
+        - &ref_0
+          name: accountUid
+          in: path
+          type: string
+          required: true
+          description: >-
+            The account’s unique identifier. This can be found in the Smartling
+            Dashboard under Account Settings > API.
+        - &ref_1
+          name: profileUid
+          in: path
+          required: true
+          type: string
+          description: Unique identifier of corresponding profile.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - &ref_2
+                        type: object
+                        required:
+                          - code
+                        properties:
+                          code:
+                            type: string
+                            enum:
+                              - SUCCESS
+                            description: >-
+                              Indicates whether the response was successful or
+                              what error has occurred.
+                      - type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              totalCount:
+                                type: integer
+                                description: Total element count
+                              items:
+                                type: array
+                                items:
+                                  anyOf:
+                                    - title: BLACKLISTED_TERMS
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - BLACKLISTED_TERMS
+                                              description: check type code
+                                              example: BLACKLISTED_TERMS
+                                    - title: EMOJI_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - &ref_10
+                                          type: object
+                                          properties:
+                                            noEmojisAllowedInTarget:
+                                              type: boolean
+                                              description: No emoji is allowed in target
+                                              example: false
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - EMOJI_CONSISTENCY
+                                              description: check type code
+                                              example: EMOJI_CONSISTENCY
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - EMOJI_ADDED
+                                                      - EMOJI_DELETED
+                                                      - EMOJI_PRESENT
+                                                    description: check subtype code
+                                                    example: EMOJI_ADDED
+                                    - title: GLOBAL_CAPITALISATION_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - GLOBAL_CAPITALISATION_CONSISTENCY
+                                              description: check type code
+                                              example: GLOBAL_CAPITALISATION_CONSISTENCY
+                                    - title: GLOSSARY_COMPLIANCE
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - allOf:
+                                            - &ref_16
+                                              type: object
+                                              properties:
+                                                matchMethod:
+                                                  type: string
+                                                  enum:
+                                                    - MATCH_BY_PERCENTAGE
+                                                    - EXACT_MATCH
+                                                    - LEXICAL_ANALYSIS
+                                                  description: >-
+                                                    [Match
+                                                    method.](#operation/getGlossaryComplianceMatchMethods)
+                                                  example: MATCH_BY_PERCENTAGE
+                                                matchThreshold:
+                                                  type: integer
+                                                  description: Match threshold.
+                                                  minimum: 0
+                                                  maximum: 100
+                                                  example: 10
+                                            - &ref_17
+                                              type: object
+                                              properties:
+                                                sameTermCount:
+                                                  type: boolean
+                                                  description: >-
+                                                    If true the translation should have the
+                                                    glossary term the same number of times
+                                                    as in the source. If false the
+                                                    translation only requires the
+                                                    translation of the term at least once.
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - GLOSSARY_COMPLIANCE
+                                              description: check type code
+                                              example: GLOSSARY_COMPLIANCE
+                                    - title: GRAMMAR_CHECK
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - GRAMMAR_CHECK
+                                              description: check type code
+                                              example: GRAMMAR_CHECK
+                                    - title: INSERTABLE_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - INSERTABLE_CONSISTENCY
+                                              description: check type code
+                                              example: INSERTABLE_CONSISTENCY
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - INSERTABLE_ADDED
+                                                      - INSERTABLE_DELETED
+                                                    description: check subtype code
+                                                    example: INSERTABLE_ADDED
+                                    - title: LEADING_TRAILING_SPACES
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          required:
+                                            - checkTypeCode
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - LEADING_TRAILING_SPACES
+                                              description: check type code
+                                              example: LEADING_TRAILING_SPACES
+                                    - title: NON_TRANSLATABLE_TEXT
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - NON_TRANSLATABLE_TEXT
+                                              description: check type code
+                                              example: NON_TRANSLATABLE_TEXT
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - PLACEABLE_ADDED
+                                                      - PLACEABLE_DELETED
+                                                      - SPACES_AROUND_PLACEABLE
+                                                      - PLACEABLE_FORMAT
+                                                    description: check subtype code
+                                                    example: PLACEABLE_ADDED
+                                    - title: NUMBER_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - &ref_14
+                                          type: object
+                                          properties:
+                                            ignoreSign:
+                                              type: boolean
+                                              description: Ignore sign.
+                                              example: true
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - NUMBER_CONSISTENCY
+                                              description: check type code
+                                              example: NUMBER_CONSISTENCY
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - NUMBER_ADDED
+                                                      - NUMBER_DELETED
+                                                      - NUMBER_INCORRECT_CONVERSION
+                                                    description: check subtype code
+                                                    example: NUMBER_ADDED
+                                    - title: ORIGINAL_EQUALS_TARGET
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - &ref_18
+                                          type: object
+                                          properties:
+                                            mustHaveIdenticalTags:
+                                              type: boolean
+                                              description: Must have identical tags
+                                              example: false
+                                            mustHaveIdenticalCapitalization:
+                                              type: boolean
+                                              description: Must have identical capitalization
+                                              example: true
+                                        - type: object
+                                          required:
+                                            - checkTypeCode
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - ORIGINAL_EQUALS_TARGET
+                                              description: check type code
+                                              example: ORIGINAL_EQUALS_TARGET
+                                    - title: REPEATED_WORD
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - REPEATED_WORD
+                                              description: check type code
+                                              example: REPEATED_WORD
+                                    - title: SEGMENT_COMPLETENESS
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - &ref_19
+                                          type: object
+                                          properties:
+                                            lowerLengthThreshold:
+                                              type: integer
+                                              description: Lower length threshould
+                                              example: 10
+                                            upperLengthThreshold:
+                                              type: integer
+                                              description: Upper length threshould
+                                              example: 20
+                                            minLengthThreshold:
+                                              type: integer
+                                              description: Minimal lenght threshould
+                                              example: 15
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - SEGMENT_COMPLETENESS
+                                              description: check type code
+                                              example: SEGMENT_COMPLETENESS
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET_IS_EMPTY
+                                                      - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                                                      - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                                                    description: check subtype code
+                                                    example: TARGET_IS_EMPTY
+                                    - title: SOURCE_IN_WRONG_LANGUAGE
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - &ref_12
+                                          type: object
+                                          properties:
+                                            minTextLengthLimit:
+                                              type: integer
+                                              minimum: 0
+                                              description: Minimal text length limit.
+                                              example: 10
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - SOURCE_IN_WRONG_LANGUAGE
+                                              description: check type code
+                                              example: SOURCE_IN_WRONG_LANGUAGE
+                                    - title: SPELLCHECK
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - &ref_11
+                                          type: object
+                                          properties:
+                                            skipIfWordInUserDictionary:
+                                              type: boolean
+                                              description: Skip if word is in user dictionary.
+                                              example: false
+                                            skipIfWordStartsWithCapitalLetter:
+                                              type: boolean
+                                              description: Skip if word starts with capital letter.
+                                              example: false
+                                            skipIfWordAppearsInSourceString:
+                                              type: boolean
+                                              description: Skip if word appears in source string.
+                                              example: false
+                                            skipIfWordValidInSourceLocale:
+                                              type: boolean
+                                              description: Skip if word is valid in source locale.
+                                              example: false
+                                            runSpellcheckForSubWords:
+                                              type: boolean
+                                              description: Run spellchek for sub words.
+                                              example: true
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - SPELLCHECK
+                                              description: check type code
+                                              example: SPELLCHECK
+                                    - title: TAG_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - TAG_CONSISTENCY
+                                              description: check type code
+                                              example: TAG_CONSISTENCY
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TAG_ADDED
+                                                      - TAG_DELETED
+                                                      - SPACES_AROUND_TAGS
+                                                      - TAG_ORDER_IS_CHANGED
+                                                    description: check subtype code
+                                                    example: TAG_ADDED
+                                    - title: TARGET_IN_WRONG_LANGUAGE
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - &ref_13
+                                          type: object
+                                          properties:
+                                            minTextLengthLimit:
+                                              type: integer
+                                              minimum: 0
+                                              description: Minimal text length limit.
+                                              example: 10
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - TARGET_IN_WRONG_LANGUAGE
+                                              description: check type code
+                                              example: TARGET_IN_WRONG_LANGUAGE
+                                    - title: TARGET_LENGTH_LIMIT
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - TARGET_LENGTH_LIMIT
+                                              description: check type code
+                                              example: TARGET_LENGTH_LIMIT
+                                    - title: TARGET_SOURCE_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - &ref_15
+                                          type: object
+                                          properties:
+                                            ignoreTagsAndPlaceholders:
+                                              type: boolean
+                                              description: Ignore tags and placeholders.
+                                              example: true
+                                            ignoreCase:
+                                              type: boolean
+                                              description: Ignore case.
+                                              example: false
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - TARGET_SOURCE_CONSISTENCY
+                                              description: check type code
+                                              example: TARGET_SOURCE_CONSISTENCY
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                                      - SAME_TRANSLATION_DIFFERENT_SOURCES
+                                                    description: check subtype code
+                                                    example: SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                    - title: TRADEMARK_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - TRADEMARK_CONSISTENCY
+                                              description: check type code
+                                              example: TRADEMARK_CONSISTENCY
+                                    - title: WHITESPACES
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - WHITESPACES
+                                              description: check type code
+                                              example: WHITESPACES
+                                    - title: PUNCTUATION_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - PUNCTUATION_CONSISTENCY
+                                              description: check type code
+                                              example: PUNCTUATION_CONSISTENCY
+                                    - title: PLURALS_REPETITION
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - PLURALS_REPETITION
+                                              description: check type code
+                                              example: PLURALS_REPETITION
+                                    - title: REGEX_CHECK
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - REGEX_CHECK
+                                              description: check type code
+                                              example: REGEX_CHECK
+                                            rules:
+                                              type: array
+                                              items:
+                                                $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
+                                    - title: OPEN_ISSUES
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/profileUidResponse
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - &ref_20
+                                          type: object
+                                          properties:
+                                            sourceIssuesMustBeResolved:
+                                              type: boolean
+                                              description: All source issues must be resolved
+                                              example: false
+                                            translationIssuesMustBeResolved:
+                                              type: boolean
+                                              description: All translation issues must be resolved
+                                              example: true
+                                        - type: object
+                                          required:
+                                            - checkTypeCode
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - OPEN_ISSUES
+                                              description: check type code
+                                              example: OPEN_ISSUES
+              example:
+                response:
+                  code: SUCCESS
+                  data:
+                    totalCount: 25
+                    items:
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: LEADING_TRAILING_SPACES 1
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: ORIGINAL_EQUALS_TARGET
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        mustHaveIdenticalTags: true
+                        mustHaveIdenticalCapitalization: true
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: WHITESPACES
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: SPELLCHECK
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        skipIfWordInUserDictionary: true
+                        skipIfWordStartsWithCapitalLetter: false
+                        skipIfWordAppearsInSourceString: true
+                        skipIfWordValidInSourceLocale: false
+                        runSpellcheckForSubWords: false
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: TAG_CONSISTENCY
+                        subTypes:
+                          - checkSubTypeCode: TAG_ADDED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: TAG_DELETED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: TAG_ORDER_IS_CHANGED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: SPACES_AROUND_TAGS
+                            severityLevelCode: LOW
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: HIGH
+                        checkTypeCode: TARGET_LENGTH_LIMIT
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: NUMBER_CONSISTENCY
+                        subTypes:
+                          - checkSubTypeCode: NUMBER_DELETED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: NUMBER_ADDED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: NUMBER_INCORRECT_CONVERSION
+                            severityLevelCode: LOW
+                        localeSeverityLevels: []
+                        groups:
+                          - groupUid: b0dd258b05ee
+                          - groupUid: a853df2cf8ac
+                        ignoreSign: true
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: REPEATED_WORD
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: TARGET_IN_WRONG_LANGUAGE
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        minTextLengthLimit: 40
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: SOURCE_IN_WRONG_LANGUAGE
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        minTextLengthLimit: 40
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: MEDIUM
+                        checkTypeCode: SEGMENT_COMPLETENESS
+                        subTypes:
+                          - checkSubTypeCode: TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                            severityLevelCode: MEDIUM
+                          - checkSubTypeCode: TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                            severityLevelCode: MEDIUM
+                          - checkSubTypeCode: TARGET_IS_EMPTY
+                            severityLevelCode: DISABLED
+                        localeSeverityLevels: []
+                        groups: []
+                        lowerLengthThreshold: 50
+                        upperLengthThreshold: 250
+                        minLengthThreshold: 10
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: MEDIUM
+                        checkTypeCode: NON_TRANSLATABLE_TEXT
+                        subTypes:
+                          - checkSubTypeCode: PLACEABLE_DELETED
+                            severityLevelCode: MEDIUM
+                          - checkSubTypeCode: SPACES_AROUND_PLACEABLE
+                            severityLevelCode: MEDIUM
+                          - checkSubTypeCode: PLACEABLE_ADDED
+                            severityLevelCode: MEDIUM
+                          - checkSubTypeCode: PLACEABLE_FORMAT
+                            severityLevelCode: MEDIUM
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: EMOJI_CONSISTENCY
+                        subTypes:
+                          - checkSubTypeCode: EMOJI_PRESENT
+                            severityLevelCode: DISABLED
+                          - checkSubTypeCode: EMOJI_DELETED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: EMOJI_ADDED
+                            severityLevelCode: LOW
+                        localeSeverityLevels: []
+                        groups: []
+                        noEmojisAllowedInTarget: false
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: INSERTABLE_CONSISTENCY
+                        subTypes:
+                          - checkSubTypeCode: INSERTABLE_DELETED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: INSERTABLE_ADDED
+                            severityLevelCode: LOW
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: TARGET_SOURCE_CONSISTENCY
+                        subTypes:
+                          - checkSubTypeCode: SAME_TRANSLATION_DIFFERENT_SOURCES
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                            severityLevelCode: LOW
+                        localeSeverityLevels: []
+                        groups: []
+                        ignoreTagsAndPlaceholders: true
+                        ignoreCase: true
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: MEDIUM
+                        checkTypeCode: BLACKLISTED_TERMS
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: MEDIUM
+                        checkTypeCode: GLOSSARY_COMPLIANCE
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        matchMethod: MATCH_BY_PERCENTAGE
+                        matchThreshold: 50
+                        sameTermCount: true
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: TRADEMARK_CONSISTENCY
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: GRAMMAR_CHECK
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: GLOBAL_CAPITALISATION_CONSISTENCY
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: PUNCTUATION_CONSISTENCY
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: MEDIUM
+                        checkTypeCode: PLURALS_REPETITION
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: REGEX_CHECK
+                        subTypes: []
+                        groups: []
+                        rules:
+                          - ruleUid: 2d83ea74c848
+                            severityLevelCode: LOW
+                            ruleName: ruleName1
+                            ruleTypeCode: FORBIDDEN
+                            flavorCode: JAVA
+                            originalPattern: '@mail'
+                            translationPattern: '@gmail'
+                            description: ruleName1 description
+                            caseInsensitive: true
+                            multiLine: false
+                            warningMessage: test warning
+                            groups: []
+                          - ruleUid: ac3069e2fd30
+                            severityLevelCode: MEDIUM
+                            ruleName: ruleName2
+                            ruleTypeCode: MISSING
+                            flavorCode: JAVA
+                            originalPattern: '@/d'
+                            translationPattern: '@/d'
+                            description: ruleName2 description
+                            caseInsensitive: true
+                            multiLine: false
+                            warningMessage: test warning
+                            groups: []
+                      - profileUid: ce6d6b5dbc12
+                        severityLevelCode: LOW
+                        checkTypeCode: OPEN_ISSUES
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        sourceIssuesMustBeResolved: true
+                        translationIssuesMustBeResolved: true
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
+            application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types
+  profiles_check_types_settings_effective:
+    get:
+      description: Get the settings for a single profile check type.
+      summary: Get profile check type setting
+      tags:
+        - Translation quality checks
+      operationId: getProfilesSingleCheckTypeSettings
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+        - *ref_1
+        - name: checkTypeCode
+          in: path
+          required: true
+          schema:
+            enum:
+              - LEADING_TRAILING_SPACES
+              - ORIGINAL_EQUALS_TARGET
+              - WHITESPACES
+              - SPELLCHECK
+              - TAG_CONSISTENCY
+              - TARGET_LENGTH_LIMIT
+              - NUMBER_CONSISTENCY
+              - REPEATED_WORD
+              - TARGET_IN_WRONG_LANGUAGE
+              - SOURCE_IN_WRONG_LANGUAGE
+              - SEGMENT_COMPLETENESS
+              - NON_TRANSLATABLE_TEXT
+              - EMOJI_CONSISTENCY
+              - INSERTABLE_CONSISTENCY
+              - TARGET_SOURCE_CONSISTENCY
+              - BLACKLISTED_TERMS
+              - GLOSSARY_COMPLIANCE
+              - TRADEMARK_CONSISTENCY
+              - GRAMMAR_CHECK
+              - GLOBAL_CAPITALISATION_CONSISTENCY
+              - PUNCTUATION_CONSISTENCY
+              - PLURALS_REPETITION
+              - REGEX_CHECK
+              - OPEN_ISSUES
+          description: '[check type code](#operation/getTranslationQualityCheckTypes)'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      response:
+                        allOf:
+                          - *ref_2
+                          - type: object
+                            properties:
+                              data:
+                                anyOf:
+                                  - title: LEADING_TRAILING_SPACES
+                                    allOf:
+                                      - &ref_4
+                                        type: object
+                                        properties:
+                                          profileUid:
+                                            type: string
+                                            description: >-
+                                              Unique identifier of corresponding
+                                              profile.
+                                            example: ce6d6b5dbc12
+                                      - &ref_5
+                                        allOf:
+                                          - &ref_6
+                                            type: object
+                                            properties:
+                                              severityLevelCode: &ref_3
+                                                enum:
+                                                  - DISABLED
+                                                  - LOW
+                                                  - MEDIUM
+                                                  - HIGH
+                                          - type: object
+                                            properties:
+                                              subTypes:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    checkSubTypeCode:
+                                                      type: string
+                                                      description: check subtype code
+                                                      example: ''
+                                          - &ref_7
+                                            type: object
+                                            properties:
+                                              localeSeverityLevels:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    targetLocaleId:
+                                                      type: string
+                                                      description: >-
+                                                        Smartling locale identifier of the
+                                                        translation
+                                                      example: it-IT
+                                                    severityLevelCode: *ref_3
+                                          - &ref_8
+                                            type: object
+                                            properties:
+                                              groups:
+                                                type: array
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    groupUid:
+                                                      type: string
+                                                      description: unique identifier of group
+                                                      example: 12dsd344ds
+                                      - type: object
+                                        required:
+                                          - checkTypeCode
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - LEADING_TRAILING_SPACES
+                                            description: check type code
+                                            example: LEADING_TRAILING_SPACES
+                                  - title: WHITESPACES
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - WHITESPACES
+                                            description: check type code
+                                            example: WHITESPACES
+                                  - title: ORIGINAL_EQUALS_TARGET
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          mustHaveIdenticalTags:
+                                            type: boolean
+                                            description: Must have identical tags
+                                            example: false
+                                          mustHaveIdenticalCapitalization:
+                                            type: boolean
+                                            description: Must have identical capitalization
+                                            example: true
+                                      - type: object
+                                        required:
+                                          - checkTypeCode
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - ORIGINAL_EQUALS_TARGET
+                                            description: check type code
+                                            example: ORIGINAL_EQUALS_TARGET
+                                  - title: SPELLCHECK
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          skipIfWordInUserDictionary:
+                                            type: boolean
+                                            description: Skip if word is in user dictionary.
+                                            example: false
+                                          skipIfWordStartsWithCapitalLetter:
+                                            type: boolean
+                                            description: Skip if word starts with capital letter.
+                                            example: false
+                                          skipIfWordAppearsInSourceString:
+                                            type: boolean
+                                            description: Skip if word appears in source string.
+                                            example: false
+                                          skipIfWordValidInSourceLocale:
+                                            type: boolean
+                                            description: Skip if word is valid in source locale.
+                                            example: false
+                                          runSpellcheckForSubWords:
+                                            type: boolean
+                                            description: Run spellchek for sub words.
+                                            example: true
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - SPELLCHECK
+                                            description: check type code
+                                            example: SPELLCHECK
+                                  - title: TAG_CONSISTENCY
+                                    allOf:
+                                      - *ref_4
+                                      - &ref_9
+                                        allOf:
+                                          - *ref_6
+                                          - *ref_7
+                                          - *ref_8
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - TAG_CONSISTENCY
+                                            description: check type code
+                                            example: TAG_CONSISTENCY
+                                          subTypes:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                checkSubTypeCode:
+                                                  type: string
+                                                  enum:
+                                                    - TAG_ADDED
+                                                    - TAG_DELETED
+                                                    - SPACES_AROUND_TAGS
+                                                    - TAG_ORDER_IS_CHANGED
+                                                  description: check subtype code
+                                                  example: TAG_ADDED
+                                  - title: TARGET_LENGTH_LIMIT
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - TARGET_LENGTH_LIMIT
+                                            description: check type code
+                                            example: TARGET_LENGTH_LIMIT
+                                  - title: NUMBER_CONSISTENCY
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_9
+                                      - type: object
+                                        properties:
+                                          ignoreSign:
+                                            type: boolean
+                                            description: Ignore sign.
+                                            example: true
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - NUMBER_CONSISTENCY
+                                            description: check type code
+                                            example: NUMBER_CONSISTENCY
+                                          subTypes:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                checkSubTypeCode:
+                                                  type: string
+                                                  enum:
+                                                    - NUMBER_ADDED
+                                                    - NUMBER_DELETED
+                                                    - NUMBER_INCORRECT_CONVERSION
+                                                  description: check subtype code
+                                                  example: NUMBER_ADDED
+                                  - title: REPEATED_WORD
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - REPEATED_WORD
+                                            description: check type code
+                                            example: REPEATED_WORD
+                                  - title: TARGET_IN_WRONG_LANGUAGE
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          minTextLengthLimit:
+                                            type: integer
+                                            minimum: 0
+                                            description: Minimal text length limit.
+                                            example: 10
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - TARGET_IN_WRONG_LANGUAGE
+                                            description: check type code
+                                            example: TARGET_IN_WRONG_LANGUAGE
+                                  - title: SOURCE_IN_WRONG_LANGUAGE
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          minTextLengthLimit:
+                                            type: integer
+                                            minimum: 0
+                                            description: Minimal text length limit.
+                                            example: 10
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - SOURCE_IN_WRONG_LANGUAGE
+                                            description: check type code
+                                            example: SOURCE_IN_WRONG_LANGUAGE
+                                  - title: SEGMENT_COMPLETENESS
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_9
+                                      - type: object
+                                        properties:
+                                          lowerLengthThreshold:
+                                            type: integer
+                                            description: Lower length threshould
+                                            example: 10
+                                          upperLengthThreshold:
+                                            type: integer
+                                            description: Upper length threshould
+                                            example: 20
+                                          minLengthThreshold:
+                                            type: integer
+                                            description: Minimal lenght threshould
+                                            example: 15
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - SEGMENT_COMPLETENESS
+                                            description: check type code
+                                            example: SEGMENT_COMPLETENESS
+                                          subTypes:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                checkSubTypeCode:
+                                                  type: string
+                                                  enum:
+                                                    - TARGET_IS_EMPTY
+                                                    - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                                                    - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                                                  description: check subtype code
+                                                  example: TARGET_IS_EMPTY
+                                  - title: NON_TRANSLATABLE_TEXT
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - NON_TRANSLATABLE_TEXT
+                                            description: check type code
+                                            example: NON_TRANSLATABLE_TEXT
+                                          subTypes:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                checkSubTypeCode:
+                                                  type: string
+                                                  enum:
+                                                    - PLACEABLE_ADDED
+                                                    - PLACEABLE_DELETED
+                                                    - SPACES_AROUND_PLACEABLE
+                                                    - PLACEABLE_FORMAT
+                                                  description: check subtype code
+                                                  example: PLACEABLE_ADDED
+                                  - title: EMOJI_CONSISTENCY
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_9
+                                      - type: object
+                                        properties:
+                                          noEmojisAllowedInTarget:
+                                            type: boolean
+                                            description: No emoji is allowed in target
+                                            example: false
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - EMOJI_CONSISTENCY
+                                            description: check type code
+                                            example: EMOJI_CONSISTENCY
+                                          subTypes:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                checkSubTypeCode:
+                                                  type: string
+                                                  enum:
+                                                    - EMOJI_ADDED
+                                                    - EMOJI_DELETED
+                                                    - EMOJI_PRESENT
+                                                  description: check subtype code
+                                                  example: EMOJI_ADDED
+                                  - title: INSERTABLE_CONSISTENCY
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_9
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - INSERTABLE_CONSISTENCY
+                                            description: check type code
+                                            example: INSERTABLE_CONSISTENCY
+                                          subTypes:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                checkSubTypeCode:
+                                                  type: string
+                                                  enum:
+                                                    - INSERTABLE_ADDED
+                                                    - INSERTABLE_DELETED
+                                                  description: check subtype code
+                                                  example: INSERTABLE_ADDED
+                                  - title: TARGET_SOURCE_CONSISTENCY
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_9
+                                      - type: object
+                                        properties:
+                                          ignoreTagsAndPlaceholders:
+                                            type: boolean
+                                            description: Ignore tags and placeholders.
+                                            example: true
+                                          ignoreCase:
+                                            type: boolean
+                                            description: Ignore case.
+                                            example: false
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - TARGET_SOURCE_CONSISTENCY
+                                            description: check type code
+                                            example: TARGET_SOURCE_CONSISTENCY
+                                          subTypes:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                checkSubTypeCode:
+                                                  type: string
+                                                  enum:
+                                                    - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                                    - SAME_TRANSLATION_DIFFERENT_SOURCES
+                                                  description: check subtype code
+                                                  example: SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                  - title: BLACKLISTED_TERMS
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - BLACKLISTED_TERMS
+                                            description: check type code
+                                            example: BLACKLISTED_TERMS
+                                  - title: GLOSSARY_COMPLIANCE
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - allOf:
+                                          - type: object
+                                            properties:
+                                              matchMethod:
+                                                type: string
+                                                enum:
+                                                  - MATCH_BY_PERCENTAGE
+                                                  - EXACT_MATCH
+                                                  - LEXICAL_ANALYSIS
+                                                description: >-
+                                                  [Match
+                                                  method.](#operation/getGlossaryComplianceMatchMethods)
+                                                example: MATCH_BY_PERCENTAGE
+                                              matchThreshold:
+                                                type: integer
+                                                description: Match threshold.
+                                                minimum: 0
+                                                maximum: 100
+                                                example: 10
+                                          - type: object
+                                            properties:
+                                              sameTermCount:
+                                                type: boolean
+                                                description: >-
+                                                  If true the translation should have the
+                                                  glossary term the same number of times
+                                                  as in the source. If false the
+                                                  translation only requires the
+                                                  translation of the term at least once.
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - GLOSSARY_COMPLIANCE
+                                            description: check type code
+                                            example: GLOSSARY_COMPLIANCE
+                                  - title: TRADEMARK_CONSISTENCY
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - TRADEMARK_CONSISTENCY
+                                            description: check type code
+                                            example: TRADEMARK_CONSISTENCY
+                                  - title: GRAMMAR_CHECK
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - GRAMMAR_CHECK
+                                            description: check type code
+                                            example: GRAMMAR_CHECK
+                                  - title: GLOBAL_CAPITALISATION_CONSISTENCY
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - GLOBAL_CAPITALISATION_CONSISTENCY
+                                            description: check type code
+                                            example: GLOBAL_CAPITALISATION_CONSISTENCY
+                                  - title: PUNCTUATION_CONSISTENCY
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - PUNCTUATION_CONSISTENCY
+                                            description: check type code
+                                            example: PUNCTUATION_CONSISTENCY
+                                  - title: PLURALS_REPETITION
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - PLURALS_REPETITION
+                                            description: check type code
+                                            example: PLURALS_REPETITION
+                                  - title: REGEX_CHECK
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - REGEX_CHECK
+                                            description: check type code
+                                            example: REGEX_CHECK
+                                          rules:
+                                            type: array
+                                            items:
+                                              allOf:
+                                                - type: object
+                                                  properties:
+                                                    ruleUid:
+                                                      type: string
+                                                      description: >-
+                                                        Unique identifier of corresponding check
+                                                        rule
+                                                      example: ce6d6b5dbc12
+                                                - type: object
+                                                  properties:
+                                                    ruleName:
+                                                      type: string
+                                                      description: Rule name
+                                                      example: ruleName
+                                                    severityLevelCode:
+                                                      enum:
+                                                        - DISABLED
+                                                        - LOW
+                                                        - MEDIUM
+                                                        - HIGH
+                                                    ruleTypeCode:
+                                                      enum:
+                                                        - FORBIDDEN
+                                                        - MISSING
+                                                        - COUNT_MISMATCH
+                                                    flavorCode:
+                                                      enum:
+                                                        - JAVA
+                                                        - DOT_NET
+                                                    originalPattern:
+                                                      type: string
+                                                      description: >-
+                                                        Regular expression to evaluate against
+                                                        the source string.
+                                                      example: '@mail'
+                                                    translationPattern:
+                                                      type: string
+                                                      description: >-
+                                                        Regular expression to evaluate against
+                                                        the translation.
+                                                      example: '@gmail'
+                                                    caseInsensitive:
+                                                      type: boolean
+                                                      description: Enable case insensitive search
+                                                      example: true
+                                                    multiLine:
+                                                      type: boolean
+                                                      description: >-
+                                                        Enables multine search. If true then
+                                                        search will span newlines in a string.
+                                                        Users can use ^ and $ characters with
+                                                        special meaning for beginning of line
+                                                        and end of line match.
+                                                      example: true
+                                                    description:
+                                                      type: string
+                                                      description: >-
+                                                        Human readable description of the role;
+                                                        shown in the the dashboard UI.
+                                                      example: rule description
+                                                    warningMessage:
+                                                      type: string
+                                                      description: >-
+                                                        Human readable warning message appended
+                                                        to the standard message that is shown in
+                                                        the CAT tool when the check fails.
+                                                      example: ' test warning message'
+                                                  required:
+                                                    - ruleName
+                                                    - severityLevelCode
+                                                    - ruleTypeCode
+                                                    - flavorCode
+                                                    - originalPattern
+                                                    - translationPattern
+                                                    - caseInsensitive
+                                                    - multiLine
+                                                - type: object
+                                                  properties:
+                                                    groups:
+                                                      type: array
+                                                      items:
+                                                        allOf:
+                                                          - type: object
+                                                            properties:
+                                                              groupUid:
+                                                                type: string
+                                                                description: >-
+                                                                  Smartling rule group identifier of the
+                                                                  translation
+                                                                example: ce6d6b5dbc12
+                                                              ruleUid:
+                                                                type: string
+                                                                description: >-
+                                                                  Smartling rule identifier of the
+                                                                  translation
+                                                                example: ce6d6b5dbcs2
+                                                              targetLocaleIds:
+                                                                description: The list of target locales.
+                                                                example:
+                                                                  - ru-RU
+                                                                items:
+                                                                  type: string
+                                                                type: array
+                                                              severityLevelCode: *ref_3
+                                  - title: OPEN_ISSUES
+                                    allOf:
+                                      - *ref_4
+                                      - *ref_5
+                                      - type: object
+                                        properties:
+                                          sourceIssuesMustBeResolved:
+                                            type: boolean
+                                            description: All source issues must be resolved
+                                            example: false
+                                          translationIssuesMustBeResolved:
+                                            type: boolean
+                                            description: All translation issues must be resolved
+                                            example: true
+                                      - type: object
+                                        required:
+                                          - checkTypeCode
+                                        properties:
+                                          checkTypeCode:
+                                            type: string
+                                            enum:
+                                              - OPEN_ISSUES
+                                            description: check type code
+                                            example: OPEN_ISSUES
+              examples:
+                ORIGINAL_EQUALS_TARGET:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: ORIGINAL_EQUALS_TARGET
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                    mustHaveIdenticalTags: true
+                    mustHaveIdenticalCapitalization: true
+                WHITESPACES:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: WHITESPACES
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                SPELLCHECK:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: SPELLCHECK
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                    skipIfWordInUserDictionary: true
+                    skipIfWordStartsWithCapitalLetter: false
+                    skipIfWordAppearsInSourceString: true
+                    skipIfWordValidInSourceLocale: false
+                    runSpellcheckForSubWords: false
+                TAG_CONSISTENCY:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: TAG_CONSISTENCY
+                    subTypes:
+                      - checkSubTypeCode: TAG_ADDED
+                        severityLevelCode: LOW
+                      - checkSubTypeCode: TAG_DELETED
+                        severityLevelCode: LOW
+                      - checkSubTypeCode: TAG_ORDER_IS_CHANGED
+                        severityLevelCode: LOW
+                      - checkSubTypeCode: SPACES_AROUND_TAGS
+                        severityLevelCode: LOW
+                    localeSeverityLevels: []
+                    groups: []
+                TARGET_LENGTH_LIMIT:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: HIGH
+                    checkTypeCode: TARGET_LENGTH_LIMIT
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                NUMBER_CONSISTENCY:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: NUMBER_CONSISTENCY
+                    subTypes:
+                      - checkSubTypeCode: NUMBER_DELETED
+                        severityLevelCode: LOW
+                      - checkSubTypeCode: NUMBER_ADDED
+                        severityLevelCode: LOW
+                      - checkSubTypeCode: NUMBER_INCORRECT_CONVERSION
+                        severityLevelCode: LOW
+                    localeSeverityLevels: []
+                    groups:
+                      - groupUid: b0dd258b05ee
+                      - groupUid: a853df2cf8ac
+                    ignoreSign: true
+                REPEATED_WORD:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: REPEATED_WORD
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                TARGET_IN_WRONG_LANGUAGE:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: TARGET_IN_WRONG_LANGUAGE
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                    minTextLengthLimit: 40
+                SOURCE_IN_WRONG_LANGUAGE:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: SOURCE_IN_WRONG_LANGUAGE
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                    minTextLengthLimit: 40
+                SEGMENT_COMPLETENESS:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: MEDIUM
+                    checkTypeCode: SEGMENT_COMPLETENESS
+                    subTypes:
+                      - checkSubTypeCode: TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                        severityLevelCode: MEDIUM
+                      - checkSubTypeCode: TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                        severityLevelCode: MEDIUM
+                      - checkSubTypeCode: TARGET_IS_EMPTY
+                        severityLevelCode: DISABLED
+                    localeSeverityLevels: []
+                    groups: []
+                    lowerLengthThreshold: 50
+                    upperLengthThreshold: 250
+                    minLengthThreshold: 10
+                NON_TRANSLATABLE_TEXT:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: MEDIUM
+                    checkTypeCode: NON_TRANSLATABLE_TEXT
+                    subTypes:
+                      - checkSubTypeCode: PLACEABLE_DELETED
+                        severityLevelCode: MEDIUM
+                      - checkSubTypeCode: SPACES_AROUND_PLACEABLE
+                        severityLevelCode: MEDIUM
+                      - checkSubTypeCode: PLACEABLE_ADDED
+                        severityLevelCode: MEDIUM
+                      - checkSubTypeCode: PLACEABLE_FORMAT
+                        severityLevelCode: MEDIUM
+                    localeSeverityLevels: []
+                    groups: []
+                EMOJI_CONSISTENCY:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: EMOJI_CONSISTENCY
+                    subTypes:
+                      - checkSubTypeCode: EMOJI_PRESENT
+                        severityLevelCode: LOW
+                      - checkSubTypeCode: EMOJI_DELETED
+                        severityLevelCode: DISABLED
+                      - checkSubTypeCode: EMOJI_ADDED
+                        severityLevelCode: LOW
+                    localeSeverityLevels: []
+                    groups: []
+                    noEmojisAllowedInTarget: false
+                INSERTABLE_CONSISTENCY:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: INSERTABLE_CONSISTENCY
+                    subTypes:
+                      - checkSubTypeCode: INSERTABLE_DELETED
+                        severityLevelCode: LOW
+                      - checkSubTypeCode: INSERTABLE_ADDED
+                        severityLevelCode: LOW
+                    localeSeverityLevels: []
+                    groups: []
+                TARGET_SOURCE_CONSISTENCY:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: TARGET_SOURCE_CONSISTENCY
+                    subTypes:
+                      - checkSubTypeCode: SAME_TRANSLATION_DIFFERENT_SOURCES
+                        severityLevelCode: LOW
+                      - checkSubTypeCode: SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                        severityLevelCode: LOW
+                    localeSeverityLevels: []
+                    groups: []
+                    ignoreTagsAndPlaceholders: true
+                    ignoreCase: true
+                BLACKLISTED_TERMS:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: MEDIUM
+                    checkTypeCode: BLACKLISTED_TERMS
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                GLOSSARY_COMPLIANCE:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: DISABLED
+                    checkTypeCode: GLOSSARY_COMPLIANCE
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                    matchMethod: MATCH_BY_PERCENTAGE
+                    matchThreshold: 50
+                    sameTermCount: true
+                TRADEMARK_CONSISTENCY:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: TRADEMARK_CONSISTENCY
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                GRAMMAR_CHECK:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: GRAMMAR_CHECK
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                GLOBAL_CAPITALISATION_CONSISTENCY:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: GLOBAL_CAPITALISATION_CONSISTENCY
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                PUNCTUATION_CONSISTENCY:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: PUNCTUATION_CONSISTENCY
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                PLURALS_REPETITION:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: MEDIUM
+                    checkTypeCode: PLURALS_REPETITION
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                REGEX_CHECK:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: REGEX_CHECK
+                    subTypes: []
+                    groups: []
+                    rules:
+                      - ruleUid: 2d83ea74c848
+                        severityLevelCode: LOW
+                        ruleName: ruleName1
+                        ruleTypeCode: FORBIDDEN
+                        flavorCode: JAVA
+                        originalPattern: '@mail'
+                        translationPattern: '@gmail'
+                        description: ruleName1 description
+                        caseInsensitive: true
+                        multiLine: false
+                        warningMessage: test warning
+                        groups: []
+                OPEN_ISSUES:
+                  value:
+                    profileUid: ce6d6b5dbc12
+                    severityLevelCode: LOW
+                    checkTypeCode: OPEN_ISSUES
+                    subTypes: []
+                    localeSeverityLevels: []
+                    groups: []
+                    sourceIssuesMustBeResolved: true
+                    translationIssuesMustBeResolved: true
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken" -H "Content-Type:
+            application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode
+  profiles_check_types_checkType_settings:
+    put:
+      description: Update profile check type settings.
+      summary: Update profile check type settings
+      tags:
+        - Translation quality checks
+      operationId: profilesUpdateAccountCheckTypesSettings
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+        - *ref_1
+        - &ref_22
+          name: checkTypeCode
+          in: path
+          required: true
+          schema:
+            enum:
+              - ORIGINAL_EQUALS_TARGET
+              - SPELLCHECK
+              - NUMBER_CONSISTENCY
+              - TARGET_IN_WRONG_LANGUAGE
+              - SOURCE_IN_WRONG_LANGUAGE
+              - SEGMENT_COMPLETENESS
+              - EMOJI_CONSISTENCY
+              - TARGET_SOURCE_CONSISTENCY
+              - GLOSSARY_COMPLIANCE
+              - OPEN_ISSUES
+          description: '[check type code](#operation/getTranslationQualityCheckTypes)'
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - title: EMOJI_CONSISTENCY
+                  allOf:
+                    - *ref_10
+                    - &ref_23
+                      $ref: >-
+                        ../tqc_common.yaml#/components/requestBodies/targetLocaleId
+                    - &ref_24
+                      type: object
+                      required:
+                        - noEmojisAllowedInTarget
+                - title: SPELLCHECK
+                  allOf:
+                    - *ref_11
+                    - &ref_25
+                      $ref: >-
+                        ../tqc_common.yaml#/components/requestBodies/targetLocaleId
+                    - &ref_26
+                      type: object
+                      required:
+                        - skipIfWordInUserDictionary
+                        - skipIfWordStartsWithCapitalLetter
+                        - skipIfWordAppearsInSourceString
+                        - skipIfWordValidInSourceLocale
+                        - runSpellcheckForSubWords
+                - title: SOURCE_IN_WRONG_LANGUAGE
+                  allOf:
+                    - *ref_12
+                    - &ref_27
+                      $ref: >-
+                        ../tqc_common.yaml#/components/requestBodies/targetLocaleId
+                    - &ref_28
+                      type: object
+                      required:
+                        - minTextLengthLimit
+                - title: TARGET_IN_WRONG_LANGUAGE
+                  allOf:
+                    - &ref_29
+                      type: object
+                      required:
+                        - minTextLengthLimit
+                    - &ref_30
+                      $ref: >-
+                        ../tqc_common.yaml#/components/requestBodies/targetLocaleId
+                    - *ref_13
+                - &ref_31
+                  title: NUMBER_CONSISTENCY
+                  allOf:
+                    - *ref_14
+                - title: TARGET_SOURCE_CONSISTENCY
+                  allOf:
+                    - *ref_15
+                    - &ref_32
+                      $ref: >-
+                        ../tqc_common.yaml#/components/requestBodies/targetLocaleId
+                    - &ref_33
+                      type: object
+                      required:
+                        - ignoreTagsAndPlaceholders
+                        - ignoreCase
+                - &ref_34
+                  title: GLOSSARY_COMPLIANCE
+                  allOf:
+                    - &ref_21
+                      allOf:
+                        - *ref_16
+                        - *ref_17
+                    - type: object
+                      required:
+                        - matchMethod
+                        - matchThreshold
+                - title: ORIGINAL_EQUALS_TARGET
+                  allOf:
+                    - *ref_18
+                    - &ref_35
+                      $ref: >-
+                        ../tqc_common.yaml#/components/requestBodies/targetLocaleId
+                    - &ref_36
+                      type: object
+                      required:
+                        - mustHaveIdenticalTags
+                        - mustHaveIdenticalCapitalization
+                - title: SEGMENT_COMPLETENESS
+                  allOf:
+                    - *ref_19
+                    - &ref_37
+                      $ref: >-
+                        ../tqc_common.yaml#/components/requestBodies/targetLocaleId
+                - &ref_38
+                  title: OPEN_ISSUES
+                  allOf:
+                    - *ref_20
+                    - type: object
+                      required:
+                        - sourceIssuesMustBeResolved
+                        - translationIssuesMustBeResolved
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_2
+                      - type: object
+                        properties:
+                          data: &ref_39
+                            oneOf:
+                              - title: EMOJI_CONSISTENCY
+                                allOf:
+                                  - *ref_10
+                              - title: SPELLCHECK
+                                allOf:
+                                  - *ref_11
+                              - title: SOURCE_IN_WRONG_LANGUAGE
+                                allOf:
+                                  - *ref_12
+                              - title: TARGET_IN_WRONG_LANGUAGE
+                                allOf:
+                                  - *ref_13
+                              - title: NUMBER_CONSISTENCY
+                                allOf:
+                                  - *ref_14
+                              - title: TARGET_SOURCE_CONSISTENCY
+                                allOf:
+                                  - *ref_15
+                              - title: GLOSSARY_COMPLIANCE
+                                allOf:
+                                  - *ref_21
+                              - title: ORIGINAL_EQUALS_TARGET
+                                allOf:
+                                  - *ref_18
+                              - title: SEGMENT_COMPLETENESS
+                                allOf:
+                                  - *ref_19
+                              - title: OPEN_ISSUES
+                                allOf:
+                                  - *ref_20
+              examples:
+                EMOJI_CONSISTENCY:
+                  value:
+                    noEmojisAllowedInTarget: true
+                SPELLCHECK:
+                  value:
+                    skipIfWordInUserDictionary: false
+                    skipIfWordStartsWithCapitalLetter: true
+                    skipIfWordAppearsInSourceString: false
+                    skipIfWordValidInSourceLocale: true
+                    runSpellcheckForSubWords: true
+                SOURCE_IN_WRONG_LANGUAGE:
+                  value:
+                    minTextLengthLimit: 10
+                TARGET_IN_WRONG_LANGUAGE:
+                  value:
+                    minTextLengthLimit: 15
+                NUMBER_CONSISTENCY:
+                  value:
+                    ignoreSign: true
+                TARGET_SOURCE_CONSISTENCY:
+                  value:
+                    ignoreTagsAndPlaceholders: true
+                    ignoreCase: true
+                GLOSSARY_COMPLIANCE:
+                  value:
+                    matchMethod: MATCH_BY_PERCENTAGE
+                    matchThreshold: 10
+                    sameTermCount: true
+                ORIGINAL_EQUALS_TARGET:
+                  value:
+                    mustHaveIdenticalTags: false
+                    mustHaveIdenticalCapitalization: false
+                SEGMENT_COMPLETENESS:
+                  value:
+                    lowerLengthThreshold: 10
+                    upperLengthThreshold: 20
+                    minLengthThreshold: 15
+                OPEN_ISSUES:
+                  value:
+                    sourceIssuesMustBeResolved: true
+                    translationIssuesMustBeResolved: true
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d
+            "$smartlingStringTQCJSON" -H "Content-Type: application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/settings
+  profiles_check_types_checkType_group_settings:
+    put:
+      description: Update profile check type group settings.
+      summary: Update profile check type group settings
+      tags:
+        - Translation quality checks
+      operationId: updateProfilesCheckTypeGroupSettings
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - *ref_0
+        - *ref_1
+        - *ref_22
+        - name: groupUid
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of corresponding group.
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - title: EMOJI_CONSISTENCY
+                  allOf:
+                    - *ref_10
+                    - *ref_23
+                    - *ref_24
+                - title: SPELLCHECK
+                  allOf:
+                    - *ref_11
+                    - *ref_25
+                    - *ref_26
+                - title: SOURCE_IN_WRONG_LANGUAGE
+                  allOf:
+                    - *ref_12
+                    - *ref_27
+                    - *ref_28
+                - title: TARGET_IN_WRONG_LANGUAGE
+                  allOf:
+                    - *ref_29
+                    - *ref_30
+                    - *ref_13
+                - *ref_31
+                - title: TARGET_SOURCE_CONSISTENCY
+                  allOf:
+                    - *ref_15
+                    - *ref_32
+                    - *ref_33
+                - *ref_34
+                - title: ORIGINAL_EQUALS_TARGET
+                  allOf:
+                    - *ref_18
+                    - *ref_35
+                    - *ref_36
+                - title: SEGMENT_COMPLETENESS
+                  allOf:
+                    - *ref_19
+                    - *ref_37
+                - *ref_38
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_2
+                      - type: object
+                        properties:
+                          data: *ref_39
+              examples:
+                EMOJI_CONSISTENCY:
+                  value:
+                    noEmojisAllowedInTarget: true
+                SPELLCHECK:
+                  value:
+                    skipIfWordInUserDictionary: false
+                    skipIfWordStartsWithCapitalLetter: true
+                    skipIfWordAppearsInSourceString: false
+                    skipIfWordValidInSourceLocale: true
+                    runSpellcheckForSubWords: true
+                SOURCE_IN_WRONG_LANGUAGE:
+                  value:
+                    minTextLengthLimit: 10
+                TARGET_IN_WRONG_LANGUAGE:
+                  value:
+                    minTextLengthLimit: 15
+                NUMBER_CONSISTENCY:
+                  value:
+                    ignoreSign: true
+                TARGET_SOURCE_CONSISTENCY:
+                  value:
+                    ignoreTagsAndPlaceholders: true
+                    ignoreCase: true
+                GLOSSARY_COMPLIANCE:
+                  value:
+                    matchMethod: MATCH_BY_PERCENTAGE
+                    matchThreshold: 10
+                    sameTermCount: true
+                ORIGINAL_EQUALS_TARGET:
+                  value:
+                    mustHaveIdenticalTags: false
+                    mustHaveIdenticalCapitalization: false
+                SEGMENT_COMPLETENESS:
+                  value:
+                    lowerLengthThreshold: 10
+                    upperLengthThreshold: 20
+                    minLengthThreshold: 15
+                OPEN_ISSUES:
+                  value:
+                    sourceIssuesMustBeResolved: true
+                    translationIssuesMustBeResolved: true
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X PUT -H "Authorization: Bearer $smartlingToken" -d
+            "$smartlingStringTQCJSON" -H "Content-Type: application/json"
+            https://api.smartling.com/translation-quality-api/v2/accounts/$smartlingAccountId/profiles/$smartlingProfileUid/check-types/$smartlingCheckTypeCode/groups/$smartlingGroupUid/settings
+  get_project_check_types_settings:
+    get:
+      description: Get project check types settings.
+      summary: Get project check types settings
+      tags:
+        - Translation quality checks
+      operationId: getProjectCheckTypesSettings
+      produces:
+        - application/json
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: >-
+            A unique project identifier. This can be found in the Smartling
+            Dashboard under Account Settings > API.
+        - name: localeId
+          in: path
+          required: true
+          type: string
+          description: A valid Smartling Locale ID.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    allOf:
+                      - *ref_2
+                      - type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              totalCount:
+                                type: integer
+                                description: Total element count
+                              items:
+                                type: array
+                                items:
+                                  anyOf:
+                                    - title: BLACKLISTED_TERMS
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - BLACKLISTED_TERMS
+                                              description: check type code
+                                              example: BLACKLISTED_TERMS
+                                    - title: EMOJI_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - *ref_10
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - EMOJI_CONSISTENCY
+                                              description: check type code
+                                              example: EMOJI_CONSISTENCY
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - EMOJI_ADDED
+                                                      - EMOJI_DELETED
+                                                      - EMOJI_PRESENT
+                                                    description: check subtype code
+                                                    example: EMOJI_ADDED
+                                    - title: GLOBAL_CAPITALISATION_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - GLOBAL_CAPITALISATION_CONSISTENCY
+                                              description: check type code
+                                              example: GLOBAL_CAPITALISATION_CONSISTENCY
+                                    - title: GLOSSARY_COMPLIANCE
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - *ref_16
+                                        - type: object
+                                          properties:
+                                            sameTermCount:
+                                              type: boolean
+                                              description: >-
+                                                If true the translation should have the
+                                                glossary term the same number of times
+                                                as in the source. If false the
+                                                translation only requires the
+                                                translation of the term at least once.
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - GLOSSARY_COMPLIANCE
+                                              description: check type code
+                                              example: GLOSSARY_COMPLIANCE
+                                    - title: GRAMMAR_CHECK
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - GRAMMAR_CHECK
+                                              description: check type code
+                                              example: GRAMMAR_CHECK
+                                    - title: INSERTABLE_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - INSERTABLE_CONSISTENCY
+                                              description: check type code
+                                              example: INSERTABLE_CONSISTENCY
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - INSERTABLE_ADDED
+                                                      - INSERTABLE_DELETED
+                                                    description: check subtype code
+                                                    example: INSERTABLE_ADDED
+                                    - title: LEADING_TRAILING_SPACES
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          required:
+                                            - checkTypeCode
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - LEADING_TRAILING_SPACES
+                                              description: check type code
+                                              example: LEADING_TRAILING_SPACES
+                                    - title: NON_TRANSLATABLE_TEXT
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - NON_TRANSLATABLE_TEXT
+                                              description: check type code
+                                              example: NON_TRANSLATABLE_TEXT
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - PLACEABLE_ADDED
+                                                      - PLACEABLE_DELETED
+                                                      - SPACES_AROUND_PLACEABLE
+                                                      - PLACEABLE_FORMAT
+                                                    description: check subtype code
+                                                    example: PLACEABLE_ADDED
+                                    - title: NUMBER_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - *ref_14
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - NUMBER_CONSISTENCY
+                                              description: check type code
+                                              example: NUMBER_CONSISTENCY
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - NUMBER_ADDED
+                                                      - NUMBER_DELETED
+                                                      - NUMBER_INCORRECT_CONVERSION
+                                                    description: check subtype code
+                                                    example: NUMBER_ADDED
+                                    - title: ORIGINAL_EQUALS_TARGET
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - *ref_18
+                                        - type: object
+                                          required:
+                                            - checkTypeCode
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - ORIGINAL_EQUALS_TARGET
+                                              description: check type code
+                                              example: ORIGINAL_EQUALS_TARGET
+                                    - title: REPEATED_WORD
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - REPEATED_WORD
+                                              description: check type code
+                                              example: REPEATED_WORD
+                                    - title: SEGMENT_COMPLETENESS
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - *ref_19
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - SEGMENT_COMPLETENESS
+                                              description: check type code
+                                              example: SEGMENT_COMPLETENESS
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TARGET_IS_EMPTY
+                                                      - TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                                                      - TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                                                    description: check subtype code
+                                                    example: TARGET_IS_EMPTY
+                                    - title: SOURCE_IN_WRONG_LANGUAGE
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - *ref_12
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - SOURCE_IN_WRONG_LANGUAGE
+                                              description: check type code
+                                              example: SOURCE_IN_WRONG_LANGUAGE
+                                    - title: SPELLCHECK
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - *ref_11
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - SPELLCHECK
+                                              description: check type code
+                                              example: SPELLCHECK
+                                    - title: TAG_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - TAG_CONSISTENCY
+                                              description: check type code
+                                              example: TAG_CONSISTENCY
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - TAG_ADDED
+                                                      - TAG_DELETED
+                                                      - SPACES_AROUND_TAGS
+                                                      - TAG_ORDER_IS_CHANGED
+                                                    description: check subtype code
+                                                    example: TAG_ADDED
+                                    - title: TARGET_IN_WRONG_LANGUAGE
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - *ref_13
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - TARGET_IN_WRONG_LANGUAGE
+                                              description: check type code
+                                              example: TARGET_IN_WRONG_LANGUAGE
+                                    - title: TARGET_LENGTH_LIMIT
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - TARGET_LENGTH_LIMIT
+                                              description: check type code
+                                              example: TARGET_LENGTH_LIMIT
+                                    - title: TARGET_SOURCE_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithCustomSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - *ref_15
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - TARGET_SOURCE_CONSISTENCY
+                                              description: check type code
+                                              example: TARGET_SOURCE_CONSISTENCY
+                                            subTypes:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  checkSubTypeCode:
+                                                    type: string
+                                                    enum:
+                                                      - SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                                      - SAME_TRANSLATION_DIFFERENT_SOURCES
+                                                    description: check subtype code
+                                                    example: SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                                    - title: TRADEMARK_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - TRADEMARK_CONSISTENCY
+                                              description: check type code
+                                              example: TRADEMARK_CONSISTENCY
+                                    - title: WHITESPACES
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - WHITESPACES
+                                              description: check type code
+                                              example: WHITESPACES
+                                    - title: PUNCTUATION_CONSISTENCY
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - PUNCTUATION_CONSISTENCY
+                                              description: check type code
+                                              example: PUNCTUATION_CONSISTENCY
+                                    - title: PLURALS_REPETITION
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - PLURALS_REPETITION
+                                              description: check type code
+                                              example: PLURALS_REPETITION
+                                    - title: REGEX_CHECK
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - type: object
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - REGEX_CHECK
+                                              description: check type code
+                                              example: REGEX_CHECK
+                                            rules:
+                                              type: array
+                                              items:
+                                                $ref: >-
+                                                  ../tqc_common.yaml#/components/schemas/regexRuleWithRuleUid
+                                    - title: OPEN_ISSUES
+                                      allOf:
+                                        - $ref: >-
+                                            ../tqc_common.yaml#/components/schemas/commonWithoutSubTypesResponseAccountCheckTypeSettingsEffective
+                                        - *ref_20
+                                        - type: object
+                                          required:
+                                            - checkTypeCode
+                                          properties:
+                                            checkTypeCode:
+                                              type: string
+                                              enum:
+                                                - OPEN_ISSUES
+                                              description: check type code
+                                              example: OPEN_ISSUES
+              example:
+                response:
+                  code: SUCCESS
+                  data:
+                    totalCount: 24
+                    items:
+                      - severityLevelCode: LOW
+                        checkTypeCode: LEADING_TRAILING_SPACES 1
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: ORIGINAL_EQUALS_TARGET
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        mustHaveIdenticalTags: true
+                        mustHaveIdenticalCapitalization: true
+                      - severityLevelCode: LOW
+                        checkTypeCode: WHITESPACES
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: SPELLCHECK
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        skipIfWordInUserDictionary: true
+                        skipIfWordStartsWithCapitalLetter: false
+                        skipIfWordAppearsInSourceString: true
+                        skipIfWordValidInSourceLocale: false
+                        runSpellcheckForSubWords: false
+                      - severityLevelCode: LOW
+                        checkTypeCode: TAG_CONSISTENCY
+                        subTypes:
+                          - checkSubTypeCode: TAG_ADDED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: TAG_DELETED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: TAG_ORDER_IS_CHANGED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: SPACES_AROUND_TAGS
+                            severityLevelCode: LOW
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: HIGH
+                        checkTypeCode: TARGET_LENGTH_LIMIT
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: NUMBER_CONSISTENCY
+                        subTypes:
+                          - checkSubTypeCode: NUMBER_DELETED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: NUMBER_ADDED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: NUMBER_INCORRECT_CONVERSION
+                            severityLevelCode: LOW
+                        localeSeverityLevels: []
+                        groups:
+                          - groupUid: b0dd258b05ee
+                          - groupUid: a853df2cf8ac
+                        ignoreSign: true
+                      - severityLevelCode: LOW
+                        checkTypeCode: REPEATED_WORD
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: TARGET_IN_WRONG_LANGUAGE
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        minTextLengthLimit: 40
+                      - severityLevelCode: LOW
+                        checkTypeCode: SOURCE_IN_WRONG_LANGUAGE
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        minTextLengthLimit: 40
+                      - severityLevelCode: MEDIUM
+                        checkTypeCode: SEGMENT_COMPLETENESS
+                        subTypes:
+                          - checkSubTypeCode: TARGET_IS_MUCH_SHORTER_THAN_SOURCE
+                            severityLevelCode: MEDIUM
+                          - checkSubTypeCode: TARGET_IS_MUCH_LONGER_THAN_SOURCE
+                            severityLevelCode: MEDIUM
+                          - checkSubTypeCode: TARGET_IS_EMPTY
+                            severityLevelCode: DISABLED
+                        localeSeverityLevels: []
+                        groups: []
+                        lowerLengthThreshold: 50
+                        upperLengthThreshold: 250
+                        minLengthThreshold: 10
+                      - severityLevelCode: MEDIUM
+                        checkTypeCode: NON_TRANSLATABLE_TEXT
+                        subTypes:
+                          - checkSubTypeCode: PLACEABLE_DELETED
+                            severityLevelCode: MEDIUM
+                          - checkSubTypeCode: SPACES_AROUND_PLACEABLE
+                            severityLevelCode: MEDIUM
+                          - checkSubTypeCode: PLACEABLE_ADDED
+                            severityLevelCode: MEDIUM
+                          - checkSubTypeCode: PLACEABLE_FORMAT
+                            severityLevelCode: MEDIUM
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: EMOJI_CONSISTENCY
+                        subTypes:
+                          - checkSubTypeCode: EMOJI_PRESENT
+                            severityLevelCode: DISABLED
+                          - checkSubTypeCode: EMOJI_DELETED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: EMOJI_ADDED
+                            severityLevelCode: LOW
+                        localeSeverityLevels: []
+                        groups: []
+                        noEmojisAllowedInTarget: false
+                      - severityLevelCode: LOW
+                        checkTypeCode: INSERTABLE_CONSISTENCY
+                        subTypes:
+                          - checkSubTypeCode: INSERTABLE_DELETED
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: INSERTABLE_ADDED
+                            severityLevelCode: LOW
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: TARGET_SOURCE_CONSISTENCY
+                        subTypes:
+                          - checkSubTypeCode: SAME_TRANSLATION_DIFFERENT_SOURCES
+                            severityLevelCode: LOW
+                          - checkSubTypeCode: SAME_SOURCE_DIFFERENT_TRANSLATIONS
+                            severityLevelCode: LOW
+                        localeSeverityLevels: []
+                        groups: []
+                        ignoreTagsAndPlaceholders: true
+                        ignoreCase: true
+                      - severityLevelCode: MEDIUM
+                        checkTypeCode: BLACKLISTED_TERMS
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: MEDIUM
+                        checkTypeCode: GLOSSARY_COMPLIANCE
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        matchMethod: MATCH_BY_PERCENTAGE
+                        matchThreshold: 50
+                        sameTermCount: true
+                      - severityLevelCode: LOW
+                        checkTypeCode: TRADEMARK_CONSISTENCY
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: GRAMMAR_CHECK
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: GLOBAL_CAPITALISATION_CONSISTENCY
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: PUNCTUATION_CONSISTENCY
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: MEDIUM
+                        checkTypeCode: PLURALS_REPETITION
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: REGEX_CHECK
+                        subTypes: []
+                        groups: []
+                        rules:
+                          - ruleUid: 2d83ea74c848
+                            severityLevelCode: LOW
+                            ruleName: ruleName1
+                            ruleTypeCode: FORBIDDEN
+                            flavorCode: JAVA
+                            originalPattern: '@mail'
+                            translationPattern: '@gmail'
+                            description: ruleName1 description
+                            caseInsensitive: true
+                            multiLine: false
+                            warningMessage: test warning
+                            groups: []
+                      - severityLevelCode: LOW
+                        checkTypeCode: OPEN_ISSUES
+                        subTypes: []
+                        localeSeverityLevels: []
+                        groups: []
+                        sourceIssuesMustBeResolved: true
+                        translationIssuesMustBeResolved: true
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -H "Authorization: Bearer $smartlingToken"
+            https://api.smartling.com/translation-quality-api/v2/projects/$smartlingProjectId/locales/$smartlingLocaleId/check-types/

@@ -1,0 +1,376 @@
+x-paths:
+
+  # ---------------------------------------------------------------------------
+  # Bulk create string instructions
+  # ---------------------------------------------------------------------------
+
+  bulk_create_instructions:
+    post:
+      tags:
+        - string-instructions
+      operationId: string_instructions_bulk_create
+      summary: Add the same instruction to multiple strings
+      description: |
+        Creates a new enabled string instruction with the given text for every
+        listed string in the project. All instructions are saved in a single
+        transaction.
+
+        **Limits**
+        - At most **1000** hashcodes per request.
+        - Instruction text is at most **5000** characters.
+        - Rate limit (per user, across all `/string-instructions-api/v2` endpoints):
+          **50** requests per **15** seconds, **3** concurrent requests.
+
+        **Behavior notes**
+        - Each call adds a new instruction; existing instructions on the same
+          strings are neither replaced nor deduplicated. Repeating a request
+          creates duplicate active instructions.
+        - Hashcodes that do not match a string in the project are silently
+          skipped. The response does not report how many instructions were created.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkCreateInstructionsCommand'
+            examples:
+              bulk_create:
+                value:
+                  stringHashcodes:
+                    - 1756c52b143867ba428c03fbcfca9697
+                    - 2867d63c254978cb539d14fcdb5a7708
+                  instructionText: Keep the product name in English.
+      responses:
+        '200':
+          description: Instructions created; no data returned.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/EmptyResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data: {}
+        '400':
+          description: Request failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error400Response'
+              examples:
+                no_hashcodes:
+                  summary: No hashcodes provided
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.string.instructions.no.hashcodes.provided
+                          message: At least one string hashcode must be specified
+                max_hashcodes:
+                  summary: Hashcode limit exceeded
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.string.instructions.max.hashcodes.provided
+                          message: No more than 1000 string hashcodes can be specified
+                no_text:
+                  summary: Instruction text is blank
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.string.instructions.no.text.provided
+                          message: No instruction text was provided
+                max_text:
+                  summary: Instruction text is too long
+                  value:
+                    response:
+                      code: VALIDATION_ERROR
+                      errors:
+                        - key: api.request.validation.string.instructions.max.text.provided
+                          message: No more than 5000 characters of instruction text is allowed
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '403':
+          description: Caller does not have access to the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error401Response'
+        '404':
+          description: Requested resource not found.
+          content:
+            application/json:
+              schema:
+                $ref: '../api_common.yaml#/components/schemas/Error404Response'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+
+  # ---------------------------------------------------------------------------
+  # Get string instructions
+  # ---------------------------------------------------------------------------
+
+  get_instructions:
+    post:
+      tags:
+        - string-instructions
+      operationId: strings_get_instructions
+      summary: Get instructions for strings
+      description: |
+        Returns the translator instructions for the listed strings in the project.
+        The response combines all instruction sources:
+        - Instructions added to a string manually or through the API.
+        - Instructions taken from comments or directives in the source files
+          that contain the string.
+        - File-level instructions (`DOCUMENT_INSTRUCTION`) of the source files
+          that contain the string. At most **3** are returned per string.
+        - Attachments added to the string, returned as a Markdown link in `text`.
+
+        **Limits**
+        - At most **1000** hashcodes per request.
+
+        **Behavior notes**
+        - Duplicate hashcodes in the request are merged. The response contains
+          one item per distinct hashcode, in no particular order.
+        - A hashcode that does not match a string in the project returns an item
+          with an empty `instructions` array.
+        - An empty `hashcodes` array returns an empty `items` array.
+        - Within an item, `DOCUMENT_INSTRUCTION` entries come first, then the
+          remaining instructions from newest to oldest by `createdDate`.
+        - Disabled instructions are included; check the `enabled` flag.
+      parameters:
+        - $ref: '../api_common.yaml#/components/parameters/projectUid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetStringInstructionsCommand'
+            examples:
+              get_instructions:
+                value:
+                  hashcodes:
+                    - c603a7336704eddcd5bba0bc955245da
+                  excludeDuplicatedStringInstructions: true
+      responses:
+        '200':
+          description: Instructions for every requested hashcode.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringInstructionsListResponse'
+              examples:
+                success:
+                  value:
+                    response:
+                      code: SUCCESS
+                      data:
+                        totalCount: 1
+                        items:
+                          - hashcode: c603a7336704eddcd5bba0bc955245da
+                            instructions:
+                              - uid: '850199'
+                                type: DOCUMENT_INSTRUCTION
+                                createdDate: '2026-06-10T11:50:29Z'
+                                modifiedDate: '2026-06-10T11:50:29Z'
+                                text: Instruction from source file
+                                contentFileUri: original.yaml
+                                attachmentUrl: /api/translations/instructions/file?fileUri=original.yaml
+                                attachmentUri: 2.txt
+                                attachmentContentType: text/plain
+                                userUid: 1776b16b6542
+                                editable: false
+                                label: Document instruction
+                                enabled: true
+                                modifiedByUserUid: null
+                              - uid: '398435541'
+                                type: STRING_INSTRUCTION
+                                createdDate: '2026-06-10T11:51:27Z'
+                                modifiedDate: '2026-06-11T08:02:10Z'
+                                text: Keep the translation under 30 characters
+                                contentFileUri: null
+                                attachmentUrl: null
+                                attachmentUri: null
+                                attachmentContentType: null
+                                userUid: 1776b16b6543
+                                editable: true
+                                label: null
+                                enabled: true
+                                modifiedByUserUid: 1776b16b6543
+        '400':
+          $ref: '../api_common.yaml#/components/responses/Error400ResponseDefinition'
+        '401':
+          $ref: '../api_common.yaml#/components/responses/Error401ResponseDefinition'
+        '429':
+          $ref: '../api_common.yaml#/components/responses/Error429ResponseDefinition'
+        '500':
+          $ref: '../api_common.yaml#/components/responses/Error500ResponseDefinition'
+      x-code-samples:
+        - lang: curl
+          source: >
+            curl -X POST -H "Authorization: Bearer $smartlingToken" -H "Content-Type: application/json"
+            -d '{"hashcodes": ["c603a7336704eddcd5bba0bc955245da"]}'
+            https://api.smartling.com/strings-api/v2/projects/$smartlingProjectId/string-instructions
+
+components:
+  schemas:
+
+    # -- Command / request bodies --
+
+    BulkCreateInstructionsCommand:
+      type: object
+      description: Instruction text to apply to a batch of strings.
+      required:
+        - stringHashcodes
+        - instructionText
+      properties:
+        stringHashcodes:
+          type: array
+          description: Hashcodes of the source strings to add the instruction to.
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '../api_common.yaml#/components/schemas/Hashcode'
+        instructionText:
+          type: string
+          description: Instruction text. Must not be blank.
+          minLength: 1
+          maxLength: 5000
+
+    GetStringInstructionsCommand:
+      type: object
+      description: Strings to return instructions for.
+      required:
+        - hashcodes
+      properties:
+        hashcodes:
+          type: array
+          description: Hashcodes of the source strings to return instructions for.
+          maxItems: 1000
+          items:
+            $ref: '../api_common.yaml#/components/schemas/Hashcode'
+        excludeDuplicatedStringInstructions:
+          type: boolean
+          default: false
+          description: |
+            When `true`, instructions that came from source files of the same
+            file type and have the same text (case-insensitive) are returned
+            once, keeping the oldest. Instructions added manually or through the
+            API, and `DOCUMENT_INSTRUCTION` entries, are never removed.
+
+    # -- Response bodies --
+
+    Instruction:
+      type: object
+      description: A translator instruction attached to a string.
+      properties:
+        uid:
+          type: string
+          nullable: true
+          description: Instruction identifier. `null` for attachments.
+          example: '398435541'
+        type:
+          type: string
+          enum:
+            - STRING_INSTRUCTION
+            - DOCUMENT_INSTRUCTION
+          description: |
+            Instruction source:
+            - `STRING_INSTRUCTION` - added to this string, manually, through the
+              API, from a source file comment, or as an attachment.
+            - `DOCUMENT_INSTRUCTION` - a file-level instruction of a source file
+              that contains the string.
+        createdDate:
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
+        modifiedDate:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the instruction was last modified. `null` for attachments.
+          example: '2026-01-15T10:00:00Z'
+        text:
+          type: string
+          description: Instruction text. For an attachment, a Markdown link to the file.
+        contentFileUri:
+          type: string
+          nullable: true
+          description: URI of the source file the instruction came from. `null` for instructions not taken from a file.
+          example: /content/en/home.json
+        attachmentUrl:
+          type: string
+          nullable: true
+          description: Download URL of the file attached to a `DOCUMENT_INSTRUCTION`. `null` if there is no attachment.
+        attachmentUri:
+          type: string
+          nullable: true
+          description: URI of the file attached to a `DOCUMENT_INSTRUCTION`. `null` if there is no attachment.
+        attachmentContentType:
+          type: string
+          nullable: true
+          description: MIME type of the file attached to a `DOCUMENT_INSTRUCTION`. `null` if there is no attachment.
+          example: text/plain
+        userUid:
+          type: string
+          nullable: true
+          description: UID of the user who created the instruction. `null` if unknown.
+          example: 99b0662fbae1
+        editable:
+          type: boolean
+          description: |
+            Whether the caller can edit the instruction. Only instructions
+            added to the string directly (not from a source file) can be edited,
+            and only by users with project-level privileges.
+        label:
+          type: string
+          nullable: true
+          description: Display label. Set to `Document instruction` for `DOCUMENT_INSTRUCTION` entries, `null` otherwise.
+        enabled:
+          type: boolean
+          description: Whether the instruction is shown to translators.
+        modifiedByUserUid:
+          type: string
+          nullable: true
+          description: UID of the user who last modified the instruction. `null` if it was never modified or for file and attachment instructions.
+          example: 99b0662fbae1
+
+    StringInstructions:
+      type: object
+      description: All instructions for one string.
+      properties:
+        hashcode:
+          $ref: '../api_common.yaml#/components/schemas/Hashcode'
+        instructions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Instruction'
+
+    StringInstructionsListResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: object
+                  required:
+                    - totalCount
+                    - items
+                  properties:
+                    totalCount:
+                      type: integer
+                      description: Number of items returned.
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/StringInstructions'

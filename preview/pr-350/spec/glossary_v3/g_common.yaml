@@ -1,0 +1,601 @@
+components:
+  parameters:
+    glossaryUidPathParameter:
+      name: glossaryUid
+      in: path
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Unique identifier of the glossary.
+    entryUidPathParameter:
+      name: entryUid
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique identifier of the glossary entry.
+
+    blocklistUidPathParameter:
+      name: blocklistUid
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique identifier of the blocklist.
+
+    termUidPathParameter:
+      name: termUid
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique identifier of the blocklist term.
+
+  schemas:
+    GetGlossaryEntriesByFilterCommandPTO:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Keyword search for translation of variants.
+          example: 'P&G term'
+        localeIds:
+          type: array
+          description: >-
+            Locales list for translation filtering. Each locale must be one of the glossary locales.
+            Required for the entries search endpoint unless `entryUids` is passed.
+          items:
+            $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          example:
+            [ "uk-UA","en","en-US" ]
+        entryUids:
+          type: array
+          description: Glossary entry uids filter.
+          uniqueItems: true
+          items:
+            type: string
+          example:
+            ["16ed66cc-accc-4bb5-9822-bc84e93429f8", "69dae398-96c2-45f6-9f0d-91470c3464bd"]
+        entryState:
+          type: string
+          description: >-
+            State of the glossary entry.
+            ACTIVE is used if omitted, or BOTH if `entryUids` is passed.
+          enum:
+            - ACTIVE
+            - ARCHIVED
+            - BOTH
+          example: ACTIVE
+        missingTranslationLocaleId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          description: >-
+            Additional locale id filter, which allow to find missing/empty translations.
+            Must be one of the glossary locales.
+          example: uk-UA
+        presentTranslationLocaleId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          description: >-
+            Additional locale id filter, which allow to find only present translations.
+            Must be one of the glossary locales.
+          example: uk-UA
+        presentTranslationTargetLocaleId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          description: >-
+            Second locale filter, applied only together with `presentTranslationLocaleId` (ignored otherwise).
+            The entry must also have a translation with a non-empty term in this locale.
+            Must be one of the glossary locales.
+          example: de-DE
+        presentTranslationWithTargetLocaleEnabled:
+          type: boolean
+          description: >-
+            Applies only with `presentTranslationTargetLocaleId`: the translation in that locale must also not be disabled.
+          example: false
+        targetLocalePresentOrSourceTranslationDNT:
+          type: boolean
+          description: >-
+            Applies only with `presentTranslationTargetLocaleId`: an entry also qualifies when its
+            `presentTranslationLocaleId` translation is marked Do Not Translate
+            (a translation for the target locale must still exist).
+          example: false
+        dntLocaleId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          description: >-
+            Additional locale id filter, which allow to find only DNT-marked translations.
+            Must be one of the glossary locales.
+          example: uk-UA
+        returnFallbackTranslations:
+          type: boolean
+          description: For all translations, if they are missing, appropriate fallback locales will be used.
+          example: false
+        labels:
+          allOf:
+            - $ref: '#/components/schemas/FilterByLabelsPTO'
+          description: Labels filter.
+        dntTermSet:
+          type: boolean
+          description: Return entries where dnt term is set.
+          example: false
+        created:
+          allOf:
+            - $ref: '#/components/schemas/AuditionDateCommandPTO'
+          description: Created date filter.
+        lastModified:
+          allOf:
+            - $ref: '#/components/schemas/AuditionDateCommandPTO'
+          description: Modified date filter.
+        createdBy:
+          allOf:
+            - $ref: '#/components/schemas/AuditorCommandPTO'
+          description: Created by user filter.
+        lastModifiedBy:
+          allOf:
+            - $ref: '#/components/schemas/AuditorCommandPTO'
+          description: modified by user filter
+        mtCompatibilityStates:
+          type: array
+          description: MT-compatibility filter.
+          items:
+            type: string
+            enum:
+              - OPTIMIZED
+              - EMPTY
+              - PENDING
+          example: [ "OPTIMIZED" ]
+        entrySuggestionStatuses:
+          type: array
+          description: Suggestion status filter.
+          items:
+            type: string
+            enum:
+              - STANDARD
+              - SUGGESTED
+              - APPROVED
+          example: [ "STANDARD", "APPROVED" ]
+        customFields:
+          type: array
+          maxItems: 200
+          description: >-
+            Custom fields filter. Items are AND-ed, values within an item are OR-ed.
+            `fieldUid` must be unique and assigned to the glossary.
+            Text fields accept up to 10 values; select values must be valid options; checkbox values are "true" or "false".
+          items:
+            $ref: '#/components/schemas/CustomFieldFilterCommandPTO'
+        paging:
+          allOf:
+            - $ref: '#/components/schemas/PaginationCommandPTO'
+          description: Paging command.
+        sorting:
+          allOf:
+            - $ref: '#/components/schemas/GlossaryEntriesSortCommandPTO'
+          description: Sorting command.
+      description: Glossary entries filter command.
+    CustomFieldFilterCommandPTO:
+      type: object
+      required:
+        - fieldUid
+        - fieldValues
+      properties:
+        fieldUid:
+          type: string
+          description: Uid of the custom field.
+          example: 4a1f7c2e-3b5d-4e6f-8a9b-0c1d2e3f4a5b
+        fieldValues:
+          type: array
+          description: Values to match (OR-ed).
+          items:
+            type: string
+          example: [ "value 1", "value 2" ]
+      description: Custom field filter item.
+    FilterByLabelsPTO:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/NoLabelsFilter'
+        - $ref: '#/components/schemas/AnyLabelsFilter'
+        - $ref: '#/components/schemas/AssociatedLabelsFilter'
+      discriminator:
+        propertyName: type
+        mapping:
+          empty: '#/components/schemas/NoLabelsFilter'
+          any: '#/components/schemas/AnyLabelsFilter'
+          associated: '#/components/schemas/AssociatedLabelsFilter'
+      description: >-
+        Labels filter on glossary entry level. There are 3 subTypes :
+         - empty -  allow to search for entries where no labels are assigned, as example - '{"type":"empty"}';
+         - any - allow to search for entries where ant labels are assigned, as example - '{"type":"any"}';
+         - associated - allow to search for entries where pre-selected labels are assigned, as example - '{"type":"associated", "labelUids":[""16ed66cc-accc-4bb5-9822-bc84e93429f8""]}'.
+    NoLabelsFilter:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          example: empty
+      description: >-
+        No labels filter / labels are missing filter. Use 'empty' as type property value.
+    AnyLabelsFilter:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          example: any
+      description: >-
+        Any labels filter / labels - present filter. Use 'any' as type property value.
+    AssociatedLabelsFilter:
+      type: object
+      required:
+        - type
+        - labelUids
+      properties:
+        type:
+          type: string
+          example: associated
+        labelUids:
+          type: array
+          description: Label uuids collection for the filtering.
+          items:
+            type: string
+            format: uuid
+          example : ["16ed66cc-accc-4bb5-9822-bc84e93429f9","69dae398-96c2-45f6-9f0d-91470c3464b6"]
+      description: >-
+        Associated labels filter. Use 'associated' as type property value.
+    AuditionDateCommandPTO:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/AfterDateAuditionDateFilter'
+        - $ref: '#/components/schemas/BeforeDateAuditionDateFilter'
+        - $ref: '#/components/schemas/DateRangeAuditionDateFilter'
+        - $ref: '#/components/schemas/ExactDateAuditionDateFilter'
+      discriminator:
+        propertyName: type
+        mapping:
+          after: '#/components/schemas/AfterDateAuditionDateFilter'
+          before: '#/components/schemas/BeforeDateAuditionDateFilter'
+          date_range: '#/components/schemas/DateRangeAuditionDateFilter'
+          exact: '#/components/schemas/ExactDateAuditionDateFilter'
+      description: >-
+        Audition date-time filter.
+        Possible values :
+         - after - after date-time filter, as example :  '{ "type": "after", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }';
+         - before - before date-time filter, as example :  '{ "type": "before", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }';
+         - date_range - date time in-range filter, as example :  '{ "type": "date_range", "level":"ANY", "from":"2023-02-01T11:45:00.000Z", "to":"2023-03-01T11:45:00.000Z" }';
+         - exact - exact date time filter, as example :  '{ "type": "exact", "level":"ANY", "date":"2023-02-01T11:45:00.000Z" }'.
+        `level` is optional, ANY is used if omitted. Dates are ISO-8601 (e.g. '2023-02-01T11:45:00Z' or '2023-02-01T11:45:00+02:00').
+    AfterDateAuditionDateFilter:
+      type: object
+      required:
+        - date
+        - type
+      properties:
+        level:
+          type: string
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example: ANY
+        date:
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
+        type:
+          type: string
+          example: after
+      description: After date filter.
+    BeforeDateAuditionDateFilter:
+      type: object
+      required:
+        - date
+        - type
+      properties:
+        level:
+          type: string
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example: ANY
+        date:
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
+        type:
+          type: string
+          example: before
+      description: Before date filter.
+    DateRangeAuditionDateFilter:
+      type: object
+      required:
+        - from
+        - to
+        - type
+      properties:
+        level:
+          type: string
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example: ANY
+        from:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
+          description: From date-time / range start.
+          example: '2023-02-01T11:45:00.000Z'
+        to:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/DateTime'
+          description: To date-time / range end.
+          example: '2023-02-11T11:45:00.000Z'
+        type:
+          type: string
+          example: date_range
+      description: Date range filter.
+    ExactDateAuditionDateFilter:
+      type: object
+      required:
+        - date
+        - type
+      properties:
+        level:
+          type: string
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ). ANY is default.
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example: ANY
+        date:
+          $ref: '../api_common.yaml#/components/schemas/DateTime'
+        type:
+          type: string
+          example: exact
+      description: Exact date filter.
+    AuditorCommandPTO:
+      type: object
+      required:
+        - userIds
+      properties:
+        level:
+          type: string
+          description: Level on which filtering should be performed ( glossary entry /  glossary translation / or any ).
+          enum:
+            - ENTRY
+            - LOCALE
+            - ANY
+          example: ANY
+        userIds:
+          type: array
+          description: User identifiers.
+          items:
+            type: string
+          example : ["user1","user2"]
+      description: Auditor user filter.
+    PaginationCommandPTO:
+      type: object
+      properties:
+        offset:
+          type: integer
+          description: Amount of items to skip. Negative values are treated as 0.
+          example: 0
+        limit:
+          type: integer
+          description: >-
+            Amount of items to fetch. Values below 1 are raised to 1, and values above 500 are reduced to 500.
+          example: 50
+      description: >-
+        Pagination options. If `paging` is omitted, offset 0 and limit 500 are used.
+        If `paging` is passed, set `limit` explicitly: an omitted `limit` returns a single item.
+    GlossaryEntriesSortCommandPTO:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Sort field, select one of - term | createdDate | lastModifiedDate.
+          enum:
+            - term
+            - createdDate
+            - lastModifiedDate
+          example: term
+        direction:
+          type: string
+          description: Sort direction.
+          enum:
+            - ASC
+            - DESC
+          example: DESC
+        localeId:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/LocaleId'
+          description: >-
+            Locale identifier - for case when 'term' sort field is selected. Must be one of `localeIds`;
+            the first of `localeIds` is used if omitted.
+          example: uk-UA
+      description: >-
+        Sorting options. If `sorting` is omitted, entries are sorted by lastModifiedDate DESC.
+        An unknown `field` falls back to lastModifiedDate; an unknown `direction` falls back to ASC.
+
+    AsyncOperationResponse:
+      type: object
+      properties:
+        operationUid:
+          type: string
+          description: Uid of the async operation.
+
+    AsyncOperationResponsePTO:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: "#/components/schemas/AcceptedResponse"
+            - type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/AsyncOperationResponse"
+
+    CodeOnlyResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          type: object
+          required:
+            - code
+          properties:
+            code:
+              type: string
+              description: >-
+                SUCCESS if the operation was performed, NO_CONTENT if nothing changed
+                (e.g. the item was already in the requested state).
+              enum:
+                - SUCCESS
+                - NO_CONTENT
+            errors:
+              type: array
+              description: Always empty.
+              items:
+                $ref: '../api_common.yaml#/components/schemas/Error'
+              example: [ ]
+
+    GlossaryEmptyResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          allOf:
+            - $ref: '../api_common.yaml#/components/schemas/SuccessResponse'
+            - type: object
+              properties:
+                errors:
+                  type: array
+                  description: Always empty. No `data` property is returned.
+                  items:
+                    $ref: '../api_common.yaml#/components/schemas/Error'
+    AcceptedResponse:
+      properties:
+        code:
+          description: >-
+            Indicates whether the response was successful or what error has occurred.
+          enum:
+            - ACCEPTED
+          type: string
+      required:
+        - code
+      type: object
+    GlossaryError500Response:
+      properties:
+        response:
+          properties:
+            code:
+              description: >-
+                Indicates whether the response was successful or what error has occurred.
+              enum:
+                - GENERAL_ERROR
+              type: string
+            errors:
+              items:
+                $ref: '../api_common.yaml#/components/schemas/Error'
+              type: array
+          required:
+            - code
+            - errors
+          type: object
+      required:
+        - response
+      type: object
+
+  responses:
+    GlossaryError400ResponseDefinition:
+      description: Provided request parameters are invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/Error400Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: VALIDATION_ERROR
+                  errors:
+                    - key: error.key
+                      message: >-
+                        message that describes the error
+    GlossaryError401ResponseDefinition:
+      description: Provided credentials are not valid.
+      content:
+        application/json:
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/Error401Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: AUTHENTICATION_ERROR
+                  errors:
+                    - details: { }
+                      key: invalid_token
+                      message: Invalid token
+    GlossaryError403ResponseDefinition:
+      description: Access denied.
+      content:
+        application/json:
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/Error403Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: ACCESS_DENIED_ERROR
+                  errors:
+                    - key: no.access
+                      message: >-
+                        access denied message
+    GlossaryError404ResponseDefinition:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/Error404Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: NOT_FOUND_ERROR
+                  errors:
+                    - key: not.found
+                      message: >-
+                        message describing not found resource
+    GlossaryError429ResponseDefinition:
+      description: Too many simultaneous API requests.
+      content:
+        application/json:
+          schema:
+            $ref: '../api_common.yaml#/components/schemas/Error429Response'
+          examples:
+            response:
+              value:
+                response:
+                  code: MAX_OPERATIONS_LIMIT_EXCEEDED
+                  errors:
+                    - key: too.many.requests
+                      message: >-
+                        limitation message
+    GlossaryError500ResponseDefinition:
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GlossaryError500Response'
